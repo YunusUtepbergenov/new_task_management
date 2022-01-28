@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,9 +15,16 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [PageController::class, 'dashboard'])->name('home');
+    Route::get('employee', [PageController::class, 'employees'])->name('employees');
 
-Route::get('/', function () {
-    return view('page.login');
+    Route::resource('project', ProjectController::class)->only([
+        'store', 'update'
+    ]);
+    Route::resource('task', TaskController::class)->only([
+        'store', 'update'
+    ]);
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {

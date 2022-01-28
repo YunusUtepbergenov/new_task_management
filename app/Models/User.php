@@ -26,6 +26,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'sector_id',
+        'role_id',
         'password',
     ];
 
@@ -58,4 +60,16 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function role(){
+        return $this->belongsTo(Role::class);
+    }
+
+    public function tasks(){
+        return $this->hasMany(Task::class);
+    }
+
+    public function sector(){
+        return $this->belongsTo(Sector::class);
+    }
 }

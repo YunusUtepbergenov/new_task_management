@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Sector extends Model
 {
     use HasFactory;
+
+    public function users(){
+        return $this->hasMany(User::class);
+    }
+
+    public function tasks(){
+        return $this->hasMany(Task::class);
+    }
 }
