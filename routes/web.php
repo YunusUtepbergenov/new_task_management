@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [PageController::class, 'dashboard'])->name('home');
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
+    Route::get('/task/info/byid/{id}', [PageController::class, 'getTaskInfo']);
 
     Route::resource('project', ProjectController::class)->only([
         'store', 'update'

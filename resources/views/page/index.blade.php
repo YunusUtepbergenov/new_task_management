@@ -7,13 +7,13 @@
             <div class="col-sm-12">
                 <ul class="nav nav-tabs nav-tabs-bottom">
                     <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#tab_additions">Мои задачи</a>
+                        <a class="nav-link active" href="#">Мои задачи</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#tab_overtime">Поручил</a>
+                        <a class="nav-link" href="#">Поручил</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#tab_deductions">Помогаю</a>
+                        <a class="nav-link" href="#">Помогаю</a>
                     </li>
                 </ul>
             </div>
@@ -49,7 +49,7 @@
                                     <tr>
                                         <td>{{ $key+1 }}</td>
                                         <td>
-                                            <a href="#" data-toggle="modal" data-target="#view_task">{{ $task->name }}</a>
+                                            <a href="#" onclick="viewTask({{ $task->id }})">{{ $task->name }}</a>
                                         </td>
                                         <td>{{ $task->created_at->format('Y-m-d') }}</td>
                                         <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
@@ -75,7 +75,8 @@
                                         <tbody>
                                             <tr>
                                                 <td>{{ $key+1 }}</td>
-                                                <td><a href="#" data-toggle="modal" data-target="#view_task">{{ $task->name }}</a></td>
+                                                <td><a href="#" onclick="viewTask({{ $task->id }})">{{ $task->name }}</a>
+                                                </td>
                                                 <td>{{ $task->created_at->format('Y-m-d') }}</td>
                                                 <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
                                                 <td>{{ $task->username($task->creator_id) }}</td>
@@ -134,7 +135,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('task.store') }}" method="POST">
+                    <form action="{{ route('task.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
                             <div class="col-sm-12">
@@ -154,14 +155,15 @@
                             </div>
                         </div>
 
-                        {{-- <div class="row">
+                        <div class="row">
                             <div class="col-sm-12">
                                 <div class="form-group file-upload">
                                     <label for="file-input"><img src="assets/img/attachment.png"></label>
-                                    <input id="file-input" type="file">
+                                    <input id="file-input" type="file" name="file[]" multiple onchange="javascript:updateList()">
+                                    <div id="fileList"></div>
                                 </div>
                             </div>
-                        </div> --}}
+                        </div>
 
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Ответственный</label>
@@ -185,19 +187,29 @@
                             </div>
                         </div>
 
-                        {{-- <div class="form-group row">
+                        <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Соисполнитель</label>
                             <div class="col-sm-4">
-                                <select class="form-control" id="example-getting-started" multiple="multiple">
+
+                                <select class="form-control select" name="helpers[]" multiple>
+                                    @foreach ($sectors as $sector)
+                                    <optgroup label="{{ $sector->name }}">
+                                        @foreach ($sector->users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endforeach
+                                      </optgroup>
+                                    @endforeach
+                                </select>
+                                {{-- <select class="form-control" id="example-getting-started" multiple="multiple">
                                     <option value="cheese">Someone 1</option>
                                     <option value="tomatoes">Someone 2</option>
                                     <option value="mozarella">Someone 3</option>
                                     <option value="mushrooms">Someone 4</option>
                                     <option value="pepperoni">Someone 5</option>
                                     <option value="onions">Someone 6</option>
-                                </select>
+                                </select> --}}
                             </div>
-                        </div> --}}
+                        </div>
 
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Крайний срок</label>

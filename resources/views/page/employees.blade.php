@@ -97,6 +97,8 @@
                                     <div class="form-group">
                                         <label>Введите имя</label>
                                         <input class="form-control" name="name" type="text">
+                                        <input type="hidden" name="password" value="password">
+                                        <input type="hidden" name="password_confirmation" value="password">
                                     </div>
                                 </div>
                             </div>

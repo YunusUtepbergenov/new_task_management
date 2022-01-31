@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\File;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
 {
@@ -45,6 +47,23 @@ class TaskController extends Controller
             'deadline' => date("Y-m-d", strtotime($date)),
             'status' => 'Новое',
         ]);
+
+        $task->executers()->sync($request->helpers, false);
+
+        if($request->hasFile('file')){
+            foreach($request->file as $file){
+                $filename = time().$file->getClientOriginalName();
+                Storage::disk('local')->putFileAs(
+                    'files/',
+                    $file,
+                    $filename
+                );
+                $fileModel = new File;
+                $fileModel->task_id = $task->id;
+                $fileModel->name = $filename;
+                $fileModel->save();
+            }
+        }
 
         return redirect()->back();
     }

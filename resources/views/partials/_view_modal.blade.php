@@ -2,7 +2,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header" id="left_header">
-                    <h5 class="modal-title">Вазифа</h5>
+                    <h5 class="modal-title" id="task_title"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -12,59 +12,12 @@
                             <div class="col-lg-8 col-xl-9">
                                 <div class="card">
                                     <div class="card-body">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel elit neque. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vestibulum sollicitudin libero vitae est consectetur, a molestie tortor consectetur. Aenean tincidunt interdum ipsum, id pellentesque diam suscipit ut. Vivamus massa mi, fermentum eget neque eget, imperdiet tristique lectus. Proin at purus ut sem pellentesque tempor sit amet ut lectus. Sed orci augue, placerat et pretium ac, hendrerit in felis. Integer scelerisque libero non metus commodo, et hendrerit diam aliquet. Proin tincidunt porttitor ligula, a tincidunt orci pellentesque nec. Ut ultricies maximus nulla id consequat. Fusce eu consequat mi, eu euismod ligula. Aliquam porttitor neque id massa porttitor, a pretium velit vehicula. Morbi volutpat tincidunt urna, vel ullamcorper ligula fermentum at. </p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel elit neque. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vestibulum sollicitudin libero vitae est consectetur, a molestie tortor consectetur. Aenean tincidunt interdum ipsum, id pellentesque diam suscipit ut. Vivamus massa mi, fermentum eget neque eget, imperdiet tristique lectus. Proin at purus ut sem pellentesque tempor sit amet ut lectus. Sed orci augue, placerat et pretium ac, hendrerit in felis. Integer scelerisque libero non metus commodo, et hendrerit diam aliquet. Proin tincidunt porttitor ligula, a tincidunt orci pellentesque nec. Ut ultricies maximus nulla id consequat. Fusce eu consequat mi, eu euismod ligula. Aliquam porttitor neque id massa porttitor, a pretium velit vehicula. Morbi volutpat tincidunt urna, vel ullamcorper ligula fermentum at. </p>
+                                        <p id="task_description"></p>
                                     </div>
                                 </div>
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title m-b-20">Прикрепленный файл</h5>
-                                            {{-- <li>
-                                                <div class="files-cont">
-                                                    <div class="file-type">
-                                                        <span class="files-icon"><i class="fa fa-file-pdf-o"></i></span>
-                                                    </div>
-                                                    <div class="files-info">
-                                                        <span class="file-name text-ellipsis"><a href="#">AHA Selfcare Mobile Application Test-Cases.xls</a></span>
-                                                        <span class="file-author"><a href="#">John Doe</a></span> <span class="file-date">May 31st at 6:53 PM</span>
-                                                        <div class="file-size">Size: 14.8Mb</div>
-                                                    </div>
-                                                    <ul class="files-action">
-                                                        <li class="dropdown dropdown-action">
-                                                            <a href="" class="dropdown-toggle btn btn-link" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_horiz</i></a>
-                                                            <div class="dropdown-menu dropdown-menu-right">
-                                                                <a class="dropdown-item" href="javascript:void(0)">Download</a>
-                                                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#share_files">Share</a>
-                                                                <a class="dropdown-item" href="javascript:void(0)">Delete</a>
-                                                            </div>
-                                                        </li>
-
-                                                    </ul>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="files-cont">
-                                                    <div class="file-type">
-                                                        <span class="files-icon"><i class="fa fa-file-pdf-o"></i></span>
-                                                    </div>
-                                                    <div class="files-info">
-                                                        <span class="file-name text-ellipsis"><a href="#">AHA Selfcare Mobile Application Test-Cases.xls</a></span>
-                                                        <span class="file-date">May 31st at 6:53 PM</span>
-                                                        <div class="file-size">Size: 14.8Mb</div>
-                                                    </div>
-                                                    <ul class="files-action">
-                                                        <li class="dropdown dropdown-action">
-                                                            <a href="" class="dropdown-toggle btn btn-link" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_horiz</i></a>
-                                                            <div class="dropdown-menu dropdown-menu-right">
-                                                                <a class="dropdown-item" href="javascript:void(0)">Download</a>
-                                                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#share_files">Share</a>
-                                                                <a class="dropdown-item" href="javascript:void(0)">Delete</a>
-                                                            </div>
-                                                        </li>
-
-                                                    </ul>
-                                                </div>
-                                            </li> --}}
                                             <div class="row">
                                                 <div class="col-md-3 col-sm-4 col-lg-4 col-xl-3">
                                                     <div class="uploaded-box">
@@ -177,18 +130,6 @@
                                             <div class="col-sm-4">
                                                 <button type="button" class="btn btn-secondary" style="width: 100%">Делегировать</button>
                                             </div>
-
-                                            {{-- <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                                                <div class="btn-group mr-2" role="group" aria-label="First group">
-                                                  <button type="button" class="btn btn-secondary">Начать выполнение</button>
-                                                </div>
-                                                <div class="btn-group mr-2" role="group" aria-label="Second group">
-                                                  <button type="button" class="btn btn-secondary">Завершить</button>
-                                                </div>
-                                                <div class="btn-group" role="group" aria-label="Third group">
-                                                  <button type="button" class="btn btn-secondary">Делегировать</button>
-                                                </div>
-                                            </div> --}}
                                         </div>
 
                                     </div>
@@ -206,22 +147,6 @@
                                                         <div class="card p-3">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <div class="user d-flex flex-row align-items-center"> <img src="{{ asset('assets/img/avatar.jpg') }}" width="30" class="user-img rounded-circle mr-2"> <span><small class="font-weight-bold text-primary">james_olesenn</small> <small class="font-weight-bold">Hmm, This poster looks cool</small></span> </div> <small>2 days ago</small>
-                                                            </div>
-                                                            <div class="action d-flex justify-content-between mt-2 align-items-center">
-                                                                <div class="reply px-4"> <small>Remove</small> <span class="dots"></span></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="card p-3 mt-1">
-                                                            <div class="d-flex justify-content-between align-items-center">
-                                                                <div class="user d-flex flex-row align-items-center"> <img src="{{ asset('assets/img/avatar.jpg') }}" width="30" class="user-img rounded-circle mr-2"> <span><small class="font-weight-bold text-primary">olan_sams</small> <small class="font-weight-bold">Loving your work and profile! </small></span> </div> <small>3 days ago</small>
-                                                            </div>
-                                                            <div class="action d-flex justify-content-between mt-2 align-items-center">
-                                                                <div class="reply px-4"> <small>Remove</small> <span class="dots"></span> </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="card p-3 mt-1">
-                                                            <div class="d-flex justify-content-between align-items-center">
-                                                                <div class="user d-flex flex-row align-items-center"> <img src="{{ asset('assets/img/avatar.jpg') }}" width="30" class="user-img rounded-circle mr-2"> <span><small class="font-weight-bold text-primary">rashida_jones</small> <small class="font-weight-bold">Really cool Which filter are you using? </small></span> </div> <small>3 days ago</small>
                                                             </div>
                                                             <div class="action d-flex justify-content-between mt-2 align-items-center">
                                                                 <div class="reply px-4"> <small>Remove</small> <span class="dots"></span></div>
@@ -254,19 +179,19 @@
                                             <tbody>
                                                 <tr>
                                                     <td>Начало:</td>
-                                                    <td class="text-right">25 Feb, 2019</td>
+                                                    <td class="text-right" id="task_created"></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Крайний срок:</td>
-                                                    <td class="text-right">12 Jun, 2019</td>
+                                                    <td class="text-right" id="task_deadline"></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Постановщик:</td>
-                                                    <td class="text-right"><a href="profile.html">О.Хакимов</a></td>
+                                                    <td class="text-right"><a href="profile.html" id="task_creator"></a></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Состояние:</td>
-                                                    <td class="text-right">Начало</td>
+                                                    <td class="text-right" id="task_status"></td>
                                                 </tr>
                                             </tbody>
                                         </table>

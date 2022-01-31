@@ -15,10 +15,12 @@ class PageController extends Controller
         $projects = Project::all();
         $tasks = Task::where('project_id', NULL)->get();
         $users = User::all();
+        $sectors = Sector::all();
         return view('page.index', [
             'projects' => $projects,
             'users' => $users,
-            'tasks' => $tasks
+            'tasks' => $tasks,
+            'sectors' => $sectors
         ]);
     }
 
@@ -27,5 +29,11 @@ class PageController extends Controller
         $sectors = Sector::all();
         $roles = Role::all();
         return view('page.employees', ['employees' => $employees, 'sectors' => $sectors, 'roles' => $roles]);
+    }
+
+    public function getTaskInfo($id){
+        $task = Task::where('id', $id)->first();
+        $creator = $task->username($task->creator_id);
+        return response()->json(['task' => $task, 'creator' => $creator]);
     }
 }

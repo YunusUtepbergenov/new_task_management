@@ -69,6 +69,10 @@ class User extends Authenticatable
         return $this->hasMany(Task::class);
     }
 
+    public function helpers(){
+        return $this->belongsToMany(Task::class);
+    }
+
     public function sector(){
         return $this->belongsTo(Sector::class);
     }

@@ -24,4 +24,8 @@ class Task extends Model
         $user = User::find($id);
         return $user->name;
     }
+
+    public function executers(){
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
 }
