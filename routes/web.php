@@ -19,6 +19,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [PageController::class, 'dashboard'])->name('home');
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
     Route::get('/task/info/byid/{id}', [PageController::class, 'getTaskInfo']);
+    Route::get('task/download/{id}', [PageController::class, 'download'])->name('file.download');
+
+    Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
 
     Route::resource('project', ProjectController::class)->only([
         'store', 'update'

@@ -324,18 +324,18 @@ $(document).ready(function() {
         output.innerHTML = '<ul>'+children+'</ul>';
     }
 
-    viewTask = function(id) {
-        $.get("/task/info/byid/" + id, function (task) {
-            console.log(task);
-            $("#task_title").html(task.task.name);
-            $("#task_description").html(task.task.description);
-            $("#task_created").html(task.task.created_at.substr(0,10));
-            $("#task_deadline").html(task.task.deadline);
-            $("#task_creator").html(task.creator);
-            $("#task_status").html(task.task.status);
-            $('#view_task').modal('show');
-        });
-    }
+    // viewTask = function(id) {
+    //     $.get("/task/info/byid/" + id, function (task) {
+    //         // console.log(task);
+    //         $("#task_title").html(task.task.name);
+    //         $("#task_description").html(task.task.description);
+    //         $("#task_created").html(task.task.created_at.substr(0,10));
+    //         $("#task_deadline").html(task.task.deadline);
+    //         $("#task_creator").html(task.creator);
+    //         $("#task_status").html(task.task.status);
+    //         $('#view_task').modal('show');
+    //     });
+    // }
 
 	$(document).on('click', '.top-nav-search .responsive-search', function() {
 		$('.top-nav-search').toggleClass('active');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\File;
+use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -111,5 +112,17 @@ class TaskController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function changeStatus(Request $request, $id){
+        $task = Task::where('id', $id)->first();
+
+        if($request->status == "Started"){
+            $task->update(['status' => "Выполняется"]);
+        }
+        else if($request->status == "Submitted"){
+            $task->update(['status' => "Ждет подтверждения"]);
+        }
+        return redirect()->back();
     }
 }

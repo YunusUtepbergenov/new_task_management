@@ -76,4 +76,16 @@ class User extends Authenticatable
     public function sector(){
         return $this->belongsTo(Sector::class);
     }
+
+    public function isDirector(){
+        return $this->role->name == "Директор";
+    }
+
+    public function isMailer(){
+        return $this->role->name === "Заведующий канцелярии";
+    }
+
+    public function isHead(){
+        return $this->role->name === "Заведующий сектором";
+    }
 }

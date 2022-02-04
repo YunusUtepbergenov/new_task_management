@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-        <meta name="description" content="Smarthr - Bootstrap Admin Template">
+        <meta name="description" content="CERR Task Manager">
 		<meta name="keywords" content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern, accounts, invoice, html5, responsive, CRM, Projects">
         <meta name="author" content="Dreamguys - Bootstrap Admin Template">
         <meta name="robots" content="noindex, nofollow">
@@ -12,6 +12,7 @@
 		<!-- Favicon -->
         <link rel="shortcut icon" type="image/x-icon" href="https://cerr.uz/themes/cer/icon/favicon.ico">
 
+        {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
 		<!-- Bootstrap CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
 
@@ -31,15 +32,11 @@
 		<!-- Datetimepicker CSS -->
 		<link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}">
 
+        @yield('styles')
+
 		<!-- Main CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-
-		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-		<!--[if lt IE 9]>
-			<script src="assets/js/html5shiv.min.js"></script>
-			<script src="assets/js/respond.min.js"></script>
-		<![endif]-->
-    </head>
+</head>
     <body>
 		<!-- Main Wrapper -->
         <div class="main-wrapper">
@@ -77,7 +74,7 @@
 						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
 							<span class="user-img"><img src="assets/img/avatar.jpg" alt="">
 							<span class="status online"></span></span>
-							<span>Admin</span>
+							<span>{{ Auth::user()->name }}</span>
 						</a>
 						<div class="dropdown-menu">
 							<a class="dropdown-item" href="profile.html">My Profile</a>
@@ -153,9 +150,9 @@
 		<!-- Select2 JS -->
 		<script src="{{ asset('assets/js/select2.min.js') }}"></script>
 
-		<!-- Datatable JS -->
+		{{-- <!-- Datatable JS -->
 		<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
-		<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}"></script>
+		<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}"></script> --}}
 
 		<!-- Datetimepicker JS -->
 		<script src="{{ asset('assets/js/moment.min.js') }}"></script>
@@ -163,12 +160,27 @@
 
 		<!-- Custom JS -->
 		<script src="{{ asset('assets/js/app.js') }}"></script>
+        @yield('scripts')
+        <script src="{{ asset('js/app.js') }}"></script>
 
 		<script type="text/javascript">
 			$(document).ready(function() {
 				$('#example-getting-started').multiselect();
 			});
-		</script>
 
+            window.addEventListener('show-modal', event => {
+                $('#view_task').modal('show');
+            });
+            window.addEventListener('submit-task', event => {
+                $('#submit_task').modal('show');
+            });
+
+            // $("#project_text").change(function() {
+            //     var select = $("#project_text :selected").text();
+            //     if(select == "Добавить Проект"){
+            //         $('#create_project').modal('show');
+            //     }
+            // });
+		</script>
     </body>
 </html>

@@ -28,4 +28,25 @@ class Task extends Model
     public function executers(){
         return $this->belongsToMany(User::class)->withTimestamps();
     }
+
+    public function response(){
+        return $this->hasOne(Response::class);
+    }
+
+    public function project(){
+        return $this->belongsTo(Project::class);
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
+    public function files(){
+        return $this->hasMany(File::class);
+    }
+
+    public function comments(){
+        return $this->hasMany(Comment::class);
+    }
+
 }
