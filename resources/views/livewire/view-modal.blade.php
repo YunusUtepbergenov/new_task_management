@@ -39,7 +39,7 @@
                                                 </div>
                                             </div>
                                         @empty
-                                            <p>No files</p>
+                                            <p style="margin-left: 15px">No files</p>
                                         @endforelse
                                     </div>
                                 </div>
@@ -58,7 +58,7 @@
                                                     @error('description')
                                                         <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
                                                     @enderror
-                                                    <textarea rows="5" cols="5" class="form-control" wire:model="description" name="description" placeholder="Введите текст"></textarea>
+                                                    <textarea rows="3" cols="5" class="form-control" wire:model="description" name="description" placeholder="Введите текст"></textarea>
                                                 </div>
                                             </div>
                                             <input type="hidden" name="task_id" value="{{ $task->id }}">
@@ -122,7 +122,7 @@
                                                                 <form wire:submit.prevent="storeComment({{ $task->id }})" method="POST">
                                                                     @csrf
                                                                     <div class="form-group">
-                                                                        <textarea class="form-control" wire:model.defer="comment" rows="2" name="comment" id="comment_textarea" required></textarea>
+                                                                        <textarea class="form-control" wire:model.defer="comment" rows="2" name="comment" id="comment_textarea" placeholder="Введите комментарий" required></textarea>
                                                                     </div>
 
                                                                     <button class="btn btn-primary" wire:click="$refresh" style="float: right;">Отправить</button>

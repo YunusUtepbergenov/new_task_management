@@ -60,19 +60,6 @@
                                     </tr>
                                 @endforeach
                             @endforeach
-
-							{{-- @foreach ($employees as $employee)
-								<tr>
-									<td>
-										<h2 class="table-avatar">
-											<a href="#">{{ $employee->name }}</a>
-										</h2>
-									</td>
-									<td>{{ $employee->email }}</td>
-									<td class="text-wrap">{{ $employee->sector->name }}</td>
-									<td>{{ $employee->role->name }}</td>
-								</tr>
-							@endforeach --}}
 						</tbody>
 					</table>
 				</div>

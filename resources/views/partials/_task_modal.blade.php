@@ -14,13 +14,6 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Проект</label>
                         <div class="col-sm-4">
-                            {{-- <input class="form-control" type="text" name="project_name" list="productName"/>
-                            <datalist id="productName">
-                                <option value="">Не проект</option>
-                                @foreach ($projects as $project)
-                                    <option value="{{ $project->name }}">{{ $project->name }}</option>
-                                @endforeach
-                            </datalist> --}}
                             <select class="form-control" id="project_text" name="project_id">
                                 <option value="">Не проект</option>
                                 @foreach ($projects as $project)
@@ -58,7 +51,120 @@
                         </div>
                     </div>
 
-                    <div class="form-group row">
+
+                    @if (Auth::user()->isDirector())
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Ответственный</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="user_id">
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Постановщик</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="creator_id" id="">
+                                        <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
+                            <div class="col-sm-4">
+
+                                <select class="form-control select" name="helpers[]" multiple>
+                                    @foreach ($sectors as $sector)
+                                    <optgroup label="{{ $sector->name }}">
+                                        @foreach ($sector->users as $user)
+                                        @if($user->id != Auth::user()->id)
+                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endif
+                                @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    @elseif(Auth::user()->isMailer())
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Ответственный</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="user_id">
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Постановщик</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="creator_id" id="">
+                                        <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
+                                        <option value="1">О.Хакимов</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
+                            <div class="col-sm-4">
+
+                                <select class="form-control select" name="helpers[]" multiple>
+                                    @foreach ($sectors as $sector)
+                                    <optgroup label="{{ $sector->name }}">
+                                        @foreach ($sector->users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        @elseif(Auth::user()->isHead())
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Ответственный</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="user_id">
+                                    @foreach (Auth::user()->sector->users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Постановщик</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="creator_id" id="">
+                                        <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
+                            <div class="col-sm-4">
+
+                                <select class="form-control select" name="helpers[]" multiple>
+                                        @foreach (Auth::user()->sector->users as $user)
+                                            @if($user->id != Auth::user()->id)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @endif
+                                        @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Ответственный</label>
                         <div class="col-sm-4">
                             <select class="form-control" name="user_id">
@@ -94,7 +200,9 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>
+                    </div> --}}
+
+
 
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Крайний срок</label>

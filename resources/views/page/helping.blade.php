@@ -38,7 +38,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        @livewire('tasks-table', ['projects' => $projects, 'tasks' => $tasks, 'user_projects' => $user_projects])
+                        @livewire('helping-tasks', ['projects' => $projects, 'tasks' => $tasks_without_project, 'helping_projects' => $helping_projects, 'tasks_id' => $tasks_id])
                     </div>
                 </div>
             </div>

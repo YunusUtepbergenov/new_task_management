@@ -44,8 +44,8 @@
                 @php
                     $cnt = 1;
                 @endphp
-                @foreach ($project['tasks'] as $task)
-                    @if ($task['user_id'] == Auth::user()->id)
+                @foreach ($project['tasks'] as $key=>$task)
+                    @if ($task['creator_id'] == Auth::user()->id)
                         <tbody>
                             <tr>
                                 <td>{{ $cnt }}</td>
@@ -65,6 +65,7 @@
                         @php
                             $cnt++
                         @endphp
+
                     @endif
                 @endforeach
             @endforeach
