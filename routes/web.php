@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [PageController::class, 'dashboard'])->name('home');
+    Route::get('/ordered', [PageController::class, 'ordered'])->name('ordered');
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
     Route::get('/task/info/byid/{id}', [PageController::class, 'getTaskInfo']);
     Route::get('task/download/{id}', [PageController::class, 'download'])->name('file.download');

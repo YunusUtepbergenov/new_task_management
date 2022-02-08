@@ -21,7 +21,6 @@ class ViewModal extends Component
     public function taskClicked($id){
         $this->dispatchBrowserEvent('show-modal');
         $this->task = Task::with(['comments', 'files'])->where('id', $id)->first();
-        // dd($this->task->response);
 
         if ($this->task->status == "Новое") {
             if (Auth::user()->id == $this->task->user_id) {
@@ -77,9 +76,6 @@ class ViewModal extends Component
 
     public function render()
     {
-        return view('livewire.view-modal', [
-            'task' => $this->task,
-            'comments' => $this->comments
-        ]);
+        return view('livewire.view-modal');
     }
 }

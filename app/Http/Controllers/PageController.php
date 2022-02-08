@@ -42,6 +42,34 @@ class PageController extends Controller
         ]);
     }
 
+    public function ordered(){
+        $projects = Project::with('tasks')->get();
+        $tasks = Task::where('creator_id', Auth::user()->id)->where('project_id', null)->get();
+        $users = User::select(['id', 'name'])->get();
+        $project_tasks = Task::with('project')->where('creator_id', Auth::user()->id)->where('project_id', '<>', null)->get();
+        $projects_arr = array();
+
+        $user_projects = collect([]);
+
+        foreach($project_tasks as $task){
+            array_push($projects_arr, $task->project->name);
+        }
+
+        $unique_projects = array_unique($projects_arr);
+        foreach($unique_projects as $project){
+            $project_collection = Project::where('name', $project)->first();
+            $user_projects = $user_projects->merge([$project_collection]);
+        }
+        $sectors = Sector::with('users')->get();
+        return view('page.index', [
+            'projects' => $projects,
+            'users' => $users,
+            'tasks' => $tasks,
+            'sectors' => $sectors,
+            'user_projects' => $user_projects
+        ]);
+    }
+
     public function employees(){
         $employees = User::all();
         $sectors = Sector::all();

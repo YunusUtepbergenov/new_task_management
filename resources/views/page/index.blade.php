@@ -10,15 +10,15 @@
             <div class="col-sm-12">
                 <ul class="nav nav-tabs nav-tabs-bottom">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Мои задачи</a>
+                        <a class="nav-link {{ (Route::current()->uri == '/') ? 'active' : '' }}" href="{{ route('home') }}">Мои задачи</a>
                     </li>
                     @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() )
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Поручил</a>
+                            <a class="nav-link {{ (Route::current()->uri == 'ordered') ? 'active' : '' }}" href="{{ route('ordered') }}">Поручил</a>
                         </li>
                     @endif
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Помогаю</a>
+                        <a class="nav-link {{ (Route::current()->uri == 'helping') ? 'active' : '' }}" href="#">Помогаю</a>
                     </li>
                 </ul>
             </div>
