@@ -3724,7 +3724,7 @@ table.dataTable thead > tr > td.sorting {
     position: relative;
 }
 .notifications .media {
-	margin-top: 0;
+	margin: 8px;
 	border-bottom: 1px solid #f5f5f5;
 }
 .notifications .media:last-child {
@@ -3778,7 +3778,7 @@ table.dataTable thead > tr > td.sorting {
     top: 6px;
 }
 .user-menu.nav > li > a .badge {
-	background-color: #7460ee;
+	background-color: #69997a;
 }
 .user-menu.nav > li > a > i {
 	font-size: 20px;
@@ -8588,6 +8588,30 @@ td a{
     background-color: rgba(0,0,0,0.3);
   }
 
+  .notification-action {
+    position: relative;
+    height: 100%;
+    float: right;
+    border-left: solid 2px #686868;
+}
+
+.notification-action .action-icon {
+    font-size: 27px;
+    color: #686868;
+    padding: 5px;
+    margin-top: auto;
+    height: 100%;
+    border: 0;
+    background-color: #fff;
+}
+
+
+#noti-link{
+    padding: 0;
+    display: inline;
+    color: #256c6c;
+    font-weight: bold;
+}
   /* :not(:required) hides these rules from IE9 and below */
   .loading:not(:required) {
     /* hide "loading..." text */

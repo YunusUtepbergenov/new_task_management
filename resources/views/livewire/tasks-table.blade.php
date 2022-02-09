@@ -16,7 +16,7 @@
                 <tr>
                     <td>{{ $key+1 }}</td>
                     <td>
-                        <a href="#" wire:click.prevent="view({{ $task }})">{{ $task->name }}</a>
+                        <a href="#" wire:click.prevent="view({{ $task->id }})">{{ $task->name }}</a>
                         <div wire:loading>
                             <div class="loading">Loading&#8230;</div>
                         </div>

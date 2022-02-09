@@ -8,42 +8,32 @@
         <meta name="author" content="Dreamguys - Bootstrap Admin Template">
         <meta name="robots" content="noindex, nofollow">
         <title>CERR Task Management</title>
-
 		<!-- Favicon -->
         <link rel="shortcut icon" type="image/x-icon" href="https://cerr.uz/themes/cer/icon/favicon.ico">
-
         {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
 		<!-- Bootstrap CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
-
 		<!-- Fontawesome CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/font-awesome.min.css') }}">
-
 		<!-- Lineawesome CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/line-awesome.min.css') }}">
-
 		<!-- Datatable CSS -->
 		<link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap4.min.css') }}">
-
 		<!-- Select2 CSS -->
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/css/bootstrap-multiselect.css" integrity="sha512-Lif7u83tKvHWTPxL0amT2QbJoyvma0s9ubOlHpcodxRxpZo4iIGFw/lDWbPwSjNlnas2PsTrVTTcOoaVfb4kwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
 		<!-- Datetimepicker CSS -->
 		<link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}">
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" integrity="sha512-6S2HWzVFxruDlZxI3sXOZZ4/eJ8AcxkQH1+JjSe/ONCEqR9L4Ysq5JdT5ipqtzU7WHalNwzwBv+iE51gNHJNqQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         @yield('styles')
-
 		<!-- Main CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
     <body>
 		<!-- Main Wrapper -->
         <div class="main-wrapper">
-
 			<!-- Header -->
             <div class="header">
-
 				<!-- Logo -->
                 <div class="header-left">
                     <a href="index.html" class="logo">
@@ -51,7 +41,6 @@
 					</a>
                 </div>
 				<!-- /Logo -->
-
 				<a id="toggle_btn" href="javascript:void(0);">
 					<span class="bar-icon">
 						<span></span>
@@ -59,17 +48,15 @@
 						<span></span>
 					</span>
 				</a>
-
 				<a id="mobile_btn" class="mobile_btn" href="#sidebar"><i class="fa fa-bars"></i></a>
-
 				<!-- Header Menu -->
 				<ul class="nav user-menu">
-
 					<!-- Search -->
 					<li class="nav-item dropdown flag-nav">
 							<a class="nav-link dropdown-toggle">Эффективность: 70%</a>
 					</li>
-
+                    @include('partials.notifications')
+                    {{-- @livewire('notifications') --}}
 					<li class="nav-item dropdown has-arrow main-drop">
 						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
 							<span class="user-img"><img src="assets/img/avatar.jpg" alt="">
@@ -87,7 +74,6 @@
 					</li>
 				</ul>
 				<!-- /Header Menu -->
-
 				<!-- Mobile Menu -->
 				<div class="dropdown mobile-user-menu">
 					<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
@@ -101,29 +87,19 @@
 					</div>
 				</div>
 				<!-- /Mobile Menu -->
-
             </div>
 			<!-- /Header -->
-
             @include('partials._sidebar')
-
 			<!-- Page Wrapper -->
             <div class="page-wrapper">
-
 				<!-- Page Content -->
                 <div class="content container-fluid">
-
                     @yield('main')
-
                 </div>
             </div>
 				<!-- /Page Content -->
-
-
-
             </div>
 			<!-- /Page Wrapper -->
-
 			<!-- Right Sidebar -->
 			<div class="sidebar_right" id="sidebar">
                 <div class="sidebar-inner slimscroll">
@@ -132,37 +108,29 @@
                 </div>
             </div>
 			<!-- End Right Sidebar -->
-
         </div>
 		<!-- /Main Wrapper -->
-
 		<!-- jQuery -->
         <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
-
 		<!-- Bootstrap Core JS -->
         <script src="{{ asset('assets/js/popper.min.js') }}"></script>
         <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
-
 		<!-- Slimscroll JS -->
 		<script src="{{ asset('assets/js/jquery.slimscroll.min.js') }}"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/js/bootstrap-multiselect.min.js" integrity="sha512-fp+kGodOXYBIPyIXInWgdH2vTMiOfbLC9YqwEHslkUxc8JLI7eBL2UQ8/HbB5YehvynU3gA3klc84rAQcTQvXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
 		<!-- Select2 JS -->
 		<script src="{{ asset('assets/js/select2.min.js') }}"></script>
-
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 		{{-- <!-- Datatable JS -->
 		<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
 		<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}"></script> --}}
-
 		<!-- Datetimepicker JS -->
 		<script src="{{ asset('assets/js/moment.min.js') }}"></script>
 		<script src="{{ asset('assets/js/bootstrap-datetimepicker.min.js') }}"></script>
-
 		<!-- Custom JS -->
 		<script src="{{ asset('assets/js/app.js') }}"></script>
         @yield('scripts')
         <script src="{{ asset('js/app.js') }}"></script>
-
 		<script type="text/javascript">
 			$(document).ready(function() {
 				$('#example-getting-started').multiselect();
@@ -175,12 +143,9 @@
                 $('#submit_task').modal('show');
             });
 
-            // $("#project_text").change(function() {
-            //     var select = $("#project_text :selected").text();
-            //     if(select == "Добавить Проект"){
-            //         $('#create_project').modal('show');
-            //     }
-            // });
+            window.addEventListener('success', event => {
+                toastr.success(event.detail.msg);
+            });
 		</script>
     </body>
 </html>

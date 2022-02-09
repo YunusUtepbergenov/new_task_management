@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TaskCreatedEvent;
 use App\Models\File;
 use App\Models\Project;
 use App\Models\Task;
@@ -20,7 +21,6 @@ class TaskController extends Controller
     {
         //
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -65,7 +65,7 @@ class TaskController extends Controller
                 $fileModel->save();
             }
         }
-
+        event(new TaskCreatedEvent($task));
         return redirect()->back();
     }
 

@@ -110,7 +110,6 @@ class PageController extends Controller
             'sectors' => $sectors,
             'tasks_id' => $tasks_id
         ]);
-
     }
 
     public function employees(){

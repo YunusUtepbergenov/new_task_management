@@ -53,6 +53,7 @@ class ViewModal extends Component
             $response->filename = $filename;
         }
         $response->save();
+        $this->dispatchBrowserEvent('success', ['msg' => "Задача выполнена. Пожалуйста, дождитесь подтверждения."]);
 
         $this->task->update(['status' => "Ждет подтверждения"]);
     }
@@ -63,11 +64,10 @@ class ViewModal extends Component
             'user_id' => Auth::user()->id,
             'comment' => $this->comment
         ]);
-
+        $this->dispatchBrowserEvent('success', ['msg' => "Комментарий успешно отправлен"]);
         $this->comments = Comment::with('user')->where('task_id', $id)->latest()->get();
 
         $this->comment = '';
-
     }
 
     public function submitTask($id){

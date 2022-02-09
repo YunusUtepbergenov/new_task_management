@@ -29,45 +29,45 @@
                 </tr>
             @endforeach
         </tbody>
-            @foreach ($helping_projects as $project)
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>{{ $project['name'] }}</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                @php
-                    $cnt = 1;
-                @endphp
+        @foreach ($helping_projects as $project)
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>{{ $project['name'] }}</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            @php
+                $cnt = 1;
+            @endphp
 
-                @foreach ($project['tasks'] as $task)
-                    @if (in_array($task['id'], $tasks_id))
-                        <tbody>
-                            <tr>
-                                <td>{{ $cnt }}</td>
-                                <td>
-                                    <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
-                                    <div wire:loading>
-                                        <div class="loading">Loading&#8230;</div>
-                                    </div>
-                                </td>
-                                <td>{{ substr($task['created_at'], 0, 10) }}</td>
-                                <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
-                                <td>{{ \App\Helpers\AppHelper::username($task['creator_id']) }}</td>
-                                <td>{{ \App\Helpers\AppHelper::username($task['user_id']) }}</td>
-                        <td><span class="badge bg-inverse-{{ ($task['status'] == "Новое") ? 'success' : (($task['status'] == "Выполняется") ? 'primary' : (($task['status'] == "Ждет подтверждения") ? 'danger' : (($task['status'] == "Выполнено") ? 'purple' : 'primary') )) }}">{{ $task['status'] }}</span></td>
-                            </tr>
-                        </tbody>
-                        @php
-                            $cnt++
-                        @endphp
-                    @endif
-                @endforeach
+            @foreach ($project['tasks'] as $task)
+                @if (in_array($task['id'], $tasks_id))
+                    <tbody>
+                        <tr>
+                            <td>{{ $cnt }}</td>
+                            <td>
+                                <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
+                                <div wire:loading>
+                                    <div class="loading">Loading&#8230;</div>
+                                </div>
+                            </td>
+                            <td>{{ substr($task['created_at'], 0, 10) }}</td>
+                            <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
+                            <td>{{ \App\Helpers\AppHelper::username($task['creator_id']) }}</td>
+                            <td>{{ \App\Helpers\AppHelper::username($task['user_id']) }}</td>
+                    <td><span class="badge bg-inverse-{{ ($task['status'] == "Новое") ? 'success' : (($task['status'] == "Выполняется") ? 'primary' : (($task['status'] == "Ждет подтверждения") ? 'danger' : (($task['status'] == "Выполнено") ? 'purple' : 'primary') )) }}">{{ $task['status'] }}</span></td>
+                        </tr>
+                    </tbody>
+                    @php
+                        $cnt++
+                    @endphp
+                @endif
             @endforeach
+        @endforeach
     </table>
 </div>

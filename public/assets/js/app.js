@@ -324,6 +324,9 @@ $(document).ready(function() {
         output.innerHTML = '<ul>'+children+'</ul>';
     }
 
+    openModal = function(id){
+        window.livewire.emit('taskClicked', id);
+    }
     // viewTask = function(id) {
     //     $.get("/task/info/byid/" + id, function (task) {
     //         // console.log(task);
