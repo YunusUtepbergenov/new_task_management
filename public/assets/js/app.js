@@ -59,14 +59,6 @@ $(document).ready(function() {
 			$('#task_window').removeClass('opened');
 	});
 
-	// Chat sidebar overlay
-
-	$(document).on('click', '#task_chat', function() {
-		$('.sidebar-overlay').toggleClass('opened');
-		$('#task_window').addClass('opened');
-		return false;
-	});
-
 	// Select 2
 
 	if($('.select').length > 0) {
@@ -160,37 +152,6 @@ $(document).ready(function() {
 		$('[data-toggle="tooltip"]').tooltip();
 	}
 
-	// Email Inbox
-
-	if($('.clickable-row').length > 0 ){
-		$(".clickable-row").click(function() {
-			window.location = $(this).data("href");
-		});
-	}
-
-	// Check all email
-
-	$(document).on('click', '#check_all', function() {
-		$('.checkmail').click();
-		return false;
-	});
-	if($('.checkmail').length > 0) {
-		$('.checkmail').each(function() {
-			$(this).on('click', function() {
-				if($(this).closest('tr').hasClass('checked')) {
-					$(this).closest('tr').removeClass('checked');
-				} else {
-					$(this).closest('tr').addClass('checked');
-				}
-			});
-		});
-	}
-
-	// Mail important
-
-	$(document).on('click', '.mail-important', function() {
-		$(this).find('i.fa').toggleClass('fa-star').toggleClass('fa-star-o');
-	});
 
 	// Summernote
 
@@ -327,22 +288,6 @@ $(document).ready(function() {
     openModal = function(id){
         window.livewire.emit('taskClicked', id);
     }
-    // viewTask = function(id) {
-    //     $.get("/task/info/byid/" + id, function (task) {
-    //         // console.log(task);
-    //         $("#task_title").html(task.task.name);
-    //         $("#task_description").html(task.task.description);
-    //         $("#task_created").html(task.task.created_at.substr(0,10));
-    //         $("#task_deadline").html(task.task.deadline);
-    //         $("#task_creator").html(task.creator);
-    //         $("#task_status").html(task.task.status);
-    //         $('#view_task').modal('show');
-    //     });
-    // }
-
-	$(document).on('click', '.top-nav-search .responsive-search', function() {
-		$('.top-nav-search').toggleClass('active');
-	});
 
 	$(document).on('click', '#file_sidebar_toggle', function() {
 		$('.file-wrap').toggleClass('file-sidebar-toggle');
@@ -352,19 +297,5 @@ $(document).ready(function() {
 		$('.file-wrap').removeClass('file-sidebar-toggle');
 	});
 
-	if($('.kanban-wrap').length > 0) {
-		$(".kanban-wrap").sortable({
-			connectWith: ".kanban-wrap",
-			handle: ".kanban-box",
-			placeholder: "drag-placeholder"
-		});
-	}
-
 });
 
-// Loader
-
-$(window).on ('load', function (){
-	$('#loader').delay(100).fadeOut('slow');
-	$('#loader-wrapper').delay(500).fadeOut('slow');
-});

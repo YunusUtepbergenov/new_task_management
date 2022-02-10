@@ -22,6 +22,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
     Route::get('/task/info/byid/{id}', [PageController::class, 'getTaskInfo']);
     Route::get('task/download/{id}', [PageController::class, 'download'])->name('file.download');
+    Route::get('task/response/download/{name}', [PageController::class, 'responseDownload'])->name('response.download');
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
 
@@ -31,6 +32,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('task', TaskController::class)->only([
         'store', 'update'
     ]);
+
+    Route::put('/notification/read/{id}', [PageController::class, 'read'])->name('notification.read');
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {

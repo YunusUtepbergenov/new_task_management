@@ -2,8 +2,16 @@
 
 namespace App\Providers;
 
+use App\Events\CommentStoredEvent;
+use App\Events\TaskConfirmedEvent;
 use App\Events\TaskCreatedEvent;
+use App\Events\TaskRejectedEvent;
+use App\Events\TaskSubmittedEvent;
+use App\Listeners\SendCommentStoredNotification;
 use App\Listeners\SendNewTaskNotification;
+use App\Listeners\SendTaskConfirmedNotification;
+use App\Listeners\SendTaskRejectedNotification;
+use App\Listeners\SendTaskSubmittedNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -20,6 +28,18 @@ class EventServiceProvider extends ServiceProvider
         TaskCreatedEvent::class => [
             SendNewTaskNotification::class,
         ],
+        TaskSubmittedEvent::class => [
+            SendTaskSubmittedNotification::class
+        ],
+        TaskConfirmedEvent::class => [
+            SendTaskConfirmedNotification::class
+        ],
+        TaskRejectedEvent::class => [
+            SendTaskRejectedNotification::class
+        ],
+        CommentStoredEvent::class => [
+            SendCommentStoredNotification::class
+        ]
     ];
 
     /**

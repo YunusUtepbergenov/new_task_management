@@ -16,10 +16,17 @@
                 <tr>
                     <td>{{ $key+1 }}</td>
                     <td>
-                        <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
-                        <div wire:loading>
-                            <div class="loading">Loading&#8230;</div>
-                        </div>
+                        @if ($task['status'] == "Выполнено")
+                            <a href="#" wire:click.prevent="view({{ $task['id'] }})"><del>{{ $task['name'] }}</del></a>
+                            <div wire:loading>
+                                <div class="loading">Loading&#8230;</div>
+                            </div>
+                        @else
+                            <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
+                            <div wire:loading>
+                                <div class="loading">Loading&#8230;</div>
+                            </div>
+                        @endif
                     </td>
                     <td>{{ substr($task['created_at'], 0, 10) }}</td>
                     <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
@@ -51,10 +58,17 @@
                         <tr>
                             <td>{{ $cnt }}</td>
                             <td>
-                                <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
-                                <div wire:loading>
-                                    <div class="loading">Loading&#8230;</div>
-                                </div>
+                                @if ($task['status'] == "Выполнено")
+                                    <a href="#" wire:click.prevent="view({{ $task['id'] }})"><del>{{ $task['name'] }}</del></a>
+                                    <div wire:loading>
+                                        <div class="loading">Loading&#8230;</div>
+                                    </div>
+                                @else
+                                    <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
+                                    <div wire:loading>
+                                        <div class="loading">Loading&#8230;</div>
+                                    </div>
+                                @endif
                             </td>
                             <td>{{ substr($task['created_at'], 0, 10) }}</td>
                             <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>

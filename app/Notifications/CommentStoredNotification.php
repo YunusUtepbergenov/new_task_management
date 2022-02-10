@@ -8,15 +8,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewTaskNotification extends Notification implements ShouldQueue
+class CommentStoredNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    private $task;
+    private $comment;
 
-    public function __construct($task)
+    /**
+     * Create a new notification instance.
+     *
+     * @return void
+     */
+    public function __construct($comment)
     {
-        $this->task = $task;
+        $this->comment = $comment;
     }
 
     /**
@@ -30,15 +35,14 @@ class NewTaskNotification extends Notification implements ShouldQueue
         return ['database'];
     }
 
-
     public function toArray($notifiable)
     {
-        $user = User::where('id', $this->task->creator_id)->first();
+        $user = User::where('id', $this->comment->user_id)->first();
         return [
-            'name' => $this->task->name,
-            'task_id' => $this->task->id,
-            'creator_name' => $user->name,
-            'creator_id' => $user->id,
+            'name' => $this->comment->task->name,
+            'task_id' => $this->comment->task->id,
+            'user_name' => $user->name,
+            'user_id' => $user->id
         ];
     }
 }

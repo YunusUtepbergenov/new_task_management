@@ -139,9 +139,6 @@
             window.addEventListener('show-modal', event => {
                 $('#view_task').modal('show');
             });
-            window.addEventListener('submit-task', event => {
-                $('#submit_task').modal('show');
-            });
 
             window.addEventListener('success', event => {
                 toastr.success(event.detail.msg);

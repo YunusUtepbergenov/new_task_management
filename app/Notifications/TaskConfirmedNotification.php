@@ -8,12 +8,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewTaskNotification extends Notification implements ShouldQueue
+class TaskConfirmedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     private $task;
-
+    /**
+     * Create a new notification instance.
+     *
+     * @return void
+     */
     public function __construct($task)
     {
         $this->task = $task;
@@ -30,7 +34,12 @@ class NewTaskNotification extends Notification implements ShouldQueue
         return ['database'];
     }
 
-
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
     public function toArray($notifiable)
     {
         $user = User::where('id', $this->task->creator_id)->first();

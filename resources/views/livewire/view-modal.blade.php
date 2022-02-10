@@ -14,7 +14,7 @@
                         <div class="col-lg-8 col-xl-9">
                             <div class="card">
                                 <div class="card-body">
-                                    <p id="task_description">{{ $task->name }}</p>
+                                    <p id="task_description">{{ $task->description }}</p>
                                 </div>
                             </div>
                             <div class="card">
@@ -44,7 +44,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @if ($task->status != "Ждет подтверждения" && $task->user_id == Auth::user()->id)
+                            @if (!$task->response && $task->user_id == Auth::user()->id)
                                 <div class="card">
                                     <div class="card-header">
                                         <h4 class="card-title mb-0">Завершить задачу</h4>
@@ -76,15 +76,15 @@
                                             </div>
 
                                             <div class="text-right">
-                                                <button type="submit" class="btn btn-primary">Отправить</button>
+                                                <button type="submit" class="btn btn-primary">Завершить</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
-                                @elseif ($task->status == "Ждет подтверждения")
+                            @elseif ($task->response)
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5 class="card-title m-b-20">Submitted Task</h5>
+                                        <h5 class="card-title m-b-20">Завершенная задача</h5>
                                         <p>{{ $task->response->description }}</p>
                                         <ul class="files-list">
                                             <li>
@@ -94,7 +94,7 @@
                                                     </div>
                                                     @if($task->response->filename)
                                                     <div class="files-info">
-                                                        <span class="file-name text-ellipsis"><a href="">{{ $task->response->filename }}</a></span>
+                                                        <span class="file-name text-ellipsis"><a href="{{ route('response.download', $task->response->filename) }}">{{ $task->response->filename }}</a></span>
                                                         {{-- <div class="file-size">{{ round(Storage::size('/files/responses/'.$task->response->filename) / 1024, 1)  }} KB</div> --}}
                                                     </div>
                                                     @endif
@@ -103,9 +103,7 @@
                                         </ul>
                                     </div>
                                 </div>
-
                             @endif
-
                             <div class="project-task">
                                 <ul class="nav nav-tabs nav-tabs-top nav-justified mb-0">
                                     <li class="nav-item"><a class="nav-link active" href="#comments" data-toggle="tab" aria-expanded="true">Комментарии</a></li>
@@ -178,6 +176,30 @@
                                                 <td>Состояние:</td>
                                                 <td class="text-right" id="task_status"><span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'primary') )) }}">{{ $task->status }}</span></td>
                                             </tr>
+
+                                            @can('creator', $task)
+                                                @if ($task->status == "Ждет подтверждения")
+                                                    <tr>
+                                                        <td>Действия:</td>
+                                                        <td class="nowrap">
+                                                            <div class="row">
+                                                                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                                                    <div class="btn-group mr-2" role="group" aria-label="First group">
+                                                                        <button class="btn btn-primary btn-sm" wire:click="taskConfirmed({{ $task->id }})">Подтвердить</button>
+                                                                    </div>
+                                                                    <div class="btn-group mr-2" role="group" aria-label="Second group">
+                                                                        <form action="#" method="post">
+                                                                            <input type="hidden" name="_method" value="DELETE">
+                                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                                            <button class="btn btn-secondary btn-sm" wire:click.prevent="taskRejected({{ $task->id }})">Отменить</button>
+                                                                        </form>
+                                                                    </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @endcan
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -234,49 +256,5 @@
             </div>
         </div>
     </div>
-
-        <!-- Submit Project Modal -->
-    {{-- <div id="submit_task" class="modal custom-modal fade" role="dialog">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title mb-0">Завершить задачу</h4>
-                        </div>
-                        <div class="card-body">
-                            <form action="" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <div class="form-group row">
-                                    <label class="col-lg-2 col-form-label">Текст</label>
-                                    <div class="col-lg-10">
-                                        @error('description')
-                                            <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
-                                        @enderror
-                                        <textarea rows="5" cols="5" class="form-control" name="description" placeholder="Введите текст"></textarea>
-                                    </div>
-
-                                </div>
-                                <input type="hidden" name="task_id" value="{{ $task->id }}">
-                                <div class="form-group row">
-                                    <label class="col-lg-2 col-form-label">Файл</label>
-                                    <div class="col-lg-10">
-                                        @error('filename')
-                                            <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
-                                        @enderror
-                                        <input class="form-control" name="filename" type="file">
-                                    </div>
-                                </div>
-
-                                <div class="text-right">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>                </div>
-            </div>
-        </div>
-    </div> --}}
-    <!-- /Submit Project Modal -->
     @endif
 </div>

@@ -2,6 +2,10 @@
 
 namespace App\Http\Livewire;
 
+use App\Events\CommentStoredEvent;
+use App\Events\TaskConfirmedEvent;
+use App\Events\TaskRejectedEvent;
+use App\Events\TaskSubmittedEvent;
 use App\Models\Comment;
 use App\Models\Response;
 use App\Models\Task;
@@ -55,6 +59,8 @@ class ViewModal extends Component
         $response->save();
         $this->dispatchBrowserEvent('success', ['msg' => "Задача выполнена. Пожалуйста, дождитесь подтверждения."]);
 
+        event(new TaskSubmittedEvent($response->task));
+
         $this->task->update(['status' => "Ждет подтверждения"]);
     }
 
@@ -68,10 +74,31 @@ class ViewModal extends Component
         $this->comments = Comment::with('user')->where('task_id', $id)->latest()->get();
 
         $this->comment = '';
+        if(Auth::user()->id == $comment->task->creator_id){
+            event(new CommentStoredEvent($comment, $comment->task->user_id));
+        }else{
+            event(new CommentStoredEvent($comment, $comment->task->creator_id));
+        }
     }
 
-    public function submitTask($id){
-        $this->dispatchBrowserEvent('submit-task');
+    public function taskConfirmed($id){
+        $task = Task::where('id', $id)->first();
+
+        $task->update(['status' => "Выполнено"]);
+        $this->task = $task;
+        event(new TaskConfirmedEvent($task));
+    }
+
+    public function taskRejected($id){
+        $task = Task::where('id', $id)->first();
+
+        if($task->response->filename)
+            Storage::delete('files/responses/'.$task->response->filename);
+
+        $task->response->delete();
+        $task->update(['status' => "Выполняется"]);
+        $this->task = $task;
+        event(new TaskRejectedEvent($task));
     }
 
     public function render()

@@ -18,7 +18,7 @@ class PageController extends Controller
     public function dashboard(){
         $user = Auth::user();
         $projects = Project::with('tasks')->get();
-        $tasks = Task::where('user_id', $user->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
+        $tasks = Task::with(['creator', 'user'])->where('user_id', $user->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
         $project_tasks = Task::with('project')->where('user_id', $user->id)->where('project_id', '<>', null)->get();
         $projects_arr = array();
 
@@ -34,8 +34,8 @@ class PageController extends Controller
             $user_projects = $user_projects->merge([$project_collection]);
         }
 
-        $sectors = Sector::with('users')->get();
-        $users = User::select(['id', 'name'])->get(5);
+        $sectors = Sector::with('users:id,name')->get();
+        $users = User::select(['id', 'name'])->get();
 
         return view('page.index', [
             'projects' => $projects,
@@ -48,9 +48,9 @@ class PageController extends Controller
 
     public function ordered(){
         $projects = Project::with('tasks')->get();
-        $tasks = Task::where('creator_id', Auth::user()->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
+        $tasks = Task::where('creator_id', Auth::user()->id)->where('project_id', null)->orderBy('deadline', 'ASC')->limit(30)->get();
         $users = User::select(['id', 'name'])->get();
-        $project_tasks = Task::with('project')->where('creator_id', Auth::user()->id)->where('project_id', '<>', null)->get();
+        $project_tasks = Task::with('project')->where('creator_id', Auth::user()->id)->where('project_id', '<>', null)->limit(10)->get();
         $projects_arr = array();
 
         $user_projects = collect([]);
@@ -64,7 +64,7 @@ class PageController extends Controller
             $project_collection = Project::where('name', $project)->first();
             $user_projects = $user_projects->merge([$project_collection]);
         }
-        $sectors = Sector::with('users')->get();
+        $sectors = Sector::with('users:id,name')->get();
         return view('page.ordered', [
             'projects' => $projects,
             'users' => $users,
@@ -100,7 +100,7 @@ class PageController extends Controller
             $project_collection = Project::where('name', $project)->first();
             $helping_projects = $helping_projects->merge([$project_collection]);
         }
-        $sectors = Sector::with('users')->get();
+        $sectors = Sector::with('users:id,name')->get();
 
         return view('page.helping', [
             'projects' => $projects,
@@ -128,4 +128,16 @@ class PageController extends Controller
         $file = File::where('id', $id)->first();
         return response()->download(storage_path('app/files/'.$file->name));
     }
+
+    public function responseDownload($filename){
+        return response()->download(storage_path('app/files/responses/'.$filename));
+    }
+
+
+    public function read($id, Request $request){
+        Auth::user()->unreadNotifications->where('id', $id)->markAsRead();
+        return redirect()->back();
+    }
+
+
 }
