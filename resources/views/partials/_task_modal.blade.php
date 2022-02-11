@@ -50,6 +50,10 @@
                             </div>
                         </div>
                     </div>
+{{--
+                    @foreach ($sectors as $sector)
+                        {{ dd($sector->users) }}</p>}}
+                    @endforeach --}}
 
 
                     @if (Auth::user()->isDirector())
@@ -57,8 +61,10 @@
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
                                 <select class="form-control" name="user_id">
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @foreach ($sectors as $sector)
+                                        @foreach ($sector->users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endforeach
                                     @endforeach
                                 </select>
                             </div>
@@ -79,12 +85,12 @@
 
                                 <select class="form-control select" name="helpers[]" multiple>
                                     @foreach ($sectors as $sector)
-                                    <optgroup label="{{ $sector->name }}">
-                                        @foreach ($sector->users as $user)
-                                        @if($user->id != Auth::user()->id)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endif
-                                @endforeach
+                                        <optgroup label="{{ $sector->name }}">
+                                            @foreach ($sector->users as $user)
+                                                @if($user->id != Auth::user()->id)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endif
+                                            @endforeach
                                         </optgroup>
                                     @endforeach
                                 </select>

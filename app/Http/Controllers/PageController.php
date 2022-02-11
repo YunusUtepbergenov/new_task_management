@@ -17,29 +17,70 @@ class PageController extends Controller
 {
     public function dashboard(){
         $user = Auth::user();
-        $projects = Project::with('tasks')->get();
-        $tasks = Task::with(['creator', 'user'])->where('user_id', $user->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
-        $project_tasks = Task::with('project')->where('user_id', $user->id)->where('project_id', '<>', null)->get();
-        $projects_arr = array();
 
-        $user_projects = collect([]);
+        if($user->isDirector() || $user->isMailer()){
+            $projects = Project::where('user_id', $user->id)->get();
+            $tasks = Task::with(['creator', 'user'])->where('user_id', $user->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
 
-        foreach($project_tasks as $task){
-            array_push($projects_arr, $task->project->name);
+            $project_tasks = Task::with('project')->where('user_id', $user->id)->where('project_id', '<>', null)->get();
+            $projects_arr = array();
+
+            $user_projects = collect([]);
+
+            foreach($project_tasks as $task){
+                array_push($projects_arr, $task->project->name);
+            }
+
+            $unique_projects = array_unique($projects_arr);
+            foreach($unique_projects as $project){
+                $project_collection = Project::where('name', $project)->first();
+                $user_projects = $user_projects->merge([$project_collection]);
+            }
+
+            $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
+
+        }elseif ($user->isHead()) {
+            $projects = Project::where('user_id', $user->id)->get();
+            $tasks = Task::with(['creator', 'user'])->where('user_id', $user->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
+            $project_tasks = Task::with('project')->where('user_id', $user->id)->where('project_id', '<>', null)->get();
+            $projects_arr = array();
+
+            $user_projects = collect([]);
+
+            foreach($project_tasks as $task){
+                array_push($projects_arr, $task->project->name);
+            }
+
+            $unique_projects = array_unique($projects_arr);
+            foreach($unique_projects as $project){
+                $project_collection = Project::where('name', $project)->first();
+                $user_projects = $user_projects->merge([$project_collection]);
+            }
+
+            $sectors = NULL;
         }
+        else{
+            $projects = NULL;
+            $tasks = Task::with(['creator', 'user'])->where('user_id', $user->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
+            $project_tasks = Task::with('project')->where('user_id', $user->id)->where('project_id', '<>', null)->get();
+            $projects_arr = array();
 
-        $unique_projects = array_unique($projects_arr);
-        foreach($unique_projects as $project){
-            $project_collection = Project::where('name', $project)->first();
-            $user_projects = $user_projects->merge([$project_collection]);
+            $user_projects = collect([]);
+
+            foreach($project_tasks as $task){
+                array_push($projects_arr, $task->project->name);
+            }
+
+            $unique_projects = array_unique($projects_arr);
+            foreach($unique_projects as $project){
+                $project_collection = Project::where('name', $project)->first();
+                $user_projects = $user_projects->merge([$project_collection]);
+            }
+
+            $sectors = NULL;
         }
-
-        $sectors = Sector::with('users:id,name')->get();
-        $users = User::select(['id', 'name'])->get();
-
         return view('page.index', [
             'projects' => $projects,
-            'users' => $users,
             'tasks' => $tasks,
             'sectors' => $sectors,
             'user_projects' => $user_projects
