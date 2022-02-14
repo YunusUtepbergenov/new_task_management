@@ -8605,6 +8605,9 @@ td a{
     background-color: #fff;
 }
 
+#employee_normal{
+    white-space: normal;
+}
 
 #noti-link{
     padding: 0;
@@ -8705,3 +8708,4 @@ td a{
       transform: rotate(360deg);
     }
   }
+

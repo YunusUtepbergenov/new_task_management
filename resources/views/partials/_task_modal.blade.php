@@ -50,11 +50,6 @@
                             </div>
                         </div>
                     </div>
-{{--
-                    @foreach ($sectors as $sector)
-                        {{ dd($sector->users) }}</p>}}
-                    @endforeach --}}
-
 
                     @if (Auth::user()->isDirector())
                         <div class="form-group row">

@@ -22,7 +22,7 @@
 								<a href="#"><i class="fa fa-book" aria-hidden="true"></i><span>Справочники</span></a>
 							</li>
 							<li>
-								<a href="#"><i class="fa fa-cog"></i><span>Настройки</span></a>
+								<a href="{{ route('settings') }}"><i class="fa fa-cog"></i><span>Настройки</span></a>
 							</li>
 						</ul>
 					</div>

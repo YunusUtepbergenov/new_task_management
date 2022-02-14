@@ -45,9 +45,12 @@
         </div>
     </div>
 
-    @include('partials._project_modal')
+    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() )
+        @include('partials._project_modal')
 
-    @include('partials._task_modal')
+        @include('partials._task_modal')
+    @endif
+
     <!-- View Project Modal -->
     {{-- @include('partials._view_modal')--}}
     @livewire('view-modal')

@@ -32,18 +32,7 @@
         </div>
     </div>
     <!-- /Page Header -->
-
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        @livewire('ordered-table', ['projects' => $projects, 'tasks' => $tasks, 'user_projects' => $user_projects])
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @livewire('ordered-table', ['projects' => $projects])
 
     @include('partials._project_modal')
 

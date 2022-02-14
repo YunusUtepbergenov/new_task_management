@@ -64,8 +64,8 @@
 							<span>{{ Auth::user()->name }}</span>
 						</a>
 						<div class="dropdown-menu">
-							<a class="dropdown-item" href="profile.html">My Profile</a>
-							<a class="dropdown-item" href="settings.html">Settings</a>
+							{{-- <a class="dropdown-item" href="profile.html">My Profile</a> --}}
+							<a class="dropdown-item" href="{{ route('settings') }}">Settings</a>
 							<form action="{{ route('logout') }}" method="POST">
 								@csrf
 								<button class="dropdown-item">Logout</button>

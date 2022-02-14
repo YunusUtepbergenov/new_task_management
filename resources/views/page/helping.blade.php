@@ -32,22 +32,13 @@
         </div>
     </div>
     <!-- /Page Header -->
+    @livewire('helping-tasks')
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        @livewire('helping-tasks', ['projects' => $projects, 'tasks' => $tasks_without_project, 'helping_projects' => $helping_projects, 'tasks_id' => $tasks_id])
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() )
+        @include('partials._project_modal')
 
-    @include('partials._project_modal')
-
-    @include('partials._task_modal')
+        @include('partials._task_modal')
+    @endif
     <!-- View Project Modal -->
     {{-- @include('partials._view_modal')--}}
     @livewire('view-modal')

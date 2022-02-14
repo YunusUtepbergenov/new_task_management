@@ -13,7 +13,6 @@
 @section('main')
 	<!-- Page Content -->
 	<div class="content container-fluid">
-
 		<!-- Page Header -->
 		<div class="page-header">
 			<div class="row align-items-center">
@@ -29,22 +28,26 @@
 
 		<div class="row">
 			<div class="col-md-12">
-				<div class="table-responsive">
-					<table class="table table-striped custom-table">
+				<div class="table-responsive" style="height: 770px;">
+					<table class="table custom-table" style="overflow-y: auto; height: 110px;">
 						<thead>
 							<tr>
-								<th>Ф.И.О</th>
-								<th>Почта</th>
-								<th>Сектор</th>
-								<th>Должность</th>
-							</tr>
+								<th style="position: sticky;top: 0; background: #ABDD93;">Ф.И.О</th>
+								<th style="position: sticky;top: 0; background: #ABDD93;">Почта</th>
+								<th style="position: sticky;top: 0; background: #ABDD93;">Сектор</th>
+								<th style="position: sticky;top: 0; background: #ABDD93;">Должность</th>
+								<th style="position: sticky;top: 0; background: #ABDD93;">Тел.Номер</th>
+								<th style="position: sticky;top: 0; background: #ABDD93;">Внутренный номер</th>
+                            </tr>
 						</thead>
-						<tbody>
+						<tbody style="overflow: auto;">
                             @foreach ($sectors as $sector)
                                 <tr>
                                     <th></th>
                                     <th></th>
-                                    <th>{{ $sector->name }}</th>
+                                    <th id="employee_normal">{{ $sector->name }}</th>
+                                    <th></th>
+                                    <th></th>
                                     <th></th>
                                 </tr>
                                 @foreach ($sector->users as $employee)
@@ -57,6 +60,8 @@
                                         <td>{{ $employee->email }}</td>
                                         <td class="text-wrap"></td>
                                         <td>{{ $employee->role->name }}</td>
+                                        <td> +998933667500</td>
+                                        <td>450</td>
                                     </tr>
                                 @endforeach
                             @endforeach
@@ -77,7 +82,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method="POST" action="{{ route('register') }}">
+                        <form method="POST" action="{{ route('new.user') }}">
                             @csrf
                             <div class="row">
                                 <div class="col-sm-12">

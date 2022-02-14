@@ -20,6 +20,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('ordered', [PageController::class, 'ordered'])->name('ordered');
     Route::get('helping', [PageController::class, 'helping'])->name('helping');
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
+    Route::get('settings', [PageController::class, 'settings'])->name('settings');
     Route::get('/task/info/byid/{id}', [PageController::class, 'getTaskInfo']);
     Route::get('task/download/{id}', [PageController::class, 'download'])->name('file.download');
     Route::get('task/response/download/{name}', [PageController::class, 'responseDownload'])->name('response.download');
@@ -34,6 +35,8 @@ Route::middleware(['auth'])->group(function () {
     ]);
 
     Route::put('/notification/read/{id}', [PageController::class, 'read'])->name('notification.read');
+    Route::post('register/new/employee', [PageController::class, 'register'])->name('new.user');
+    Route::put('user/settings', [PageController::class, 'updatePassword'])->name('update.password');
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
