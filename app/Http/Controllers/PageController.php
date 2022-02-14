@@ -88,6 +88,33 @@ class PageController extends Controller
         ]);
     }
 
+    public function ordered(){
+        $user = Auth::user();
+
+        if($user->isDirector() || $user->isMailer()){
+            $projects = Project::where('user_id', $user->id)->get();
+            $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
+        }elseif ($user->isHead()) {
+            $projects = Project::where('user_id', $user->id)->get();
+            $sectors = NULL;
+        }else{
+            abort(404);
+        }
+
+        return view('page.ordered', ['projects' => $projects,'sectors' => $sectors]);
+    }
+
+    public function helping(){
+        $projects = Project::where('user_id', Auth::user()->id)->get();
+
+        $sectors = Sector::with('users:id,name')->get();
+
+        return view('page.helping', [
+            'projects' => $projects,
+            'sectors' => $sectors,
+        ]);
+    }
+
     public function employees(){
         $sectors = Sector::with('users.role')->get();
         $roles = Role::all();
