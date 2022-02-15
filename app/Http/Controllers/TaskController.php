@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\TaskCreatedEvent;
 use App\Models\File;
 use App\Models\Project;
+use App\Models\Sector;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -66,7 +67,20 @@ class TaskController extends Controller
             }
         }
         event(new TaskCreatedEvent($task));
-        return redirect()->back();
+
+        $user = Auth::user();
+
+        if($user->isDirector() || $user->isMailer()){
+            $projects = Project::where('user_id', $user->id)->get();
+            $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
+        }elseif ($user->isHead()) {
+            $projects = Project::where('user_id', $user->id)->get();
+            $sectors = NULL;
+        }else{
+            abort(404);
+        }
+
+        return view('page.ordered', ['projects' => $projects,'sectors' => $sectors]);
     }
 
     /**

@@ -7459,6 +7459,7 @@ ul.comment-list li ul.children {
 }
 .table-responsive {
 	white-space: nowrap;
+    max-height: 545px;
 }
 .user-add-shedule-list a {
     display: inline-block;

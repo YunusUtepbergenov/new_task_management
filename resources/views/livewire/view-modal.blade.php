@@ -14,7 +14,7 @@
                         <div class="col-lg-8 col-xl-9">
                             <div class="card">
                                 <div class="card-body">
-                                    <p id="task_description">{{ $task->description }}</p>
+                                    <p id="task_description">{!! nl2br(e($task->description)) !!}</p>
                                 </div>
                             </div>
                             <div class="card">
@@ -107,7 +107,7 @@
                             <div class="project-task">
                                 <ul class="nav nav-tabs nav-tabs-top nav-justified mb-0">
                                     <li class="nav-item"><a class="nav-link active" href="#comments" data-toggle="tab" aria-expanded="true">Комментарии</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#history" data-toggle="tab" aria-expanded="false">История</a></li>
+                                    {{-- <li class="nav-item"><a class="nav-link" href="#history" data-toggle="tab" aria-expanded="false">История</a></li> --}}
                                 </ul>
                                 <div class="tab-content">
                                     <div class="tab-pane show active" id="comments">
@@ -148,9 +148,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tab-pane" id="history">
+                                    {{-- <div class="tab-pane" id="history">
                                         <p>Task was given</p>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>

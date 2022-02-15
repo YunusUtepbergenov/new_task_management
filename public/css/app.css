@@ -999,6 +999,9 @@ select {
 .float-right {
   float: right;
 }
+.m-auto {
+  margin: auto;
+}
 .mx-auto {
   margin-left: auto;
   margin-right: auto;

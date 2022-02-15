@@ -1,5 +1,5 @@
 <div>
-    <div class="row filter-row">
+    {{-- <div class="row filter-row">
         <div class="col-sm-4 col-md-2">
             <div class="form-group">
                 <label for="select">Проекты</label>
@@ -24,13 +24,13 @@
                 </select>
             </div>
         </div>
-    </div>
+    </div> --}}
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-nowrap mb-0" wire.ignore.self>
+                        <table class="table table-nowrap mb-0">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -43,7 +43,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($tasks as $key=>$task)
+                                @foreach ($tasks_without_project as $key=>$task)
                                     <tr>
                                         <td>{{ $key+1 }}</td>
                                         <td>
@@ -67,7 +67,7 @@
                                     </tr>
                                 @endforeach
                             </tbody>
-                            @foreach ($helping_projects as $project)
+                            {{-- @foreach ($helping_projects as $project)
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -113,7 +113,7 @@
                                         @endphp
                                     @endif
                                 @endforeach
-                            @endforeach
+                            @endforeach --}}
                         </table>
                     </div>
                 </div>

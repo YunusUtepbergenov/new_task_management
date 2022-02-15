@@ -4,7 +4,8 @@
             <div class="form-group">
                 <label for="select">Проекты</label>
                 <select class="form-control" wire:model="projectId" aria-hidden="true">
-                    <option value="">Not project</option>
+                    <option value="Empty"></option>
+                    <option value="">Не проект</option>
                     @foreach ($projects as $project)
                         <option value="{{ $project->id }}">{{ $project->name }}</option>
                     @endforeach
@@ -15,6 +16,7 @@
             <div class="form-group">
                 <label for="select">Состаяние</label>
                 <select class="form-control" wire:model="status" aria-hidden="true">
+                    <option value="Empty"></option>
                     <option value="Новое">Новое</option>
                     <option value="Выполняется">Выполняется</option>
                     <option value="Ждет подтверждения">Ждет подтверждения</option>
@@ -41,7 +43,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-
                                 @if ($tasks)
                                 @forelse ($tasks as $key=>$task)
                                 <tr>
@@ -94,14 +95,14 @@
                                             <td>
                                                 @if ($task['status'] == "Выполнено")
                                                     <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>
-                                                    <div wire:loading>
+                                                    {{-- <div wire:loading>
                                                         <div class="loading">Loading&#8230;</div>
-                                                    </div>
+                                                    </div> --}}
                                                 @else
                                                     <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
-                                                    <div wire:loading>
+                                                    {{-- <div wire:loading>
                                                         <div class="loading">Loading&#8230;</div>
-                                                    </div>
+                                                    </div> --}}
                                                 @endif
                                             </td>                                <td>{{ substr($task['created_at'], 0, 10) }}</td>
                                             <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>

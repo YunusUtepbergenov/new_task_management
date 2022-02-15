@@ -10,28 +10,26 @@ use Livewire\Component;
 
 class HelpingTasks extends Component
 {
-    public $tasks, $helping_projects, $tasks_id;
+    public $tasks1, $helping_projects, $tasks_id, $tasks_without_project, $helping_task;
     public $projectId, $status;
 
-    public function view($task_id){
-        $this->emit('taskClicked', $task_id);
-    }
-
     public function mount(){
-        $this->username = Auth::user()->name;
         $this->chosen_project = Null;
-        $this->tasks = TaskUser::where('user_id', Auth::user()->id)->orderBy('created_at', 'ASC')->get();
+        $this->tasks1 = TaskUser::where('user_id', Auth::user()->id)->get();
 
         $projects_arr = array();
         $this->tasks_id = array();
 
         $this->helping_projects = collect([]);
+        $this->tasks_without_project = collect([]);
 
-        foreach($this->tasks as $task){
-            $helping_task = Task::with('project')->where('id', $task->task_id)->first();
-            if($helping_task->project_id != NULL){
-                array_push($projects_arr, $helping_task->project->name);
-                array_push($this->tasks_id, $helping_task->id);
+        foreach($this->tasks1 as $task){
+            $this->helping_task = Task::where('id', $task->task_id)->first();
+            if($this->helping_task->project_id != NULL){
+                array_push($projects_arr, $this->helping_task->project->name);
+                array_push($this->tasks_id, $this->helping_task->id);
+            }else{
+                $this->tasks_without_project = $this->tasks_without_project->merge([$this->helping_task]);
             }
         }
 
@@ -66,6 +64,9 @@ class HelpingTasks extends Component
                 $query->where('status', $this->status);
             }])->where('id', $this->projectId)->first();
         }
+    }
+    public function view($task_id){
+        $this->emit('taskClicked', $task_id);
     }
 
     public function render()

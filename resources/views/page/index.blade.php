@@ -33,17 +33,8 @@
     </div>
     <!-- /Page Header -->
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        @livewire('tasks-table', ['projects' => $projects, 'tasks' => $tasks, 'user_projects' => $user_projects])
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
+    @livewire('tasks-table')
 
     @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() )
         @include('partials._project_modal')

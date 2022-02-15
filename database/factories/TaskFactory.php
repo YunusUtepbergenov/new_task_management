@@ -19,7 +19,7 @@ class TaskFactory extends Factory
             'creator_id' => $this->faker->randomDigitNotNull(),
             'user_id' => $this->faker->numberBetween(10, 45),
             'sector_id' => $this->faker->numberBetween(1, 8),
-            'project_id' => $this->faker->numberBetween(1, 3),
+            'project_id' => $this->faker->numberBetween(1, 5),
             'name' => $this->faker->sentence(8),
             'description' => $this->faker->sentence(20),
             'deadline' => $this->faker->date('Y-m-d'),

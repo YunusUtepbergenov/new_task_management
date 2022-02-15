@@ -7,7 +7,6 @@ use App\Models\Project;
 use App\Models\Role;
 use App\Models\Sector;
 use App\Models\Task;
-use App\Models\TaskUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,70 +20,18 @@ class PageController extends Controller
 
         if($user->isDirector() || $user->isMailer()){
             $projects = Project::where('user_id', $user->id)->get();
-            $tasks = Task::with(['creator', 'user'])->where('user_id', $user->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
-
-            $project_tasks = Task::with('project')->where('user_id', $user->id)->where('project_id', '<>', null)->get();
-            $projects_arr = array();
-
-            $user_projects = collect([]);
-
-            foreach($project_tasks as $task){
-                array_push($projects_arr, $task->project->name);
-            }
-
-            $unique_projects = array_unique($projects_arr);
-            foreach($unique_projects as $project){
-                $project_collection = Project::where('name', $project)->first();
-                $user_projects = $user_projects->merge([$project_collection]);
-            }
-
             $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
-
         }elseif ($user->isHead()) {
             $projects = Project::where('user_id', $user->id)->get();
-            $tasks = Task::with(['creator', 'user'])->where('user_id', $user->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
-            $project_tasks = Task::with('project')->where('user_id', $user->id)->where('project_id', '<>', null)->get();
-            $projects_arr = array();
-
-            $user_projects = collect([]);
-
-            foreach($project_tasks as $task){
-                array_push($projects_arr, $task->project->name);
-            }
-
-            $unique_projects = array_unique($projects_arr);
-            foreach($unique_projects as $project){
-                $project_collection = Project::where('name', $project)->first();
-                $user_projects = $user_projects->merge([$project_collection]);
-            }
-
             $sectors = NULL;
         }
         else{
             $projects = NULL;
-            $tasks = Task::with(['creator', 'user'])->where('user_id', $user->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
-            $project_tasks = Task::with('project')->where('user_id', $user->id)->where('project_id', '<>', null)->get();
-            $projects_arr = array();
-
-            $user_projects = collect([]);
-
-            foreach($project_tasks as $task){
-                array_push($projects_arr, $task->project->name);
-            }
-
-            $unique_projects = array_unique($projects_arr);
-            foreach($unique_projects as $project){
-                $project_collection = Project::where('name', $project)->first();
-                $user_projects = $user_projects->merge([$project_collection]);
-            }
-
             $sectors = NULL;
         }
         return view('page.index', [
             'projects' => $projects,
-            'tasks' => $tasks,
             'sectors' => $sectors,
-            'user_projects' => $user_projects
         ]);
     }
 
@@ -107,7 +54,7 @@ class PageController extends Controller
     public function helping(){
         $projects = Project::where('user_id', Auth::user()->id)->get();
 
-        $sectors = Sector::with('users:id,name')->get();
+        $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
 
         return view('page.helping', [
             'projects' => $projects,
