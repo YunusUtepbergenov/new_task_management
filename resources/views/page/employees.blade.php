@@ -19,16 +19,18 @@
 				<div class="col">
 					<h3 class="page-title"> Сотрудники</h3>
 				</div>
-                <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
-                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_employee"> Добавить сотрудника</a>
-                </div>
+                @if (Auth::user()->isHR())
+                    <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
+                        <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_employee"> Добавить сотрудника</a>
+                    </div>
+                @endif
 			</div>
 		</div>
 		<!-- /Page Header -->
 
 		<div class="row">
 			<div class="col-md-12">
-				<div class="table-responsive" style="height: 770px;">
+				<div class="table-responsive" id="employeeTable">
 					<table class="table custom-table" style="overflow-y: auto; height: 110px;">
 						<thead>
 							<tr>
@@ -82,16 +84,17 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method="POST" action="{{ route('new.user') }}">
+                        <form method="POST" action="{{ route('new.user') }}" id="createUser">
                             @csrf
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label>Введите имя</label>
-                                        <input class="form-control" name="name" type="text">
+                                        <input class="form-control" name="user_name" type="text">
                                         <input type="hidden" name="password" value="password">
                                         <input type="hidden" name="password_confirmation" value="password">
                                     </div>
+                                    <div class="alert alert-danger" id="user_name"></div>
                                 </div>
                             </div>
                             <div class="row">
@@ -100,6 +103,7 @@
                                         <label>Введите почта</label>
                                         <input class="form-control" name="email" type="email">
                                     </div>
+                                    <div class="alert alert-danger" id="email"></div>
                                 </div>
                             </div>
 
@@ -117,7 +121,6 @@
                                 <label class="col-sm-3 col-form-label">Должность</label>
                                 <div class="col-sm-4">
                                     <select class="form-control" name="role_id">
-                                        <option value="">Не проект</option>
                                         @foreach ($roles as $role)
                                             <option value="{{ $role->id }}">{{ $role->name }}</option>
                                         @endforeach
@@ -139,13 +142,44 @@
 	<!-- /Page Content -->
 @endsection
 
-{{-- @section('scripts')
-	<!-- Select2 JS -->
-	<script src="{{ asset('assets/js/select2.min.js') }}"></script>
-	<script src="{{ asset('assets/js/moment.min.js') }}"></script>
-	<script src="{{ asset('assets/js/bootstrap-datetimepicker.min.js') }}"></script>
-	<!-- Datatable JS -->
-	<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
-	<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}"></script>
+@section('scripts')
+    <script>
+        $(document).ready(function() {
 
-@endsection --}}
+            $("#user_name").addClass("d-none");
+            $("#email").addClass("d-none");
+
+            jQuery("#createUser").on("submit", function (e) {
+                e.preventDefault();
+                console.log("sheeeeeeesh");
+                var formData = new FormData($("#createUser")[0]);
+                var url = $(this).attr("action");
+
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        location.reload();
+                    },
+                    error: function (data) {
+                        $("#user_name").addClass("d-none");
+                        $("#email").addClass("d-none");
+
+                        var errors = data.responseJSON;
+                        if ($.isEmptyObject(errors) == false) {
+                            $.each(errors.errors, function (key, value) {
+                                var ErrorId = "#" + key;
+                                $(ErrorId).removeClass("d-none");
+                                $(ErrorId).text(value);
+                            });
+                        }
+                        console.log(errors);
+                    },
+                });
+            });
+        });
+    </script>
+@endsection

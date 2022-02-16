@@ -1,4 +1,7 @@
 <div>
+    <div wire:loading wire:target="view">
+        <div class="loading">Loading&#8230;</div>
+    </div>
     <div class="row filter-row">
         <div class="col-sm-4 col-md-2">
             <div class="form-group">
@@ -50,14 +53,8 @@
                                     <td>
                                         @if ($task->status == "Выполнено")
                                             <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>
-                                            <div wire:loading>
-                                                <div class="loading">Loading&#8230;</div>
-                                            </div>
                                         @else
                                             <a href="#" wire:click.prevent="view({{ $task->id }})">{{ $task->name }}</a>
-                                            <div wire:loading>
-                                                <div class="loading">Loading&#8230;</div>
-                                            </div>
                                         @endif
                                     </td>
                                     <td>{{ $task->created_at->format('Y-m-d') }}</td>
@@ -95,16 +92,11 @@
                                             <td>
                                                 @if ($task['status'] == "Выполнено")
                                                     <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>
-                                                    {{-- <div wire:loading>
-                                                        <div class="loading">Loading&#8230;</div>
-                                                    </div> --}}
                                                 @else
                                                     <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
-                                                    {{-- <div wire:loading>
-                                                        <div class="loading">Loading&#8230;</div>
-                                                    </div> --}}
                                                 @endif
-                                            </td>                                <td>{{ substr($task['created_at'], 0, 10) }}</td>
+                                            </td>
+                                            <td>{{ substr($task['created_at'], 0, 10) }}</td>
                                             <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
                                             <td>{{ $username }}</td>
                                             <td>{{ $task->user->name }}</td>

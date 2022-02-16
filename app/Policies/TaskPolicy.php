@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Task;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TaskPolicy
@@ -94,5 +95,9 @@ class TaskPolicy
 
     public function creator(User $user, Task $task){
         return $task->creator_id === $user->id;
+    }
+
+    public function overdue(User $user, Task $task){
+        return $task->deadline > Carbon::now();
     }
 }

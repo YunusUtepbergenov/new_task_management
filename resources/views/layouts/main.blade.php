@@ -136,6 +136,12 @@
 				$('#example-getting-started').multiselect();
 			});
 
+            $("#name").addClass("d-none");
+            $("#project_name").addClass("d-none");
+            $("#deadline").addClass("d-none");
+            $("#description").addClass("d-none");
+            $("#file").addClass("d-none");
+
             window.addEventListener('show-modal', event => {
                 $('#view_task').modal('show');
             });

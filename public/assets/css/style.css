@@ -7461,6 +7461,10 @@ ul.comment-list li ul.children {
 	white-space: nowrap;
     max-height: 545px;
 }
+
+#employeeTable{
+    max-height: 770px;
+}
 .user-add-shedule-list a {
     display: inline-block;
     padding: 10px;

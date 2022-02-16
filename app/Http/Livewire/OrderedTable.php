@@ -14,13 +14,31 @@ class OrderedTable extends Component
     public $projectId, $status;
 
     public function mount(){
+        // $project_tasks = Task::with('project')->where('creator_id', Auth::user()->id)->where('project_id', '<>', null)->get();
+        // $projects_arr = array();
+
+        // $user_projects = collect([]);
+
+        // foreach($project_tasks as $task){
+        //     array_push($projects_arr, $task->project->name);
+        // }
+
+        // $unique_projects = array_unique($projects_arr);
+
+        // foreach($unique_projects as $project){
+        //     $project_collection = Project::where('name', $project)->first();
+        //     $user_projects = $user_projects->merge([$project_collection]);
+        // }
+
+        // $this->projects = $user_projects;
+
         $this->projectId = "Empty";
         $this->status = "Empty";
         $this->username = Auth::user()->name;
         $this->chosen_project = Null;
         $this->project = Project::all();
         $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->whereIn('status', ['Новое' ,'Выполняется'])
-                        ->orderBy('deadline', 'ASC')->limit(15)->get();
+                        ->orderBy('deadline', 'ASC')->get();
     }
 
     public function view($task_id){
@@ -39,9 +57,9 @@ class OrderedTable extends Component
             $this->chosen_project = Null;
             if($this->status == "Empty"){
                 $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->whereIn('status', ['Новое' ,'Выполняется'])
-                                ->orderBy('deadline', 'ASC')->limit(15)->get();
+                                ->orderBy('deadline', 'ASC')->get();
             }else{
-                $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)->where('status', $this->status)->orderBy('deadline', 'ASC')->limit(15)->get();
+                $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)->where('status', $this->status)->orderBy('deadline', 'ASC')->get();
             }
         }else{
             $this->tasks = Null;
@@ -69,9 +87,9 @@ class OrderedTable extends Component
             $this->chosen_project = Null;
             if($this->status == "Empty"){
                 $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->whereIn('status', ['Новое' ,'Выполняется'])
-                                ->orderBy('deadline', 'ASC')->limit(15)->get();
+                                ->orderBy('deadline', 'ASC')->get();
             }else{
-                $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)->where('status', $this->status)->orderBy('deadline', 'ASC')->limit(15)->get();
+                $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)->where('status', $this->status)->orderBy('deadline', 'ASC')->get();
             }
         }
         else{

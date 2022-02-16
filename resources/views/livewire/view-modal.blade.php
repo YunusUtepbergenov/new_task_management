@@ -44,43 +44,56 @@
                                     </div>
                                 </div>
                             </div>
+
+
                             @if (!$task->response && $task->user_id == Auth::user()->id)
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4 class="card-title mb-0">Завершить задачу</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        <form wire:submit.prevent="storeResponse" method="POST" enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="form-group row">
-                                                <label class="col-lg-1 col-form-label">Текст</label>
-                                                <div class="col-lg-11">
+                                @can('overdue', $task)
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4 class="card-title mb-0">Завершить задачу</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <form wire:submit.prevent="storeResponse" method="POST" enctype="multipart/form-data">
+                                                @csrf
+                                                <div class="form-group row">
+                                                    <label class="col-sm-1 col-form-label">Текст</label>
+                                                    <div class="col-sm-11">
+                                                        <textarea rows="3" cols="5" class="form-control" wire:model="description" name="description" placeholder="Введите текст"></textarea>
+                                                    </div>
                                                     @error('description')
-                                                        <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
+                                                        <div class="col-sm-12 m-t-10">
+                                                            <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
+                                                        </div>
                                                     @enderror
-                                                    <textarea rows="3" cols="5" class="form-control" wire:model="description" name="description" placeholder="Введите текст"></textarea>
                                                 </div>
-                                            </div>
-                                            <input type="hidden" name="task_id" value="{{ $task->id }}">
-                                            <div class="form-group row">
-                                                <label class="col-lg-1 col-form-label">Файл</label>
-                                                <div class="col-lg-11">
-                                                    @error('filename')
-                                                        <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
-                                                    @enderror
-                                                    <input class="form-control" wire:model="upload" name="filename" type="file">
-                                                    <div wire:loading wire:target="upload">
-                                                        <div class="loading">Loading&#8230;</div>
+                                        <input type="hidden" name="task_id" value="{{ $task->id }}">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-1 col-form-label">Файл</label>
+                                                    <div class="col-lg-11">
+                                                        @error('upload')
+                                                            <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
+                                                        @enderror
+                                                        <input class="form-control" wire:model="upload" type="file">
+                                                        <div wire:loading wire:target="upload">
+                                                            <div class="loading">Loading&#8230;</div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="text-right">
-                                                <button type="submit" class="btn btn-primary">Завершить</button>
-                                            </div>
-                                        </form>
+                                                <div class="text-right">
+                                                    <button type="submit" class="btn btn-primary">Завершить</button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
-                                </div>
+                                @endcan
+                                @cannot('overdue')
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h4>Срок истек</h4>
+                                        </div>
+                                    </div>
+                                @endcannot
                             @elseif ($task->response)
                                 <div class="card">
                                     <div class="card-body">

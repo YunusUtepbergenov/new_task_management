@@ -65,6 +65,7 @@ class HelpingTasks extends Component
             }])->where('id', $this->projectId)->first();
         }
     }
+
     public function view($task_id){
         $this->emit('taskClicked', $task_id);
     }

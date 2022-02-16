@@ -17,11 +17,11 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|min:3'
+            'project_name' => 'required|min:3|max:128'
         ]);
 
         $flight = Project::create([
-            'name' => $request->name,
+            'name' => $request->project_name,
             'user_id' => Auth::user()->id
         ]);
 

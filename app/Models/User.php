@@ -88,4 +88,8 @@ class User extends Authenticatable
     public function isHead(){
         return $this->role->name === "Заведующий сектором";
     }
+
+    public function isHR(){
+        return $this->role->name === "Спецалист по работе с персоналом";
+    }
 }

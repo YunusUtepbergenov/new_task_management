@@ -34,10 +34,16 @@ class ViewModal extends Component
         $this->comments = $this->task->comments()->latest()->get();
     }
 
+    public function updatedUpload(){
+        $this->validate([
+            'upload' => 'nullable|file|max:5000'
+        ]);
+    }
+
     public function storeResponse(){
         $this->validate([
             'description' => 'required|min:3',
-            'upload' => 'nullable|file|max:40000'
+            'upload' => 'nullable|file|max:5000'
         ]);
 
         $response = new Response;
@@ -62,6 +68,7 @@ class ViewModal extends Component
         event(new TaskSubmittedEvent($response->task));
 
         $this->task->update(['status' => "Ждет подтверждения"]);
+        $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
     }
 
     public function storeComment($id){
@@ -85,7 +92,7 @@ class ViewModal extends Component
         $task = Task::where('id', $id)->first();
 
         $task->update(['status' => "Выполнено"]);
-        $this->task = $task;
+        $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
         event(new TaskConfirmedEvent($task));
     }
 
@@ -97,7 +104,7 @@ class ViewModal extends Component
 
         $task->response->delete();
         $task->update(['status' => "Выполняется"]);
-        $this->task = $task;
+        $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
         event(new TaskRejectedEvent($task));
     }
 

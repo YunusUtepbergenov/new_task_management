@@ -13,7 +13,7 @@ class SendTaskSubmittedNotification
 {
     public function handle($event)
     {
-        $creator = User::find($event->task->creator_id)->first();
+        $creator = User::where('id', $event->task->creator_id)->first();
         Notification::send($creator, new TaskSubmittedNotification($event->task));
     }
 }

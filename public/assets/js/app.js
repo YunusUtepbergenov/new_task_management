@@ -171,6 +171,70 @@ $(document).ready(function() {
 		return false;
 	});
 
+    jQuery("#createTask").on("submit", function (e) {
+        e.preventDefault();
+        console.log("sheeeeeeesh");
+        var formData = new FormData($("#createTask")[0]);
+        var url = $(this).attr("action");
+
+        $.ajax({
+            url: url,
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                location.reload();
+            },
+            error: function (data) {
+                $("#name").addClass("d-none");
+                $("#deadline").addClass("d-none");
+                $("#description").addClass("d-none");
+                $("#file").addClass("d-none");
+
+                var errors = data.responseJSON;
+                if ($.isEmptyObject(errors) == false) {
+                    $.each(errors.errors, function (key, value) {
+                        var ErrorId = "#" + key;
+                        $(ErrorId).removeClass("d-none");
+                        $(ErrorId).text(value);
+                    });
+                }
+                console.log(errors);
+            },
+        });
+    });
+
+    jQuery("#createProject").on("submit", function (e) {
+        e.preventDefault();
+        console.log("sheeeeeeesh");
+        var formData = new FormData($("#createProject")[0]);
+        var url = $(this).attr("action");
+
+        $.ajax({
+            url: url,
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                location.reload();
+            },
+            error: function (data) {
+                $("#project_name").addClass("d-none");
+                var errors = data.responseJSON;
+                if ($.isEmptyObject(errors) == false) {
+                    $.each(errors.errors, function (key, value) {
+                        var ErrorId = "#" + key;
+                        $(ErrorId).removeClass("d-none");
+                        $(ErrorId).text(value);
+                    });
+                }
+                console.log(errors);
+            },
+        });
+    });
+
 	// Multiselect
 
 	if($('#customleave_select').length > 0) {

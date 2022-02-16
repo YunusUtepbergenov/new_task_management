@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('task.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('task.store') }}" method="POST" enctype="multipart/form-data" id="createTask">
                     @csrf
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Проект</label>
@@ -29,6 +29,7 @@
                                 <label>Введите Название Задачи</label>
                                 <input class="form-control" name="name" type="text">
                             </div>
+                            <div class="alert alert-danger" id="name"></div>
                         </div>
                     </div>
 
@@ -38,6 +39,7 @@
                                 <label>Поручение / Комментария</label>
                                 <textarea rows="4" class="form-control" name="description" placeholder="Поручение / Комментария"></textarea>
                             </div>
+                            <div class="alert alert-danger" id="description"></div>
                         </div>
                     </div>
 
@@ -48,6 +50,7 @@
                                 <input id="file-input" type="file" name="file[]" multiple onchange="javascript:updateList()">
                                 <div id="fileList"></div>
                             </div>
+                            <div class="alert alert-danger" id="file"></div>
                         </div>
                     </div>
 
@@ -164,54 +167,16 @@
                             </div>
                         </div>
                     @endif
-
-                    {{-- <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Ответственный</label>
-                        <div class="col-sm-4">
-                            <select class="form-control" name="user_id">
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Постановщик</label>
-                        <div class="col-sm-4">
-                            <select class="form-control" name="creator_id" id="">
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Соисполнитель</label>
-                        <div class="col-sm-4">
-
-                            <select class="form-control select" name="helpers[]" multiple>
-                                @foreach ($sectors as $sector)
-                                <optgroup label="{{ $sector->name }}">
-                                    @foreach ($sector->users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                    @endforeach
-                                    </optgroup>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div> --}}
-
-
-
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Крайний срок</label>
                         <div class="col-sm-4">
-                            <div class="cal-icon">
+                            <div class="form-group cal-icon">
                                 <input class="form-control datetimepicker" name="deadline" type="text">
                             </div>
-                    </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="alert alert-danger" id="deadline"></div>
+                        </div>
                     </div>
                     <div class="submit-section">
                         <button class="btn btn-primary submit-btn">Поставить Задачу</button>

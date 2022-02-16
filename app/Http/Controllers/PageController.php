@@ -70,15 +70,15 @@ class PageController extends Controller
 
     public function register(Request $request){
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'user_name' => ['required', 'string', 'max:128'],
+            'email' => ['required', 'string', 'email', 'max:128', 'unique:users'],
             'sector_id' => 'required',
             'role_id' => 'required',
             'password' => 'required|min:6|max:15'
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'name' => $request->user_name,
             'email' => $request->email,
             'sector_id' => $request->sector_id,
             'role_id' => $request->role_id,
