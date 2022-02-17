@@ -36,7 +36,7 @@
             <div class="header">
 				<!-- Logo -->
                 <div class="header-left">
-                    <a href="index.html" class="logo">
+                    <a href="{{ route('home') }}" class="logo">
 						<img src="assets/img/logo.svg" width="80" height="40" alt="">
 					</a>
                 </div>

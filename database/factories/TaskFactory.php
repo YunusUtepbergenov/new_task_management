@@ -22,7 +22,7 @@ class TaskFactory extends Factory
             'project_id' => $this->faker->numberBetween(1, 5),
             'name' => $this->faker->sentence(8),
             'description' => $this->faker->sentence(20),
-            'deadline' => $this->faker->date('Y-m-d'),
+            'deadline' => $this->faker->dateTimeBetween('-1 week', '+5 week')->format('Y-m-d'),
             'status' => "Новое"
         ];
     }

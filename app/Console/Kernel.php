@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
         //     DB::table('tasks')->where('deadline', '<', Carbon::now())->where('status', '<>', 'Просроченный')->update(['status' => 'Просроченный']);
         // })->dailyAt('00:01');
         $schedule->call(function(){
-            DB::table('tasks')->where('deadline', '<', Carbon::now())->where('status', '<>', 'Просроченный')->update(['status' => 'Просроченный']);
+            DB::table('tasks')->where('deadline', '<', Carbon::now())->where('status', '<>', 'Просроченный')->whereIn('status', ['Новое' ,'Выполняется'])->update(['status' => 'Просроченный']);
         })->everyMinute();
     }
 

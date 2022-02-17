@@ -31,8 +31,6 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        // $date = str_replace('/', '-', $request->deadline);
-        // $request->deadline = date("Y-m-d", strtotime($date));
         $request->validate([
             'name' => 'required|min:3|max:255',
             'description' => 'required|min:3',
