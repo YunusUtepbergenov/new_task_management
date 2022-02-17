@@ -14,7 +14,6 @@ class TasksTable extends Component
 
     public function mount(){
         $project_tasks = Task::with('project')->where('user_id', Auth::user()->id)->where('project_id', '<>', null)->get();
-        // dd($project_tasks);
         $projects_arr = array();
 
         $user_projects = collect([]);
@@ -41,7 +40,7 @@ class TasksTable extends Component
                         ->orderBy('deadline', 'ASC')->get();
     }
 
-    public function updatedProjectId(){
+    public function updated(){
         if($this->projectId == Null){
             if($this->status == "Empty"){
                 $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
@@ -59,37 +58,6 @@ class TasksTable extends Component
             }
         }else{
             $this->tasks = Null;
-            if($this->status == "Empty"){
-                $this->chosen_project = Project::with(['tasks' => function($query){
-                    $query->where('user_id', Auth::user()->id);
-                }])->where('id', $this->projectId)->first();
-            }else{
-                $this->chosen_project = Project::with(['tasks' => function($query){
-                    $query->where('user_id', Auth::user()->id)->where('status', $this->status);
-                }])->where('id', $this->projectId)->first();
-            }
-        }
-    }
-
-    public function updatedStatus(){
-        if($this->projectId == Null){
-            if($this->status == "Empty"){
-                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
-            }else{
-                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->where('status', $this->status)->orderBy('deadline', 'ASC')->get();
-            }
-            $this->chosen_project = Null;
-        }elseif($this->projectId == "Empty"){
-            $this->chosen_project = Null;
-            if($this->status == "Empty"){
-                $this->tasks = Task::with('creator:id,name,sector_id,role_id')->where('user_id', Auth::user()->id)->whereIn('status', ['Новое' ,'Выполняется'])
-                                ->orderBy('deadline', 'ASC')->get();
-            }else{
-                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('status', $this->status)->orderBy('deadline', 'ASC')->get();
-            }
-        }
-        else{
-            $this->tasks = NULL;
             if($this->status == "Empty"){
                 $this->chosen_project = Project::with(['tasks' => function($query){
                     $query->where('user_id', Auth::user()->id);

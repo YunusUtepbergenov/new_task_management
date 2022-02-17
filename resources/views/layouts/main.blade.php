@@ -53,7 +53,12 @@
 				<ul class="nav user-menu">
 					<!-- Search -->
 					<li class="nav-item dropdown flag-nav">
-							<a class="nav-link dropdown-toggle">Эффективность: 70%</a>
+                        @if (auth()->user()->tasks()->count())
+    						<a class="nav-link dropdown-toggle">Эффективность: {{ round(((1 - (auth()->user()->tasks()->where('status', 'Просроченный')->count() / auth()->user()->tasks()->count())) * 100), 1) }}%</a>
+                        @else
+    						<a class="nav-link dropdown-toggle">Эффективность: 100%</a>
+                        @endif
+
 					</li>
                     @include('partials.notifications')
                     {{-- @livewire('notifications') --}}

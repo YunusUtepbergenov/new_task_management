@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -72,6 +73,11 @@ class User extends Authenticatable
     public function helpers(){
         return $this->belongsToMany(Task::class);
     }
+
+    // public function overdueTasks(){
+    //     return $this->tasks();
+    // }
+
 
     public function sector(){
         return $this->belongsTo(Sector::class);

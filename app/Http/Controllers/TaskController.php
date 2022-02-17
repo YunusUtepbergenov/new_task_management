@@ -31,13 +31,14 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
+        // $date = str_replace('/', '-', $request->deadline);
+        // $request->deadline = date("Y-m-d", strtotime($date));
         $request->validate([
             'name' => 'required|min:3|max:255',
             'description' => 'required|min:3',
-            'deadline' => 'required',
+            'deadline' => 'required|date_format:Y-m-d|after:today',
         ]);
 
-        $date = str_replace('/', '-', $request->deadline);
 
         $task = Task::create([
             'creator_id' => Auth::user()->id,
@@ -46,7 +47,7 @@ class TaskController extends Controller
             'project_id' => $request->project_id,
             'name' => $request->name,
             'description' => $request->description,
-            'deadline' => date("Y-m-d", strtotime($date)),
+            'deadline' => $request->deadline,
             'status' => 'Новое',
         ]);
 

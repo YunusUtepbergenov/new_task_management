@@ -24,6 +24,7 @@
                     <option value="Выполняется">Выполняется</option>
                     <option value="Ждет подтверждения">Ждет подтверждения</option>
                     <option value="Выполнено">Выполнено</option>
+                    <option value="Просроченный">Просроченный</option>
                 </select>
             </div>
         </div>
@@ -53,9 +54,6 @@
                                     <td>
                                         @if ($task->status == "Выполнено")
                                             <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>
-                                            {{-- <div wire:loading wire:target="view">
-                                                <div class="loading">Loading&#8230;</div>
-                                            </div> --}}
                                         @else
                                             <a href="#" wire:click.prevent="view({{ $task->id }})">{{ $task->name }}</a>
                                         @endif
@@ -95,16 +93,11 @@
                                             <td>
                                                 @if ($task['status'] == "Выполнено")
                                                     <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>
-                                                    {{-- <div wire:loading wire:target="view">
-                                                        <div class="loading">Loading&#8230;</div>
-                                                    </div> --}}
                                                 @else
                                                     <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
-                                                    {{-- <div wire:loading wire:target="view">
-                                                        <div class="loading">Loading&#8230;</div>
-                                                    </div> --}}
                                                 @endif
-                                            </td>                                <td>{{ substr($task['created_at'], 0, 10) }}</td>
+                                            </td>
+                                            <td>{{ substr($task['created_at'], 0, 10) }}</td>
                                             <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
                                             <td>{{ $task->creator->name }}</td>
                                             <td>{{ $username }}</td>
@@ -116,7 +109,6 @@
                                     @endphp
                                 @endif
                             @endforeach
-
                             @endif
                         </table>
                     </div>

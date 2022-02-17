@@ -24,6 +24,7 @@
                     <option value="Выполняется">Выполняется</option>
                     <option value="Ждет подтверждения">Ждет подтверждения</option>
                     <option value="Выполнено">Выполнено</option>
+                    <option value="Просроченный">Просроченный</option>
                 </select>
             </div>
         </div>
