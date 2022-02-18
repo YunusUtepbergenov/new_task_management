@@ -28,7 +28,7 @@
         @yield('styles')
 		<!-- Main CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-</head>
+    </head>
     <body>
 		<!-- Main Wrapper -->
         <div class="main-wrapper">

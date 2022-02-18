@@ -30,8 +30,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('project', ProjectController::class)->only([
         'store', 'update'
     ]);
+
     Route::resource('task', TaskController::class)->only([
-        'store', 'update'
+        'store', 'update', 'destroy'
     ]);
 
     Route::put('/notification/read/{id}', [PageController::class, 'read'])->name('notification.read');

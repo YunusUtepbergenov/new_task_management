@@ -34,23 +34,18 @@
 					<table class="table custom-table" style="overflow-y: auto; height: 110px;">
 						<thead>
 							<tr>
-								<th style="position: sticky;top: 0; background: #ABDD93;">Ф.И.О</th>
-								<th style="position: sticky;top: 0; background: #ABDD93;">Почта</th>
-								<th style="position: sticky;top: 0; background: #ABDD93;">Сектор</th>
-								<th style="position: sticky;top: 0; background: #ABDD93;">Должность</th>
-								<th style="position: sticky;top: 0; background: #ABDD93;">Тел.Номер</th>
-								<th style="position: sticky;top: 0; background: #ABDD93;">Внутренный номер</th>
+								<th style="position: sticky;top: 1; background: #69997a;">Ф.И.О</th>
+								<th style="position: sticky;top: 1; background: #69997a;">Почта</th>
+								<th style="position: sticky;top: 1; background: #69997a;">Сектор</th>
+								<th style="position: sticky;top: 1; background: #69997a;">Должность</th>
+								<th style="position: sticky;top: 1; background: #69997a;">Тел.Номер</th>
+								<th style="position: sticky;top: 1; background: #69997a;">Внутренный номер</th>
                             </tr>
 						</thead>
 						<tbody style="overflow: auto;">
                             @foreach ($sectors as $sector)
                                 <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th id="employee_normal">{{ $sector->name }}</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
+                                    <th colspan="6" id="employee_normal">{{ $sector->name }}</th>
                                 </tr>
                                 @foreach ($sector->users as $employee)
                                     <tr>

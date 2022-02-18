@@ -37,6 +37,7 @@
     @include('partials._project_modal')
 
     @include('partials._task_modal')
+    @include('partials._edit_task')
     <!-- View Project Modal -->
     {{-- @include('partials._view_modal')--}}
     @livewire('view-modal')

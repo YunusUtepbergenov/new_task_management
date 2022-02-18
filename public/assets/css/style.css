@@ -2207,7 +2207,7 @@ table.dataTable thead > tr > td.sorting {
 	line-height: 42px;
 }
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
-	background-color: #f43b48;
+	background-color: #363333;
 }
 
 /*-----------------
@@ -3272,10 +3272,7 @@ table.dataTable thead > tr > td.sorting {
 	color: #333;
 }
 .dropdown.profile-action {
-	position: absolute;
-	right: 5px;
-	text-align: right;
-	top: 10px;
+	position: relative;
 }
 .profile-action .dropdown-toggle::after {
 	display: none;

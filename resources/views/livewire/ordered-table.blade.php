@@ -38,6 +38,7 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th></th>
                                     <th>Название</th>
                                     <th>Дата Создание</th>
                                     <th>Крайний срок</th>
@@ -51,6 +52,19 @@
                                 @forelse ($tasks as $key=>$task)
                                 <tr>
                                     <td>{{ $key+1 }}</td>
+                                    <td>
+                                        <div class="dropdown dropdown-action profile-action">
+                                            <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_project"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
+                                                <form action="{{ route('task.destroy', $task->id) }}" method="POST">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                    <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td>
                                         @if ($task->status == "Выполнено")
                                             <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>
@@ -74,6 +88,7 @@
                             <thead>
                                 <tr>
                                     <th></th>
+                                    <th></th>
                                     <th>{{ $chosen_project->name }}</th>
                                     <th></th>
                                     <th></th>
@@ -90,6 +105,17 @@
                                     <tbody>
                                         <tr>
                                             <td>{{ $cnt }}</td>
+                                            <td><div class="dropdown dropdown-action profile-action">
+                                                <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_project"><i class="fa fa-pencil m-r-5"></i>Изменить</a>
+                                                    <form  method="POST">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                        <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div></td>
                                             <td>
                                                 @if ($task['status'] == "Выполнено")
                                                     <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>

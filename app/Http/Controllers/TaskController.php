@@ -7,6 +7,7 @@ use App\Models\File;
 use App\Models\Project;
 use App\Models\Sector;
 use App\Models\Task;
+use App\Models\TaskUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -124,7 +125,25 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $task = Task::where('id', $id)->first();
+        $executers = TaskUser::where('task_id', $task->id)->get();
+
+        if($executers){
+            foreach ($executers as $executer) {
+                $executer->delete();
+            }
+        }
+
+        if($task->files){
+            foreach($task->files as $file){
+                Storage::delete('files/'.$file->name);
+                $file->delete();
+            }
+        }
+
+        $task->delete();
+
+        return back();
     }
 
     public function changeStatus(Request $request, $id){

@@ -36,14 +36,14 @@ class ViewModal extends Component
 
     public function updatedUpload(){
         $this->validate([
-            'upload' => 'nullable|file|max:5000'
+            'upload' => 'nullable|file|max:40000'
         ]);
     }
 
     public function storeResponse(){
         $this->validate([
             'description' => 'required|min:3',
-            'upload' => 'nullable|file|max:5000'
+            'upload' => 'nullable|file|max:40000'
         ]);
 
         $response = new Response;
