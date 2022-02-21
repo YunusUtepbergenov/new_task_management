@@ -37,8 +37,7 @@ class TaskController extends Controller
             'description' => 'required|min:3',
             'deadline' => 'required|date_format:Y-m-d|after:today',
         ]);
-
-
+        
         $task = Task::create([
             'creator_id' => Auth::user()->id,
             'user_id' => $request->user_id,
@@ -51,7 +50,6 @@ class TaskController extends Controller
         ]);
 
         $task->executers()->sync($request->helpers, false);
-
         if($request->hasFile('file')){
             foreach($request->file as $file){
                 $filename = time().$file->getClientOriginalName();
@@ -80,7 +78,7 @@ class TaskController extends Controller
             abort(404);
         }
 
-        return view('page.ordered', ['projects' => $projects,'sectors' => $sectors]);
+        return redirect()->back();
     }
 
     /**

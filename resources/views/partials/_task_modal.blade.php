@@ -60,9 +60,13 @@
                             <div class="col-sm-4">
                                 <select class="form-control" name="user_id">
                                     @foreach ($sectors as $sector)
-                                        @foreach ($sector->users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
+                                        <optgroup label="{{ $sector->name }}">
+                                            @foreach ($sector->users as $user)
+                                                @if($user->id != Auth::user()->id)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endif
+                                            @endforeach
+                                        </optgroup>
                                     @endforeach
                                 </select>
                             </div>
@@ -99,8 +103,12 @@
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
                                 <select class="form-control" name="user_id">
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @foreach ($sectors as $sector)
+                                        <optgroup label="{{ $sector->name }}">
+                                            @foreach ($sector->users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @endforeach
+                                        </optgroup>
                                     @endforeach
                                 </select>
                             </div>
@@ -132,7 +140,7 @@
                             </div>
                         </div>
 
-                        @elseif(Auth::user()->isHead())
+                    @elseif(Auth::user()->isHead())
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
@@ -156,13 +164,16 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Соисполнитель</label>
                             <div class="col-sm-4">
-
                                 <select class="form-control select" name="helpers[]" multiple>
-                                        @foreach (Auth::user()->sector->users as $user)
-                                            @if($user->id != Auth::user()->id)
+                                    @foreach ($sectors as $sector)
+                                    <optgroup label="{{ $sector->name }}">
+                                        @foreach ($sector->users as $user)
+                                            @if($user->id != Auth::user()->id && $user->id != 1)
                                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                                             @endif
                                         @endforeach
+                                    </optgroup>
+                                @endforeach
                                 </select>
                             </div>
                         </div>

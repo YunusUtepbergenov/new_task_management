@@ -4,7 +4,7 @@
 					<div id="sidebar-menu" class="sidebar-menu">
 						<ul>
 							<li>
-								<a href="{{ route('home') }}"><i class="la la-rocket"></i> <span> Проекты </span></a>
+								<a href="{{ route('home') }}"><i class="la la-rocket"></i> <span> Проекты и задачи </span></a>
 							</li>
 							<li>
 								<a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span></a>

@@ -23,7 +23,7 @@ class PageController extends Controller
             $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
         }elseif ($user->isHead()) {
             $projects = Project::where('user_id', $user->id)->get();
-            $sectors = NULL;
+            $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
         }
         else{
             $projects = NULL;
@@ -43,7 +43,7 @@ class PageController extends Controller
             $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
         }elseif ($user->isHead()) {
             $projects = Project::where('user_id', $user->id)->get();
-            $sectors = NULL;
+            $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
         }else{
             abort(404);
         }
