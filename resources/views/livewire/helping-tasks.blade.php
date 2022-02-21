@@ -67,7 +67,7 @@
                                     </tr>
                                 @endforeach
                             </tbody>
-                            {{-- @foreach ($helping_projects as $project)
+                            @foreach ($helping_projects as $project)
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -113,7 +113,7 @@
                                         @endphp
                                     @endif
                                 @endforeach
-                            @endforeach --}}
+                            @endforeach
                         </table>
                     </div>
                 </div>

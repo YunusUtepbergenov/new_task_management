@@ -3,7 +3,7 @@
         <div class="loading">Loading&#8230;</div>
     </div>
     <div class="row filter-row">
-        <div class="col-sm-4 col-md-2">
+        {{-- <div class="col-sm-4 col-md-2">
             <div class="form-group">
                 <label for="select">Проекты</label>
                 <select class="form-control" wire:model="projectId" aria-hidden="true">
@@ -14,12 +14,12 @@
                     @endforeach
                 </select>
             </div>
-        </div>
+        </div> --}}
         <div class="col-sm-4 col-md-2">
             <div class="form-group">
                 <label for="select">Состаяние</label>
                 <select class="form-control" wire:model="status" aria-hidden="true">
-                    <option value="Empty"></option>
+                    <option value="Empty">Все</option>
                     <option value="Новое">Новое</option>
                     <option value="Выполняется">Выполняется</option>
                     <option value="Ждет подтверждения">Ждет подтверждения</option>
@@ -71,10 +71,11 @@
 
                             </tbody>
                             @if ($chosen_project)
+                            @foreach ($chosen_project as $prj)
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>{{ $chosen_project->name }}</th>
+                                    <th>{{ $prj['name'] }}</th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
@@ -85,7 +86,7 @@
                             @php
                                 $cnt = 1;
                             @endphp
-                            @foreach ($chosen_project->tasks as $key=>$task)
+                            @foreach ($prj['tasks'] as $key=>$task)
                                 @if ($task['user_id'] == Auth::user()->id)
                                     <tbody>
                                         <tr>
@@ -109,6 +110,8 @@
                                     @endphp
                                 @endif
                             @endforeach
+                            @endforeach
+
                             @endif
                         </table>
                     </div>

@@ -84,7 +84,6 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Соисполнитель</label>
                             <div class="col-sm-4">
-
                                 <select class="form-control select" name="helpers[]" multiple>
                                     @foreach ($sectors as $sector)
                                         <optgroup label="{{ $sector->name }}">

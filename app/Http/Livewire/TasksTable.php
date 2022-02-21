@@ -34,9 +34,9 @@ class TasksTable extends Component
         $this->projectId = "Empty";
         $this->status = "Empty";
         $this->username = Auth::user()->name;
-        $this->chosen_project = Null;
+        $this->chosen_project = $user_projects;
         $this->project = Project::all();
-        $this->tasks = Task::with('creator:id,name,sector_id,role_id')->where('user_id', Auth::user()->id)->whereIn('status', ['Новое' ,'Выполняется'])
+        $this->tasks = Task::with('creator:id,name,sector_id,role_id')->where('user_id', Auth::user()->id)->where('project_id', Null)
                         ->orderBy('deadline', 'ASC')->get();
     }
 

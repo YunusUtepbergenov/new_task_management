@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             'name' => "О.Хакимов",
             'sector_id' => 1,
             'role_id' => 1,
-            'email' => "admin@cerr.uz",
+            'email' => "o.khakimov@cerr.uz",
             'password' => Hash::make('password')
         ],
         [
@@ -45,10 +45,10 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password')
         ],
         [
-            'name' => "Б.Б.Хамидов",
+            'name' => "А.Нигманов",
             'sector_id' => 5,
             'role_id' => 2,
-            'email' => "b.khamidov@cerr.uz",
+            'email' => "a.nigmonov@cerr.uz",
             'password' => Hash::make('password')
         ],
         [
@@ -73,17 +73,10 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password')
         ],
         [
-            'name' => "Х.З.Мажидов",
-            'sector_id' => 3,
-            'role_id' => 3,
-            'email' => "majidov@cerr.uz",
-            'password' => Hash::make('password')
-        ],
-        [
-            'name' => "О.О.Одилов",
-            'sector_id' => 3,
-            'role_id' => 3,
-            'email' => "odilov@cerr.uz",
+            'name' => "Шамсиев Ж",
+            'sector_id' => 9,
+            'role_id' => 2,
+            'email' => "j.shamsiyev@cerr.uz",
             'password' => Hash::make('password')
         ],
         [
@@ -133,6 +126,20 @@ class UserSeeder extends Seeder
             'sector_id' => 4,
             'role_id' => 3,
             'email' => "r.abaturov@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "И.Худайберганов",
+            'sector_id' => 4,
+            'role_id' => 3,
+            'email' => "i.khudayberganov@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "Мирошникова Д.",
+            'sector_id' => 4,
+            'role_id' => 4,
+            'email' => "d.miroshnikova@cerr.uz",
             'password' => Hash::make('password')
         ],
         [
@@ -192,6 +199,20 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password')
         ],
         [
+            'name' => "Г.Азимова",
+            'sector_id' => 8,
+            'role_id' => 3,
+            'email' => "g.azimova@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "У.Мамасалаев",
+            'sector_id' => 8,
+            'role_id' => 3,
+            'email' => "u.mamasalaeva@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
             'name' => "Л.А.Буриева",
             'sector_id' => 8,
             'role_id' => 4,
@@ -220,38 +241,24 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password')
         ],
         [
-            'name' => "С.Бегманов",
-            'sector_id' => 3,
+            'name' => "М.К.Бабаданов",
+            'sector_id' => 10,
             'role_id' => 3,
-            'email' => "s.begmanov@cerr.uz",
+            'email' => "m.babadjanov@cerr.uz",
             'password' => Hash::make('password')
         ],
         [
-            'name' => "Ю.Жумабаев",
-            'sector_id' => 3,
-            'role_id' => 4,
-            'email' => "y.jumabaev@cerr.uz",
+            'name' => "А.Халмурзаев",
+            'sector_id' => 10,
+            'role_id' => 3,
+            'email' => "a.halmurzaev@cerr.uz",
             'password' => Hash::make('password')
         ],
         [
-            'name' => "Ф.Рахимов",
-            'sector_id' => 3,
+            'name' => "Т.Ниязматов",
+            'sector_id' => 10,
             'role_id' => 3,
-            'email' => "f.raximov@cerr.uz",
-            'password' => Hash::make('password')
-        ],
-        [
-            'name' => "А.Кобилов",
-            'sector_id' => 3,
-            'role_id' => 3,
-            'email' => "a.kobilov@cerr.uz",
-            'password' => Hash::make('password')
-        ],
-        [
-            'name' => "С.Махмудов",
-            'sector_id' => 3,
-            'role_id' => 3,
-            'email' => "s.maxmudov@cerr.uz",
+            'email' => "t.niyazmatov@cerr.uz",
             'password' => Hash::make('password')
         ],
         [
@@ -280,6 +287,76 @@ class UserSeeder extends Seeder
             'sector_id' => 11,
             'role_id' => 4,
             'email' => "v.lukonin@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "С.Бегманов",
+            'sector_id' => 12,
+            'role_id' => 3,
+            'email' => "s.begmanov@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "Ю.Жумабаев",
+            'sector_id' => 12,
+            'role_id' => 4,
+            'email' => "y.jumabaev@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "Ф.Рахимов",
+            'sector_id' => 13,
+            'role_id' => 3,
+            'email' => "f.raximov@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "У.Хужакулов",
+            'sector_id' => 13,
+            'role_id' => 3,
+            'email' => "u.khujakulov@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "Э.Пулатов",
+            'sector_id' => 13,
+            'role_id' => 4,
+            'email' => "e.pulatov@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "Ш.Нурдинова",
+            'sector_id' => 14,
+            'role_id' => 3,
+            'email' => "sh.nurdinova@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "Б.Хусанов",
+            'sector_id' => 15,
+            'role_id' => 3,
+            'email' => "b.khusanov@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "А.Кобилов",
+            'sector_id' => 16,
+            'role_id' => 2,
+            'email' => "a.kobilov@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "Э.Зайниддинов",
+            'sector_id' => 16,
+            'role_id' => 3,
+            'email' => "e.zayniddinov@cerr.uz",
+            'password' => Hash::make('password')
+        ],
+        [
+            'name' => "Ф.Исломов",
+            'sector_id' => 16,
+            'role_id' => 4,
+            'email' => "f.islomov@cerr.uz",
             'password' => Hash::make('password')
         ],
         [
@@ -339,10 +416,10 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password')
         ],
         [
-            'name' => "М.Рашидов",
+            'name' => "Шамсиддинов Ш.",
             'sector_id' => 1,
             'role_id' => 13,
-            'email' => "m.rashidov@cerr.uz",
+            'email' => "sh.shamsiddinov@cerr.uz",
             'password' => Hash::make('password')
         ],
     ]);

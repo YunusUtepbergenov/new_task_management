@@ -46,7 +46,7 @@
                                 </div>
 
                                 @if (!$task->response && $task->user_id == Auth::user()->id)
-                                    @can('overdue', $task)
+                                    @if ($task->status != "Просроченный")
                                         <div class="card">
                                             <div class="card-header">
                                                 <h4 class="card-title mb-0">Завершить задачу</h4>
@@ -85,14 +85,13 @@
                                                 </form>
                                             </div>
                                         </div>
-                                    @endcan
-                                    @cannot('overdue')
+                                    @else
                                         <div class="card">
                                             <div class="card-body">
                                                 <h4>Срок истек</h4>
                                             </div>
                                         </div>
-                                    @endcannot
+                                    @endif
                                 @elseif ($task->response)
                                     <div class="card">
                                         <div class="card-body">

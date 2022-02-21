@@ -17,10 +17,12 @@ class OrderedTable extends Component
         $this->projectId = "Empty";
         $this->status = "Empty";
         $this->username = Auth::user()->name;
-        $this->chosen_project = Null;
         $this->project = Project::all();
-        $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->whereIn('status', ['Новое' ,'Выполняется'])
+        $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->where('project_id', Null)
                         ->orderBy('deadline', 'ASC')->get();
+        $this->chosen_project = Project::with(['tasks' => function($query){
+            $query->with('user')->where('creator_id', Auth::user()->id);
+        }])->get();
     }
 
     public function view($task_id){
@@ -36,12 +38,17 @@ class OrderedTable extends Component
             }
             $this->chosen_project = Null;
         }elseif($this->projectId == "Empty"){
-            $this->chosen_project = Null;
             if($this->status == "Empty"){
-                $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->whereIn('status', ['Новое' ,'Выполняется'])
-                                ->orderBy('deadline', 'ASC')->get();
+                $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->where('project_id', null)
+                            ->orderBy('deadline', 'ASC')->get();
+                $this->chosen_project = Project::with(['tasks' => function($query){
+                    $query->with('user')->where('creator_id', Auth::user()->id);
+                }])->get();
             }else{
-                $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)->where('status', $this->status)->orderBy('deadline', 'ASC')->get();
+                $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)->where('project_id', null)->where('status', $this->status)->orderBy('deadline', 'ASC')->get();
+                $this->chosen_project = Project::with(['tasks' => function($query){
+                    $query->with('user')->where('creator_id', Auth::user()->id)->where('status', $this->status);
+                }])->get();
             }
         }else{
             $this->tasks = Null;
