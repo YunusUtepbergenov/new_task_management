@@ -173,7 +173,6 @@ $(document).ready(function() {
 
     jQuery("#createTask").on("submit", function (e) {
         e.preventDefault();
-        console.log("sheeeeeeesh");
         var formData = new FormData($("#createTask")[0]);
         var url = $(this).attr("action");
 
@@ -184,7 +183,13 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             success: function (res) {
-                location.reload();
+                document.location.href = '/ordered';
+                toastr.options =
+                {
+                    "closeButton" : true,
+                    "progressBar" : true
+                }
+                toastr.success("Задача успешно создана");
             },
             error: function (data) {
                 $("#name").addClass("d-none");
@@ -200,14 +205,14 @@ $(document).ready(function() {
                         $(ErrorId).text(value);
                     });
                 }
-                console.log(errors);
+                toastr.error(errors.message);
+                // console.log(errors);
             },
         });
     });
 
     jQuery("#createProject").on("submit", function (e) {
         e.preventDefault();
-        console.log("sheeeeeeesh");
         var formData = new FormData($("#createProject")[0]);
         var url = $(this).attr("action");
 
@@ -219,6 +224,12 @@ $(document).ready(function() {
             contentType: false,
             success: function (res) {
                 location.reload();
+				toastr.options =
+                {
+                    "closeButton" : true,
+                    "progressBar" : true
+                }
+                toastr.success("Проект успешно создан");
             },
             error: function (data) {
                 $("#project_name").addClass("d-none");
@@ -230,7 +241,7 @@ $(document).ready(function() {
                         $(ErrorId).text(value);
                     });
                 }
-                console.log(errors);
+                toastr.error(errors.message);
             },
         });
     });

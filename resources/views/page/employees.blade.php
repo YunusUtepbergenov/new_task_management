@@ -57,8 +57,8 @@
                                         <td>{{ $employee->email }}</td>
                                         <td class="text-wrap"></td>
                                         <td>{{ $employee->role->name }}</td>
-                                        <td> +998933667500</td>
-                                        <td>450</td>
+                                        <td> {{$employee->phone}}</td>
+                                        <td>{{$employee->internal}}</td>
                                     </tr>
                                 @endforeach
                             @endforeach

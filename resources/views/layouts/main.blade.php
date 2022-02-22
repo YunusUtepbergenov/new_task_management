@@ -154,6 +154,24 @@
             window.addEventListener('success', event => {
                 toastr.success(event.detail.msg);
             });
+
+			@if(Session::has('message'))
+                toastr.options =
+                {
+                    "closeButton" : true,
+                    "progressBar" : true
+                }
+                toastr.success("{{ session('message') }}");
+            @endif
+
+            @if(Session::has('error'))
+                toastr.options =
+                {
+                    "closeButton" : true,
+                    "progressBar" : true
+                }
+                toastr.error("{{ session('error') }}");
+            @endif
 		</script>
     </body>
 </html>

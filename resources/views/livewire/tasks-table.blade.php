@@ -100,7 +100,7 @@
                                             </td>
                                             <td>{{ substr($task['created_at'], 0, 10) }}</td>
                                             <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
-                                            <td>{{ $task->creator->name }}</td>
+                                            <td>{{ $task['creator']['name'] }}</td>
                                             <td>{{ $username }}</td>
                                     <td><span class="badge bg-inverse-{{ ($task['status'] == "Новое") ? 'success' : (($task['status'] == "Выполняется") ? 'primary' : (($task['status'] == "Ждет подтверждения") ? 'danger' : (($task['status'] == "Выполнено") ? 'purple' : 'primary') )) }}">{{ $task['status'] }}</span></td>
                                         </tr>

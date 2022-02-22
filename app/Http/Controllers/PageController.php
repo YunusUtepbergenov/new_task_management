@@ -125,8 +125,9 @@ class PageController extends Controller
             $user->update([
                 'password' => bcrypt($request->new_password)
             ]);
-            return redirect()->back();
+            return back()->withMessage('Пароль успешно изменен');
+        }else{
+            return back()->withError("Неправильный пароль");
         }
-
     }
 }
