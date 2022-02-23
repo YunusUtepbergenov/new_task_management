@@ -181,7 +181,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>Постановщик:</td>
-                                                    <td class="text-right"><a href="profile.html" id="task_creator">{{ $task->username($task->creator_id) }}</a></td>
+                                                    <td class="text-right"><a href="#" id="task_creator">{{ $task->username($task->creator_id) }}</a></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Состояние:</td>
@@ -220,7 +220,7 @@
                                         <h6 class="card-title m-b-20">Ответственный</h6>
                                         <ul class="list-box">
                                             <li>
-                                                <a href="profile.html">
+                                                <a href="#">
                                                     <div class="list-item">
                                                         <div class="list-left">
                                                             <span class="avatar"><img alt="" src="assets/img/avatar.jpg"></span>

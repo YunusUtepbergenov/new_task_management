@@ -18,12 +18,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        // $schedule->call(function(){
-        //     DB::table('tasks')->where('deadline', '<', Carbon::now())->where('status', '<>', 'Просроченный')->update(['status' => 'Просроченный']);
-        // })->dailyAt('00:01');
         $schedule->call(function(){
             DB::table('tasks')->where('deadline', '<', Carbon::now())->where('status', '<>', 'Просроченный')->whereIn('status', ['Новое' ,'Выполняется'])->update(['status' => 'Просроченный']);
-        })->everyMinute();
+        })->dailyAt('00:01');
+        // $schedule->call(function(){
+        //     DB::table('tasks')->where('deadline', '<', Carbon::now())->where('status', '<>', 'Просроченный')->whereIn('status', ['Новое' ,'Выполняется'])->update(['status' => 'Просроченный']);
+        // })->everyMinute();
     }
 
     /**

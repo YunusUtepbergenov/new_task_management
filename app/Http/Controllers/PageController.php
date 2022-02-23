@@ -62,6 +62,11 @@ class PageController extends Controller
         ]);
     }
 
+    public function reports(){
+
+        return view('page.reports');
+    }
+
     public function employees(){
         $sectors = Sector::with('users.role')->get();
         $roles = Role::all();
