@@ -118,7 +118,6 @@
                             <div class="col-sm-4">
                                 <select class="form-control" name="creator_id" id="">
                                         <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
-                                        <option value="1">О.Хакимов</option>
                                 </select>
                             </div>
                         </div>

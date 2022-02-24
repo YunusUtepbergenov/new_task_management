@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
                     ]);
                 }
             }
-        })->everyMinute();
+        })->dailyAt('01:00');
 
         $schedule->call(function(){
             $tasks = Task::where('repeat', 'weekly')->get();
