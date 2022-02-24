@@ -206,7 +206,6 @@ $(document).ready(function() {
                     });
                 }
                 toastr.error(errors.message);
-                // console.log(errors);
             },
         });
     });

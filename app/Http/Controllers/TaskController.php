@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Sector;
 use App\Models\Task;
 use App\Models\TaskUser;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -32,52 +33,48 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
+        $repeat_arr = ['ordinary','daily', 'weekly', 'monthly', 'quarterly'];
         $request->validate([
             'name' => 'required|min:3|max:255',
             'description' => 'required|min:3',
             'deadline' => 'required|date_format:Y-m-d|after:today',
         ]);
 
-        $task = Task::create([
-            'creator_id' => $request->creator_id,
-            'user_id' => $request->user_id,
-            'project_id' => $request->project_id,
-            'name' => $request->name,
-            'description' => $request->description,
-            'deadline' => $request->deadline,
-            'status' => 'Новое',
-        ]);
-
-        $task->executers()->sync($request->helpers, false);
-        if($request->hasFile('file')){
-            foreach($request->file as $file){
-                $filename = time().$file->getClientOriginalName();
-                Storage::disk('local')->putFileAs(
-                    'files/',
-                    $file,
-                    $filename
-                );
-                $fileModel = new File;
-                $fileModel->task_id = $task->id;
-                $fileModel->name = $filename;
-                $fileModel->save();
-            }
+        if($request->repeat_check != "on"){
+            $request->repeat = 'ordinary';
         }
-        event(new TaskCreatedEvent($task));
 
-        // $user = Auth::user();
+        if(in_array($request->repeat, $repeat_arr)){
+            $task = Task::create([
+                'creator_id' => $request->creator_id,
+                'user_id' => $request->user_id,
+                'project_id' => $request->project_id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'deadline' => $request->deadline,
+                'status' => 'Новое',
+                'repeat' => $request->repeat
+            ]);
 
-        // if($user->isDirector() || $user->isMailer()){
-        //     $projects = Project::where('user_id', $user->id)->get();
-        //     $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
-        // }elseif ($user->isHead()) {
-        //     $projects = Project::where('user_id', $user->id)->get();
-        //     $sectors = NULL;
-        // }else{
-        //     abort(404);
-        // }
-
-        return redirect()->action([PageController::class, 'ordered']);
+            $task->executers()->sync($request->helpers, false);
+            if($request->hasFile('file')){
+                foreach($request->file as $file){
+                    $filename = time().$file->getClientOriginalName();
+                    Storage::disk('local')->putFileAs(
+                        'files/',
+                        $file,
+                        $filename
+                    );
+                    $fileModel = new File;
+                    $fileModel->task_id = $task->id;
+                    $fileModel->name = $filename;
+                    $fileModel->save();
+                }
+            }
+            event(new TaskCreatedEvent($task));
+        }else{
+            abort(404);
+        }
     }
 
     /**

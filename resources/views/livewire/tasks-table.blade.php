@@ -17,7 +17,7 @@
         </div> --}}
         <div class="col-sm-4 col-md-2">
             <div class="form-group">
-                <label for="select">Состаяние</label>
+                <label for="select">Состояние</label>
                 <select class="form-control" wire:model="status" aria-hidden="true">
                     <option value="Empty">Все</option>
                     <option value="Новое">Новое</option>
@@ -43,7 +43,7 @@
                                     <th>Крайний срок</th>
                                     <th>Постановщик</th>
                                     <th>Ответственный</th>
-                                    <th>Состаяние</th>
+                                    <th>Состояние</th>
                                 </tr>
                             </thead>
                             <tbody>

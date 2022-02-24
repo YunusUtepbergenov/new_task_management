@@ -155,6 +155,10 @@
                 toastr.success(event.detail.msg);
             });
 
+            $('#flexCheckDefault').click(function() {
+                $("#repeat_container").toggle(this.checked);
+            });
+
 			@if(Session::has('message'))
                 toastr.options =
                 {

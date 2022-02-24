@@ -17,7 +17,9 @@ class Task extends Model
         'name',
         'description',
         'deadline',
-        'status'
+        'status',
+        'repeat',
+        'repeat_id'
     ];
 
     public function username($id){

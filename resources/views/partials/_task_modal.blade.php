@@ -188,6 +188,22 @@
                             <div class="alert alert-danger" id="deadline"></div>
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3 form-check">
+                            <input class="form-check-input" type="checkbox" name="repeat_check" id="flexCheckDefault">
+                            <label class="form-check-label" style="margin-top: 3px" for="flexCheckDefault">
+                                Повторяющаяся задача
+                            </label>
+                          </div>
+                        <div class="col-sm-4" id="repeat_container" style="display: none">
+                            <select class="form-control" name="repeat">
+                                <option value="daily">Ежедневное</option>
+                                <option value="weekly">Еженедельная</option>
+                                <option value="monthly">Ежемесячная</option>
+                                <option value="quarterly">Ежеквартальное</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="submit-section">
                         <button class="btn btn-primary submit-btn">Поставить Задачу</button>
                     </div>

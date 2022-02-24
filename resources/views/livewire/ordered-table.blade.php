@@ -17,7 +17,7 @@
         </div> --}}
         <div class="col-sm-4 col-md-2">
             <div class="form-group">
-                <label for="select">Состаяние</label>
+                <label for="select">Состояние</label>
                 <select class="form-control" wire:model="status" aria-hidden="true">
                     <option value="Empty">Все</option>
                     <option value="Новое">Новое</option>
@@ -44,7 +44,7 @@
                                     <th>Крайний срок</th>
                                     <th>Постановщик</th>
                                     <th>Ответственный</th>
-                                    <th>Состаяние</th>
+                                    <th>Состояние</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -57,11 +57,24 @@
                                             <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
                                             <div class="dropdown-menu dropdown-menu-right">
                                                 {{-- <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_project"><i class="fa fa-pencil m-r-5"></i> Изменить</a> --}}
-                                                <form action="{{ route('task.destroy', $task->id) }}" method="POST">
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                    <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
-                                                </form>
+                                                @if ($task->repeat_id)
+                                                    <form action="{{ route('task.destroy', $task->id) }}" method="POST">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                        <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить текущую задачу</button>
+                                                    </form>
+                                                    <form action="{{ route('task.destroy', $task->repeat_id) }}" method="POST">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                        <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Остановить цикл</button>
+                                                    </form>
+                                                @else
+                                                    <form action="{{ route('task.destroy', $task->id) }}" method="POST">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                        <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
