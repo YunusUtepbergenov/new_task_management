@@ -12,7 +12,7 @@
                     <li class="nav-item">
                         <a class="nav-link {{ (Route::current()->uri == '/') ? 'active' : '' }}" href="{{ route('home') }}">Мои задачи</a>
                     </li>
-                    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() )
+                    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
                         <li class="nav-item">
                             <a class="nav-link {{ (Route::current()->uri == 'ordered') ? 'active' : '' }}" href="{{ route('ordered') }}">Поручил</a>
                         </li>
@@ -21,13 +21,6 @@
                         <a class="nav-link {{ (Route::current()->uri == 'helping') ? 'active' : '' }}" href="{{ route('helping') }}">Помогаю</a>
                     </li>
                 </ul>
-            </div>
-
-            <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
-                @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() )
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Проект</a>
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
-                @endif
             </div>
         </div>
     </div>
@@ -46,4 +39,88 @@
 
 @section('scripts')
     @livewireScripts
+
+    <script>
+        $('#flexCheckDefault1').click(function() {
+            $("#repeat_container1").toggle(this.checked);
+        });
+
+            $("#name2").addClass("d-none");
+            $("#deadline2").addClass("d-none");
+            $("#description2").addClass("d-none");
+
+        function editTask(id) {
+            var helpers = $('#helpers1 option');
+
+            for(var c=0; c < helpers.length; c++){
+                if (helpers[c].hasAttribute('selected')) {
+                    helpers[c].removeAttribute('selected');
+                }
+            }
+
+            $.get("/task/info/byid/" + id, function (task) {
+                $('#helpers1').val(null).trigger('change');
+
+                $("#project_id1").val(task.task.project_id);
+                $("#id1").val(task.task.id);
+                $("#name1").val(task.task.name);
+                $("#deadline1").val(task.task.deadline);
+                $("#user_id1").val(task.task.user_id);
+                $("#creator_id1").val(task.task.creator_id);
+                if(task.task.executers.length > 0){
+                    for(var i=0; i < task.task.executers.length; i++){
+                        for(var c=0; c < helpers.length; c++){
+                            if (task.task.executers[i].id == helpers[c].value) {
+                                helpers[c].setAttribute('selected', 'selected');
+                            }
+                        }
+                    }
+                    $('#helpers1').trigger('change');
+                }
+                if(task.task.repeat == "ordinary"){
+                    document.getElementById('flexCheckDefault1').checked = false;
+                    document.getElementById('repeat_container1').style.display = "none";
+                }else{
+                    document.getElementById('flexCheckDefault1').checked = true;
+                    document.getElementById('repeat_container1').style.display = "block";
+                    $('#repeat_options').val(task.task.repeat);
+                }
+                // $("#helpers1").val(task.task.deadline);
+                $("#deadline1").val(task.task.deadline);
+                $("#description1").val(task.task.description);
+            });
+        }
+
+        jQuery("#editTask").on("submit", function (e) {
+            e.preventDefault();
+            var formData1 = new FormData($("#editTask")[0]);
+            var url = document.getElementById('editTask').getAttribute("action");
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                },
+                data: formData1,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    document.location.href = '/ordered';
+                },
+                error: function (data) {
+                    var errors = data.responseJSON;
+                    if ($.isEmptyObject(errors) == false) {
+                        $.each(errors.errors, function (key, value) {
+                            var ErrorId = "#" + key + "2";
+                            console.log(ErrorId);
+                            $(ErrorId).removeClass("d-none");
+                            $(ErrorId).text(value);
+                        });
+                    }
+                    console.log(errors);
+                },
+            });
+        });
+    </script>
 @endsection

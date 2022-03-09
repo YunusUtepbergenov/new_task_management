@@ -19,6 +19,7 @@ class Task extends Model
         'deadline',
         'status',
         'repeat',
+        'repeat_deadline',
         'repeat_id'
     ];
 
@@ -53,5 +54,23 @@ class Task extends Model
 
     public function comments(){
         return $this->hasMany(Comment::class);
+    }
+
+    public function overdueTasks(){
+        return $this->where('status', 'Просроченный');
+    }
+
+    public function newTasks(){
+        return $this->where('status', 'Новое');
+    }
+
+    public function doingTasks(){
+        return $this->where('status', 'Выполняется');
+    }
+    public function confirmTasks(){
+        return $this->where('status', 'Ждет подтверждения');
+    }
+    public function finishedTasks(){
+        return $this->where('status', 'Выполнено');
     }
 }

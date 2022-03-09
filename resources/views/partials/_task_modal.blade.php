@@ -12,6 +12,7 @@
                 <form action="{{ route('task.store') }}" method="POST" enctype="multipart/form-data" id="createTask">
                     @csrf
                     <div class="form-group row">
+                        <div class="col-sm-1"></div>
                         <label class="col-sm-3 col-form-label">Проект</label>
                         <div class="col-sm-4">
                             <select class="form-control" id="project_text" name="project_id">
@@ -44,9 +45,10 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-12">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-10">
                             <div class="form-group file-upload">
-                                <label for="file-input"><img src="assets/img/attachment.png"></label>
+                                <label for="file-input"><img src="assets/img/attachment.png"> ( Макс: 5 MB )</label>
                                 <input id="file-input" type="file" name="file[]" multiple onchange="javascript:updateList()">
                                 <div id="fileList"></div>
                             </div>
@@ -56,6 +58,7 @@
 
                     @if (Auth::user()->isDirector())
                         <div class="form-group row">
+                            <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
                                 <select class="form-control" name="user_id">
@@ -73,6 +76,7 @@
                         </div>
 
                         <div class="form-group row">
+                            <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Постановщик</label>
                             <div class="col-sm-4">
                                 <select class="form-control" name="creator_id" id="">
@@ -82,6 +86,7 @@
                         </div>
 
                         <div class="form-group row">
+                            <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Соисполнитель</label>
                             <div class="col-sm-4">
                                 <select class="form-control select" name="helpers[]" multiple>
@@ -97,8 +102,72 @@
                                 </select>
                             </div>
                         </div>
+
+                    @elseif(Auth::user()->isDeputy())
+                        @if(Auth::user()->id == 7)
+                            <div class="form-group row">
+                                <div class="col-sm-1"></div>
+                                <label class="col-sm-3 col-form-label">Ответственный</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control" name="user_id">
+                                        @foreach ($sectors->whereIn('id', [2,5,6,7,8,9]) as $sector)
+                                            <optgroup label="{{ $sector->name }}">
+                                                @foreach ($sector->users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        @elseif (Auth::user()->id == 3)
+                            <div class="form-group row">
+                                <div class="col-sm-1"></div>
+                                <label class="col-sm-3 col-form-label">Ответственный</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control" name="user_id">
+                                        @foreach ($sectors->whereIn('id', [3,4,12,13,14,15,16]) as $sector)
+                                            <optgroup label="{{ $sector->name }}">
+                                                @foreach ($sector->users as $user)
+                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-3 col-form-label">Постановщик</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="creator_id" id="">
+                                        <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
+                            <div class="col-sm-4">
+
+                                <select class="form-control select" name="helpers[]" multiple>
+                                    @foreach ($sectors as $sector)
+                                    <optgroup label="{{ $sector->name }}">
+                                        @foreach ($sector->users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                     @elseif(Auth::user()->isMailer())
                         <div class="form-group row">
+                            <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
                                 <select class="form-control" name="user_id">
@@ -114,6 +183,7 @@
                         </div>
 
                         <div class="form-group row">
+                            <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Постановщик</label>
                             <div class="col-sm-4">
                                 <select class="form-control" name="creator_id" id="">
@@ -123,6 +193,7 @@
                         </div>
 
                         <div class="form-group row">
+                            <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Соисполнитель</label>
                             <div class="col-sm-4">
 
@@ -140,8 +211,10 @@
 
                     @elseif(Auth::user()->isHead())
                         <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
-                            <div class="col-sm-4">
+                            <div class="col-sm-5">
                                 <select class="form-control" name="user_id">
                                     @foreach (Auth::user()->sector->users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -151,6 +224,7 @@
                         </div>
 
                         <div class="form-group row">
+                            <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Постановщик</label>
                             <div class="col-sm-4">
                                 <select class="form-control" name="creator_id" id="">
@@ -160,6 +234,7 @@
                         </div>
 
                         <div class="form-group row">
+                            <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Соисполнитель</label>
                             <div class="col-sm-4">
                                 <select class="form-control select" name="helpers[]" multiple>
@@ -177,6 +252,7 @@
                         </div>
                     @endif
                     <div class="form-group row">
+                        <div class="col-sm-1"></div>
                         <label class="col-sm-3 col-form-label">Крайний срок</label>
                         <div class="col-sm-4">
                             <div class="form-group cal-icon">
@@ -188,6 +264,7 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <div class="col-sm-1"></div>
                         <div class="col-sm-3 form-check">
                             <input class="form-check-input" type="checkbox" name="repeat_check" id="flexCheckDefault">
                             <label class="form-check-label" style="margin-top: 3px" for="flexCheckDefault">

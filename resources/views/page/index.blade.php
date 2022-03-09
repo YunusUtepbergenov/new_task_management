@@ -12,7 +12,7 @@
                     <li class="nav-item">
                         <a class="nav-link {{ (Route::current()->uri == '/') ? 'active' : '' }}" href="{{ route('home') }}">Мои задачи</a>
                     </li>
-                    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() )
+                    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
                         <li class="nav-item">
                             <a class="nav-link {{ (Route::current()->uri == 'ordered') ? 'active' : '' }}" href="{{ route('ordered') }}">Поручил</a>
                         </li>
@@ -22,13 +22,6 @@
                     </li>
                 </ul>
             </div>
-
-            <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
-                @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() )
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Проект</a>
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
-                @endif
-            </div>
         </div>
     </div>
     <!-- /Page Header -->
@@ -36,7 +29,7 @@
 
     @livewire('tasks-table')
 
-    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() )
+    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() )
         @include('partials._project_modal')
 
         @include('partials._task_modal')

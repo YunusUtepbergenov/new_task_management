@@ -5,7 +5,7 @@
     </a>
     <div class="dropdown-menu notifications">
         <div class="topnav-dropdown-header">
-            <span class="notification-title">Notifications</span>
+            <span class="notification-title">Уведомления</span>
         </div>
         <div class="noti-content">
             <ul class="notification-list">

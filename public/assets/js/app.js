@@ -1,11 +1,4 @@
-/*
-Author       : Dreamguys
-Template Name: SmartHR - Bootstrap Admin Template
-Version      : 3.6
-*/
-
 $(document).ready(function() {
-
 	// Variables declarations
 
 	var $wrapper = $('.main-wrapper');
@@ -139,20 +132,15 @@ $(document).ready(function() {
 	}
 
 	// Datatable
-
 	if($('.datatable').length > 0) {
 		$('.datatable').DataTable({
 			"bFilter": false,
 		});
 	}
-
 	// Tooltip
-
 	if($('[data-toggle="tooltip"]').length > 0) {
 		$('[data-toggle="tooltip"]').tooltip();
 	}
-
-
 	// Summernote
 
 	if($('.summernote').length > 0) {
@@ -171,44 +159,45 @@ $(document).ready(function() {
 		return false;
 	});
 
-    jQuery("#createTask").on("submit", function (e) {
-        e.preventDefault();
-        var formData = new FormData($("#createTask")[0]);
-        var url = $(this).attr("action");
+    // jQuery("#createTask").on("submit", function (e) {
+    //     e.preventDefault();
+    //     var formData = new FormData($("#createTask")[0]);
+    //     var url = $(this).attr("action");
 
-        $.ajax({
-            url: url,
-            method: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (res) {
-                document.location.href = '/ordered';
-                toastr.options =
-                {
-                    "closeButton" : true,
-                    "progressBar" : true
-                }
-                toastr.success("Задача успешно создана");
-            },
-            error: function (data) {
-                $("#name").addClass("d-none");
-                $("#deadline").addClass("d-none");
-                $("#description").addClass("d-none");
-                $("#file").addClass("d-none");
+    //     $.ajax({
+    //         url: url,
+    //         method: "POST",
+    //         data: formData,
+    //         processData: false,
+    //         contentType: false,
+    //         success: function (res) {
+    //             document.location.href = '/ordered';
+    //             toastr.options =
+    //             {
+    //                 "closeButton" : true,
+    //                 "progressBar" : true
+    //             }
+    //             toastr.success("Задача успешно создана");
+    //         },
+    //         error: function (data) {
+    //             console.log(data);
+    //             $("#name").addClass("d-none");
+    //             $("#deadline").addClass("d-none");
+    //             $("#description").addClass("d-none");
+    //             $("#file").addClass("d-none");
 
-                var errors = data.responseJSON;
-                if ($.isEmptyObject(errors) == false) {
-                    $.each(errors.errors, function (key, value) {
-                        var ErrorId = "#" + key;
-                        $(ErrorId).removeClass("d-none");
-                        $(ErrorId).text(value);
-                    });
-                }
-                toastr.error(errors.message);
-            },
-        });
-    });
+    //             var errors = data.responseJSON;
+    //             if ($.isEmptyObject(errors) == false) {
+    //                 $.each(errors.errors, function (key, value) {
+    //                     var ErrorId = "#" + key;
+    //                     $(ErrorId).removeClass("d-none");
+    //                     $(ErrorId).text(value);
+    //                 });
+    //             }
+    //             toastr.error(errors.message);
+    //         },
+    //     });
+    // });
 
     jQuery("#createProject").on("submit", function (e) {
         e.preventDefault();
@@ -244,7 +233,6 @@ $(document).ready(function() {
             },
         });
     });
-
 	// Multiselect
 
 	if($('#customleave_select').length > 0) {
@@ -255,7 +243,6 @@ $(document).ready(function() {
 	}
 
 	// Leave Settings button show
-
 	$(document).on('click', '.leave-edit-btn', function() {
 		$(this).removeClass('leave-edit-btn').addClass('btn btn-white leave-cancel-btn').text('Cancel');
 		$(this).closest("div.leave-right").append('<button class="btn btn-primary leave-save-btn" type="submit">Save</button>');
@@ -298,29 +285,27 @@ $(document).ready(function() {
 			$("#leave_"+id+" .leave-edit-btn").prop('disabled', true);
 		}
 	});
+	// // Placeholder Hide
 
-	// Placeholder Hide
+	// if ($('.otp-input, .zipcode-input input, .noborder-input input').length > 0) {
+	// 	$('.otp-input, .zipcode-input input, .noborder-input input').focus(function () {
+	// 		$(this).data('placeholder', $(this).attr('placeholder'))
+	// 			   .attr('placeholder', '');
+	// 	}).blur(function () {
+	// 		$(this).attr('placeholder', $(this).data('placeholder'));
+	// 	});
+	// }
+	// // OTP Input
 
-	if ($('.otp-input, .zipcode-input input, .noborder-input input').length > 0) {
-		$('.otp-input, .zipcode-input input, .noborder-input input').focus(function () {
-			$(this).data('placeholder', $(this).attr('placeholder'))
-				   .attr('placeholder', '');
-		}).blur(function () {
-			$(this).attr('placeholder', $(this).data('placeholder'));
-		});
-	}
-
-	// OTP Input
-
-	if ($('.otp-input').length > 0) {
-		$(".otp-input").keyup(function(e) {
-			if ((e.which >= 48 && e.which <= 57) || (e.which >= 96 && e.which <= 105)) {
-				$(e.target).next('.otp-input').focus();
-			} else if (e.which == 8) {
-				$(e.target).prev('.otp-input').focus();
-			}
-		});
-	}
+	// if ($('.otp-input').length > 0) {
+	// 	$(".otp-input").keyup(function(e) {
+	// 		if ((e.which >= 48 && e.which <= 57) || (e.which >= 96 && e.which <= 105)) {
+	// 			$(e.target).next('.otp-input').focus();
+	// 		} else if (e.which == 8) {
+	// 			$(e.target).prev('.otp-input').focus();
+	// 		}
+	// 	});
+	// }
 
 	// Small Sidebar
 
@@ -355,6 +340,7 @@ $(document).ready(function() {
         var children = "";
         for (var i = 0; i < input.files.length; ++i) {
             children += '<li>' + input.files.item(i).name + '</li>';
+            console.log(input.files.item(i).size / 1024 );
         }
         output.innerHTML = '<ul>'+children+'</ul>';
     }

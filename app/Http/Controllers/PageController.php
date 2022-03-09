@@ -17,12 +17,11 @@ class PageController extends Controller
 {
     public function dashboard(){
         $user = Auth::user();
+        $projects = Project::where('user_id', $user->id)->get();
 
-        if($user->isDirector() || $user->isMailer()){
-            $projects = Project::where('user_id', $user->id)->get();
+        if($user->isDirector() || $user->isMailer() || Auth::user()->isDeputy()){
             $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
         }elseif ($user->isHead()) {
-            $projects = Project::where('user_id', $user->id)->get();
             $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
         }
         else{
@@ -37,12 +36,11 @@ class PageController extends Controller
 
     public function ordered(){
         $user = Auth::user();
+        $projects = Project::where('user_id', $user->id)->get();
 
-        if($user->isDirector() || $user->isMailer()){
-            $projects = Project::where('user_id', $user->id)->get();
+        if($user->isDirector() || $user->isMailer() || Auth::user()->isDeputy()){
             $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
         }elseif ($user->isHead()) {
-            $projects = Project::where('user_id', $user->id)->get();
             $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
         }else{
             abort(404);
@@ -63,8 +61,10 @@ class PageController extends Controller
     }
 
     public function reports(){
-
-        return view('page.reports');
+        $sectors = Sector::all();
+        return view('page.reports', [
+            'sectors' => $sectors
+        ]);
     }
 
     public function employees(){
@@ -94,9 +94,9 @@ class PageController extends Controller
     }
 
     public function getTaskInfo($id){
-        $task = Task::where('id', $id)->first();
-        $creator = $task->username($task->creator_id);
-        return response()->json(['task' => $task, 'creator' => $creator]);
+        $task = Task::with('executers')->where('id', $id)->first();
+        // $creator = $task->username($task->creator_id);
+        return response()->json(['task' => $task]);
     }
 
     public function download($id){

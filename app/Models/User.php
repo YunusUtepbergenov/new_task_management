@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use PDO;
 
 class User extends Authenticatable
 {
@@ -74,9 +75,23 @@ class User extends Authenticatable
         return $this->belongsToMany(Task::class);
     }
 
-    // public function overdueTasks(){
-    //     return $this->tasks();
-    // }
+    public function overdueTasks(){
+        return $this->tasks()->where('status', 'Просроченный');
+    }
+
+    public function newTasks(){
+        return $this->tasks()->where('status', 'Новое');
+    }
+
+    public function doingTasks(){
+        return $this->tasks()->where('status', 'Выполняется');
+    }
+    public function confirmTasks(){
+        return $this->tasks()->where('status', 'Ждет подтверждения');
+    }
+    public function finishedTasks(){
+        return $this->tasks()->where('status', 'Выполнено');
+    }
 
 
     public function sector(){
@@ -97,5 +112,9 @@ class User extends Authenticatable
 
     public function isHR(){
         return $this->role->name === "Спецалист по работе с персоналом";
+    }
+
+    public function isDeputy(){
+        return $this->role->name === "Заместитель директора";
     }
 }

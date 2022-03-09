@@ -9,9 +9,11 @@
 							<li>
 								<a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span></a>
 							</li>
-							<li>
-								<a href="#"><i class="la la-pie-chart"></i> <span>Отчеты</span></a>
-							</li>
+                            @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
+                                <li>
+                                    <a href="{{ route('reports') }}"><i class="la la-pie-chart"></i> <span>Отчеты</span></a>
+                                </li>
+                            @endif
 							<li>
 								<a href="{{ route('employees') }}"><i class="la la-user"></i> <span> Сотрудники </span></a>
 							</li>

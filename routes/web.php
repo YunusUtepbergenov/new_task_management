@@ -33,9 +33,10 @@ Route::middleware(['auth'])->group(function () {
     ]);
 
     Route::resource('task', TaskController::class)->only([
-        'store', 'update', 'destroy'
+        'store', 'destroy'
     ]);
 
+    Route::put('task/update', [TaskController::class, 'update'])->name('task.update');
     Route::put('/notification/read/{id}', [PageController::class, 'read'])->name('notification.read');
     Route::post('register/new/employee', [PageController::class, 'register'])->name('new.user');
     Route::put('user/settings', [PageController::class, 'updatePassword'])->name('update.password');

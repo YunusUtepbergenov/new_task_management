@@ -507,6 +507,10 @@ table.dataTable thead > tr > td.sorting {
 .badge-info {
     background-color: #009efb !important;
 }
+.bg-progress,
+.badge-progress {
+    background-color: #34444c !important;
+}
 .bg-warning,
 .badge-warning {
     background-color: #ffbc34 !important;
@@ -3289,11 +3293,6 @@ table.dataTable thead > tr > td.sorting {
 	21. Leave
 -----------------------*/
 
-.filter-row .btn {
-    min-height: 50px;
-    padding: 12px;
-    text-transform: uppercase;
-}
 .action-label .label {
     display: inline-block;
     min-width: 85px;
@@ -8789,6 +8788,10 @@ ul.comment-list li ul.children {
 .page-header .page-title i {
     color: #e6e9ef;
 }
+
+.form-check-inline{
+    margin-right: 2.75rem;
+}
 .page-header .page-title i:hover,
 .page-header .page-title i:active {
     color: #ffcb00;
@@ -8903,6 +8906,7 @@ td a {
 
 #employee_normal {
     white-space: normal;
+    text-align: center;
 }
 
 #noti-link {
@@ -8910,6 +8914,28 @@ td a {
     display: inline;
     color: #256c6c;
     font-weight: bold;
+}
+
+.sectors_section{
+    height: 200px;
+    overflow-y: auto;
+}
+
+.users_section{
+    height: 200px;
+    overflow-y: auto;
+}
+
+.users_section .user_name {
+    margin-top: 10px;
+}
+
+.users_section .progress_indicator {
+    margin-top: 10px;
+}
+
+.reports_table{
+    max-height: 400px;
 }
 /* :not(:required) hides these rules from IE9 and below */
 .loading:not(:required) {
@@ -9019,3 +9045,14 @@ td a {
         transform: rotate(360deg);
     }
 }
+
+#employee_header tr th{
+    margin: 0;
+    padding: 2px 0 0 12px;
+    position: -webkit-sticky;
+    position: sticky;
+    top: -1px;
+    border-right: 1px solid #fff;
+    background: #69997a;
+}
+

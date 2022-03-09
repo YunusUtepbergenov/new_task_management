@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function(){
             $tasks = Task::where('repeat', 'daily')->get();
             foreach($tasks as $task){
-                if($task->deadline <= Carbon::now()){
+                if($task->deadline >= Carbon::now()){
                     Task::create([
                         'creator_id' => $task->creator_id,
                         'user_id' => $task->user_id,
@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
                     ]);
                 }
             }
-        })->dailyAt('01:00');
+        })->dailyAt('00:10');
 
         $schedule->call(function(){
             $tasks = Task::where('repeat', 'weekly')->get();

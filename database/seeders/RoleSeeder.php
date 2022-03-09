@@ -52,6 +52,9 @@ class RoleSeeder extends Seeder
         ],
         [
             'name' => "Референт"
+        ],
+        [
+            'name' => "Заместитель директора"
         ]
         ]);
     }

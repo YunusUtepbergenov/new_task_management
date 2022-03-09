@@ -32,14 +32,14 @@
 			<div class="col-md-12">
 				<div class="table-responsive" id="employeeTable">
 					<table class="table custom-table" style="overflow-y: auto; height: 110px;">
-						<thead>
+						<thead id="employee_header">
 							<tr>
-								<th style="position: sticky;top: 1; background: #69997a;">Ф.И.О</th>
-								<th style="position: sticky;top: 1; background: #69997a;">Почта</th>
-								<th style="position: sticky;top: 1; background: #69997a;">Сектор</th>
-								<th style="position: sticky;top: 1; background: #69997a;">Должность</th>
-								<th style="position: sticky;top: 1; background: #69997a;">Тел.Номер</th>
-								<th style="position: sticky;top: 1; background: #69997a;">Внутренный номер</th>
+								<th>Ф.И.О</th>
+								<th>Почта</th>
+								<th>Сектор</th>
+								<th>Должность</th>
+								<th>Тел.Номер</th>
+								<th>Внутренный номер</th>
                             </tr>
 						</thead>
 						<tbody style="overflow: auto;">

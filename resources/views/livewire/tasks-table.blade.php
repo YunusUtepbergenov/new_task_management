@@ -28,6 +28,12 @@
                 </select>
             </div>
         </div>
+        <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
+            @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() )
+            <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Проект</a>
+            <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
+            @endif
+        </div>
     </div>
     <div class="row">
         <div class="col-lg-12">
@@ -93,7 +99,7 @@
                                             <td>{{ $cnt }}</td>
                                             <td>
                                                 @if ($task['status'] == "Выполнено")
-                                                    <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>
+                                                    <a href="#" wire:click.prevent="view({{ $task['id'] }})"><del>{{ $task['name'] }}</del></a>
                                                 @else
                                                     <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
                                                 @endif

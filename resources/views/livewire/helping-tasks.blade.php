@@ -1,6 +1,7 @@
 <div>
-    {{-- <div class="row filter-row">
-        <div class="col-sm-4 col-md-2">
+
+      <div class="row filter-row">
+        {{-- <div class="col-sm-4 col-md-2">
             <div class="form-group">
                 <label for="select">Проекты</label>
                 <select class="form-control" wire:model="projectId" aria-hidden="true">
@@ -23,8 +24,14 @@
                     <option value="Выполнено">Выполнено</option>
                 </select>
             </div>
+        </div> --}}
+        <div class="col-auto float-right ml-auto" style="margin: 10px 0 10px 0;">
+            @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
+            <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Проект</a>
+            <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
+            @endif
         </div>
-    </div> --}}
+    </div>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">

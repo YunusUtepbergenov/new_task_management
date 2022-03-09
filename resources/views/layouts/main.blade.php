@@ -54,11 +54,11 @@
 					<!-- Search -->
 					<li class="nav-item dropdown flag-nav">
                         @if (auth()->user()->tasks()->count())
-    						<a class="nav-link dropdown-toggle">Эффективность: {{ round(((1 - (auth()->user()->tasks()->where('status', 'Просроченный')->count() / auth()->user()->tasks()->count())) * 100), 1) }}%</a>
+    						<a class="nav-link dropdown-toggle">Эффективность: {{ round( ((1 - ( auth()->user()->overdueTasks()->count()
+                            + (0.5 * auth()->user()->newTasks()->count()) ) / auth()->user()->tasks()->count() )) * 100, 1) }}%</a>
                         @else
     						<a class="nav-link dropdown-toggle">Эффективность: 100%</a>
                         @endif
-
 					</li>
                     @include('partials.notifications')
                     {{-- @livewire('notifications') --}}

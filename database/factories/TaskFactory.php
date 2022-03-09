@@ -18,12 +18,11 @@ class TaskFactory extends Factory
         return [
             'creator_id' => $this->faker->randomDigitNotNull(),
             'user_id' => $this->faker->numberBetween(1, 45),
-            'sector_id' => $this->faker->numberBetween(1, 8),
             'project_id' => $this->faker->numberBetween(1, 5),
             'name' => $this->faker->sentence(8),
             'description' => $this->faker->sentence(20),
             'deadline' => $this->faker->dateTimeBetween('-1 week', '+5 week')->format('Y-m-d'),
-            'status' => "Новое"
+            'status' => $this->faker->randomElement(['Выполнено' ,'Выполняется', 'Ждет подтверждения', 'Новое', 'Просроченный']),
         ];
     }
 }
