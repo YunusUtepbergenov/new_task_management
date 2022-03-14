@@ -157,6 +157,52 @@
 
             $('#flexCheckDefault').click(function() {
                 $("#repeat_container").toggle(this.checked);
+                $(".repeat_div").toggle(this.checked);
+                var val = document.getElementById("repeat").value;
+                if(this.checked){
+                    if(val == 'weekly'){
+                        $("#days_container").toggle(true);
+                        $("#month_container").toggle(false);
+                    }else if(val == "monthly"){
+                        $("#days_container").toggle(false);
+                        $("#month_container").toggle(true);
+                    }
+                }
+            });
+
+            $("#repeat_container select").on('change', function(){
+                if(this.value == 'weekly'){
+                    $("#days_container").toggle(true);
+                    $("#month_container").toggle(false);
+                }else{
+                    $("#days_container").toggle(false);
+                    $("#month_container").toggle(true);
+                }
+            });
+
+            $('#flexCheckDefault3').click(function() {
+                $("#repeat_container1").toggle(this.checked);
+                $("#repeat_div_cont").toggle(this.checked);
+                var val = document.getElementById("repeat1").value;
+                if(this.checked){
+                    if(val == 'weekly'){
+                        $("#days_container1").toggle(true);
+                        $("#month_container1").toggle(false);
+                    }else if(val == "monthly"){
+                        $("#days_container1").toggle(false);
+                        $("#month_container1").toggle(true);
+                    }
+                }
+            });
+
+            $("#repeat_container1 select").on('change', function(){
+                if(this.value == 'weekly'){
+                    $("#days_container1").toggle(true);
+                    $("#month_container1").toggle(false);
+                }else{
+                    $("#days_container1").toggle(false);
+                    $("#month_container1").toggle(true);
+                }
             });
 
 			@if(Session::has('message'))

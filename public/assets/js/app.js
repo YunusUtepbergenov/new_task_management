@@ -159,45 +159,45 @@ $(document).ready(function() {
 		return false;
 	});
 
-    // jQuery("#createTask").on("submit", function (e) {
-    //     e.preventDefault();
-    //     var formData = new FormData($("#createTask")[0]);
-    //     var url = $(this).attr("action");
+    jQuery("#createTask").on("submit", function (e) {
+        e.preventDefault();
+        var formData = new FormData($("#createTask")[0]);
+        var url = $(this).attr("action");
 
-    //     $.ajax({
-    //         url: url,
-    //         method: "POST",
-    //         data: formData,
-    //         processData: false,
-    //         contentType: false,
-    //         success: function (res) {
-    //             document.location.href = '/ordered';
-    //             toastr.options =
-    //             {
-    //                 "closeButton" : true,
-    //                 "progressBar" : true
-    //             }
-    //             toastr.success("Задача успешно создана");
-    //         },
-    //         error: function (data) {
-    //             console.log(data);
-    //             $("#name").addClass("d-none");
-    //             $("#deadline").addClass("d-none");
-    //             $("#description").addClass("d-none");
-    //             $("#file").addClass("d-none");
+        $.ajax({
+            url: url,
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                document.location.href = '/ordered';
+                toastr.options =
+                {
+                    "closeButton" : true,
+                    "progressBar" : true
+                }
+                toastr.success("Задача успешно создана");
+            },
+            error: function (data) {
+                console.log(data);
+                $("#name").addClass("d-none");
+                $("#deadline").addClass("d-none");
+                $("#description").addClass("d-none");
+                $("#file").addClass("d-none");
 
-    //             var errors = data.responseJSON;
-    //             if ($.isEmptyObject(errors) == false) {
-    //                 $.each(errors.errors, function (key, value) {
-    //                     var ErrorId = "#" + key;
-    //                     $(ErrorId).removeClass("d-none");
-    //                     $(ErrorId).text(value);
-    //                 });
-    //             }
-    //             toastr.error(errors.message);
-    //         },
-    //     });
-    // });
+                var errors = data.responseJSON;
+                if ($.isEmptyObject(errors) == false) {
+                    $.each(errors.errors, function (key, value) {
+                        var ErrorId = "#" + key;
+                        $(ErrorId).removeClass("d-none");
+                        $(ErrorId).text(value);
+                    });
+                }
+                toastr.error(errors.message);
+            },
+        });
+    });
 
     jQuery("#createProject").on("submit", function (e) {
         e.preventDefault();

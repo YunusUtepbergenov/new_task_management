@@ -62,6 +62,7 @@ class ViewModal extends Component
             );
             $response->filename = $filename;
         }
+
         $response->save();
         $this->dispatchBrowserEvent('success', ['msg' => "Задача выполнена. Пожалуйста, дождитесь подтверждения."]);
 

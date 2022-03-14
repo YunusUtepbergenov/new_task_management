@@ -20,6 +20,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('ordered', [PageController::class, 'ordered'])->name('ordered');
     Route::get('helping', [PageController::class, 'helping'])->name('helping');
     Route::get('reports', [PageController::class, 'reports'])->name('reports');
+    Route::get('documents', [PageController::class, 'documents'])->name('documents');
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
     Route::get('settings', [PageController::class, 'settings'])->name('settings');
     Route::get('/task/info/byid/{id}', [PageController::class, 'getTaskInfo']);

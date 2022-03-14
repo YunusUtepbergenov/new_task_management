@@ -95,7 +95,7 @@
                                     <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
                                     <td>{{ $username }}</td>
                                     <td>{{ $task->user->name }}</td>
-                                    <td><span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'primary') )) }}">{{ $task->status }}</span></td>
+                                    <td><span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span></td>
                                 </tr>
                             @empty
 
@@ -160,7 +160,7 @@
                                             <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
                                             <td>{{ $username }}</td>
                                             <td>{{ $task->user->name }}</td>
-                                    <td><span class="badge bg-inverse-{{ ($task['status'] == "Новое") ? 'success' : (($task['status'] == "Выполняется") ? 'primary' : (($task['status'] == "Ждет подтверждения") ? 'danger' : (($task['status'] == "Выполнено") ? 'purple' : 'primary') )) }}">{{ $task['status'] }}</span></td>
+                                    <td><span class="badge bg-inverse-{{ ($task['status'] == "Новое") ? 'success' : (($task['status'] == "Выполняется") ? 'primary' : (($task['status'] == "Ждет подтверждения") ? 'danger' : (($task['status'] == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task['status'] }}</span></td>
                                         </tr>
                                     </tbody>
                                     @php

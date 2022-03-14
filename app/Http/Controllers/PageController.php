@@ -67,6 +67,10 @@ class PageController extends Controller
         ]);
     }
 
+    public function documents(){
+        return view('page.documents.index');
+    }
+
     public function employees(){
         $sectors = Sector::with('users.role')->get();
         $roles = Role::all();
@@ -94,7 +98,7 @@ class PageController extends Controller
     }
 
     public function getTaskInfo($id){
-        $task = Task::with('executers')->where('id', $id)->first();
+        $task = Task::with(['executers', 'repeat'])->where('id', $id)->first();
         // $creator = $task->username($task->creator_id);
         return response()->json(['task' => $task]);
     }

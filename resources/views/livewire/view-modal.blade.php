@@ -46,7 +46,6 @@
                                 </div>
 
                                 @if (!$task->response && $task->user_id == Auth::user()->id)
-                                    @if ($task->status != "Просроченный")
                                         <div class="card">
                                             <div class="card-header">
                                                 <h4 class="card-title mb-0">Завершить задачу</h4>
@@ -85,13 +84,6 @@
                                                 </form>
                                             </div>
                                         </div>
-                                    @else
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h4>Срок истек</h4>
-                                            </div>
-                                        </div>
-                                    @endif
                                 @elseif ($task->response)
                                     <div class="card">
                                         <div class="card-body">
@@ -185,7 +177,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>Состояние:</td>
-                                                    <td class="text-right" id="task_status"><span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'primary') )) }}">{{ $task->status }}</span></td>
+                                                    <td class="text-right" id="task_status"><span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span></td>
                                                 </tr>
 
                                                 @can('creator', $task)

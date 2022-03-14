@@ -6,9 +6,21 @@
 							<li>
 								<a href="{{ route('home') }}"><i class="la la-rocket"></i> <span> Проекты и задачи </span></a>
 							</li>
-							<li>
-								<a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span></a>
+                            <li class="submenu">
+								<a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span><span class="menu-arrow"></span></a>
+								<ul style="display: none;">
+									<li><a href="#">Статья</a></li>
+									<li class="submenu"><a href="#">Журналь</a>
+                                        <ul style="display: none;">
+                                            <li><a href="#">2022</a></li>
+                                            <li><a href="#">2023</a></li>
+                                        </ul>
+                                    </li>
+								</ul>
 							</li>
+							{{-- <li>
+								<a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span></a>
+							</li> --}}
                             @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
                                 <li>
                                     <a href="{{ route('reports') }}"><i class="la la-pie-chart"></i> <span>Отчеты</span></a>

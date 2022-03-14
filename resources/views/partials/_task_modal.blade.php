@@ -212,9 +212,8 @@
                     @elseif(Auth::user()->isHead())
                         <div class="form-group row">
                             <div class="col-sm-1"></div>
-                            <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
-                            <div class="col-sm-5">
+                            <div class="col-sm-4">
                                 <select class="form-control" name="user_id">
                                     @foreach (Auth::user()->sector->users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -270,15 +269,34 @@
                             <label class="form-check-label" style="margin-top: 3px" for="flexCheckDefault">
                                 Повторяющаяся задача
                             </label>
-                          </div>
-                        <div class="col-sm-4" id="repeat_container" style="display: none">
-                            <select class="form-control" name="repeat">
-                                <option value="daily">Ежедневное</option>
-                                <option value="weekly">Еженедельная</option>
-                                <option value="monthly">Ежемесячная</option>
-                                <option value="quarterly">Ежеквартальное</option>
-                            </select>
                         </div>
+                        <div class="col-sm-8 row repeat_div" style="display: none">
+                            <div class="col-sm-6" id="repeat_container" style="display: none">
+                                <select class="form-control" name="repeat" id="repeat">
+                                    <option value="weekly" selected>Еженедельная</option>
+                                    <option value="monthly">Ежемесячная</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6" id="days_container" style="display:none">
+                                <select class="form-control select" name="days[]" multiple>
+                                    <option value="1">Понедельник</option>
+                                    <option value="2">Вторник</option>
+                                    <option value="3">Среда</option>
+                                    <option value="4">Четверг</option>
+                                    <option value="5">Пятница</option>
+                                    <option value="6">Суббота</option>
+                                    <option value="7">Воскресенье</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-3" id="month_container" style="display:none">
+                                <select class="form-control" name="month_day">
+                                    @for ($a = 1; $a <= 28; $a++)
+                                        <option value="{{ $a }}">{{ $a }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="submit-section">
                         <button class="btn btn-primary submit-btn">Поставить Задачу</button>

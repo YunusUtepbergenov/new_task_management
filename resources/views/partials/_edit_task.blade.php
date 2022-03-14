@@ -50,9 +50,9 @@
                         <div class="col-sm-1"></div>
                         <div class="col-sm-10">
                             <div class="form-group file-upload">
-                                <label for="file-input"><img src="assets/img/attachment.png"> ( Макс: 5 MB )</label>
-                                <input id="input-file" type="file" name="file[]" multiple onchange="javascript:updateList()">
-                                <div id="fileList"></div>
+                                <label for="file-input1"><img src="assets/img/attachment.png"> ( Макс: 5 MB )</label>
+                                <input id="file-input1" type="file" name="file[]" multiple onchange="javascript:updateList1()">
+                                <div id="fileList1"></div>
                             </div>
                             {{-- <div class="alert alert-danger" id="file"></div> --}}
                         </div>
@@ -264,23 +264,43 @@
                             <div class="alert alert-danger" id="deadline2"></div>
                         </div>
                     </div>
-                    <div class="form-group row">
+                    {{-- <div class="form-group row">
                         <div class="col-sm-1"></div>
                         <div class="col-sm-3 form-check">
-                            <input class="form-check-input" type="checkbox" name="repeat_check" id="flexCheckDefault1">
-                            <label class="form-check-label" style="margin-top: 3px" for="flexCheckDefault1">
+                            <input class="form-check-input" type="checkbox" name="repeat_check" id="flexCheckDefault3" checked="false">
+                            <label class="form-check-label" style="margin-top: 3px" for="flexCheckDefault3">
                                 Повторяющаяся задача
                             </label>
-                          </div>
-                        <div class="col-sm-4" id="repeat_container1" style="display: none">
-                            <select class="form-control" name="repeat" id="repeat_options">
-                                <option value="daily">Ежедневное</option>
-                                <option value="weekly">Еженедельная</option>
-                                <option value="monthly">Ежемесячная</option>
-                                <option value="quarterly">Ежеквартальное</option>
-                            </select>
                         </div>
-                    </div>
+                        <div class="col-sm-8" id="repeat_div_cont" style="display: none">
+                            <div class="row">
+                                <div class="col-sm-6" id="repeat_container1" style="display: none">
+                                    <select class="form-control" name="repeat" id="repeat1">
+                                        <option value="weekly" selected>Еженедельная</option>
+                                        <option value="monthly">Ежемесячная</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6" id="days_container1" style="display:none">
+                                    <select class="form-control select" id="dayss" name="days[]" multiple>
+                                        <option value="1">Понедельник</option>
+                                        <option value="2">Вторник</option>
+                                        <option value="3">Среда</option>
+                                        <option value="4">Четверг</option>
+                                        <option value="5">Пятница</option>
+                                        <option value="6">Суббота</option>
+                                        <option value="7">Воскресенье</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3" id="month_container1" style="display:none">
+                                    <select class="form-control" id="month_day" name="month_day">
+                                        @for ($a = 1; $a <= 28; $a++)
+                                            <option value="{{ $a }}">{{ $a }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div> --}}
                     <div class="submit-section">
                         <button class="btn btn-primary submit-btn">Поставить Задачу</button>
                     </div>

@@ -93,7 +93,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'ijro.cerr.uz@gmail.com'),
-        'name' => env('MAIL_FROM_NAME', 'IJRO.CERR.UZ'),
+        'name' => env('MAIL_FROM_NAME', 'ijro.cerr.uz'),
     ],
 
     /*

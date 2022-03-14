@@ -41,13 +41,11 @@
     @livewireScripts
 
     <script>
-        $('#flexCheckDefault1').click(function() {
-            $("#repeat_container1").toggle(this.checked);
-        });
 
-            $("#name2").addClass("d-none");
-            $("#deadline2").addClass("d-none");
-            $("#description2").addClass("d-none");
+        // $('#flexCheckDefault3').removeAttr('checked');
+        $("#name2").addClass("d-none");
+        $("#deadline2").addClass("d-none");
+        $("#description2").addClass("d-none");
 
         function editTask(id) {
             var helpers = $('#helpers1 option');
@@ -60,7 +58,7 @@
 
             $.get("/task/info/byid/" + id, function (task) {
                 $('#helpers1').val(null).trigger('change');
-
+                // document.getElementById('repeat_div_cont').style.display = 'none';
                 $("#project_id1").val(task.task.project_id);
                 $("#id1").val(task.task.id);
                 $("#name1").val(task.task.name);
@@ -77,20 +75,40 @@
                     }
                     $('#helpers1').trigger('change');
                 }
-                if(task.task.repeat == "ordinary"){
-                    document.getElementById('flexCheckDefault1').checked = false;
-                    document.getElementById('repeat_container1').style.display = "none";
-                }else{
-                    document.getElementById('flexCheckDefault1').checked = true;
-                    document.getElementById('repeat_container1').style.display = "block";
-                    $('#repeat_options').val(task.task.repeat);
-                }
-                // $("#helpers1").val(task.task.deadline);
+                // console.log(task.task.repeat);
+                // if(task.task.repeat == null){
+                //     document.getElementById('flexCheckDefault3').checked = false;
+                //     document.getElementById('repeat_container1').style.display = "none";
+                // }else{
+                //     document.getElementById('flexCheckDefault3').checked = true;
+                //     document.getElementById('repeat_div_cont').style.display = 'block';
+                //     document.getElementById('repeat_container1').style.display = "block";
+                //     $('#repeat1').val(task.task.repeat.repeat);
+                //     if (task.task.repeat.repeat == "weekly") {
+                //         $("#days_container1").toggle(true);
+                //         $("#month_container1").toggle(false);
+                //         $("#dayss").val(task.task.repeat.repeat)
+                //     }else if(task.task.repeat.repeat == "monthly"){
+                //         $("#days_container1").toggle(false);
+                //         $("#month_container1").toggle(true);
+                //         $("#month_day").val(task.task.repeat.day);
+                //     }
+                // }
+                $("#helpers1").val(task.task.deadline);
                 $("#deadline1").val(task.task.deadline);
                 $("#description1").val(task.task.description);
             });
         }
-
+        updateList1 = function() {
+            var input = document.getElementById('file-input1');
+            var output = document.getElementById('fileList1');
+            var children = "";
+            for (var i = 0; i < input.files.length; ++i) {
+                children += '<li>' + input.files.item(i).name + '</li>';
+                console.log(input.files.item(i).size / 1024 );
+            }
+            output.innerHTML = '<ul>'+children+'</ul>';
+        }
         jQuery("#editTask").on("submit", function (e) {
             e.preventDefault();
             var formData1 = new FormData($("#editTask")[0]);
