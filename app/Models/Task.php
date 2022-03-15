@@ -18,6 +18,7 @@ class Task extends Model
         'description',
         'deadline',
         'status',
+        'repeat_id',
     ];
 
     public function username($id){
@@ -64,12 +65,15 @@ class Task extends Model
     public function doingTasks(){
         return $this->where('status', 'Выполняется');
     }
+
     public function confirmTasks(){
         return $this->where('status', 'Ждет подтверждения');
     }
+
     public function finishedTasks(){
         return $this->where('status', 'Выполнено');
     }
+
     public function repeat(){
         return $this->hasOne(Repeat::class);
     }

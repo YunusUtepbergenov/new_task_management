@@ -49,6 +49,7 @@ class Kernel extends ConsoleKernel
                         'description' => $repeat->task->description,
                         'deadline' => $new_deadline,
                         'status' => 'Новое',
+                        'repeat_id' => $repeat->id,
                     ]);
                     event(new TaskCreatedEvent($task));
                 }
@@ -72,6 +73,7 @@ class Kernel extends ConsoleKernel
                         'description' => $repeat->task->description,
                         'deadline' => $new_deadline,
                         'status' => 'Новое',
+                        'repeat_id' => $repeat->id,
                     ]);
                 }
             }

@@ -69,7 +69,7 @@
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                         <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить текущую задачу</button>
                                                     </form>
-                                                    <form action="{{ route('task.destroy', $task->repeat_id) }}" method="POST">
+                                                    <form action="{{ route('repeat.delete', $task->repeat_id) }}" method="POST">
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                         <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Остановить цикл</button>

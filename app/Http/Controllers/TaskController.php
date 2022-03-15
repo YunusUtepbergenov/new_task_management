@@ -15,6 +15,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use phpDocumentor\Reflection\Types\Null_;
 
 class TaskController extends Controller
 {
@@ -27,22 +28,7 @@ class TaskController extends Controller
         6 => 'Saturday',
         7 => 'Sunday'
     );
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -178,35 +164,6 @@ class TaskController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request)
     {
         // $repeat_arr = ['ordinary', 'weekly', 'monthly', 'quarterly'];
@@ -258,12 +215,6 @@ class TaskController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $task = Task::where('id', $id)->first();
@@ -289,6 +240,22 @@ class TaskController extends Controller
         }
 
         $task->delete();
+
+        return back();
+    }
+
+    public function destroyRepeat($id){
+        $repeat = Repeat::where('id', $id)->first();
+        if($repeat)
+            $repeat->delete();
+
+        $tasks = Task::where('repeat_id', $repeat->id)->get();
+
+        foreach($tasks as $task){
+            $task->update([
+                'repeat_id' => Null
+            ]);
+        }
 
         return back();
     }
