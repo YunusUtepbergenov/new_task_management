@@ -76,21 +76,21 @@ class User extends Authenticatable
     }
 
     public function overdueTasks(){
-        return $this->tasks()->where('status', 'Просроченный');
+        return $this->tasks()->where('overdue', 1);
     }
 
     public function newTasks(){
-        return $this->tasks()->where('status', 'Новое');
+        return $this->tasks()->where('overdue', 0)->where('status', 'Новое');
     }
 
     public function doingTasks(){
-        return $this->tasks()->where('status', 'Выполняется');
+        return $this->tasks()->where('overdue', 0)->where('status', 'Выполняется');
     }
     public function confirmTasks(){
         return $this->tasks()->where('status', 'Ждет подтверждения');
     }
     public function finishedTasks(){
-        return $this->tasks()->where('status', 'Выполнено');
+        return $this->tasks()->where('overdue', 0)->where('status', 'Выполнено');
     }
 
 

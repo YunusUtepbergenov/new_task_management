@@ -278,7 +278,7 @@
                                 </select>
                             </div>
                             <div class="col-sm-6" id="days_container" style="display:none">
-                                <select class="form-control select" name="days[]" multiple>
+                                <select class="form-control select" name="days[]" multiple required>
                                     <option value="1">Понедельник</option>
                                     <option value="2">Вторник</option>
                                     <option value="3">Среда</option>

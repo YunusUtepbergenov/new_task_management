@@ -9,13 +9,8 @@
                             <li class="submenu">
 								<a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span><span class="menu-arrow"></span></a>
 								<ul style="display: none;">
-									<li><a href="#">Статьи</a></li>
-									<li class="submenu"><a href="#">Журналы</a>
-                                        <ul style="display: none;">
-                                            <li><a href="#">2022</a></li>
-                                            <li><a href="#">2023</a></li>
-                                        </ul>
-                                    </li>
+									<li><a href="{{ route('articles.index') }}">Статьи</a></li>
+									<li><a href="#">Журналы</a></li>
 								</ul>
 							</li>
 							{{-- <li>

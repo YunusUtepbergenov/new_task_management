@@ -31,7 +31,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function(){
-            DB::table('tasks')->where('deadline', '<=', Carbon::yesterday())->where('status', '<>', 'Просроченный')->whereIn('status', ['Новое' ,'Выполняется'])->update(['status' => 'Просроченный']);
+            DB::table('tasks')->where('deadline', '<=', Carbon::yesterday())->whereIn('status', ['Новое' ,'Выполняется', 'Просроченный'])->
+                where('overdue', 0)->update(['overdue' => 1]);
         })->dailyAt('00:01');
 
         $schedule->call(function(){

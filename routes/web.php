@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Documents\ArticleController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
@@ -20,12 +21,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('ordered', [PageController::class, 'ordered'])->name('ordered');
     Route::get('helping', [PageController::class, 'helping'])->name('helping');
     Route::get('reports', [PageController::class, 'reports'])->name('reports');
-    Route::get('documents', [PageController::class, 'documents'])->name('documents');
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
     Route::get('settings', [PageController::class, 'settings'])->name('settings');
     Route::get('/task/info/byid/{id}', [PageController::class, 'getTaskInfo']);
+    Route::get('/article/info/byid/{id}', [PageController::class, 'getArticleInfo']);
     Route::get('task/download/{id}', [PageController::class, 'download'])->name('file.download');
     Route::get('task/response/download/{name}', [PageController::class, 'responseDownload'])->name('response.download');
+    Route::get('article/download/{name}', [PageController::class, 'articleDownload'])->name('article.download');
+
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
 
@@ -37,10 +40,15 @@ Route::middleware(['auth'])->group(function () {
         'store', 'destroy',
     ]);
 
+    Route::resource('articles', ArticleController::class)->only([
+        'index', 'store', 'destroy',
+    ]);
+
     Route::put('task/update', [TaskController::class, 'update'])->name('task.update');
     Route::put('/notification/read/{id}', [PageController::class, 'read'])->name('notification.read');
     Route::post('register/new/employee', [PageController::class, 'register'])->name('new.user');
     Route::put('user/settings', [PageController::class, 'updatePassword'])->name('update.password');
+    Route::put('article/update', [ArticleController::class, 'update'])->name('article.update');
 
     Route::delete('task/repeat/destroy/{id}', [TaskController::class, 'destroyRepeat'])->name('repeat.delete');
 });

@@ -55,15 +55,15 @@ class Task extends Model
     }
 
     public function overdueTasks(){
-        return $this->where('status', 'Просроченный');
+        return $this->where('overdue', 1);
     }
 
     public function newTasks(){
-        return $this->where('status', 'Новое');
+        return $this->where('overdue', 0)->where('status', 'Новое');
     }
 
     public function doingTasks(){
-        return $this->where('status', 'Выполняется');
+        return $this->where('overdue', 0)->where('status', 'Выполняется');
     }
 
     public function confirmTasks(){
@@ -71,7 +71,7 @@ class Task extends Model
     }
 
     public function finishedTasks(){
-        return $this->where('status', 'Выполнено');
+        return $this->where('overdue', 0)->where('status', 'Выполнено');
     }
 
     public function repeat(){

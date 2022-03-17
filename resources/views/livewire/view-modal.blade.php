@@ -177,7 +177,13 @@
                                                 </tr>
                                                 <tr>
                                                     <td>Состояние:</td>
-                                                    <td class="text-right" id="task_status"><span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span></td>
+                                                    <td>
+                                                        @if ($task->overdue)
+                                                            <span class="badge bg-inverse-warning">Просроченный</span>
+                                                        @else
+                                                            <span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span>
+                                                        @endif
+                                                    </td>
                                                 </tr>
 
                                                 @can('creator', $task)

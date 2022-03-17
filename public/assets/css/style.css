@@ -202,6 +202,14 @@ a:focus {
     font-size: 15px;
     height: 44px;
 }
+
+.form-filter {
+    box-shadow: none;
+    font-size: 13px;
+    height: 30px;
+    padding: 0;
+}
+
 .form-control:focus {
     border-color: #ccc;
     box-shadow: none;
@@ -8945,6 +8953,12 @@ td a {
     text-shadow: none;
     background-color: transparent;
     border: 0;
+}
+
+.article-table td,
+.article-table th {
+    white-space: normal;
+    max-width: 350px;
 }
 
 .loading:not(:required):after {

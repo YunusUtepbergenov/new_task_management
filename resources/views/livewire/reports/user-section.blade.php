@@ -19,11 +19,6 @@
                     </div>
                     <div class="col-lg-6 progress_indicator">
                         <div class="progress">
-                            {{-- @if ($user->tasks()->count())
-                                <a class="nav-link dropdown-toggle">Эффективность: {{ round(((1 - ($user->overdueTasks()->count() / auth()->user()->tasks()->count())) * 100), 1) }}%</a>
-                            @else
-                                <a class="nav-link dropdown-toggle">Эффективность: 100%</a>
-                            @endif --}}
                             @if ($user->tasks()->count() > 0)
                                 <div class="progress-bar bg-progress" role="progressbar" style="width: {{ round( ((1 - ( $user->overdueTasks()->count()
                                     + (0.5 * $user->newTasks()->count()) ) / $user->tasks()->count() )) * 100, 1) }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">{{ round( ((1 - ( $user->overdueTasks()->count()

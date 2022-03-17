@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
+use App\Models\Category;
 use App\Models\File;
 use App\Models\Project;
 use App\Models\Role;
@@ -67,10 +69,6 @@ class PageController extends Controller
         ]);
     }
 
-    public function documents(){
-        return view('page.documents.index');
-    }
-
     public function employees(){
         $sectors = Sector::with('users.role')->get();
         $roles = Role::all();
@@ -103,6 +101,12 @@ class PageController extends Controller
         return response()->json(['task' => $task]);
     }
 
+    public function getArticleInfo($id){
+        $article = Article::with(['user'])->where('id', $id)->first();
+        return response()->json(['article' => $article]);
+    }
+
+
     public function download($id){
         $file = File::where('id', $id)->first();
         return response()->download(storage_path('app/files/'.$file->name));
@@ -112,6 +116,9 @@ class PageController extends Controller
         return response()->download(storage_path('app/files/responses/'.$filename));
     }
 
+    public function articleDownload($filename){
+        return response()->download(storage_path('app/files/articles/'.$filename));
+    }
 
     public function read($id, Request $request){
         Auth::user()->unreadNotifications->where('id', $id)->markAsRead();
