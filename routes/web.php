@@ -28,6 +28,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('task/download/{id}', [PageController::class, 'download'])->name('file.download');
     Route::get('task/response/download/{name}', [PageController::class, 'responseDownload'])->name('response.download');
     Route::get('article/download/{name}', [PageController::class, 'articleDownload'])->name('article.download');
+    Route::get('journals/ru', [PageController::class, 'journalRu'])->name('journal.ru');
 
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');

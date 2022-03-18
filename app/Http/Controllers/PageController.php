@@ -75,6 +75,12 @@ class PageController extends Controller
         return view('page.employees', ['sectors' => $sectors, 'roles' => $roles]);
     }
 
+    public function journalRu()
+    {
+
+        return view('page.documents.ru_journal');
+    }
+
     public function register(Request $request){
         $request->validate([
             'user_name' => ['required', 'string', 'max:128'],

@@ -1,0 +1,32 @@
+.nav-tabs .nav-item .nav-link1 {
+    border-radius: 0;
+    font-size: 15px;
+}
+.nav-tabs .nav-item .nav-link1 {
+    margin-right: 11px;
+}
+.nav-tabs > li > a {
+    margin-right: 0;
+    color: #888;
+    border-radius: 0;
+}
+.nav-tabs .nav-link1:focus,
+.nav-tabs .nav-link1:hover {
+    background-color: #eee;
+    border-color: transparent;
+    color: #333;
+}
+.nav-tabs.nav-justified > li > a {
+    border-radius: 0;
+    margin-bottom: 0;
+}
+.nav-tabs.nav-justified > li > a:hover,
+.nav-tabs.nav-justified > li > a:focus {
+    border-bottom-color: #ddd;
+}
+.nav-tabs.nav-justified.nav-tabs-solid > li > a {
+    border-color: transparent;
+}
+.nav-tabs.nav-tabs-solid > li > a {
+    color: #333;
+}

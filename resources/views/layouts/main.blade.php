@@ -37,7 +37,7 @@
 				<!-- Logo -->
                 <div class="header-left">
                     <a href="{{ route('home') }}" class="logo">
-						<img src="assets/img/logo.svg" width="80" height="40" alt="">
+						<img src="{{ asset('assets/img/logo.svg') }}" width="80" height="40" alt="">
 					</a>
                 </div>
 				<!-- /Logo -->
@@ -64,7 +64,7 @@
                     {{-- @livewire('notifications') --}}
 					<li class="nav-item dropdown has-arrow main-drop">
 						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-							<span class="user-img"><img src="assets/img/avatar.jpg" alt="">
+							<span class="user-img"><img src="{{ asset('assets/img/avatar.jpg') }}" alt="">
 							<span class="status online"></span></span>
 							<span>{{ Auth::user()->name }}</span>
 						</a>

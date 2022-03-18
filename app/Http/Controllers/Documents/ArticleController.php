@@ -34,7 +34,7 @@ class ArticleController extends Controller
         $request->validate([
             'name' => 'required|max:256',
             'description' => 'required|max:1024',
-            'link' => 'nullable|max:128',
+            'link' => 'nullable|max:1024',
             'file' => 'required|file|max:8000|mimes:doc,docx,pdf',
         ]);
 
@@ -63,7 +63,7 @@ class ArticleController extends Controller
         $request->validate([
             'name' => 'required|max:256',
             'description' => 'required|max:1024',
-            'link' => 'nullable|max:256',
+            'link' => 'nullable|max:1024',
             'file' => 'file|max:8000|mimes:doc,docx,pdf',
         ]);
 

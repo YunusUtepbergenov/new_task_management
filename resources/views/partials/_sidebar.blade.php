@@ -10,7 +10,13 @@
 								<a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span><span class="menu-arrow"></span></a>
 								<ul style="display: none;">
 									<li><a href="{{ route('articles.index') }}">Статьи</a></li>
-									<li><a href="#">Журналы</a></li>
+									<li class="submenu">
+                                        <a href="#"><span>Журналы</span><span class="menu-arrow"></span></a>
+                                    <ul style="display: none;">
+                                        <li><a href="{{ route('journal.ru') }}">Экономическое Обозрение</a></li>
+                                        <li><a href="#">Иқтисодий Шарҳ</a></li>
+                                    </ul>
+                                    </li>
 								</ul>
 							</li>
 							{{-- <li>

@@ -278,12 +278,12 @@
                                 </select>
                             </div>
                             <div class="col-sm-6" id="days_container" style="display:none">
-                                <select class="form-control select" name="days[]" multiple required>
+                                <select class="form-control select" name="days[]" multiple>
                                     <option value="1">Понедельник</option>
                                     <option value="2">Вторник</option>
                                     <option value="3">Среда</option>
                                     <option value="4">Четверг</option>
-                                    <option value="5">Пятница</option>
+                                    <option value="5" selected>Пятница</option>
                                     <option value="6">Суббота</option>
                                     <option value="7">Воскресенье</option>
                                 </select>
