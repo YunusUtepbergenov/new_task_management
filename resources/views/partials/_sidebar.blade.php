@@ -13,8 +13,8 @@
 									<li class="submenu">
                                         <a href="#"><span>Журналы</span><span class="menu-arrow"></span></a>
                                     <ul style="display: none;">
-                                        <li><a href="{{ route('journal.ru') }}">Экономическое Обозрение</a></li>
-                                        <li><a href="#">Иқтисодий Шарҳ</a></li>
+                                        <li><a href="{{ route('journal.ru', date('Y')) }}">Экономическое Обозрение</a></li>
+                                        <li><a href="{{ route('journal.uz', date('Y')) }}">Иқтисодий Шарҳ</a></li>
                                     </ul>
                                     </li>
 								</ul>

@@ -35,6 +35,7 @@
 						<thead id="employee">
 							<tr>
 								<th class="skip-filter"><span>&#8470;</span></th>
+                                <th class="skip-filter"></th>
                                 <th class="skip-filter">Название</th>
 								<th>Автор</th>
 								<th>Отдел</th>
@@ -48,6 +49,20 @@
                             @foreach ($articles as $key => $article)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
+                                    <td>
+                                        @if ($article->user_id == auth()->user()->id)
+                                            <div class="dropdown dropdown-action profile-action">
+                                                <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                        <form action="{{ route('articles.destroy', $article->id) }}" method="POST">
+                                                            <input type="hidden" name="_method" value="DELETE">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
+                                                        </form>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td>
                                         @if ($article->user_id == auth()->user()->id)
                                             <a href="#" onclick="editArticle({{ $article->id }})" data-toggle="modal" data-target="#edit_article">{{ $article->name }}</a>

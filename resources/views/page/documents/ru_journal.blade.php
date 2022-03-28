@@ -2,11 +2,11 @@
 
 @section('styles')
 	<!-- Select2 CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+	{{-- <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}"> --}}
 	<!-- Datatable CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap4.min.css') }}">
+	{{-- <link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap4.min.css') }}"> --}}
 	<!-- Datetimepicker CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}">
+	{{-- <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('css/journals.css') }}">
 @endsection
 
@@ -19,9 +19,9 @@
 				<div class="col">
                     <h3 class="page-title">Экономическое Обозрение</h3>
 				</div>
-                <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
+                {{-- <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
                     <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_article">Добавить журнал</a>
-                </div>
+                </div> --}}
 			</div>
             <ul class="nav nav-tabs nav-tabs-bottom">
                 <li class="nav-item">
@@ -34,7 +34,12 @@
             <div class="col-lg-12">
                 <div class="col-auto float-right ml-auto" style="margin-bottom: 30px;">
                     <ul class="nav nav-tabs nav-tabs-bottom">
-                        <li class="nav-item">
+                        @foreach ($years as $year)
+                            <li class="nav-item">
+                                <a href="{{ route('journal.ru', $year->year) }}" class="nav-link1">{{ $year->year }}</a>
+                            </li>
+                        @endforeach
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link1">2022</a>
                         </li>
                         <li class="nav-item">
@@ -72,65 +77,21 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link1">2010</a>
-                        </li>
-
+                        </li> --}}
                     </ul>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card mb-4 box-shadow">
-                  <img class="card-img-top" style="height: 300px; width: 100%; display: block;" src="https://static.review.uz/crop/3/7/360__80_3794985784.jpg?v=1640692532" data-holder-rendered="true">
-                  <div class="card-body">
-                    <p class="card-text" style="text-align: center">12-264-2021</p>
-                    <h4 style="text-align: center">Экономическое Обозрение</h4>
-                  </div>
+            @foreach ($journals as $journal)
+                <div class="col-sm-6 col-md-4 col-lg-2">
+                    <div class="card mb-4 box-shadow">
+                    <a href="{{ route('journal', $journal->id) }}"><img class="card-img-top" style="height: 300px; width: 100%; display: block;" src="{{ $journal->img }}" data-holder-rendered="true"></a>
+                    <div class="card-body">
+                        <p class="card-text" style="text-align: center">{{ $journal->name }}</p>
+                        <h4 style="text-align: center">Экономическое Обозрение</h4>
+                    </div>
+                    </div>
                 </div>
-              </div>
-              <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card mb-4 box-shadow">
-                  <img class="card-img-top" style="height: 300px; width: 100%; display: block;" src="https://static.review.uz/crop/3/7/360__80_3794985784.jpg?v=1640692532" data-holder-rendered="true">
-                  <div class="card-body">
-                    <p class="card-text">12-264-2021</p>
-                    <h4>Экономическое Обозрение</h4>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card mb-4 box-shadow">
-                  <img class="card-img-top" style="height: 300px; width: 100%; display: block;" src="https://static.review.uz/crop/3/7/360__80_3794985784.jpg?v=1640692532" data-holder-rendered="true">
-                  <div class="card-body">
-                    <p class="card-text">12-264-2021</p>
-                    <h4>Экономическое Обозрение</h4>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card mb-4 box-shadow">
-                  <img class="card-img-top" style="height: 300px; width: 100%; display: block;" src="https://static.review.uz/crop/3/7/360__80_3794985784.jpg?v=1640692532" data-holder-rendered="true">
-                  <div class="card-body">
-                    <p class="card-text">12-264-2021</p>
-                    <h4>Экономическое Обозрение</h4>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card mb-4 box-shadow">
-                  <img class="card-img-top" style="height: 300px; width: 100%; display: block;" src="https://static.review.uz/crop/3/7/360__80_3794985784.jpg?v=1640692532" data-holder-rendered="true">
-                  <div class="card-body">
-                    <p class="card-text">12-264-2021</p>
-                    <h4>Экономическое Обозрение</h4>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card mb-4 box-shadow">
-                  <img class="card-img-top" style="height: 300px; width: 100%; display: block;" src="https://static.review.uz/crop/3/7/360__80_3794985784.jpg?v=1640692532" data-holder-rendered="true">
-                  <div class="card-body">
-                    <p class="card-text">12-264-2021</p>
-                    <h4>Экономическое Обозрение</h4>
-                  </div>
-                </div>
-              </div>
+            @endforeach
     </div>
     </div>
 	<!-- /Page Content -->

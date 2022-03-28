@@ -20,7 +20,7 @@ class CreateJournalsTable extends Migration
             $table->integer('year');
             $table->unsignedInteger('number');
             $table->string('img');
-            $table->string('file');
+            $table->text('file');
             $table->timestamps();
         });
     }

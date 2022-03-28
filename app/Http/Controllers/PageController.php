@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\File;
+use App\Models\Journal;
 use App\Models\Project;
 use App\Models\Role;
 use App\Models\Sector;
@@ -75,10 +76,35 @@ class PageController extends Controller
         return view('page.employees', ['sectors' => $sectors, 'roles' => $roles]);
     }
 
-    public function journalRu()
+    public function journalRu($year)
     {
+        $journals = Journal::where('lang', 'ru')->where('year', $year)->orderBy('name', 'DESC')->get();
+        $years = Journal::select('year')->distinct()->where('lang', 'ru')->orderBy('year', 'DESC')->get();
 
-        return view('page.documents.ru_journal');
+        return view('page.documents.ru_journal', [
+            'journals' => $journals,
+            'years' => $years
+        ]);
+    }
+    public function journalUz($year)
+    {
+        $journals = Journal::where('lang', 'uz')->where('year', $year)->get();
+        $years = Journal::select('year')->distinct()->where('lang', 'uz')->orderBy('year', 'DESC')->get();
+
+        return view('page.documents.uz_journal', [
+            'journals' => $journals,
+            'years' => $years
+        ]);
+    }
+
+    public function journal($id){
+        $journal = Journal::where('id', $id)->first();
+        $years = Journal::select('year')->distinct()->orderBy('year', 'DESC')->get();
+
+        return view('page.documents.journal', [
+            'journal' => $journal,
+            'years' => $years
+        ]);
     }
 
     public function register(Request $request){
