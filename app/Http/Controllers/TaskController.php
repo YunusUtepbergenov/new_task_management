@@ -238,6 +238,9 @@ class TaskController extends Controller
                 $file->delete();
             }
         }
+        if($task->repeat){
+            $task->repeat->delete();
+        }
 
         $task->delete();
 

@@ -57,7 +57,7 @@
      overwritePDFOutline: false,
 
      // enableDownload of PDF files (true|false)
-     enableDownload: true,
+     enableDownload: false,
 
      // duration of page turn in milliseconds
      duration: 800,

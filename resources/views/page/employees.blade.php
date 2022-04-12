@@ -85,7 +85,7 @@
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label>Введите имя</label>
-                                        <input class="form-control" name="user_name" type="text">
+                                        <input class="form-control" name="user_name" type="text" placeholder="Введите имя">
                                         <input type="hidden" name="password" value="password">
                                         <input type="hidden" name="password_confirmation" value="password">
                                     </div>
@@ -96,7 +96,7 @@
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label>Введите почта</label>
-                                        <input class="form-control" name="email" type="email">
+                                        <input class="form-control" name="email" type="email" placeholder="Введите почта">
                                     </div>
                                     <div class="alert alert-danger" id="email"></div>
                                 </div>
@@ -112,6 +112,7 @@
                                     </select>
                                 </div>
                             </div>
+
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Должность</label>
                                 <div class="col-sm-4">
@@ -120,6 +121,16 @@
                                             <option value="{{ $role->id }}">{{ $role->name }}</option>
                                         @endforeach
                                     </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label>Введите номер телефона</label>
+                                        <input class="form-control" name="phone" type="text" placeholder="(93) 123-45-67">
+                                    </div>
+                                    {{-- <div class="alert alert-danger" id="phone"></div> --}}
                                 </div>
                             </div>
 

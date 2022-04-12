@@ -31,21 +31,8 @@
 		<!-- /Page Header -->
 
 		<div class="row">
-            {{-- <div class="col-lg-12">
-                <div class="col-auto float-right ml-auto" style="margin-bottom: 30px;">
-                    <ul class="nav nav-tabs nav-tabs-bottom">
-                        @foreach ($years as $year)
-                            <li class="nav-item">
-                                <a href="{{ route('journal.ru', $year->year) }}" class="nav-link1">{{ $year->year }}</a>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div> --}}
-
             <div class="_df_book" id="flipbookContainer"></div>
-
-    </div>
+        </div>
     </div>
 	<!-- /Page Content -->
 @endsection
@@ -56,7 +43,7 @@
 <script>
     @if (str_contains($journal->file, ','))
         var flipBook = $('#flipbookContainer').flipBook([{!! $journal->file !!}], {
-        height: '700px',
+        height: '900px',
         enableDownload:false,
         scrollWheel:false,
         moreControls: 'pageMode,startPage,endPage,sound',
@@ -64,14 +51,12 @@
         });
     @else
         var flipBook = $('#flipbookContainer').flipBook({!! $journal->file !!}, {
-        height: '700px',
+        height: '900px',
         enableDownload:false,
         scrollWheel:false,
         moreControls: 'pageMode,startPage,endPage,sound',
         backgroundColor:'red'
         });
     @endif
-
-
 </script>
 @endsection

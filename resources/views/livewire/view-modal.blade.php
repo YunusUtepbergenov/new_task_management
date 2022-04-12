@@ -185,6 +185,12 @@
                                                         @endif
                                                     </td>
                                                 </tr>
+                                                @if ($task->response)
+                                                    <tr>
+                                                        <td>Время выполнения:</td>
+                                                        <td class="text-right" id="task_deadline">{{ $task->response->created_at->format('Y-m-d') }}</td>
+                                                    </tr>
+                                                @endif
 
                                                 @can('creator', $task)
                                                     @if ($task->status == "Ждет подтверждения")

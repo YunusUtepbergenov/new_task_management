@@ -111,11 +111,13 @@
                                 <div class="col-sm-1"></div>
                                 <label class="col-sm-3 col-form-label">Ответственный</label>
                                 <div class="col-sm-4">
-                                    <select class="form-control" name="user_id">
-                                        @foreach ($sectors->whereIn('id', [2,5,6,7,8,9]) as $sector)
+                                <select class="form-control" name="user_id">
+                                        @foreach ($sectors as $sector)
                                             <optgroup label="{{ $sector->name }}">
                                                 @foreach ($sector->users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @if($user->id != Auth::user()->id)
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @endif
                                                 @endforeach
                                             </optgroup>
                                         @endforeach
@@ -128,14 +130,16 @@
                                 <label class="col-sm-3 col-form-label">Ответственный</label>
                                 <div class="col-sm-4">
                                     <select class="form-control" name="user_id">
-                                        @foreach ($sectors->whereIn('id', [3,4,12,13,14,15,16]) as $sector)
-                                            <optgroup label="{{ $sector->name }}">
-                                                @foreach ($sector->users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                @endforeach
-                                            </optgroup>
-                                        @endforeach
-                                    </select>
+                                            @foreach ($sectors as $sector)
+                                                <optgroup label="{{ $sector->name }}">
+                                                    @foreach ($sector->users as $user)
+                                                        @if($user->id != Auth::user()->id)
+                                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </optgroup>
+                                            @endforeach
+                                        </select>
                                 </div>
                             </div>
                         @endif

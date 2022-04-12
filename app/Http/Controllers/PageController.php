@@ -78,7 +78,7 @@ class PageController extends Controller
 
     public function journalRu($year)
     {
-        $journals = Journal::where('lang', 'ru')->where('year', $year)->orderBy('name', 'DESC')->get();
+        $journals = Journal::where('lang', 'ru')->where('year', $year)->orderBy('number', 'DESC')->get();
         $years = Journal::select('year')->distinct()->where('lang', 'ru')->orderBy('year', 'DESC')->get();
 
         return view('page.documents.ru_journal', [
@@ -88,7 +88,7 @@ class PageController extends Controller
     }
     public function journalUz($year)
     {
-        $journals = Journal::where('lang', 'uz')->where('year', $year)->get();
+        $journals = Journal::where('lang', 'uz')->where('year', $year)->orderBy('number', 'DESC')->get();
         $years = Journal::select('year')->distinct()->where('lang', 'uz')->orderBy('year', 'DESC')->get();
 
         return view('page.documents.uz_journal', [
@@ -116,11 +116,12 @@ class PageController extends Controller
             'password' => 'required|min:6|max:15'
         ]);
 
-        $user = User::create([
+        User::create([
             'name' => $request->user_name,
             'email' => $request->email,
             'sector_id' => $request->sector_id,
             'role_id' => $request->role_id,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
         ]);
 

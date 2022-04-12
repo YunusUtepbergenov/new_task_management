@@ -19,7 +19,7 @@ class OrderedTable extends Component
         $this->username = Auth::user()->name;
         $this->project = Project::all();
         $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->where('project_id', Null)
-                        ->orderBy('deadline', 'ASC')->get();
+                        ->orderBy('created_at', 'DESC')->get();
         $this->chosen_project = Project::with(['tasks' => function($query){
             $query->with('user')->where('creator_id', Auth::user()->id);
         }])->where('user_id', Auth::user()->id)->get();
@@ -40,7 +40,7 @@ class OrderedTable extends Component
         }elseif($this->projectId == "Empty"){
             if($this->status == "Empty"){
                 $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->where('project_id', null)
-                            ->orderBy('deadline', 'ASC')->get();
+                            ->orderBy('created_at', 'DESC')->get();
                 $this->chosen_project = Project::with(['tasks' => function($query){
                     $query->with('user')->where('creator_id', Auth::user()->id);
                 }])->where('user_id', Auth::user()->id)->get();

@@ -13,7 +13,7 @@ class TasksTable extends Component
     public $projectId, $status;
 
     public function mount(){
-        $project_tasks = Task::with('project')->where('user_id', Auth::user()->id)->where('project_id', '<>', null)->get();
+        $project_tasks = Task::with('project')->where('user_id', Auth::user()->id)->where('project_id', '<>', null)->orderBy('created_at', 'DESC')->get();
         $projects_arr = array();
 
         $user_projects = collect([]);
@@ -37,7 +37,7 @@ class TasksTable extends Component
         $this->chosen_project = $user_projects;
         $this->project = Project::all();
         $this->tasks = Task::with('creator:id,name,sector_id,role_id')->where('user_id', Auth::user()->id)->where('project_id', Null)
-                        ->orderBy('deadline', 'ASC')->get();
+                        ->orderBy('created_at', 'DESC')->get();
     }
 
     public function updated(){
