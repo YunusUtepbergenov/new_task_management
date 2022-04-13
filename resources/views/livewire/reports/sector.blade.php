@@ -22,12 +22,14 @@
                         <div class="progress">
                             @php $avg = 0; @endphp
                             @foreach ($sector->users as $user)
-                                @if ($user->tasks()->count() > 0)
-                                    @php  $avg = $avg + round( ((1 - ( $user->overdueTasks()->count()
-                                          + (0.5 * $user->newTasks()->count()) ) / $user->tasks()->count() )) * 100, 1);
-                                    @endphp
-                                @else
-                                    @php $avg = $avg + 100 @endphp
+                                @if (!$user->isDirector())
+                                    @if ($user->tasks()->count() > 0)
+                                        @php  $avg = $avg + round( ((1 - ( $user->overdueTasks()->count()
+                                            + (0.5 * $user->newTasks()->count()) ) / $user->tasks()->count() )) * 100, 1);
+                                        @endphp
+                                    @else
+                                        @php $avg = $avg + 100 @endphp
+                                    @endif
                                 @endif
                             @endforeach
                             <div class="progress-bar bg-progress" role="progressbar" style="width: {{ round(($avg) / ($sector->users()->count()), 1) }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">{{ round(($avg) / ($sector->users()->count()), 1) }}%</div>

@@ -21,8 +21,12 @@
 							</li>
 
                             @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
-                                <li>
-                                    <a href="{{ route('reports') }}"><i class="la la-pie-chart"></i> <span>Отчеты</span></a>
+                                <li class="submenu">
+                                    <a href="#"><i class="la la-pie-chart"></i><span>Отчеты</span><span class="menu-arrow"></span></a>
+                                    <ul style="display: none;">
+                                        <li><a href="{{ route('reports') }}"><span>Отчеты</span></a></li>
+                                        <li><a href="{{ route('table.report') }}"><span>Таблица</span></a></li>
+                                    </ul>
                                 </li>
                             @endif
 							<li>

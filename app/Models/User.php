@@ -94,7 +94,6 @@ class User extends Authenticatable
         return $this->tasks()->where('overdue', 0)->where('status', 'Выполнено');
     }
 
-
     public function sector(){
         return $this->belongsTo(Sector::class);
     }
