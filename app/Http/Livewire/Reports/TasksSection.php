@@ -28,14 +28,14 @@ class TasksSection extends Component
             $this->user = Null;
         }
         else{
+            $this->user = User::where('id', $id)->first();
             if($this->filter == "Null"){
-                $this->tasks = Task::with(['user', 'creator'])->where('user_id', $id)->get();
-                $this->user = User::where('id', $id)->first();
+                $this->tasks = Task::with(['user', 'creator'])->where('user_id', $id)->orderBy('created_at', 'DESC')->get();
             }
-            else{
-                $this->user = User::where('id', $id)->first();
-                $this->tasks = Task::with(['user', 'creator'])->where('user_id', $id)->where('status', $this->filter)->get();
-            }
+            elseif($this->filter == "Просроченный")
+                $this->tasks = Task::with(['user', 'creator'])->where('user_id', $id)->where('overdue', 1)->orderBy('created_at', 'DESC')->get();
+            else
+                $this->tasks = Task::with(['user', 'creator'])->where('user_id', $id)->where('overdue', 0)->where('status', $this->filter)->orderBy('created_at', 'DESC')->get();
         }
     }
 
@@ -43,9 +43,11 @@ class TasksSection extends Component
         if($this->user == Null){
             $this->tasks = Null;
         }elseif($this->filter == "Null")
-            $this->tasks = Task::with(['user', 'creator'])->where('user_id', $this->user->id)->get();
+            $this->tasks = Task::with(['user', 'creator'])->where('user_id', $this->user->id)->orderBy('created_at', 'DESC')->get();
+        elseif($this->filter == "Просроченный")
+            $this->tasks = Task::with(['user', 'creator'])->where('user_id', $this->user->id)->where('overdue', 1)->orderBy('created_at', 'DESC')->get();
         else
-            $this->tasks = Task::with(['user', 'creator'])->where('user_id', $this->user->id)->where('status', $this->filter)->get();
+            $this->tasks = Task::with(['user', 'creator'])->where('user_id', $this->user->id)->where('overdue', 0)->where('status', $this->filter)->orderBy('created_at', 'DESC')->get();
     }
 
     public function render()

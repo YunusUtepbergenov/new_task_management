@@ -88,7 +88,7 @@ class User extends Authenticatable
         return $this->tasks()->where('overdue', 0)->where('status', 'Выполняется');
     }
     public function confirmTasks(){
-        return $this->tasks()->where('status', 'Ждет подтверждения');
+        return $this->tasks()->where('overdue', 0)->where('status', 'Ждет подтверждения');
     }
     public function finishedTasks(){
         return $this->tasks()->where('overdue', 0)->where('status', 'Выполнено');

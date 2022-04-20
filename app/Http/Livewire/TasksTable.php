@@ -13,19 +13,17 @@ class TasksTable extends Component
     public $projectId, $status;
 
     public function mount(){
-        $project_tasks = Task::with('project')->where('user_id', Auth::user()->id)->where('project_id', '<>', null)->orderBy('created_at', 'DESC')->get();
+        $project_tasks = Task::with('project')->select('project_id')->where('user_id', Auth::user()->id)->where('project_id', '<>', null)->distinct('project_id')->get();
         $projects_arr = array();
 
         $user_projects = collect([]);
 
         foreach($project_tasks as $task){
-            array_push($projects_arr, $task->project->name);
+            array_push($projects_arr, $task->project->id);
         }
 
-        $unique_projects = array_unique($projects_arr);
-
-        foreach($unique_projects as $project){
-            $project_collection = Project::where('name', $project)->first();
+        foreach($projects_arr as $project){
+            $project_collection = Project::where('id', $project)->first();
             $user_projects = $user_projects->merge([$project_collection]);
         }
 
@@ -35,27 +33,27 @@ class TasksTable extends Component
         $this->status = "Empty";
         $this->username = Auth::user()->name;
         $this->chosen_project = $user_projects;
-        $this->project = Project::all();
         $this->tasks = Task::with('creator:id,name,sector_id,role_id')->where('user_id', Auth::user()->id)->where('project_id', Null)
-                        ->orderBy('created_at', 'DESC')->get();
+                        ->latest()->get();
     }
 
     public function updated(){
         if($this->projectId == Null){
             if($this->status == "Empty"){
-                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->orderBy('deadline', 'ASC')->get();
+                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->latest()->get();
             }else{
-                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->where('status', $this->status)->orderBy('deadline', 'ASC')->get();
+                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->where('status', $this->status)->latest()->get();
             }
             $this->chosen_project = Null;
         }elseif($this->projectId == "Empty"){
             $this->chosen_project = Null;
             if($this->status == "Empty"){
-                $this->tasks = Task::with('creator:id,name,sector_id,role_id')->where('user_id', Auth::user()->id)->whereIn('status', ['Новое' ,'Выполняется'])
-                                ->orderBy('deadline', 'ASC')->get();
-            }else{
-                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('status', $this->status)->orderBy('deadline', 'ASC')->get();
-            }
+                // $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->latest()->get();
+                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->latest()->get();
+            }elseif($this->status == "Просроченный")
+                $this->tasks = Task::with(['user', 'creator'])->where('user_id', Auth::user()->id)->where('overdue', 1)->orderBy('created_at', 'DESC')->get();
+            else
+                $this->tasks = Task::with(['user', 'creator'])->where('user_id', Auth::user()->id)->where('overdue', 0)->where('status', $this->status)->orderBy('created_at', 'DESC')->get();
         }else{
             $this->tasks = Null;
             if($this->status == "Empty"){

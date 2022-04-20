@@ -62,7 +62,9 @@
                                         <div class="dropdown dropdown-action profile-action">
                                             <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
+                                                @if ($task->status != "Выполнено")
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
+                                                @endif
                                                 @if ($task->repeat_id)
                                                     <form action="{{ route('task.destroy', $task->id) }}" method="POST">
                                                         <input type="hidden" name="_method" value="DELETE">
