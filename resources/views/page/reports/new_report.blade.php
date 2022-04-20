@@ -52,7 +52,7 @@
                                         <td class="text-wrap"></td>
                                         <td>{{ $employee->role->name }}</td>
                                         <td> {{$employee->tasks->count()}}</td>
-                                        <td>{{$employee->finishedTasks()->count()}}</td>
+                                        <td>{{$employee->closedTasks()->count()}}</td>
                                     </tr>
 
                                     @endif

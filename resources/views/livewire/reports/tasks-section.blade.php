@@ -49,33 +49,79 @@
                     </thead>
                     <tbody>
                         @if ($tasks)
-                        @forelse ($tasks as $key=>$task)
-                        <tr>
-                            <td>{{ $key+1 }}</td>
-                            <td>
-                                @if ($task->status == "Выполнено")
-                                    <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>
-                                @else
-                                    <a href="#" wire:click.prevent="view({{ $task->id }})">{{ $task->name }}</a>
-                                @endif
-                            </td>
-                            <td>{{ $task->created_at->format('Y-m-d') }}</td>
-                            <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
-                            <td>{{ $task->creator->name }}</td>
-                            <td>{{ $task->user->name }}</td>
-                            <td>
-                                @if ($task->overdue)
-                                    <span class="badge bg-inverse-warning">Просроченный</span>
-                                @else
-                                    <span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-
-                    @endforelse
+                            @forelse ($tasks as $key=>$task)
+                                <tr>
+                                    <td>{{ $key+1 }}</td>
+                                    <td>
+                                        @if ($task->status == "Выполнено")
+                                            <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>
+                                        @else
+                                            <a href="#" wire:click.prevent="view({{ $task->id }})">{{ $task->name }}</a>
+                                        @endif
+                                    </td>
+                                    <td>{{ $task->created_at->format('Y-m-d') }}</td>
+                                    <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
+                                    <td>{{ $task->creator->name }}</td>
+                                    <td>{{ $task->user->name }}</td>
+                                    <td>
+                                        @if ($task->overdue)
+                                            <span class="badge bg-inverse-warning">Просроченный</span>
+                                        @else
+                                            <span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                            @endforelse
                         @endif
-
+                        @if ($projects)
+                            @foreach ($projects as $prj)
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>{{ $prj['name'] }}</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                @php
+                                    $cnt = 1;
+                                @endphp
+                                @foreach ($prj['tasks'] as $key=>$task)
+                                    @if ($task['user_id'] == $user['id'])
+                                        <tbody>
+                                            <tr>
+                                                <td>{{ $cnt }}</td>
+                                                <td>
+                                                    @if ($task['status'] == "Выполнено")
+                                                        <a href="#" wire:click.prevent="view({{ $task['id'] }})"><del>{{ $task['name'] }}</del></a>
+                                                    @else
+                                                        <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
+                                                    @endif
+                                                </td>
+                                                <td>{{ substr($task['created_at'], 0, 10) }}</td>
+                                                <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
+                                                <td>{{ $task['creator']['name'] }}</td>
+                                                <td>{{ $task['user']['name'] }}</td>
+                                                <td>
+                                                    @if ($task['overdue'])
+                                                        <span class="badge bg-inverse-warning">Просроченный</span>
+                                                    @else
+                                                        <span class="badge bg-inverse-{{ ($task['status'] == "Новое") ? 'success' : (($task['status'] == "Выполняется") ? 'primary' : (($task['status'] == "Ждет подтверждения") ? 'danger' : (($task['status'] == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task['status'] }}</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        @php
+                                            $cnt++
+                                        @endphp
+                                    @endif
+                                @endforeach
+                            @endforeach
+                        @endif
                     </tbody>
                 </table>                                                                                                                                                                                </table>
             </div>
