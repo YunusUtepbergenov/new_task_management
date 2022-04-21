@@ -3832,6 +3832,13 @@ table.dataTable thead > tr > td.sorting {
     float: left;
     font-size: 14px;
 }
+
+.clear-notifications{
+    color: #d56546;
+    display: block;
+    float: right;
+    font-size: 14px;
+}
 .topnav-dropdown-header .clear-noti {
     color: #f83f37;
     float: right;

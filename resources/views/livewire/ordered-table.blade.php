@@ -40,15 +40,15 @@
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-nowrap mb-0" wire.ignore.self>
+                        <table class="table table-nowrap mb-0" id="myTable" wire.ignore.self>
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th></th>
-                                    <th>Название</th>
-                                    <th>Дата Создание</th>
-                                    <th>Крайний срок</th>
-                                    <th>Постановщик</th>
+                                    <th class="skip-filter">#</th>
+                                    <th class="skip-filter"></th>
+                                    <th class="skip-filter">Название</th>
+                                    <th class="skip-filter">Дата Создание</th>
+                                    <th class="skip-filter">Крайний срок</th>
+                                    <th class="skip-filter">Постановщик</th>
                                     <th>Ответственный</th>
                                     <th>Состояние</th>
                                 </tr>

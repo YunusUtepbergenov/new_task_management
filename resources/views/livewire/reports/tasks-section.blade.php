@@ -5,6 +5,7 @@
                 <div class="col-sm-2">
                     <h4 class="card-title mb-0">Задачи</h4>
                 </div>
+                @if ($user)
                 <div class="col-sm-10">
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" wire:model="filter" name="filter" id="inlineRadio0" value="Null">
@@ -31,6 +32,8 @@
                         <label class="form-check-label" for="inlineRadio5" style="color: #ffbc34; font-weight:bold">Просроченный ({{ ($user) ? $user->overdueTasks()->count() : '0' }})</label>
                     </div>
                 </div>
+                @endif
+
             </div>
         </div>
         <div class="card-body">

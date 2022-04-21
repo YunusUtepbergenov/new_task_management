@@ -6,6 +6,7 @@
     <div class="dropdown-menu notifications">
         <div class="topnav-dropdown-header">
             <span class="notification-title">Уведомления</span>
+            <a href="{{ route('read.noti') }}" class="clear-notifications">Удалить все уведомления</a>
         </div>
         <div class="noti-content">
             <ul class="notification-list">

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-use App\Models\Category;
+// use App\Models\Category;
 use App\Models\File;
 use App\Models\Journal;
 use App\Models\Project;
@@ -14,7 +14,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+// use Illuminate\Support\Facades\Storage;
 
 class PageController extends Controller
 {
@@ -171,6 +171,11 @@ class PageController extends Controller
     public function read($id, Request $request){
         Auth::user()->unreadNotifications->where('id', $id)->markAsRead();
         return redirect()->back();
+    }
+
+    public function readNoti(){
+        Auth::user()->unreadNotifications->markAsRead();
+        return back();
     }
 
     public function settings(){

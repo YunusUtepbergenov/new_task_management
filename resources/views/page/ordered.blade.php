@@ -39,9 +39,9 @@
 
 @section('scripts')
     @livewireScripts
-
+    <script src="{{ asset('assets/js/ddtf.js') }}"></script>
     <script>
-
+        $('#myTable').ddTableFilter();
         // $('#flexCheckDefault3').removeAttr('checked');
         $("#name2").addClass("d-none");
         $("#deadline2").addClass("d-none");

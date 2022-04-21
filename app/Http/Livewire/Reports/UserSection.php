@@ -16,10 +16,10 @@ class UserSection extends Component
     }
 
     public function updateUsersList($id){
-        $sector = Sector::with('users')->where  ('id', $id)->first();
+        $sector = Sector::with('users')->where('id', $id)->first();
         $this->users = $sector->users;
         $this->userId = Null;
-        $this->emit('updateUserId', $this->userId);
+        $this->emit('updateSectorTasks', $sector->id);
     }
 
     public function updatedUserId(){

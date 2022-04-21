@@ -12,7 +12,7 @@ class TasksSection extends Component
 {
     public $tasks, $user, $filter = "Null", $projects;
 
-    protected $listeners = ['updateUserId'];
+    protected $listeners = ['updateUserId', 'updateSectorTasks'];
 
     public function mount()
     {
@@ -74,6 +74,11 @@ class TasksSection extends Component
             $this->tasks = Task::with(['user', 'creator'])->where('user_id', $this->user->id)->where('overdue', 0)->where('status', $this->filter)->orderBy('created_at', 'DESC')->get();
             $this->projects = Null;
         }
+    }
+
+    public function updateSectorTasks($id){
+        $this->user = Null;
+        $this->tasks = Task::where('sector_id', $id)->get();
     }
 
     public function render()
