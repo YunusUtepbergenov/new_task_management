@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-// use App\Models\Category;
 use App\Models\File;
 use App\Models\Journal;
 use App\Models\Project;
@@ -11,26 +10,17 @@ use App\Models\Role;
 use App\Models\Sector;
 use App\Models\Task;
 use App\Models\User;
+use App\Services\TaskService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-// use Illuminate\Support\Facades\Storage;
 
 class PageController extends Controller
 {
     public function dashboard(){
-        $user = Auth::user();
-        $projects = Project::where('user_id', $user->id)->get();
+        $projects = (new TaskService())->projectList();
+        $sectors = (new TaskService())->sectorList();
 
-        if($user->isDirector() || $user->isMailer() || Auth::user()->isDeputy()){
-            $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
-        }elseif ($user->isHead()) {
-            $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
-        }
-        else{
-            $projects = NULL;
-            $sectors = NULL;
-        }
         return view('page.index', [
             'projects' => $projects,
             'sectors' => $sectors,
@@ -38,23 +28,17 @@ class PageController extends Controller
     }
 
     public function ordered(){
-        $user = Auth::user();
-        $projects = Project::where('user_id', $user->id)->get();
+        $sectors = (new TaskService())->sectorList();
+        $projects = (new TaskService())->projectList();
 
-        if($user->isDirector() || $user->isMailer() || Auth::user()->isDeputy()){
-            $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
-        }elseif ($user->isHead()) {
-            $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
-        }else{
-            abort(404);
-        }
-
-        return view('page.ordered', ['projects' => $projects,'sectors' => $sectors]);
+        return view('page.ordered', [
+            'projects' => $projects,
+            'sectors' => $sectors
+        ]);
     }
 
     public function helping(){
         $projects = Project::where('user_id', Auth::user()->id)->get();
-
         $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
 
         return view('page.helping', [
@@ -64,10 +48,7 @@ class PageController extends Controller
     }
 
     public function reports(){
-        $sectors = Sector::all();
-        return view('page.reports', [
-            'sectors' => $sectors
-        ]);
+        return view('page.reports');
     }
 
     public function reportTable(){
@@ -81,13 +62,14 @@ class PageController extends Controller
         $user = User::where('id', $id)->first();
 
         return view('page.reports.user', [
-            'user' => $user
+            'user_id' => $user->id
         ]);
     }
 
     public function employees(){
         $sectors = Sector::with('users.role')->get();
         $roles = Role::all();
+
         return view('page.employees', ['sectors' => $sectors, 'roles' => $roles]);
     }
 
@@ -101,6 +83,7 @@ class PageController extends Controller
             'years' => $years
         ]);
     }
+
     public function journalUz($year)
     {
         $journals = Journal::where('lang', 'uz')->where('year', $year)->orderBy('number', 'DESC')->get();
@@ -153,7 +136,6 @@ class PageController extends Controller
         $article = Article::with(['user'])->where('id', $id)->first();
         return response()->json(['article' => $article]);
     }
-
 
     public function download($id){
         $file = File::where('id', $id)->first();

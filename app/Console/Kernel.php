@@ -31,16 +31,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-
-        $schedule->call(function(){
-            $tasks = Task::all();
-
-            foreach($tasks as $task){
-                $user = User::where('id', $task->user_id)->first();
-                $task->update(['sector_id' => intval($user->sector->id)]);
-            }
-        })->everyMinute();
-
         $schedule->call(function(){
             DB::table('tasks')->where('deadline', '<=', Carbon::yesterday())->whereIn('status', ['Новое' ,'Выполняется', 'Просроченный'])->
                 where('overdue', 0)->update(['overdue' => 1]);

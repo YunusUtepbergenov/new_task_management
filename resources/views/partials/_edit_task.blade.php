@@ -111,7 +111,7 @@
                                 <div class="col-sm-1"></div>
                                 <label class="col-sm-3 col-form-label">Ответственный</label>
                                 <div class="col-sm-4">
-                                <select class="form-control" name="user_id">
+                                <select class="form-control" name="user_id" id="user_id1">
                                         @foreach ($sectors as $sector)
                                             <optgroup label="{{ $sector->name }}">
                                                 @foreach ($sector->users as $user)
@@ -129,7 +129,7 @@
                                 <div class="col-sm-1"></div>
                                 <label class="col-sm-3 col-form-label">Ответственный</label>
                                 <div class="col-sm-4">
-                                    <select class="form-control" name="user_id">
+                                    <select class="form-control" name="user_id" id="user_id1">
                                             @foreach ($sectors as $sector)
                                                 <optgroup label="{{ $sector->name }}">
                                                     @foreach ($sector->users as $user)
@@ -159,7 +159,7 @@
                             <label class="col-sm-3 col-form-label">Соисполнитель</label>
                             <div class="col-sm-4">
 
-                                <select class="form-control select" name="helpers[]" multiple>
+                                <select class="form-control select" name="helpers[]" id="helpers1" multiple>
                                     @foreach ($sectors as $sector)
                                     <optgroup label="{{ $sector->name }}">
                                         @foreach ($sector->users as $user)

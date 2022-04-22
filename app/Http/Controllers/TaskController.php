@@ -10,6 +10,7 @@ use App\Models\Response;
 use App\Models\Sector;
 use App\Models\Task;
 use App\Models\TaskUser;
+use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
@@ -38,6 +39,8 @@ class TaskController extends Controller
             'file.*' => 'nullable|file|max:5000'
         ]);
 
+        $user = User::where('id', $request->user_id)->first();
+
         if($request->repeat_check != "on"){
             $new_deadline = $request->deadline;
 
@@ -45,6 +48,7 @@ class TaskController extends Controller
                 'creator_id' => $request->creator_id,
                 'user_id' => $request->user_id,
                 'project_id' => $request->project_id,
+                'sector_id' => $user->sector->id,
                 'name' => $request->name,
                 'description' => $request->description,
                 'deadline' => $new_deadline,
@@ -85,6 +89,7 @@ class TaskController extends Controller
                         'creator_id' => $request->creator_id,
                         'user_id' => $request->user_id,
                         'project_id' => $request->project_id,
+                        'sector_id' => $user->sector->id,
                         'name' => $request->name,
                         'description' => $request->description,
                         'deadline' => $new_deadline,
@@ -131,6 +136,7 @@ class TaskController extends Controller
                     'creator_id' => $request->creator_id,
                     'user_id' => $request->user_id,
                     'project_id' => $request->project_id,
+                    'sector_id' => $user->sector->id,
                     'name' => $request->name,
                     'description' => $request->description,
                     'deadline' => $new_deadline,
@@ -175,7 +181,7 @@ class TaskController extends Controller
         ]);
 
         $task = Task::where('id', $request->id)->first();
-
+        $user = User::where('id', $request->user_id)->first();
         // if($request->repeat_check != "on"){
         //     $request->repeat = 'ordinary';
         // }
@@ -184,6 +190,7 @@ class TaskController extends Controller
             'creator_id' => $request->creator_id,
             'user_id' => $request->user_id,
             'project_id' => $request->project_id,
+            'sector_id' => $user->sector->id,
             'name' => $request->name,
             'description' => $request->description,
             'deadline' => $request->deadline,

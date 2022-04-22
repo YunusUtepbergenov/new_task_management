@@ -32,12 +32,6 @@ class TasksSection extends Component
         else{
             $this->user = User::where('id', $id)->first();
 
-            // $project_tasks = Task::with('project')->select('project_id')->where('user_id', $id)->where('project_id', '<>', null)->distinct('project_id')->get();
-            // $this->projects = (new ProjectService())->projectsList($project_tasks);
-
-            // $this->tasks = Task::with('creator:id,name,sector_id,role_id')->where('user_id', $this->user->id)->where('project_id', Null)
-            //                 ->latest()->get();
-
             if($this->filter == "Null"){
                 $project_tasks = Task::with('project')->select('project_id')->where('user_id', $id)->where('project_id', '<>', null)->distinct('project_id')->get();
                 $this->projects = (new ProjectService())->projectsList($project_tasks);
@@ -78,6 +72,7 @@ class TasksSection extends Component
 
     public function updateSectorTasks($id){
         $this->user = Null;
+        $this->projects = Null;
         $this->tasks = Task::where('sector_id', $id)->get();
     }
 

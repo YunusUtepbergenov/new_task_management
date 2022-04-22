@@ -16,7 +16,7 @@
 			</div>
 		</div>
 		<!-- /Page Header -->
-        @livewire('reports.user', ['userId' => $user->id])
+        @livewire('reports.user', ['userId' => $user_id])
         @livewire('view-modal')
 	</div>
 	<!-- /Page Content -->
