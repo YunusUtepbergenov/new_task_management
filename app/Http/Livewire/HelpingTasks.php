@@ -26,7 +26,7 @@ class HelpingTasks extends Component
         foreach($this->tasks1 as $task){
             $this->helping_task = Task::where('id', $task->task_id)->first();
             if($this->helping_task->project_id != NULL){
-                array_push($projects_arr, $this->helping_task->project->name);
+                array_push($projects_arr, $this->helping_task->project->id);
                 array_push($this->tasks_id, $this->helping_task->id);
             }else{
                 $this->tasks_without_project = $this->tasks_without_project->merge([$this->helping_task]);
@@ -36,7 +36,7 @@ class HelpingTasks extends Component
         $unique_projects = array_unique($projects_arr);
 
         foreach($unique_projects as $project){
-            $project_collection = Project::with('tasks')->where('name', $project)->first();
+            $project_collection = Project::with('tasks')->where('id', $project)->first();
             $this->helping_projects = $this->helping_projects->merge([$project_collection]);
         }
 
