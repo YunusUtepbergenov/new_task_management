@@ -127,9 +127,9 @@
                                             </div>
                                         </div>
                                     </a>
-                                </li>                                
+                                </li>
                             @endforeach
-                        </ul>                    
+                        </ul>
                 </div>
                 </div>
             </div>

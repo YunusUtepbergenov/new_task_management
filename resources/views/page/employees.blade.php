@@ -38,6 +38,7 @@
 								<th>Почта</th>
 								<th>Сектор</th>
 								<th>Должность</th>
+                                <th>Дата рождения</th>
 								<th>Тел.Номер</th>
 								<th>Внутренный номер</th>
                             </tr>
@@ -45,7 +46,7 @@
 						<tbody style="overflow: auto;">
                             @foreach ($sectors as $sector)
                                 <tr>
-                                    <th colspan="6" id="employee_normal">{{ $sector->name }}</th>
+                                    <th colspan="7" id="employee_normal">{{ $sector->name }}</th>
                                 </tr>
                                 @foreach ($sector->users as $employee)
                                     <tr>
@@ -57,6 +58,11 @@
                                         <td>{{ $employee->email }}</td>
                                         <td class="text-wrap"></td>
                                         <td>{{ $employee->role->name }}</td>
+                                        @if ($employee->birth_date)
+                                            <td>{{ $employee->birth_date->format('Y-m-d') }}</td>
+                                        @else
+                                            <td></td>
+                                        @endif
                                         <td> {{$employee->phone}}</td>
                                         <td>{{$employee->internal}}</td>
                                     </tr>

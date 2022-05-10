@@ -54,10 +54,15 @@ class PageController extends Controller
     }
 
     public function reportTable(){
-        $sectors = Sector::all();
-        return view('page.reports.new_report', [
-            'sectors' => $sectors
-        ]);
+        $user = Auth::user();
+        if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer()){
+            $sectors = Sector::all();
+            return view('page.reports.new_report', [
+                'sectors' => $sectors
+            ]);
+        }else{
+            abort(404);
+        }
     }
 
     public function userReport($id){
