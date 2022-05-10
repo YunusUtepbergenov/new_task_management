@@ -19,6 +19,7 @@
 				<div class="col">
 					<h3 class="page-title">Сотрудники</h3>
 				</div>
+				<a href="{{ route('download.report') }}"> Download report for April</a>
 			</div>
 		</div>
 		<!-- /Page Header -->

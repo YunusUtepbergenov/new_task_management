@@ -108,8 +108,29 @@
 			<!-- Right Sidebar -->
 			<div class="sidebar_right" id="sidebar">
                 <div class="sidebar-inner slimscroll">
-					<div id="sidebar-menu" class="sidebar-menu">
-					</div>
+                    <div class="card-body">
+                        <h6 class="birthday-title m-b-5" style="color: white">
+                            Ближайшие дни рождения
+                        </h6>
+                        <ul class="list-box">
+                            @foreach ($birthdays as $birthday)
+                                <li>
+                                    <a href="#">
+                                        <div class="list-item">
+                                            <div class="list-left">
+                                                <span class="avatar"><img alt="" src="{{ asset('assets/img/avatar.jpg') }}"></span>
+                                            </div>
+                                            <div class="list-body">
+                                                <span class="birthday-author">{{ $birthday->name }}</span>
+                                                <div class="clearfix"></div>
+                                                <span class="birth-date">{{ $birthday->birth_date->format('d-m-Y') }}</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>                                
+                            @endforeach
+                        </ul>                    
+                </div>
                 </div>
             </div>
 			<!-- End Right Sidebar -->

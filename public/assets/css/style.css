@@ -1581,7 +1581,7 @@ table.dataTable thead > tr > td.sorting {
     position: fixed;
     top: 60px;
     transition: all 0.2s ease-in-out 0s;
-    width: 80px;
+    width: 220px;
     z-index: 1000;
 }
 
@@ -1827,7 +1827,7 @@ table.dataTable thead > tr > td.sorting {
 .page-wrapper {
     left: 0;
     margin-left: 230px;
-    margin-right: 80px;
+    margin-right: 220px;
     padding-top: 60px;
     position: relative;
     transition: all 0.2s ease-in-out;
@@ -1864,6 +1864,12 @@ table.dataTable thead > tr > td.sorting {
     font-weight: 500;
     margin-bottom: 20px;
 }
+
+.birthday-title {
+    font-size: 13px;
+    font-weight: bold;
+}
+
 .card-header {
     background-color: #fff;
 }
@@ -3833,7 +3839,7 @@ table.dataTable thead > tr > td.sorting {
     font-size: 14px;
 }
 
-.clear-notifications{
+.clear-notifications {
     color: #d56546;
     display: block;
     float: right;
@@ -3971,6 +3977,17 @@ table.dataTable thead > tr > td.sorting {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.birthday-author {
+    color: #fff;
+    float: left;
+    font-weight: 500;
+    width: 175px;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 .message-time {
     color: #888;
     float: right;
@@ -3978,6 +3995,15 @@ table.dataTable thead > tr > td.sorting {
 }
 .message-content {
     color: #333;
+    font-size: 13px;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.birth-date {
+    color: #fff;
     font-size: 13px;
     display: block;
     max-width: 100%;
@@ -8220,7 +8246,7 @@ ul.comment-list li ul.children {
         border-bottom-width: 2px;
         border-color: transparent;
         border-bottom-color: #34444c;
-        font-size: 22px;
+        font-size: 18px;
         background-color: transparent;
         transition: none 0s ease 0s;
         -moz-transition: none 0s ease 0s;
@@ -8253,6 +8279,30 @@ ul.comment-list li ul.children {
     .nav-tabs-justified.nav-tabs-top > li > a:hover,
     .nav-tabs-justified.nav-tabs-top > li > a:focus {
         border-width: 2px 0 0 0;
+    }
+    body {
+        font-size: 12px;
+    }
+
+    .page-title {
+        font-size: 22px;
+    }
+    .card-title {
+        font-size: 16px;
+    }
+    .add-btn {
+        font-size: 13px;
+        min-width: 120px;
+    }
+
+    .form-control {
+        height: 36px;
+        font-size: 13px;
+    }
+
+    .submit-btn {
+        font-size: 14px;
+        padding: 10px;
     }
 }
 @media only screen and (max-width: 1199.98px) {
@@ -8798,13 +8848,35 @@ ul.comment-list li ul.children {
         font-size: 14px;
         min-width: inherit;
     }
+    body {
+        font-size: 10px;
+    }
+    .form-control {
+        font-size: 11px;
+        height: 24px;
+    }
+    .sidebar_right {
+        width: 0px;
+    }
+
+    .page-wrapper {
+        margin-right: 6px;
+    }
+
+    .nav-tabs .nav-link {
+        font-size: 14px;
+    }
+
+    .add-btn {
+        font-size: 12px;
+    }
 }
 /*Project Board*/
 .page-header .page-title i {
     color: #e6e9ef;
 }
 
-.form-check-inline{
+.form-check-inline {
     margin-right: 2.75rem;
 }
 .page-header .page-title i:hover,
@@ -8931,12 +9003,12 @@ td a {
     font-weight: bold;
 }
 
-.sectors_section{
+.sectors_section {
     height: 200px;
     overflow-y: auto;
 }
 
-.users_section{
+.users_section {
     height: 200px;
     overflow-y: auto;
 }
@@ -8949,7 +9021,7 @@ td a {
     margin-top: 10px;
 }
 
-.reports_table{
+.reports_table {
     max-height: 400px;
 }
 /* :not(:required) hides these rules from IE9 and below */
@@ -9067,7 +9139,7 @@ td a {
     }
 }
 
-#employee_header tr th{
+#employee_header tr th {
     margin: 0;
     padding: 2px 0 0 12px;
     position: -webkit-sticky;
@@ -9076,4 +9148,3 @@ td a {
     border-right: 1px solid #fff;
     background: #69997a;
 }
-

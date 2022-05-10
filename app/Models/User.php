@@ -64,6 +64,8 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+    protected $dates = ['birth_date'];
+
     public function role(){
         return $this->belongsTo(Role::class);
     }

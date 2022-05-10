@@ -34,6 +34,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reports/table', [PageController::class, 'reportTable'])->name('table.report');
     Route::get('report/{id}', [PageController::class, 'userReport'])->name('user.report');
     Route::get('notifications/read/all', [PageController::class, 'readNoti'])->name('read.noti');
+    Route::get('reports/download/monthly', [PageController::class, 'downloadReport'])->name('download.report');
 
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');

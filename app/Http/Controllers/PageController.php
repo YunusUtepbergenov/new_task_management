@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Article;
 use App\Models\File;
-use App\Models\Journal;
-use App\Models\Project;
 use App\Models\Role;
-use App\Models\Sector;
 use App\Models\Task;
 use App\Models\User;
-use App\Services\TaskService;
+use App\Models\Sector;
+use App\Models\Article;
+use App\Models\Journal;
+use App\Models\Project;
+use App\Exports\TasksExport;
 use Illuminate\Http\Request;
+use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PageController extends Controller
 {
@@ -64,6 +66,10 @@ class PageController extends Controller
         return view('page.reports.user', [
             'user_id' => $user->id
         ]);
+    }
+
+    public function downloadReport(){
+        return Excel::download(new TasksExport, 'aprel.xlsx');
     }
 
     public function employees(){
