@@ -61,14 +61,12 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
-                                <select class="form-control" name="user_id">
+                                <select class="form-control select" name="users[]" multiple>
                                     @foreach ($sectors as $sector)
-                                        <optgroup label="{{ $sector->name }}">
-                                            @foreach ($sector->users as $user)
-                                                @if($user->id != Auth::user()->id)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                @endif
-                                            @endforeach
+                                    <optgroup label="{{ $sector->name }}">
+                                        @foreach ($sector->users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endforeach
                                         </optgroup>
                                     @endforeach
                                 </select>
@@ -109,14 +107,12 @@
                                 <div class="col-sm-1"></div>
                                 <label class="col-sm-3 col-form-label">Ответственный</label>
                                 <div class="col-sm-4">
-                                    <select class="form-control" name="user_id">
+                                    <select class="form-control select" name="users[]" multiple>
                                         @foreach ($sectors as $sector)
-                                            <optgroup label="{{ $sector->name }}">
-                                                @foreach ($sector->users as $user)
-                                                    @if($user->id != Auth::user()->id)
-                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                    @endif
-                                                @endforeach
+                                        <optgroup label="{{ $sector->name }}">
+                                            @foreach ($sector->users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @endforeach
                                             </optgroup>
                                         @endforeach
                                     </select>
@@ -127,17 +123,15 @@
                                 <div class="col-sm-1"></div>
                                 <label class="col-sm-3 col-form-label">Ответственный</label>
                                 <div class="col-sm-4">
-                                <select class="form-control" name="user_id">
-                                    @foreach ($sectors as $sector)
+                                    <select class="form-control select" name="users[]" multiple>
+                                        @foreach ($sectors as $sector)
                                         <optgroup label="{{ $sector->name }}">
                                             @foreach ($sector->users as $user)
-                                                @if($user->id != Auth::user()->id)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                @endif
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
                                             @endforeach
-                                        </optgroup>
-                                    @endforeach
-                                </select>
+                                            </optgroup>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         @endif
@@ -174,12 +168,12 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
-                                <select class="form-control" name="user_id">
+                                <select class="form-control select" name="users[]" multiple>
                                     @foreach ($sectors as $sector)
-                                        <optgroup label="{{ $sector->name }}">
-                                            @foreach ($sector->users as $user)
-                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                            @endforeach
+                                    <optgroup label="{{ $sector->name }}">
+                                        @foreach ($sector->users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endforeach
                                         </optgroup>
                                     @endforeach
                                 </select>
@@ -218,7 +212,7 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
-                                <select class="form-control" name="user_id">
+                                <select class="form-control select" name="users[]" multiple>
                                     @foreach (Auth::user()->sector->users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach

@@ -8,7 +8,7 @@
 							</li>
                             <li class="submenu">
 								<a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span><span class="menu-arrow"></span></a>
-								<ul style="display: none;">
+								<ul style="display: none;" id="journals_menu">
 									<li><a href="{{ route('articles.index') }}">Статьи</a></li>
 									<li class="submenu">
                                         <a href="#"><span>Журналы</span><span class="menu-arrow"></span></a>
@@ -20,10 +20,10 @@
 								</ul>
 							</li>
 
-                            @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
+                            @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() || Auth::user()->isHR() || Auth::user()->isAccountant())
                                 <li class="submenu">
                                     <a href="#"><i class="la la-pie-chart"></i><span>Отчеты</span><span class="menu-arrow"></span></a>
-                                    <ul style="display: none;">
+                                    <ul style="display: none;" id="reports_menu">
                                         <li><a href="{{ route('reports') }}"><span>Отчеты</span></a></li>
                                         <li><a href="{{ route('table.report') }}"><span>Таблица</span></a></li>
                                     </ul>

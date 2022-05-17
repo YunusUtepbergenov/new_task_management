@@ -162,6 +162,15 @@
 				$('#example-getting-started').multiselect();
 			});
 
+            path = window.location.pathname;
+            if(path == "/articles" || path.indexOf('/journal') >= 0){
+                $('#journals_menu').show();
+                $('#journals_menu').prev().addClass('subdrop')
+            }else if(path.indexOf('/reports') >= 0){
+                $('#reports_menu').show();
+                $('#reports_menu').prev().addClass('subdrop')
+            }
+
             $("#name").addClass("d-none");
             $("#project_name").addClass("d-none");
             $("#deadline").addClass("d-none");

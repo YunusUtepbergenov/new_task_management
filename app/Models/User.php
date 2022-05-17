@@ -123,4 +123,8 @@ class User extends Authenticatable
     public function isDeputy(){
         return $this->role->name === "Заместитель директора";
     }
+
+    public function isAccountant(){
+        return $this->role->name === "Главный бухгалтер" || $this->role->name === "Бухгалтер";
+    }
 }
