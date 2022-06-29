@@ -12,7 +12,9 @@ class TaskService {
         $user = Auth::user();
 
         if($user->isDirector() || $user->isMailer() || Auth::user()->isDeputy()){
-            $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
+            $sectors = Sector::with(['users' => function($query){
+                $query->select(['id','name','sector_id','role_id'])->where('leave', 0);
+            }])->get();
         }elseif ($user->isHead()) {
             $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
         }else{

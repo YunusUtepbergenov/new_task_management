@@ -21,7 +21,7 @@
                     <div class="col-lg-5" style="margin-top: 10px">
                         <div class="progress">
                             @php $avg = 0; @endphp
-                            @foreach ($sector->users as $user)
+                            @foreach ($sector->users->where('leave', 0) as $user)
                                 @if (!$user->isDirector())
                                     @if ($user->tasks()->count() > 0)
                                         @php  $avg = $avg + round( ((1 - ( $user->overdueTasks()->count()

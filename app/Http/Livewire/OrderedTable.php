@@ -13,6 +13,12 @@ class OrderedTable extends Component
     public $tasks, $projects, $chosen_project, $username;
     public $projectId, $status;
 
+    // protected $listeners = ['searchResult'];
+
+    // public function searchResult($id){
+    //     dd('hello mfucker');
+    // }
+
     public function mount(){
         $this->projectId = "Empty";
         $this->status = "Empty";

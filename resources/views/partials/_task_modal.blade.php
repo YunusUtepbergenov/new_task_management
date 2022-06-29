@@ -213,7 +213,7 @@
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
                                 <select class="form-control select" name="users[]" multiple>
-                                    @foreach (Auth::user()->sector->users as $user)
+                                    @foreach (Auth::user()->sector->users->where('leave', 0) as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach
                                 </select>

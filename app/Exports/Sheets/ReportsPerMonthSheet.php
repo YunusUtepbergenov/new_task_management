@@ -15,15 +15,17 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class ReportsPerMonthSheet implements FromQuery, WithTitle, WithHeadings, WithMapping, WithColumnWidths, WithStyles
 {
-    private $sector_id;
+    private $sector_id, $start, $end;
     public $executers;
-    
-    public function __construct($sector_id){
+
+    public function __construct($sector_id, $start, $end){
         $this->sector_id = $sector_id;
+        $this->start = $start;
+        $this->end = $end;
     }
 
     public function query(){
-        return Task::query()->where('sector_id', $this->sector_id)->whereMonth('deadline', '04');
+        return Task::query()->where('sector_id', $this->sector_id)->whereBetween('deadline', [$this->start, $this->end]);
     }
 
     public function map($task): array
@@ -53,11 +55,11 @@ class ReportsPerMonthSheet implements FromQuery, WithTitle, WithHeadings, WithMa
                 $task->deadline,
                 $task->user->name,
                 $this->executers
-            ];        
+            ];
         }
     }
 
-    public function title(): string 
+    public function title(): string
     {
         // dd($this->sector_id);
         $sector = Sector::where('id', $this->sector_id)->first();
@@ -82,10 +84,10 @@ class ReportsPerMonthSheet implements FromQuery, WithTitle, WithHeadings, WithMa
         return [
             'A' => 50,
             'B' => 50,
-            'C' => 20,            
+            'C' => 20,
             'D' => 15,
             'E' => 25,
-            'F' => 30       
+            'F' => 30
         ];
     }
 

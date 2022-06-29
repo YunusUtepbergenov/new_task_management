@@ -1,20 +1,30 @@
 @extends('layouts.main')
 
 @section('styles')
-	<!-- Select2 CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
-	<!-- Datatable CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap4.min.css') }}">
-
-	<!-- Datetimepicker CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/ijaboCropTool.min.css') }}">
 @endsection
 
 @section('main')
 	<!-- Page Content -->
 	<div class="content container-fluid">
         <div class="row">
-            <div class="col-lg-7 m-auto">
+            <div class="offset-lg-1 col-lg-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="account-settings">
+                            <div class="user-profile">
+                                <div class="user-avatar">
+                                    <img src="{{ (Auth::user()->avatar) ? asset('user_image/'.Auth::user()->avatar) : asset('user_image/avatar.jpg') }}" class="user_image">
+                                </div>
+                                    <input type="file" name="avatar_img" id="avatar_img" style="opacity: 0; height:1px; display:none">
+                                    <a href="javascript:void(0)" class="btn btn-primary" id="change_picture_btn">Cменить картинку</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
                 <div class="card">
                     <div class="card-header">
                         <h4 class="card-title mb-0">Настройки</h4>
@@ -29,7 +39,7 @@
                                     @error('old_password')
                                         <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
                                     @enderror
-                                    <input type="password" class="form-control" name="old_password" value="{{ old('old_password') }}">
+                                    <input type="password" class="form-control" name="old_password" value="{{ old('old_password') }}" autocomplete="off">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -38,7 +48,7 @@
                                     @error('new_password')
                                         <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
                                     @enderror
-                                    <input type="password" class="form-control" name="new_password" value="{{ old('new_password') }}">
+                                    <input type="password" class="form-control" name="new_password" value="{{ old('new_password') }}" autocomplete="off">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -47,7 +57,7 @@
                                     @error('confirm_password')
                                         <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
                                     @enderror
-                                    <input type="password" class="form-control" name="confirm_password" value="{{ old('confirm_password') }}">
+                                    <input type="password" class="form-control" name="confirm_password" value="{{ old('confirm_password') }}" autocomplete="off">
                                 </div>
                             </div>
                             <div class="text-right">
@@ -62,13 +72,28 @@
 	<!-- /Page Content -->
 @endsection
 
-{{-- @section('scripts')
-	<!-- Select2 JS -->
-	<script src="{{ asset('assets/js/select2.min.js') }}"></script>
-	<script src="{{ asset('assets/js/moment.min.js') }}"></script>
-	<script src="{{ asset('assets/js/bootstrap-datetimepicker.min.js') }}"></script>
-	<!-- Datatable JS -->
-	<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
-	<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}"></script>
+@section('scripts')
+    <script src="{{ asset('js/libs/ijaboCropTool.min.js') }}"></script>
+    <script>
+        $(document).on('click', '#change_picture_btn', function(){
+            $('#avatar_img').click();
+        });
 
-@endsection --}}
+        $('#avatar_img').ijaboCropTool({
+          preview : '.user_image',
+          setRatio:1,
+          allowedExtensions: ['jpg', 'jpeg','png'],
+          buttonsText:['Сохранить','Выходить'],
+          buttonsColor:['#30bf7d','#ee5155', -15],
+          processUrl:'{{ route("profile.change") }}',
+          withCSRF:['_token','{{ csrf_token() }}'],
+          onSuccess:function(message, element, status){
+            console.log(message);
+            //  alert(message);
+          },
+          onError:function(message, element, status){
+            alert(message);
+          }
+       });
+    </script>
+@endsection

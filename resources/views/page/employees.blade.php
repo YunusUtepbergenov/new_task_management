@@ -8,6 +8,7 @@
 
 	<!-- Datetimepicker CSS -->
 	<link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}">
+    @livewireStyles()
 @endsection
 
 @section('main')
@@ -41,13 +42,23 @@
                                 <th>Дата рождения</th>
 								<th>Тел.Номер</th>
 								<th>Внутренный номер</th>
+                                @if (Auth::user()->isHR())
+                                    <th>Действие</th>
+                                @endif
+
                             </tr>
 						</thead>
 						<tbody style="overflow: auto;">
                             @foreach ($sectors as $sector)
-                                <tr>
-                                    <th colspan="7" id="employee_normal">{{ $sector->name }}</th>
-                                </tr>
+                                @if (Auth::user()->isHR())
+                                    <tr>
+                                        <th colspan="8" id="employee_normal">{{ $sector->name }}</th>
+                                    </tr>
+                                @else
+                                    <tr>
+                                        <th colspan="7" id="employee_normal">{{ $sector->name }}</th>
+                                    </tr>
+                                @endif
                                 @foreach ($sector->users as $employee)
                                     <tr>
                                         <td>
@@ -65,6 +76,21 @@
                                         @endif
                                         <td> {{$employee->phone}}</td>
                                         <td>{{$employee->internal}}</td>
+                                        @if (Auth::user()->isHR())
+                                            @if ($sector->id != 1)
+                                                <td>
+                                                    <form action="{{ route('user.leave') }}" method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="hidden" name="user_id" value="{{ $employee->id }}">
+                                                        <button class="btn"><i class="fa fa-sign-out" aria-hidden="true"></i></button>
+                                                    </form>
+                                                </td>
+                                            @else
+                                                <td></td>
+                                            @endif
+                                        @endif
+
                                     </tr>
                                 @endforeach
                             @endforeach
@@ -74,7 +100,7 @@
 			</div>
 		</div>
 
-            <!-- Create Task Modal -->
+            <!-- Create User Modal -->
         <div id="create_employee" class="modal custom-modal fade" role="dialog">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
@@ -148,13 +174,15 @@
                 </div>
             </div>
         </div>
-        <!-- /Create Task Modal -->
-
+        <!-- /Create User Modal -->
+        @livewire('view-modal')
 	</div>
 	<!-- /Page Content -->
 @endsection
 
 @section('scripts')
+    @livewireScripts()
+
     <script>
         $(document).ready(function() {
 

@@ -53,7 +53,9 @@ class ViewModal extends Component
 
         if($this->upload){
             $uploadedFile = $this->upload;
+            $chars = array("+", " ", "?", "[", "]", "/", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}", "%");
             $filename = time().$uploadedFile->getClientOriginalName();
+            $filename = str_replace($chars, "_", $filename);
 
             Storage::disk('local')->putFileAs(
                 'files/responses/',

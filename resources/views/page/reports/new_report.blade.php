@@ -1,70 +1,59 @@
 @extends('layouts.main')
 
 @section('styles')
-	<!-- Select2 CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
-	<!-- Datatable CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap4.min.css') }}">
-
-	<!-- Datetimepicker CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}">
+    @livewireStyles
 @endsection
 
 @section('main')
 	<!-- Page Content -->
 	<div class="content container-fluid">
-		<!-- Page Header -->
-		<div class="page-header">
-			<div class="row align-items-center">
-				<div class="col">
-					<h3 class="page-title">Сотрудники</h3>
-				</div>
-				<a href="{{ route('download.report') }}"> Download report for April</a>
-			</div>
-		</div>
-		<!-- /Page Header -->
-
-		<div class="row">
-			<div class="col-md-12">
-				<div class="table-responsive" id="employeeTable">
-					<table class="table custom-table" style="overflow-y: auto; height: 110px;">
-						<thead id="employee_header">
-							<tr>
-								<th>Ф.И.О</th>
-								<th>Сектор</th>
-								<th>Должность</th>
-								<th>Все задачи</th>
-								<th>Выполнено</th>
-                            </tr>
-						</thead>
-						<tbody style="overflow: auto;">
-                            @foreach ($sectors as $sector)
-                                <tr>
-                                    <th colspan="6" id="employee_normal">{{ $sector->name }}</th>
-                                </tr>
-                                @foreach ($sector->users as $employee)
-                                    @if (!$employee->isDirector())
-                                    <tr>
-                                        <td>
-                                            <h2 class="table-avatar">
-                                                <a href="{{ route('user.report', $employee->id) }}">{{ $employee->name }}</a>
-                                            </h2>
-                                        </td>
-                                        <td class="text-wrap"></td>
-                                        <td>{{ $employee->role->name }}</td>
-                                        <td> {{$employee->tasks->count()}}</td>
-                                        <td>{{$employee->closedTasks()->count()}}</td>
-                                    </tr>
-
-                                    @endif
-                                @endforeach
-                            @endforeach
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-
+        <!-- Page Content -->
+	<div class="content container-fluid">
+		<!-- Page Filter -->
+		@livewire('reports.filter-section')
 	</div>
+    <iframe id="txtArea1" style="display:none"></iframe>
+
 	<!-- /Page Content -->
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script>
+        function fnExcelReport()
+        {
+            var tab_text="<table border='2px'><tr>";
+            var textRange; var j=0;
+            tab = document.getElementById('filteredTasks'); // id of table
+
+            for(j = 0 ; j < tab.rows.length ; j++)
+            {
+                tab_text=tab_text+tab.rows[j].innerHTML+"</tr>";
+                //tab_text=tab_text+"</tr>";
+            }
+
+            tab_text=tab_text+"</table>";
+            tab_text= tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
+            tab_text= tab_text.replace(/<img[^>]*>/gi,""); // remove if u want images in your table
+            tab_text= tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
+
+            var ua = window.navigator.userAgent;
+            var msie = ua.indexOf("MSIE ");
+
+            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
+            {
+                txtArea1.document.open("txt/html","replace");
+                txtArea1.document.write(tab_text);
+                txtArea1.document.close();
+                txtArea1.focus();
+                sa=txtArea1.document.execCommand("SaveAs",true,"Report.xlsx");
+            }
+            else                 //other browser not tested on IE 11
+                sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));
+
+            return (sa);
+        }
+    </script>
+@livewireScripts
 @endsection

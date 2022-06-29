@@ -12,12 +12,12 @@ class UserSection extends Component
     protected $listeners = ['updateUsersList'];
 
     public function mount(){
-        $this->users = Sector::first()->users;
+        $this->users = Sector::first()->users->where('leave', 0);
     }
 
     public function updateUsersList($id){
         $sector = Sector::with('users')->where('id', $id)->first();
-        $this->users = $sector->users;
+        $this->users = $sector->users->where('leave', 0);
         $this->userId = Null;
         $this->emit('updateSectorTasks', $sector->id);
     }

@@ -135,7 +135,7 @@
                                                                     <div class="card withoutBorder">
                                                                         <div class="d-flex justify-content-between align-items-center">
                                                                             <div class="user d-flex flex-row align-items-center">
-                                                                                <img src="{{ asset('assets/img/avatar.jpg') }}" width="30" class="user-img rounded-circle mr-2">
+                                                                                <img src="{{ ($cmt->user->avatar) ? asset('user_image/'.$cmt->user->avatar) : asset('user_image/avatar.jpg') }}" width="30" class="user-img rounded-circle mr-2">
                                                                                 <span>
                                                                                     <small class="font-weight-bold text-secondary" style="font-size: 14px">{{ $cmt->user->name }}</small>
                                                                                     <small class="font-weight-bold" style="font-size: 13px; margin-left: 8px;">{{ $cmt->comment }}</small>
@@ -227,7 +227,7 @@
                                                 <a href="#">
                                                     <div class="list-item">
                                                         <div class="list-left">
-                                                            <span class="avatar"><img alt="" src="assets/img/avatar.jpg"></span>
+                                                            <span class="avatar"><img alt="" src="{{ ($task->user->avatar) ? asset('user_image/'.$task->user->avatar) : asset('user_image/avatar.jpg') }}"></span>
                                                         </div>
                                                         <div class="list-body">
                                                             <span class="message-author">{{ $task->username($task->user_id) }}</span>
@@ -249,7 +249,7 @@
                                                     <a href="profile.html">
                                                         <div class="list-item">
                                                             <div class="list-left">
-                                                                <span class="avatar"><img alt="" src="assets/img/avatar.jpg"></span>
+                                                                <span class="avatar"><img alt="" src="{{ ($user->avatar) ? asset('user_image/'.$user->avatar) : asset('user_image/avatar.jpg') }}"></span>
                                                             </div>
                                                             <div class="list-body">
                                                                 <span class="message-author">{{ $user->name }}</span>

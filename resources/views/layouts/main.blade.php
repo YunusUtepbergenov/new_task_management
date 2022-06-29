@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
         <meta name="description" content="CERR Task Manager">
 		<meta name="keywords" content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern, accounts, invoice, html5, responsive, CRM, Projects">
-        <meta name="author" content="Dreamguys - Bootstrap Admin Template">
+        <meta name="author" content="Yunus Utepbergenov">
         <meta name="robots" content="noindex, nofollow">
         <title>CERR Task Management</title>
 		<!-- Favicon -->
@@ -50,8 +50,23 @@
 				</a>
 				<a id="mobile_btn" class="mobile_btn" href="#sidebar"><i class="fa fa-bars"></i></a>
 				<!-- Header Menu -->
+                <ul class="nav search-menu">
+                    <li class="nav-item">
+						<div class="top-nav-search">
+							<a href="javascript:void(0);" class="responsive-search">
+								<i class="fa fa-search"></i>
+						   </a>
+							<form action="{{ route('task.search') }}" id="searchForm" method="POST">
+                                @csrf
+								<input class="form-control" type="text" name="term" id="search_field" placeholder="Поиск" autocomplete="off">
+								<button class="btn" type="submit"><i class="fa fa-search"></i></button>
+                                <ul class="list-group search_group result_search">
+                                </ul>
+							</form>
+						</div>
+					</li>
+                </ul>
 				<ul class="nav user-menu">
-					<!-- Search -->
 					<li class="nav-item dropdown flag-nav">
                         @if (auth()->user()->tasks()->count())
     						<a class="nav-link dropdown-toggle">Эффективность: {{ round( ((1 - ( auth()->user()->overdueTasks()->count()
@@ -61,10 +76,9 @@
                         @endif
 					</li>
                     @include('partials.notifications')
-                    {{-- @livewire('notifications') --}}
 					<li class="nav-item dropdown has-arrow main-drop">
 						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-							<span class="user-img"><img src="{{ asset('assets/img/avatar.jpg') }}" alt="">
+							<span class="user-img"><img src="{{ (Auth::user()->avatar) ? asset('user_image/'.Auth::user()->avatar) : asset('user_image/avatar.jpg') }}" class="user_image" alt="">
 							<span class="status online"></span></span>
 							<span>{{ Auth::user()->name }}</span>
 						</a>
@@ -118,7 +132,7 @@
                                     <a href="#">
                                         <div class="list-item">
                                             <div class="list-left">
-                                                <span class="avatar"><img alt="" src="{{ asset('assets/img/avatar.jpg') }}"></span>
+                                                <span class="avatar"><img alt="" src="{{ ($birthday->avatar) ? asset('user_image/'.$birthday->avatar) : asset('user_image/avatar.jpg') }}"></span>
                                             </div>
                                             <div class="list-body">
                                                 <span class="birthday-author">{{ $birthday->name }}</span>
@@ -147,9 +161,6 @@
 		<!-- Select2 JS -->
 		<script src="{{ asset('assets/js/select2.min.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-		{{-- <!-- Datatable JS -->
-		<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
-		<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}"></script> --}}
 		<!-- Datetimepicker JS -->
 		<script src="{{ asset('assets/js/moment.min.js') }}"></script>
 		<script src="{{ asset('assets/js/bootstrap-datetimepicker.min.js') }}"></script>
@@ -162,13 +173,60 @@
 				$('#example-getting-started').multiselect();
 			});
 
+            $('#search_field').keyup(function(){
+                $('.result_search').html('');
+                var searchField = $('#search_field').val();
+                // var expression = new RegExp(searchField, "i");
+                var formData1 = new FormData($("#searchForm")[0]);
+
+                var url = document.getElementById('searchForm').getAttribute("action");
+                if(searchField.length > 2){
+                    $.ajax({
+                    url: url,
+                    type: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": $('input[name="_token"]').val(),
+                    },
+                    data: formData1,
+                    processData: false,
+                    contentType: false,
+                    success: function (res) {
+                        $('.result_search').html('');
+                        $('.result_search').show();
+                        $.each(JSON.parse(res), function(key, value){
+                            $('.result_search').append("<li class='list-group-item search_dropdown'><a href='#' onclick='searchResult(" + value.id + ")'>" + value.name + "</a></li>");
+                        });
+                        res = '';
+                    },
+                    error: function (data) {
+                        var errors = data.responseJSON;
+                        if ($.isEmptyObject(errors) == false) {
+                            $.each(errors.errors, function (key, value) {
+                                var ErrorId = "#" + key + "2";
+                                console.log(ErrorId);
+                                $(ErrorId).removeClass("d-none");
+                                $(ErrorId).text(value);
+                            });
+                        }
+                        console.log(errors);
+                    },
+                });
+                }else{
+                    $('.result_search').hide();
+                }
+            });
+
+            searchResult = function(id){
+                window.livewire.emit('taskClicked', id);
+            }
+
             path = window.location.pathname;
             if(path == "/articles" || path.indexOf('/journal') >= 0){
                 $('#journals_menu').show();
-                $('#journals_menu').prev().addClass('subdrop')
+                $('#journals_menu').prev().addClass('subdrop');
             }else if(path.indexOf('/reports') >= 0){
                 $('#reports_menu').show();
-                $('#reports_menu').prev().addClass('subdrop')
+                $('#reports_menu').prev().addClass('subdrop');
             }
 
             $("#name").addClass("d-none");

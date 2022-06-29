@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class PageController extends Controller
@@ -55,7 +56,7 @@ class PageController extends Controller
 
     public function reportTable(){
         $user = Auth::user();
-        if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer()){
+        if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer() || $user->isHR()){
             $sectors = Sector::all();
             return view('page.reports.new_report', [
                 'sectors' => $sectors
@@ -73,12 +74,14 @@ class PageController extends Controller
         ]);
     }
 
-    public function downloadReport(){
-        return Excel::download(new TasksExport, 'aprel.xlsx');
+    public function downloadReport($param1, $param2){
+        return Excel::download(new TasksExport($param1, $param2), 'report.xlsx');
     }
 
     public function employees(){
-        $sectors = Sector::with('users.role')->get();
+        $sectors = Sector::with(['users' => function($query){
+            $query->with('role')->where('leave', 0);
+        }])->get();
         $roles = Role::all();
 
         return view('page.employees', ['sectors' => $sectors, 'roles' => $roles]);
@@ -190,6 +193,41 @@ class PageController extends Controller
             return back()->withMessage('Пароль успешно изменен');
         }else{
             return back()->withError("Неправильный пароль");
+        }
+    }
+
+    public function searchTasks(Request $request){
+        $tasks = Task::where('name', 'LIKE', "%{$request->term}%")->orWhere('description', 'LIKE', "%{$request->term}%")->get();
+
+        return $tasks->toJson();
+    }
+
+    public function changeProfilePicture(Request $request){
+        $file = $request->file('avatar_img');
+        // $file = $request->file;
+
+        $filename = 'UIMG'.date('Ymd').uniqid().'.jpg';
+        $upload = $file->move(public_path("/user_image"), $filename);
+
+        if(!$upload ){
+            return response()->json(['status'=>0,'msg'=>'Something went wrong, upload new picture failed.']);
+        }else{
+            if(Auth::user()->avatar){
+                $file_path = public_path().'/user_image/'.Auth::user()->avatar;
+                if(file_exists($file_path)){
+                    unlink($file_path);
+                }
+            }
+        }
+
+        $user = User::where('id', Auth::user()->id)->first();
+        $update = $user->update(['avatar' => $filename]);
+
+
+        if($update){
+            return response()->json(['status' => 1, 'msg' => 'Image has been cropped successfully.', 'name'=>$filename]);
+        }else{
+              return response()->json(['status' => 0, 'msg' => 'Something went wrong, try again later']);
         }
     }
 }

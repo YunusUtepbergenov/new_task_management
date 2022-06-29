@@ -25,7 +25,7 @@
                                     <a href="#"><i class="la la-pie-chart"></i><span>Отчеты</span><span class="menu-arrow"></span></a>
                                     <ul style="display: none;" id="reports_menu">
                                         <li><a href="{{ route('reports') }}"><span>Отчеты</span></a></li>
-                                        <li><a href="{{ route('table.report') }}"><span>Таблица</span></a></li>
+                                        <li><a href="{{ route('table.report') }}"><span>Ежемесячный Отчет</span></a></li>
                                     </ul>
                                 </li>
                             @endif

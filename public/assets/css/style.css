@@ -1398,6 +1398,7 @@ table.dataTable thead > tr > td.sorting {
     border-bottom: 1px solid transparent;
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
     height: 60px;
+    max-height: 100px;
     left: 0;
     position: fixed;
     right: 0;
@@ -1492,6 +1493,14 @@ table.dataTable thead > tr > td.sorting {
     position: relative;
     z-index: 99;
 }
+
+.search-menu {
+    float: left;
+    margin-left: 100px;
+    position: relative;
+    z-index: 99;
+}
+
 .user-menu.nav > li > a {
     color: #fff;
     font-size: 15px;
@@ -1520,7 +1529,7 @@ table.dataTable thead > tr > td.sorting {
 }
 .main-drop .user-img img {
     border-radius: 50%;
-    width: 30px;
+    width: 40px;
 }
 .user-img .status {
     border: 2px solid #fff;
@@ -6384,12 +6393,12 @@ table.table-inbox tbody tr.checked {
 .top-nav-search form {
     margin-top: 10px;
     position: relative;
-    width: 230px;
+    width: 400px;
 }
 .top-nav-search .form-control {
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 50px;
+    border-radius: 5px;
     color: #fff;
     height: 40px;
     padding: 10px 50px 10px 15px;
@@ -9146,5 +9155,46 @@ td a {
     position: sticky;
     top: -1px;
     border-right: 1px solid #fff;
-    background: #69997a;
+    background: #49575e;
+    color: #fff;
+}
+
+.search_button {
+    background-color: #49575e;
+}
+
+.search_group{
+    display: none;
+    overflow: auto;
+    max-height: 150px;
+}
+
+.search_dropdown {
+    background-color: #49575e;
+    border-radius: 5px;
+    border: 1px solid #34444c;
+}
+
+.search_dropdown a{
+    color: #c2c7ca;
+}
+
+.search_dropdown a:hover{
+    color: #fff;
+}
+
+.account-settings .user-profile {
+    margin: 0 0 1rem 0;
+    padding-bottom: 1rem;
+    text-align: center;
+}
+.account-settings .user-profile .user-avatar {
+    margin: 0 0 1rem 0;
+}
+.account-settings .user-profile .user-avatar img {
+    width: 140px;
+    height: 140px;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
 }

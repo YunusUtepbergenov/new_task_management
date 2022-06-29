@@ -15,6 +15,15 @@ class TasksExport implements FromCollection, WithMultipleSheets
     /**
     * @return \Illuminate\Support\Collection
     */
+
+    public $start, $end;
+
+    public function __construct($param1, $param2)
+    {
+        $this->start = $param1;
+        $this->end = $param2;
+    }
+
     public function collection()
     {
         return Task::all();
@@ -24,7 +33,7 @@ class TasksExport implements FromCollection, WithMultipleSheets
         $sheets = [];
         $sectors = Sector::all();
         foreach($sectors as $sector){
-            $sheets[] = new ReportsPerMonthSheet($sector->id);
+            $sheets[] = new ReportsPerMonthSheet($sector->id, $this->start, $this->end);
         }
 
         return $sheets;

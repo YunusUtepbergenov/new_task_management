@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
         $birthdays = cache()->remember('birthdays', 60*60*24, function () {
             $date = now();
 
-            return \App\Models\User::selectRaw("DATE_FORMAT(birth_date, '%m') as months,
+            return \App\Models\User::selectRaw("avatar, DATE_FORMAT(birth_date, '%m') as months,
             DATE_FORMAT(birth_date, '%d') as dates,
             name, birth_date")->
             whereMonth('birth_date', '>', $date->month)

@@ -3,7 +3,9 @@
 use App\Http\Controllers\Documents\ArticleController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ResearchController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,7 +36,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reports/table', [PageController::class, 'reportTable'])->name('table.report');
     Route::get('report/{id}', [PageController::class, 'userReport'])->name('user.report');
     Route::get('notifications/read/all', [PageController::class, 'readNoti'])->name('read.noti');
-    Route::get('reports/download/monthly', [PageController::class, 'downloadReport'])->name('download.report');
+    Route::get('reports/download/{start}/{end}', [PageController::class, 'downloadReport'])->name('download.report');
+    Route::get('/research/houses', [ResearchController::class, 'houses'])->name('houses');
 
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
@@ -56,6 +59,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('register/new/employee', [PageController::class, 'register'])->name('new.user');
     Route::put('user/settings', [PageController::class, 'updatePassword'])->name('update.password');
     Route::put('article/update', [ArticleController::class, 'update'])->name('article.update');
+    Route::put('user/leave/', [UserController::class, 'userLeave'])->name('user.leave');
+    Route::post('task/search', [PageController::class, 'searchTasks'])->name('task.search');
+    Route::post('change/profile/picture', [PageController::class, 'changeProfilePicture'])->name('profile.change');
 
     Route::delete('task/repeat/destroy/{id}', [TaskController::class, 'destroyRepeat'])->name('repeat.delete');
 });

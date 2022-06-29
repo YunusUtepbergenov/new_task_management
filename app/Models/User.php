@@ -18,7 +18,7 @@ class User extends Authenticatable
     use HasFactory;
     use HasProfilePhoto;
     use Notifiable;
-    use TwoFactorAuthenticatable;
+    // use TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -31,6 +31,8 @@ class User extends Authenticatable
         'sector_id',
         'role_id',
         'phone',
+        'avatar',
+        'leave',
         'password',
     ];
 
@@ -77,6 +79,23 @@ class User extends Authenticatable
     public function helpers(){
         return $this->belongsToMany(Task::class);
     }
+
+    public function filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end]);
+    }
+
+    public function overdueFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('overdue', 1);
+    }
+
+    public function newFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('overdue', 0)->where('status', 'Новое');
+    }
+
+    public function confirmFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('overdue', 0)->where('status', 'Ждет подтверждения');
+    }
+
 
     public function overdueTasks(){
         return $this->tasks()->where('overdue', 1);
