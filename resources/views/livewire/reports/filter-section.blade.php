@@ -16,15 +16,15 @@
                 <input class="form-control datetimepicker" id="endDate" name="endDate" name="endDate" wire:model="endDate">
             </div>
         </div>
-        <div class="col-sm-4 col-md-6">
+        <div class="col-sm-4 col-md-5">
             <label style="color: #f7f7f7">S</label>
             <div class="">
                 <a id="btnExport" class="btn btn-primary search_button" onclick="fnExcelReport();"> Скачать таблицу </a>
             </div>
         </div>
-        <div class="col-sm-4 col-md-2" style="float: right">
+        <div class="col-sm-1 col-md-3" >
             <label style="color: #f7f7f7">S</label>
-            <div class="">
+            <div>
                 <a href="{{ route('download.report', [$startDate, $endDate]) }}" class="btn btn-primary search_button">Отчёт по секторам</a>
             </div>
         </div>
@@ -32,7 +32,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="table-responsive" id="employeeTable">
+            <div class="table-responsive" id="employeeTable1">
                 <table class="table custom-table" id="filteredTasks" style="overflow-y: auto; height: 110px;">
                     <thead id="employee_header">
                         <tr>
@@ -56,14 +56,14 @@
                                         </h2>
                                     </td>
                                     <td class="text-wrap">{{ $employee->sector->name }}</td>
-                                    <td>
+                                    <td style="text-align: center">
                                         {{ round( ((1 - ( $employee->overdueFilter($startDate, $endDate)->count()
                                         + (0.5 * $employee->newFilter($startDate, $endDate)->count()) ) / $employee->filterTasks($startDate, $endDate)->count() )) * 100, 1) }}%
                                     </td>
-                                    <td> {{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->count()}}</td>
-                                    <td>{{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->where('status', 'Выполнено')->count()}}</td>
-                                    <td>{{ $employee->overdueFilter($startDate, $endDate)->count() }}</td>
-                                    <td>{{ $employee->confirmFilter($startDate, $endDate)->count() }}</td>
+                                    <td style="text-align: center">{{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->count()}}</td>
+                                    <td style="text-align: center">{{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->where('status', 'Выполнено')->count()}}</td>
+                                    <td style="text-align: center">{{ $employee->overdueFilter($startDate, $endDate)->count() }}</td>
+                                    <td style="text-align: center">{{ $employee->confirmFilter($startDate, $endDate)->count() }}</td>
                                 </tr>
                                 @endif
                             {{-- @endforeach --}}

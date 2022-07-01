@@ -7750,6 +7750,15 @@ ul.comment-list li ul.children {
 #employeeTable {
     max-height: 770px;
 }
+
+#employeeTable1 {
+    max-height: 702px;
+}
+
+.settings_page{
+    /* display: flex; */
+    height: 100%;
+}
 .user-add-shedule-list a {
     display: inline-block;
     padding: 10px;
