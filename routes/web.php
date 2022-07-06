@@ -37,7 +37,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('report/{id}', [PageController::class, 'userReport'])->name('user.report');
     Route::get('notifications/read/all', [PageController::class, 'readNoti'])->name('read.noti');
     Route::get('reports/download/{start}/{end}', [PageController::class, 'downloadReport'])->name('download.report');
-    Route::get('/research/houses', [ResearchController::class, 'houses'])->name('houses');
+    Route::get('/research/scraping', [ResearchController::class, 'scraping'])->name('scraping');
+    Route::get('/scrape/download/{id}', [ResearchController::class, 'download'])->name('scrape.download');
 
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
@@ -62,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('user/leave/', [UserController::class, 'userLeave'])->name('user.leave');
     Route::post('task/search', [PageController::class, 'searchTasks'])->name('task.search');
     Route::post('change/profile/picture', [PageController::class, 'changeProfilePicture'])->name('profile.change');
+    Route::post('upload/scraper', [ResearchController::class, 'storeScrape'])->name('scrape.upload');
 
     Route::delete('task/repeat/destroy/{id}', [TaskController::class, 'destroyRepeat'])->name('repeat.delete');
 });
