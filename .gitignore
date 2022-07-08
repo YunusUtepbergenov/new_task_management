@@ -2,6 +2,7 @@
 /public/hot
 /public/storage
 /public/user_image
+/public/scraper
 /storage/*.key
 /storage/debugbar
 /vendor

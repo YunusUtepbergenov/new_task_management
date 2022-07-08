@@ -9,6 +9,7 @@ use App\Events\TaskSubmittedEvent;
 use App\Models\Comment;
 use App\Models\Response;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -17,10 +18,10 @@ use Livewire\WithFileUploads;
 class ViewModal extends Component
 {
     use WithFileUploads;
-    public $task, $comment, $comments;
+    public $task, $comment, $comments, $profile;
     public $description, $upload;
 
-    protected $listeners = ['taskClicked'];
+    protected $listeners = ['taskClicked', 'profileClicked'];
 
     public function taskClicked($id){
         $this->dispatchBrowserEvent('show-modal');
@@ -32,6 +33,11 @@ class ViewModal extends Component
             }
         }
         $this->comments = $this->task->comments()->latest()->get();
+    }
+
+    public function profileClicked($id){
+        $this->profile = User::where('id', $id)->first();
+        $this->dispatchBrowserEvent('profile-show-modal');
     }
 
     public function updatedUpload(){

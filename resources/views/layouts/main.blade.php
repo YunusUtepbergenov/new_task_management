@@ -4,12 +4,12 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
         <meta name="description" content="CERR Task Manager">
-		<meta name="keywords" content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern, accounts, invoice, html5, responsive, CRM, Projects">
+		<meta name="keywords" content="admin, tasks, ijro, task management, CERR">
         <meta name="author" content="Yunus Utepbergenov">
         <meta name="robots" content="noindex, nofollow">
         <title>CERR Task Management</title>
 		<!-- Favicon -->
-        <link rel="shortcut icon" type="image/x-icon" href="https://cerr.uz/themes/cer/icon/favicon.ico">
+        <link rel="shortcut icon" type="image/x-icon" href="https://cer.uz/themes/cer/icon/favicon.ico">
         {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
 		<!-- Bootstrap CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
@@ -59,7 +59,7 @@
 							<form action="{{ route('task.search') }}" id="searchForm" method="POST">
                                 @csrf
 								<input class="form-control" type="text" name="term" id="search_field" placeholder="Поиск" autocomplete="off">
-								<button class="btn" type="submit"><i class="fa fa-search"></i></button>
+								<button class="btn" type="submit" disabled><i class="fa fa-search"></i></button>
                                 <ul class="list-group search_group result_search">
                                 </ul>
 							</form>
@@ -129,7 +129,7 @@
                         <ul class="list-box">
                             @foreach ($birthdays as $birthday)
                                 <li>
-                                    <a href="#">
+                                    <a href="#" onclick='profileModal("{{ $birthday->id }}")'>
                                         <div class="list-item">
                                             <div class="list-left">
                                                 <span class="avatar"><img alt="" src="{{ ($birthday->avatar) ? asset('user_image/'.$birthday->avatar) : asset('user_image/avatar.jpg') }}"></span>
@@ -194,7 +194,13 @@
                         $('.result_search').html('');
                         $('.result_search').show();
                         $.each(JSON.parse(res), function(key, value){
-                            $('.result_search').append("<li class='list-group-item search_dropdown'><a href='#' onclick='searchResult(" + value.id + ")'>" + value.name + "</a></li>");
+                            // console.log(va);
+                            if(value.model == "Task"){
+                                $('.result_search').append("<li class='list-group-item search_dropdown'><a href='#' onclick='searchResult(" + value.id + ")'>" + value.name + "</a></li>");
+
+                            }else if(value.model == "User"){
+                                $('.result_search').append("<li class='list-group-item search_dropdown'><a href='#' onclick='profileModal(" + value.id + ")'>" + value.name + "</a></li>");
+                            }
                         });
                         res = '';
                     },
@@ -216,10 +222,6 @@
                 }
             });
 
-            searchResult = function(id){
-                window.livewire.emit('taskClicked', id);
-            }
-
             path = window.location.pathname;
             if(path == "/articles" || path.indexOf('/journal') >= 0){
                 $('#journals_menu').show();
@@ -235,8 +237,20 @@
             $("#description").addClass("d-none");
             $("#file").addClass("d-none");
 
+            searchResult = function(id){
+                window.livewire.emit('taskClicked', id);
+            }
+
+            profileModal = function(id){
+                window.livewire.emit('profileClicked', id);
+            }
+
             window.addEventListener('show-modal', event => {
                 $('#view_task').modal('show');
+            });
+
+            window.addEventListener('profile-show-modal', event => {
+                $('#profile_modal').modal('show');
             });
 
             window.addEventListener('success', event => {
@@ -247,6 +261,7 @@
                 $("#repeat_container").toggle(this.checked);
                 $(".repeat_div").toggle(this.checked);
                 var val = document.getElementById("repeat").value;
+
                 if(this.checked){
                     if(val == 'weekly'){
                         $("#days_container").toggle(true);

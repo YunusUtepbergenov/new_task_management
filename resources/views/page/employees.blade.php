@@ -63,7 +63,7 @@
                                     <tr>
                                         <td>
                                             <h2 class="table-avatar">
-                                                <a href="#">{{ $employee->name }}</a>
+                                                <a href="#" onclick='profileModal("{{ $employee->id }}")'>{{ $employee->name }}</a>
                                             </h2>
                                         </td>
                                         <td>{{ $employee->email }}</td>

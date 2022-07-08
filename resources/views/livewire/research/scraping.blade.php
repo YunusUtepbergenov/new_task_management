@@ -15,8 +15,7 @@
             <div class="col-sm-4 col-md-5">
                 <label style="color: #f7f7f7">S</label>
                 <div class="">
-                    {{-- <a id="btnExport" class="btn btn-primary search_button" data-toggle="modal" data-target="#create_scrape">Добавить</a> --}}
-                    <a id="btnExport" class="btn btn-primary search_button" data-toggle="modal" data-target="#profile_modal">Profile</a>
+                    <a id="btnExport" class="btn btn-primary search_button" data-toggle="modal" data-target="#create_scrape">Добавить</a>
                 </div>
             </div>
         @endif

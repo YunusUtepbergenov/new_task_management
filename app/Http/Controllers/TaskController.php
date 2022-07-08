@@ -59,7 +59,7 @@ class TaskController extends Controller
                 if($request->hasFile('file')){
                     foreach($request->file as $file){
                         $filename = time().$file->getClientOriginalName();
-                        preg_replace( '/[\r\n\t -]+/', '-', $filename )
+                        preg_replace( '/[\r\n\t -]+/', '-', $filename );
                         Storage::disk('local')->putFileAs(
                             'files/',
                             $file,

@@ -197,7 +197,27 @@ class PageController extends Controller
     }
 
     public function searchTasks(Request $request){
-        $tasks = Task::where('name', 'LIKE', "%{$request->term}%")->orWhere('description', 'LIKE', "%{$request->term}%")->get();
+        $user = auth()->user();
+        if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer() || $user->isHR() || $user->role_id == 2){
+            $tasks = Task::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->orWhere('description', 'LIKE', "%{$request->term}%")->get();
+        }else{
+            $tasks = Task::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->where('user_id', $user->id)->get();
+        }
+        $users = User::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->get();
+
+        if($tasks){
+            $tasks->map(function($res){
+                $res->model = class_basename($res);
+            });
+        }
+
+        if($users){
+            $users->map(function($res){
+                $res->model = class_basename($res);
+            });
+        }
+
+        $tasks = $tasks->merge($users);
 
         return $tasks->toJson();
     }

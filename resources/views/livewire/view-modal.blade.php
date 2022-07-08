@@ -272,4 +272,63 @@
             </div>
         </div>
     @endif
+
+    @if($profile)
+        <div id="profile_modal" class="modal custom-modal fade" role="dialog" wire:ignore.self>
+            <div class="modal-dialog modal-dialog-centered modal-lg profile_modal" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        {{-- <h5 class="modal-title">Профил</h5> --}}
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="profile-img-wrap edit-img">
+                                    <img class="inline-block" src="{{ ($profile->avatar) ? asset('user_image/'.$profile->avatar) : asset('user_image/avatar.jpg') }}" alt="user">
+                                </div>
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="profile-info-left">
+                                    <h3 class="user-name m-t-0 mb-3" style="text-align: center"><b>{{ $profile->name }}</b></h3>
+                                    <h4>Сектор: <b>{{ $profile->sector->name }}</b></h6>
+                                    <h4>Должность: <b>{{ $profile->role->name }}</b></h4>
+                                    <h4>Дата рождения: <b>{{ $profile->birth_date->format('d-m-Y') }}</b></h4>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Контакты</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <h4 class="col-sm-5">
+                                            Номер телефона:
+                                        </h4>
+                                        <div class="col-sm-7">
+                                            <h4 class="user-name m-t-0 mb-3">{{ $profile->phone }}</h4>
+                                        </div>
+                                        <h4 class="col-sm-5">
+                                            Внутренный номер:
+                                        </h4>
+                                        <div class="col-sm-7">
+                                            <h4 class="user-name m-t-0 mb-3">{{ $profile->internal }}</h4>
+                                        </div>
+                                        <h4 class="col-sm-5">
+                                            Адрес электронной почты:
+                                        </h4>
+                                        <div class="col-sm-7">
+                                            <h4 class="user-name m-t-0 mb-3">{{ $profile->email }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

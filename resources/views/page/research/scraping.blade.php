@@ -14,7 +14,9 @@
 	</div>
 	<!-- /Page Content -->
     @include('partials._scrape_modal')
-    @include('partials._profile')
+    {{-- @livewire('profile-modal') --}}
+    @livewire('view-modal')
+
 @endsection
 
 @section('scripts')

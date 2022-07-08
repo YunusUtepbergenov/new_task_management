@@ -2442,9 +2442,9 @@ table.dataTable thead > tr > td.sorting {
 -----------------------*/
 
 .profile-img-wrap {
-    height: 120px;
+    height: 150px;
     position: absolute;
-    width: 120px;
+    width: 150px;
     background: #fff;
     overflow: hidden;
 }
@@ -2456,8 +2456,8 @@ table.dataTable thead > tr > td.sorting {
 }
 .profile-img-wrap img {
     border-radius: 50%;
-    height: 120px;
-    width: 120px;
+    height: 150px;
+    width: 150px;
 }
 .fileupload.btn {
     position: absolute;
@@ -3727,9 +3727,7 @@ table.dataTable thead > tr > td.sorting {
     padding: 6px 12px;
     text-align: center;
 }
-.profile-info-left {
-    border-right: 2px dashed #ccc;
-}
+
 .bootstrap-tagsinput {
     background-color: #fff;
     border: 1px solid #e3e3e3;
@@ -8135,6 +8133,10 @@ ul.comment-list li ul.children {
     margin-bottom: 30px !important;
 }
 
+.profile-info-left h4{
+    text-align: center;
+}
+
 /*-----------------
 	64. Responsive
 -----------------------*/
@@ -8220,6 +8222,9 @@ ul.comment-list li ul.children {
     }
     .mini-sidebar .page-wrapper {
         margin-left: 60px;
+    }
+    .profile_modal{
+        width: 650px;
     }
 }
 @media only screen and (min-width: 768px) {
