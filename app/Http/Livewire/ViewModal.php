@@ -11,6 +11,7 @@ use App\Models\Response;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -20,8 +21,15 @@ class ViewModal extends Component
     use WithFileUploads;
     public $task, $comment, $comments, $profile;
     public $description, $upload;
+    public $phone, $internal;
+    public $oldPassword, $newPassword, $confirmPassword;
 
     protected $listeners = ['taskClicked', 'profileClicked'];
+
+    public function mount(){
+        $this->phone = auth()->user()->phone;
+        $this->internal = auth()->user()->internal;
+    }
 
     public function taskClicked($id){
         $this->dispatchBrowserEvent('show-modal');
@@ -115,6 +123,44 @@ class ViewModal extends Component
         $task->update(['status' => "Выполняется"]);
         $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
         event(new TaskRejectedEvent($task));
+    }
+
+    //Profile Information Modal
+
+    public function changeUserInfo(){
+        $this->validate([
+            'phone' => 'required|min:9',
+            'internal' => 'nullable|max:3'
+        ]);
+
+        $user = Auth::user();
+        $user->phone = $this->phone;
+        $user->internal = $this->internal;
+        $user->save();
+
+        $this->dispatchBrowserEvent('success', ['msg' => "Информация профиля успешно изменена."]);
+
+    }
+
+    public function updatePassword(){
+        $this->validate([
+            'oldPassword' => 'required|min:6|max:20',
+            'newPassword' => 'required|min:6|max:20',
+            'confirmPassword' => 'required|same:newPassword'
+        ]);
+
+        // $user = Auth::user();
+        if(Hash::check($this->oldPassword, auth()->user()->password)){
+            auth()->user()->update([
+                'password' => bcrypt($this->newPassword)
+            ]);
+            // return back()->withMessage('Пароль успешно изменен');
+            $this->dispatchBrowserEvent('success', ['msg' => "Пароль успешно изменен"]);
+
+        }else{
+            $this->dispatchBrowserEvent('danger', ['msg' => "Неправильный пароль"]);
+            // return back()->withError("Неправильный пароль");
+        }
     }
 
     public function render()

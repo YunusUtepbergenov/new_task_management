@@ -13,12 +13,6 @@ class OrderedTable extends Component
     public $tasks, $projects, $chosen_project, $username;
     public $projectId, $status;
 
-    // protected $listeners = ['searchResult'];
-
-    // public function searchResult($id){
-    //     dd('hello mfucker');
-    // }
-
     public function mount(){
         $this->projectId = "Empty";
         $this->status = "Empty";
@@ -28,7 +22,7 @@ class OrderedTable extends Component
                         ->orderBy('created_at', 'DESC')->get();
         $this->chosen_project = Project::with(['tasks' => function($query){
             $query->with('user')->where('creator_id', Auth::user()->id);
-        }])->where('user_id', Auth::user()->id)->get();
+        }])->where('user_id', Auth::user()->id)->orderBy('created_at', 'DESC')->get();
     }
 
     public function view($task_id){

@@ -278,7 +278,6 @@
             <div class="modal-dialog modal-dialog-centered modal-lg profile_modal" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        {{-- <h5 class="modal-title">Профил</h5> --}}
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -299,6 +298,105 @@
                                 </div>
                             </div>
                         </div>
+                        @if ($profile->id == Auth::user()->id)
+                        <form wire:submit.prevent="changeUserInfo" method="POST">
+                            @csrf
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Контакты</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group row">
+                                        <div class="col-sm-1"></div>
+                                            <label class="col-sm-4 col-form-label">Номер телефона:</label>
+                                        <div class="col-sm-4">
+                                            <input class="form-control" type="text" wire:model="phone">
+                                        </div>
+                                        @error('phone')
+                                        <div class="col-sm-12 m-t-10">
+                                            <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
+                                        </div>
+                                    @enderror
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-1"></div>
+                                            <label class="col-sm-4 col-form-label">Внутренный номер:</label>
+                                        <div class="col-sm-4">
+                                            <input class="form-control" type="text" wire:model="internal">
+                                        </div>
+                                        @error('internal')
+                                        <div class="col-sm-12 m-t-10">
+                                            <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
+                                        </div>
+                                    @enderror
+
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-1"></div>
+                                        <label class="col-sm-4 col-form-label">
+                                            Адрес электронной почты:
+                                        </label>
+                                        <div class="col-sm-4 col-form-label">
+                                            <label>{{ $profile->email }}</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2 offset-md-9">
+                                            <button class="btn btn-primary">Изменить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <form wire:submit.prevent="updatePassword" method="POST">
+                            @csrf
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title mb-0">Безопасность</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group row">
+                                        <div class="col-sm-1"></div>
+                                        <label class="col-lg-4 col-form-label">Прежний пароль</label>
+                                        <div class="col-lg-4">
+                                            @error('oldPassword')
+                                                <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
+                                            @enderror
+                                            <input type="password" class="form-control" wire:model="oldPassword" value="{{ old('old_password') }}" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-1"></div>
+                                        <label class="col-lg-4 col-form-label">Новый пароль</label>
+                                        <div class="col-lg-4">
+                                            @error('newPassword')
+                                                <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
+                                            @enderror
+                                            <input type="password" class="form-control" wire:model="newPassword" value="{{ old('new_password') }}" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-1"></div>
+                                        <label class="col-lg-4 col-form-label">Подтвердите пароль</label>
+                                        <div class="col-lg-4">
+                                            @error('confirmPassword')
+                                                <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
+                                            @enderror
+                                            <input type="password" class="form-control" wire:model="confirmPassword" value="{{ old('confirm_password') }}" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2 offset-md-9">
+                                            <button class="btn btn-primary">Изменить</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+
+                        @else
                             <div class="card">
                                 <div class="card-header">
                                     <h4 class="card-title mb-0">Контакты</h4>
@@ -326,6 +424,7 @@
                                     </div>
                                 </div>
                             </div>
+                        @endif
                     </div>
                 </div>
             </div>

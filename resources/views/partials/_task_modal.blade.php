@@ -298,7 +298,6 @@
                                 </select>
                             </div>
                         </div>
-
                     </div>
                     <div class="submit-section">
                         <button class="btn btn-primary submit-btn">Поставить Задачу</button>
