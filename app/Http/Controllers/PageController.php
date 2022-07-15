@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -164,6 +165,10 @@ class PageController extends Controller
         return response()->download(storage_path('app/files/articles/'.$filename));
     }
 
+    public function digestDownload($filename){
+        return response()->download(storage_path('app/files/digests/'.$filename));
+    }
+
     public function read($id, Request $request){
         Auth::user()->unreadNotifications->where('id', $id)->markAsRead();
         return redirect()->back();
@@ -249,5 +254,18 @@ class PageController extends Controller
         }else{
               return response()->json(['status' => 0, 'msg' => 'Something went wrong, try again later']);
         }
+    }
+
+    public function uploadTest(){
+        $file = fopen(public_path('test.docx'), 'r');
+        // $content = file_get_contents(public_path('test.docx'));
+        // dd($file);
+        $response = Http::attach(
+            'attachment', $file
+        )->post('http://192.168.1.35:5000');
+
+        // dd($response->json());
+
+        return redirect($response->json());
     }
 }

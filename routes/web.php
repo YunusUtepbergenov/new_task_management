@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DigestController;
 use App\Http\Controllers\Documents\ArticleController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProjectController;
@@ -8,16 +9,6 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [PageController::class, 'dashboard'])->name('home');
     Route::get('ordered', [PageController::class, 'ordered'])->name('ordered');
@@ -30,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('task/download/{id}', [PageController::class, 'download'])->name('file.download');
     Route::get('task/response/download/{name}', [PageController::class, 'responseDownload'])->name('response.download');
     Route::get('article/download/{name}', [PageController::class, 'articleDownload'])->name('article.download');
+    Route::get('digest/download/{name}', [PageController::class, 'digestDownload'])->name('digest.download');
     Route::get('journals/{year}/ru', [PageController::class, 'journalRu'])->name('journal.ru');
     Route::get('journals/{year}/uz', [PageController::class, 'journalUz'])->name('journal.uz');
     Route::get('journal/{id}', [PageController::class, 'journal'])->name('journal');
@@ -39,7 +31,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reports/download/{start}/{end}', [PageController::class, 'downloadReport'])->name('download.report');
     Route::get('/research/scraping', [ResearchController::class, 'scraping'])->name('scraping');
     Route::get('/scrape/download/{id}', [ResearchController::class, 'download'])->name('scrape.download');
-
+    Route::get('upload/test/digest', [PageController::class, 'uploadTest'])->name('upload.test');
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
 
@@ -52,6 +44,9 @@ Route::middleware(['auth'])->group(function () {
     ]);
 
     Route::resource('articles', ArticleController::class)->only([
+        'index', 'store', 'destroy',
+    ]);
+    Route::resource('digests', DigestController::class)->only([
         'index', 'store', 'destroy',
     ]);
 

@@ -76,6 +76,10 @@ class User extends Authenticatable
         return $this->hasMany(Task::class);
     }
 
+    public function digests(){
+        return $this->hasMany(Digest::class);
+    }
+
     public function helpers(){
         return $this->belongsToMany(Task::class);
     }

@@ -12,11 +12,13 @@
                         <li><a href="{{ route('articles.index') }}">Статьи</a></li>
                         <li class="submenu">
                             <a href="#"><span>Журналы</span><span class="menu-arrow"></span></a>
-                        <ul style="display: none;">
-                            <li><a href="{{ route('journal.ru', date('Y')) }}">Экономическое Обозрение</a></li>
-                            <li><a href="{{ route('journal.uz', date('Y')) }}">Иқтисодий Шарҳ</a></li>
-                        </ul>
+                            <ul style="display: none;">
+                                <li><a href="{{ route('journal.ru', date('Y')) }}">Экономическое Обозрение</a></li>
+                                <li><a href="{{ route('journal.uz', date('Y')) }}">Иқтисодий Шарҳ</a></li>
+                            </ul>
                         </li>
+                        <li><a href="{{ route('digests.index') }}">Дайжесты</a></li>
+
                     </ul>
                 </li>
 
