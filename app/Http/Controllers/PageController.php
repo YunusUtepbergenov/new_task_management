@@ -256,15 +256,21 @@ class PageController extends Controller
         }
     }
 
-    public function uploadTest(){
-        $file = fopen(public_path('test.docx'), 'r');
-        // $content = file_get_contents(public_path('test.docx'));
-        // dd($file);
+    public function uploadTest(Request $request){
+        $input = $request->file('file');
+
+        $filename = uniqid().$input->getClientOriginalName();
+        $upload = $input->move(public_path("/tmp_digests"), $filename);
+
+        $file = fopen(public_path("tmp_digests/".$filename), 'r');
+
         $response = Http::attach(
             'attachment', $file
-        )->post('http://192.168.1.35:5000');
+        )->post('http://192.168.1.35:5000', [
+            'name' => auth()->user()->name
+        ]);
 
-        // dd($response->json());
+        unlink(public_path("tmp_digests/".$filename));
 
         return redirect($response->json());
     }

@@ -20,10 +20,13 @@
                     <div class="row">
                         <div class="offset-sm-1 col-sm-10">
                             <div class="form-group">
-                                <label>Файл ( Pdf/Word, Макс: 5 MB )</label>
+                                <label>Файл ( Word, Макс: 5 MB )</label>
                                 <input class="form-control" type="file" name="file">
                             </div>
                         </div>
+                    </div>
+                    <div class="submit-section" style="margin: 0">
+                        <button class="btn btn-primary submit-btn">Загрузить</button>
                     </div>
                 </form>
             </div>

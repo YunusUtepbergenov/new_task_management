@@ -10,7 +10,7 @@
                     <h3 class="page-title">Дайжесты</h3>
 				</div>
                 <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
-                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#format_digest">Upload</a>
+                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#format_digest">Форматирования дайджеста</a>
                 </div>
                 <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
                     <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_digest">Добавить Дайжест</a>
@@ -33,7 +33,7 @@
                                 <th class="skip-filter">Название</th>
 								<th>Автор</th>
 								<th>Отдел</th>
-								{{-- <th>Журнал</th> --}}
+								<th>Журнал</th>
                                 <th class="skip-filter">Дата</th>
                                 <th class="skip-filter">Cсылка</th>
                                 <th class="skip-filter">Файл</th>
@@ -66,6 +66,7 @@
                                     </td>
                                     <td>{{ $article->user->name }}</td>
                                     <td>{{ $article->user->sector->name }}</td>
+                                    <td>{{ $article->paper }}</td>
                                     <td>{{ $article->created_at->format('Y-m-d') }}</td>
                                     <td style="text-align: center">
                                         @if ($article->link)
@@ -74,7 +75,6 @@
                                             ?>
 
                                             @for ($i = 0; $i < count(explode(";", $article->link)); $i++ )
-                                                 {{-- {{ print($article_str[$i]) }} --}}
                                                 <a href="{{ $article_str[$i] }}" target="_blank">{{ parse_url(trim($article_str[$i]), PHP_URL_HOST) }}</a><br>
                                             @endfor
                                         @else
@@ -111,9 +111,9 @@
 
         $('#myTable').ddTableFilter();
 
-        $("#article_name").addClass("d-none");
-        $("#article_description").addClass("d-none");
-        $("#article_file").addClass("d-none");
+        $("#digest_name").addClass("d-none");
+        $("#digest_description").addClass("d-none");
+        $("#digest_file").addClass("d-none");
 
         function editArticle(id) {
             $.get("/article/info/byid/" + id, function (article) {
@@ -148,9 +148,9 @@
                 },
                 error: function (data) {
                     console.log(data);
-                    $("#article_name").addClass("d-none");
-                    $("#article_description").addClass("d-none");
-                    $("#article_file").addClass("d-none");
+                    $("#digest_name").addClass("d-none");
+                    $("#digest_description").addClass("d-none");
+                    $("#digest_file").addClass("d-none");
 
                     var errors = data.responseJSON;
                     if ($.isEmptyObject(errors) == false) {
