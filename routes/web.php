@@ -18,6 +18,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings', [PageController::class, 'settings'])->name('settings');
     Route::get('/task/info/byid/{id}', [PageController::class, 'getTaskInfo']);
     Route::get('/article/info/byid/{id}', [PageController::class, 'getArticleInfo']);
+    Route::get('/digest/info/byid/{id}', [PageController::class, 'getDigestInfo']);
     Route::get('task/download/{id}', [PageController::class, 'download'])->name('file.download');
     Route::get('task/response/download/{name}', [PageController::class, 'responseDownload'])->name('response.download');
     Route::get('article/download/{name}', [PageController::class, 'articleDownload'])->name('article.download');
@@ -55,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('register/new/employee', [PageController::class, 'register'])->name('new.user');
     Route::put('user/settings', [PageController::class, 'updatePassword'])->name('update.password');
     Route::put('article/update', [ArticleController::class, 'update'])->name('article.update');
+    Route::put('digest/update', [DigestController::class, 'update'])->name('digest.update');
     Route::put('user/leave/', [UserController::class, 'userLeave'])->name('user.leave');
     Route::post('task/search', [PageController::class, 'searchTasks'])->name('task.search');
     Route::post('change/profile/picture', [PageController::class, 'changeProfilePicture'])->name('profile.change');

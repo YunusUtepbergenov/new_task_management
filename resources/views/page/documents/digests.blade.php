@@ -7,7 +7,7 @@
 		<div class="page-header">
 			<div class="row align-items-center">
 				<div class="col">
-                    <h3 class="page-title">Дайжесты</h3>
+                    <h3 class="page-title">Дайджесты</h3>
 				</div>
                 <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
                     <a href="#" class="btn add-btn" data-toggle="modal" data-target="#format_digest">Форматирования дайджеста</a>
@@ -48,21 +48,18 @@
                                             <div class="dropdown dropdown-action profile-action">
                                                 <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
                                                 <div class="dropdown-menu dropdown-menu-right">
-                                                        <form action="{{ route('articles.destroy', $article->id) }}" method="POST">
+                                                        <form action="{{ route('digests.destroy', $article->id) }}" method="POST">
                                                             <input type="hidden" name="_method" value="DELETE">
                                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
+                                                            <button class="dropdown-item"><i class="fa fa-pencil m-r-5"></i>Удалить</button>
                                                         </form>
+                                                        <a href="#" onclick="editDigest({{ $article->id }})" class="dropdown-item" data-toggle="modal" data-target="#edit_digest"><i class="fa fa-trash-o m-r-5"></i>Изменить</a>
                                                 </div>
                                             </div>
                                         @endif
                                     </td>
                                     <td>
-                                        @if ($article->user_id == auth()->user()->id)
-                                            <a href="#" onclick="editArticle({{ $article->id }})" data-toggle="modal" data-target="#edit_article">{{ $article->name }}</a>
-                                        @else
                                             <a href="#">{{ $article->name }}</a>
-                                        @endif
                                     </td>
                                     <td>{{ $article->user->name }}</td>
                                     <td>{{ $article->user->sector->name }}</td>
@@ -100,7 +97,7 @@
         @include('partials._digest_modal')
         @include('partials._digest_formatter')
 
-        {{-- @include('partials._edit_article') --}}
+        @include('partials._edit_digest')
     </div>
 	<!-- /Page Content -->
 @endsection
@@ -115,14 +112,12 @@
         $("#digest_description").addClass("d-none");
         $("#digest_file").addClass("d-none");
 
-        function editArticle(id) {
-            $.get("/article/info/byid/" + id, function (article) {
-                $("#article_id").val(article.article.id);
-                $("#article_name1").val(article.article.name);
-                $("#article_description1").val(article.article.description);
-                $("#article_user_id1").val(article.article.user_id);
-                // $("#article_category_id1").val(article.article.category_id);
-                $("#article_link1").val(article.article.link);
+        function editDigest(id) {
+            $.get("/digest/info/byid/" + id, function (digest) {
+                $("#digest_id").val(digest.digest.id);
+                $("#digest_name1").val(digest.digest.name);
+                $("#digest_paper1").val(digest.digest.paper);
+                $("#digest_link1").val(digest.digest.link);
             });
         }
 
@@ -165,10 +160,10 @@
             });
         });
 
-        jQuery("#editArticle").on("submit", function (e) {
+        jQuery("#editDigest").on("submit", function (e) {
             e.preventDefault();
-            var formData1 = new FormData($("#editArticle")[0]);
-            var url = document.getElementById('editArticle').getAttribute("action");
+            var formData1 = new FormData($("#editDigest")[0]);
+            var url = document.getElementById('editDigest').getAttribute("action");
 
             $.ajax({
                 url: url,
@@ -180,13 +175,13 @@
                 processData: false,
                 contentType: false,
                 success: function (res) {
-                    document.location.href = '/articles';
+                    document.location.href = '/digests';
                 },
                 error: function (data) {
                     var errors = data.responseJSON;
                     if ($.isEmptyObject(errors) == false) {
                         $.each(errors.errors, function (key, value) {
-                            var ErrorId = "#article_" + key + "2";
+                            var ErrorId = "#digest_" + key + "2";
                             console.log(ErrorId);
                             $(ErrorId).removeClass("d-none");
                             $(ErrorId).text(value);

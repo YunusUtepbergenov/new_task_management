@@ -3,6 +3,7 @@
 /public/storage
 /public/user_image
 /public/scraper
+/public/tmp_digests
 /storage/*.key
 /storage/debugbar
 /vendor

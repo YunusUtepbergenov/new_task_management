@@ -11,6 +11,7 @@ use App\Models\Article;
 use App\Models\Journal;
 use App\Models\Project;
 use App\Exports\TasksExport;
+use App\Models\Digest;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
@@ -152,6 +153,11 @@ class PageController extends Controller
         return response()->json(['article' => $article]);
     }
 
+    public function getDigestInfo($id){
+        $digest = Digest::with(['user'])->where('id', $id)->first();
+        return response()->json(['digest' => $digest]);
+    }
+
     public function download($id){
         $file = File::where('id', $id)->first();
         return response()->download(storage_path('app/files/'.$file->name));
@@ -257,6 +263,10 @@ class PageController extends Controller
     }
 
     public function uploadTest(Request $request){
+        $request->validate([
+            'file' => 'file|max:6000|mimes:doc,docx'
+        ]);
+
         $input = $request->file('file');
 
         $filename = uniqid().$input->getClientOriginalName();
@@ -266,7 +276,7 @@ class PageController extends Controller
 
         $response = Http::attach(
             'attachment', $file
-        )->post('http://192.168.1.35:5000', [
+        )->post('http://192.168.1.17:8888/', [
             'name' => auth()->user()->name
         ]);
 

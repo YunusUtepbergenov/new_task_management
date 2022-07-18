@@ -10,8 +10,13 @@
             </div>
             <div class="modal-body" style="padding: 10px">
                 <div class="row">
-                    <div class="offset-sm-1 col-sm-10">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    <div class="offset-sm-1 col-sm-10" style="border: solid 1px rgb(0, 90, 63); border-radius: 10px; background-color: rgba(143, 219, 211, 0.562); box-shadow: 0px 5px 5px gray;">
+                        <h4 style="text-align: center"> <b>Заметки для пользования</b> </h4>
+                        <ul>
+                            <li>Первые три параграфа дайджеста должны быть следующего характера:<br><b>"Информация"</b>, <b>&lt;тема дайджеста&gt;</b>, <b>"(материал ЦЭИР)"</b></li>
+                            <li>Все картинки и таблицы (не включая текст) исчезнут из документа, потому что скачанный файл это новый Word документ сгенерированный на основе загруженного.</li>
+                        </ul>
+
                     </div>
                 </div>
                 <br>

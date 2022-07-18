@@ -15,25 +15,31 @@ class ResearchController extends Controller
         $request->validate([
             'name' => 'required',
             'category' => 'required',
-            'file' => 'file|max:40000'
+            'file' => 'file|max:60000'
         ]);
 
         $file = $request->file('file');
-        $filename = $request->file->getClientOriginalName();
-        // $file = $request->file;
-
-        $upload = $file->move(public_path("scraper/".$request->category.'/'), $filename);
-
-        if( !$upload ){
-            return response()->json(['status' => 0,'msg'=>'Something went wrong, upload is failed.']);
+        if($file){
+            $filename = $request->file->getClientOriginalName();
+            $upload = $file->move(public_path("scraper/".$request->category.'/'), $filename);
+            if( !$upload ){
+                return response()->json(['status' => 0,'msg'=>'Something went wrong, upload is failed.']);
+            }else{
+                Scraper::create([
+                    'name' => $request->name,
+                    'category' => $request->category,
+                    'date' => $request->date,
+                    'file' => $filename
+                ]);
+            }
         }else{
             Scraper::create([
                 'name' => $request->name,
                 'category' => $request->category,
                 'date' => $request->date,
-                'file' => $filename
             ]);
         }
+
         return back();
     }
 

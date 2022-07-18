@@ -17,7 +17,7 @@
                                 <li><a href="{{ route('journal.uz', date('Y')) }}">Иқтисодий Шарҳ</a></li>
                             </ul>
                         </li>
-                        <li><a href="{{ route('digests.index') }}">Дайжесты</a></li>
+                        <li><a href="{{ route('digests.index') }}">Дайджесты</a></li>
 
                     </ul>
                 </li>
