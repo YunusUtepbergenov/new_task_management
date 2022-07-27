@@ -29,20 +29,31 @@ class DigestController extends Controller
     {
         $request->validate([
             'name' => 'required|max:256',
-            'paper' => 'required|max:128',
+            'paper' => 'nullable|file|max:8000|mimes:doc,docx,pdf',
             'link' => 'nullable|max:1024',
-            'file' => 'required|file|max:8000|mimes:doc,docx,pdf',
+            'file' => 'required|file|max:8000|mimes:doc,docx',
         ]);
+
+        $chars = array("+", " ", "?", "[", "]", "/", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}", "%");
 
         $digest = new Digest;
 
         $digest->name = $request->name;
         $digest->user_id = auth()->user()->id;
         $digest->sector_id = auth()->user()->sector->id;
-        $digest->paper = $request->paper;
+        // $digest->paper = $request->paper;
         $digest->link = $request->link;
 
+        $source = $request->file('paper');
+        if($source){
+            $source_name = uniqid().$request->file('paper')->getClientOriginalName();
+            $source_name = str_replace($chars, "_", $source_name);
+            $upload = $source->move(public_path("/digest_sources"), $source_name);
+            $digest->paper = $source_name;
+        }
+
         $filename = time().$request->file->getClientOriginalName();
+        $filename = str_replace($chars, "_", $filename);
         Storage::disk('local')->putFileAs(
             'files/digests/',
             $request->file,
@@ -58,20 +69,30 @@ class DigestController extends Controller
         $request->validate([
             'name' => 'required|max:256',
             'link' => 'nullable|max:1024',
-            'paper' => 'required|max:128',
-            'file' => 'nullable|file|max:8000|mimes:doc,docx,pdf',
+            'paper' => 'nullable|file|max:8000|mimes:doc,docx,pdf',
+            'file' => 'nullable|file|max:8000|mimes:doc,docx',
         ]);
-
+        $chars = array("+", " ", "?", "[", "]", "/", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}", "%");
         $digest = Digest::where('id', $request->id)->first();
 
         $digest->name = $request->name;
         $digest->user_id = auth()->user()->id;
         $digest->sector_id = auth()->user()->sector->id;
-        $digest->paper = $request->paper;
         $digest->link = $request->link;
+
+        $source = $request->file('paper');
+        if($source){
+            if($digest->paper)
+                unlink(public_path('digest_sources/'.$digest->paper));
+            $source_name = uniqid().$request->file('paper')->getClientOriginalName();
+            $source_name = str_replace($chars, "_", $source_name);
+            $source->move(public_path("/digest_sources"), $source_name);
+            $digest->paper = $source_name;
+        }
 
         if ($request->file) {
             $filename = time().$request->file->getClientOriginalName();
+            $filename = str_replace($chars, "_", $filename);
             Storage::disk('local')->putFileAs(
                 'files/digests/',
                 $request->file,
@@ -93,5 +114,9 @@ class DigestController extends Controller
         Storage::delete('files/digests/'.$digest->file);
 
         return back();
+    }
+
+    public function paperDownload($filename){
+        return response()->download(public_path('digest_sources/'.$filename));
     }
 }

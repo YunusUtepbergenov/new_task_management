@@ -24,8 +24,8 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label>Журнал</label>
-                                <input class="form-control" name="paper" placeholder="Введите названия журнала">
+                                <label>Источник</label>
+                                <input class="form-control" type="file" name="paper">
                             </div>
                             <div class="alert alert-danger" id="digest_description"></div>
                         </div>
@@ -34,7 +34,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label>Cсылка</label>
+                                <label>Cсылка источника</label>
                                 <input class="form-control" name="link" type="text" placeholder="Cсылка">
                             </div>
                         </div>

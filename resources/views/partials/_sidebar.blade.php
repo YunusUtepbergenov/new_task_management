@@ -9,6 +9,7 @@
                 <li class="submenu">
                     <a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span><span class="menu-arrow"></span></a>
                     <ul style="display: none;" id="journals_menu">
+                        <li><a href="{{ route('digests.index') }}">Дайджесты</a></li>
                         <li><a href="{{ route('articles.index') }}">Статьи</a></li>
                         <li class="submenu">
                             <a href="#"><span>Журналы</span><span class="menu-arrow"></span></a>
@@ -17,8 +18,6 @@
                                 <li><a href="{{ route('journal.uz', date('Y')) }}">Иқтисодий Шарҳ</a></li>
                             </ul>
                         </li>
-                        <li><a href="{{ route('digests.index') }}">Дайджесты</a></li>
-
                     </ul>
                 </li>
 
@@ -31,14 +30,14 @@
                         </ul>
                     </li>
                 @endif
-                <li>
-                    <a href="{{ route('employees') }}"><i class="la la-user"></i> <span> Сотрудники </span></a>
-                </li>
                 <li class="submenu">
                     <a href="#"><i class="fa fa-database" aria-hidden="true"></i><span>Анализ данных</span><span class="menu-arrow"></span></a>
                     <ul style="display: none;" id="reports_menu">
                         <li><a href="{{ route('scraping') }}"><span>Дата скрапинг</span></a></li>
                     </ul>
+                </li>
+                <li>
+                    <a href="{{ route('employees') }}"><i class="la la-user"></i> <span> Сотрудники </span></a>
                 </li>
             </ul>
 

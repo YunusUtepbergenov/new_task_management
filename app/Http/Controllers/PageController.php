@@ -276,12 +276,13 @@ class PageController extends Controller
 
         $response = Http::attach(
             'attachment', $file
-        )->post('http://192.168.1.17:8888/', [
+        )->post('http://192.168.1.60:8888/', [
             'name' => auth()->user()->name
         ]);
 
-        unlink(public_path("tmp_digests/".$filename));
+        copy($response->json(), public_path("tmp_digests/".$filename));
+        // unlink(public_path("tmp_digests/".$filename));
 
-        return redirect($response->json());
+        return response()->download(public_path("tmp_digests/".$filename));
     }
 }

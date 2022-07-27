@@ -32,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reports/download/{start}/{end}', [PageController::class, 'downloadReport'])->name('download.report');
     Route::get('/research/scraping', [ResearchController::class, 'scraping'])->name('scraping');
     Route::get('/scrape/download/{id}', [ResearchController::class, 'download'])->name('scrape.download');
+    Route::get('/digest/source/download/{filename}', [DigestController::class, 'paperDownload'])->name('paper.download');
     Route::post('upload/test/digest', [PageController::class, 'uploadTest'])->name('upload.test');
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');

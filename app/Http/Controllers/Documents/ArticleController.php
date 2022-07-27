@@ -37,7 +37,7 @@ class ArticleController extends Controller
             'link' => 'nullable|max:1024',
             'file' => 'required|file|max:8000|mimes:doc,docx,pdf',
         ]);
-
+        $chars = array("+", " ", "?", "[", "]", "/", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}", "%");
         $article = new Article;
 
         $article->name = $request->name;
@@ -48,6 +48,7 @@ class ArticleController extends Controller
         $article->link = $request->link;
 
         $filename = time().$request->file->getClientOriginalName();
+        $filename = str_replace($chars, "_", $filename);
         Storage::disk('local')->putFileAs(
             'files/articles/',
             $request->file,
@@ -66,6 +67,7 @@ class ArticleController extends Controller
             'link' => 'nullable|max:1024',
             'file' => 'file|max:8000|mimes:doc,docx,pdf',
         ]);
+        $chars = array("+", " ", "?", "[", "]", "/", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}", "%");
 
         $article = Article::where('id', $request->id)->first();
         $user = User::with('sector')->where('id', $request->user_id)->first();
@@ -80,6 +82,7 @@ class ArticleController extends Controller
         if ($request->file) {
             Storage::delete('/files/articles/'.$article->file);
             $filename = time().$request->file->getClientOriginalName();
+            $filename = str_replace($chars, '_', $filename);
             Storage::disk('local')->putFileAs(
                 'files/articles/',
                 $request->file,

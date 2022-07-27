@@ -121,30 +121,92 @@
 			<!-- /Page Wrapper -->
 			<!-- Right Sidebar -->
 			<div class="sidebar_right" id="sidebar">
-                <div class="sidebar-inner slimscroll">
-                    <div class="card-body">
-                        <h6 class="birthday-title m-b-5" style="color: white">
-                            Ближайшие дни рождения
-                        </h6>
-                        <ul class="list-box">
-                            @foreach ($birthdays as $birthday)
+                <div class="accordion" id="accordionExample">
+                    <div class="card" style="border: 0">
+                        <div class="card-header sidebar_right_header" id="headingOne">
+                          <h6 class="sidebar_right_header_title m-b-5">
+                            <button class="btn btn-block text-left collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="width: 100%; text-align:left">
+                                Ссылки <span class="menu-arrow"></span>
+                            </button>
+                          </h6>
+                        </div>
+
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                          <div class="card-body" style="background: #34444c; color: #fff; padding-top: 0; padding-bottom:1px;">
+                            <ul class="list-box">
                                 <li>
-                                    <a href="#" onclick='profileModal("{{ $birthday->id }}")'>
+                                    <a href="https://cer.uz" target="blank" style="color: white">
                                         <div class="list-item">
-                                            <div class="list-left">
-                                                <span class="avatar"><img alt="" src="{{ ($birthday->avatar) ? asset('user_image/'.$birthday->avatar) : asset('user_image/avatar.jpg') }}"></span>
-                                            </div>
-                                            <div class="list-body">
-                                                <span class="birthday-author">{{ $birthday->name }}</span>
-                                                <div class="clearfix"></div>
-                                                <span class="birth-date">{{ $birthday->birth_date->format('d-m-Y') }}</span>
+                                            <div class="list-body" style="padding: 0;">
+                                                <img class="links-websites" src="{{ asset('assets/img/logo.svg') }}" alt="Alisher Navoiy">
                                             </div>
                                         </div>
                                     </a>
                                 </li>
-                            @endforeach
-                        </ul>
-                </div>
+                                <li>
+                                    <a href="https://review.uz" target="blank" style="color: white">
+                                        <div class="list-item">
+                                            <div class="list-body" style="padding: 0;">
+                                                <h3 style="text-align: center; margin:auto">Review.uz</h3>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://search.ebscohost.com" data-toggle="tooltip" data-html="true" data-placement="left" title="User ID: <b>ns123207</b> <br> Password: <b>Databases1!</b>" target="blank" style="color: white">
+                                        <div class="list-item">
+                                            <div class="list-body" style="padding: 0;">
+                                                <img class="links-websites" src="https://uznel.natlib.uz:444/FN/dl_image/uload/homepage/r00/image/en/logo.png" alt="Alisher Navoiy">
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://mail.cerr.uz" target="blank" style="color: white">
+                                        <div class="list-item">
+                                            <div class="list-body" style="padding: 0;">
+                                                <h3 style="text-align: center; margin:auto">Mail.cerr.uz</h3>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border: 0">
+                        <div class="card-header sidebar_right_header" id="headingOne">
+                            <h6 class="sidebar_right_header_title m-b-5">
+                              <button class="btn btn btn-block text-left" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" style="width: 100%; text-align:left">
+                                Ближайшие дни рождения <span class="menu-arrow"></span>
+                              </button>
+                            </h6>
+                        </div>
+
+                        <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+                            <div class="card-body" style="background: #34444c; color: #fff; padding-top: 0; padding-bottom:5px;">
+                                <ul class="list-box">
+                                    @foreach ($birthdays as $birthday)
+                                        <li>
+                                            <a href="#" onclick='profileModal("{{ $birthday->id }}")'>
+                                                <div class="list-item">
+                                                    <div class="list-left">
+                                                        <span class="avatar"><img alt="" src="{{ ($birthday->avatar) ? asset('user_image/'.$birthday->avatar) : asset('user_image/avatar.jpg') }}"></span>
+                                                    </div>
+                                                    <div class="list-body">
+                                                        <span class="birthday-author">{{ $birthday->name }}</span>
+                                                        <div class="clearfix"></div>
+                                                        <span class="birth-date">{{ $birthday->birth_date->format('d-m-Y') }}</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 			<!-- End Right Sidebar -->

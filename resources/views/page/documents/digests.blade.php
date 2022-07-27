@@ -10,10 +10,10 @@
                     <h3 class="page-title">Дайджесты</h3>
 				</div>
                 <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
-                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#format_digest">Форматирования дайджеста</a>
+                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#format_digest">Форматирование дайджеста</a>
                 </div>
                 <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
-                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_digest">Добавить Дайжест</a>
+                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_digest">Добавить дайджест</a>
                 </div>
             </div>
             <ul class="nav nav-tabs nav-tabs-bottom">
@@ -33,7 +33,7 @@
                                 <th class="skip-filter">Название</th>
 								<th>Автор</th>
 								<th>Отдел</th>
-								<th>Журнал</th>
+								<th>Источник</th>
                                 <th class="skip-filter">Дата</th>
                                 <th class="skip-filter">Cсылка</th>
                                 <th class="skip-filter">Файл</th>
@@ -63,7 +63,12 @@
                                     </td>
                                     <td>{{ $article->user->name }}</td>
                                     <td>{{ $article->user->sector->name }}</td>
-                                    <td>{{ $article->paper }}</td>
+                                    <td>
+                                        @if ($article->paper)
+                                            <a href="{{ route('paper.download', $article->paper) }}">{{ substr($article->paper, 13) }}</a></td>
+                                        @else
+
+                                        @endif
                                     <td>{{ $article->created_at->format('Y-m-d') }}</td>
                                     <td style="text-align: center">
                                         @if ($article->link)
