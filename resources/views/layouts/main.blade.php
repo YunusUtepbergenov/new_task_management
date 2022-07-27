@@ -135,6 +135,16 @@
                           <div class="card-body" style="background: #34444c; color: #fff; padding-top: 0; padding-bottom:1px;">
                             <ul class="list-box">
                                 <li>
+                                    <a href="https://search.ebscohost.com" data-toggle="tooltip" data-html="true" data-placement="left" title="User ID: <b>ns123207</b> <br> Password: <b>Databases1!</b>" target="blank" style="color: white">
+                                        <div class="list-item">
+                                            <div class="list-body" style="padding: 0;">
+                                                <img class="links-websites" src="{{ asset('img/ebsco.png') }}" alt="Alisher Navoiy">
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <li>
                                     <a href="https://cer.uz" target="blank" style="color: white">
                                         <div class="list-item">
                                             <div class="list-body" style="padding: 0;">
@@ -147,16 +157,7 @@
                                     <a href="https://review.uz" target="blank" style="color: white">
                                         <div class="list-item">
                                             <div class="list-body" style="padding: 0;">
-                                                <h3 style="text-align: center; margin:auto">Review.uz</h3>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://search.ebscohost.com" data-toggle="tooltip" data-html="true" data-placement="left" title="User ID: <b>ns123207</b> <br> Password: <b>Databases1!</b>" target="blank" style="color: white">
-                                        <div class="list-item">
-                                            <div class="list-body" style="padding: 0;">
-                                                <img class="links-websites" src="https://uznel.natlib.uz:444/FN/dl_image/uload/homepage/r00/image/en/logo.png" alt="Alisher Navoiy">
+                                                <h3>REVIEW.UZ</h3>
                                             </div>
                                         </div>
                                     </a>
@@ -165,7 +166,7 @@
                                     <a href="https://mail.cerr.uz" target="blank" style="color: white">
                                         <div class="list-item">
                                             <div class="list-body" style="padding: 0;">
-                                                <h3 style="text-align: center; margin:auto">Mail.cerr.uz</h3>
+                                                <h3>MAIL.CERR.UZ</h3>
                                             </div>
                                         </div>
                                     </a>
