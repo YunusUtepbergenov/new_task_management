@@ -31,6 +31,7 @@ class User extends Authenticatable
         'sector_id',
         'role_id',
         'phone',
+        'birth_date',
         'avatar',
         'leave',
         'password',

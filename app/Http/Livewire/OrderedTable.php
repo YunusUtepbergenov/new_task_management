@@ -55,11 +55,11 @@ class OrderedTable extends Component
             if($this->status == "Empty"){
                 $this->chosen_project = Project::with(['tasks' => function($query){
                     $query->with('user')->where('creator_id', Auth::user()->id);
-                }])->where('id', $this->projectId)->first();
+                }])->where('id', $this->projectId)->get();
             }else{
                 $this->chosen_project = Project::with(['tasks' => function($query){
                     $query->with('user')->where('creator_id', Auth::user()->id)->where('status', $this->status);
-                }])->where('id', $this->projectId)->first();
+                }])->where('id', $this->projectId)->get();
             }
         }
     }

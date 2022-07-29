@@ -135,6 +135,7 @@ class PageController extends Controller
             'email' => $request->email,
             'sector_id' => $request->sector_id,
             'role_id' => $request->role_id,
+            'birth_date' => $request->birth_date,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
         ]);

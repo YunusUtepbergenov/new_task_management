@@ -36,8 +36,8 @@ class TasksTable extends Component
         }elseif($this->projectId == "Empty"){
             $this->chosen_project = Null;
             if($this->status == "Empty"){
-                // $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->latest()->get();
-                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->latest()->get();
+                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->latest()->get();
+                // $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->latest()->get();
             }elseif($this->status == "Просроченный")
                 $this->tasks = Task::with(['user', 'creator'])->where('user_id', Auth::user()->id)->where('overdue', 1)->orderBy('created_at', 'DESC')->get();
             else
@@ -47,11 +47,11 @@ class TasksTable extends Component
             if($this->status == "Empty"){
                 $this->chosen_project = Project::with(['tasks' => function($query){
                     $query->where('user_id', Auth::user()->id);
-                }])->where('id', $this->projectId)->first();
+                }])->where('id', $this->projectId)->get();
             }else{
                 $this->chosen_project = Project::with(['tasks' => function($query){
                     $query->where('user_id', Auth::user()->id)->where('status', $this->status);
-                }])->where('id', $this->projectId)->first();
+                }])->where('id', $this->projectId)->get();
             }
         }
     }

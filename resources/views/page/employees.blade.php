@@ -90,7 +90,6 @@
                                                 <td></td>
                                             @endif
                                         @endif
-
                                     </tr>
                                 @endforeach
                             @endforeach
@@ -155,14 +154,19 @@
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>Введите номер телефона</label>
-                                        <input class="form-control" name="phone" type="text" placeholder="(93) 123-45-67">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Введите дату рождения</label>
+                                <div class="col-sm-4">
+                                    <div class="form-group cal-icon">
+                                        <input class="form-control datetimepicker" name="birth_date" type="text">
                                     </div>
-                                    {{-- <div class="alert alert-danger" id="phone"></div> --}}
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Введите номер телефона</label>
+                                <div class="col-sm-4">
+                                    <input class="form-control" name="phone" type="text" placeholder="(93) 123-45-67">
                                 </div>
                             </div>
 

@@ -225,11 +225,7 @@
                             <label class="col-sm-3 col-form-label">Постановщик</label>
                             <div class="col-sm-4">
                                 <select class="form-control" name="creator_id" id="">
-                                        <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
-                                        <option value="1">Хакимов Обид</option>
-                                        <option value="3">Асадов Хуршед</option>
-                                        <option value="7">Холмухамедов Мухсинжон</option>
-                                        <option value="54">Закирова Дилафруз</option>
+                                    <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
                                 </select>
                             </div>
                         </div>
