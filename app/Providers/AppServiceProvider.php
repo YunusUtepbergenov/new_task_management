@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Paginator::useBootstrap();
         $birthdays = cache()->remember('birthdays', 60*60*24, function () {
             $date = now();
 
@@ -33,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
             ->orWhere(function ($query) use ($date) {
                 $query->whereMonth('birth_date', '=', $date->month)
                     ->whereDay('birth_date', '>=', $date->day);
-            })->orderBy("months",'ASC')->orderBy("dates", 'ASC')
+            })->where('leave', 0)->orderBy("months",'ASC')->orderBy("dates", 'ASC')
             ->take(3)
             ->get();
         });

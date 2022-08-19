@@ -60,6 +60,8 @@
                 $('#helpers1').val(null).trigger('change');
                 // document.getElementById('repeat_div_cont').style.display = 'none';
                 $("#project_id1").val(task.task.project_id);
+                $("#type_id1").val(task.task.type_id);
+                $("#priority_id1").val(task.task.priority_id);
                 $("#id1").val(task.task.id);
                 $("#name1").val(task.task.name);
                 $("#deadline1").val(task.task.deadline);

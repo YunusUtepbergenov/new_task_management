@@ -18,7 +18,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::all();
+        $articles = Article::latest()->paginate(8);
         $categories = Category::select(['id', 'name'])->get();
         $users = User::select(['id', 'name'])->get();
 
@@ -100,5 +100,14 @@ class ArticleController extends Controller
         $article->delete();
 
         return back();
+    }
+
+    public function getArticleInfo($id){
+        $article = Article::with(['user'])->where('id', $id)->first();
+        return response()->json(['article' => $article]);
+    }
+
+    public function articleDownload($filename){
+        return response()->download(storage_path('app/files/articles/'.$filename));
     }
 }

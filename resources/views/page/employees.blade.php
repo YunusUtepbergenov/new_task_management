@@ -35,6 +35,7 @@
 					<table class="table custom-table" style="overflow-y: auto; height: 110px;">
 						<thead id="employee_header">
 							<tr>
+                                <th>#</th>
 								<th>Ф.И.О</th>
 								<th>Почта</th>
 								<th>Сектор</th>
@@ -49,18 +50,22 @@
                             </tr>
 						</thead>
 						<tbody style="overflow: auto;">
+                            @php
+                                $counter = 0;
+                            @endphp
                             @foreach ($sectors as $sector)
                                 @if (Auth::user()->isHR())
                                     <tr>
-                                        <th colspan="8" id="employee_normal">{{ $sector->name }}</th>
+                                        <th colspan="9" id="employee_normal">{{ $sector->name }}</th>
                                     </tr>
                                 @else
                                     <tr>
-                                        <th colspan="7" id="employee_normal">{{ $sector->name }}</th>
+                                        <th colspan="8" id="employee_normal">{{ $sector->name }}</th>
                                     </tr>
                                 @endif
                                 @foreach ($sector->users as $employee)
                                     <tr>
+                                        <td>{{ ++$counter }}</td>
                                         <td>
                                             <h2 class="table-avatar">
                                                 <a href="#" onclick='profileModal("{{ $employee->id }}")'>{{ $employee->name }}</a>

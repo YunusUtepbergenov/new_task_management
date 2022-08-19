@@ -286,7 +286,7 @@
             });
 
             path = window.location.pathname;
-            if(path == "/articles" || path.indexOf('/journal') >= 0){
+            if(path == "/articles" || path.indexOf('/journal') >= 0 || path == "/digests" || path == "/notes"){
                 $('#journals_menu').show();
                 $('#journals_menu').prev().addClass('subdrop');
             }else if(path.indexOf('/reports') >= 0){

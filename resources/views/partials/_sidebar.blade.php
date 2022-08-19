@@ -11,6 +11,7 @@
                     <ul style="display: none;" id="journals_menu">
                         <li><a href="{{ route('digests.index') }}">Дайджесты</a></li>
                         <li><a href="{{ route('articles.index') }}">Статьи</a></li>
+                        <li><a href="{{ route('notes.index') }}">Аналитические записки</a></li>
                         <li class="submenu">
                             <a href="#"><span>Журналы</span><span class="menu-arrow"></span></a>
                             <ul style="display: none;">
@@ -32,8 +33,9 @@
                 @endif
                 <li class="submenu">
                     <a href="#"><i class="fa fa-database" aria-hidden="true"></i><span>Анализ данных</span><span class="menu-arrow"></span></a>
-                    <ul style="display: none;" id="reports_menu">
+                    <ul style="display: none;">
                         <li><a href="{{ route('scraping') }}"><span>Дата скрапинг</span></a></li>
+                        <li><a href="{{ route('surveys') }}"><span>Опросники</span></a></li>
                     </ul>
                 </li>
                 <li>

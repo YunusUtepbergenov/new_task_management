@@ -4,19 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Events\TaskCreatedEvent;
 use App\Models\File;
-use App\Models\Project;
 use App\Models\Repeat;
-use App\Models\Response;
-use App\Models\Sector;
 use App\Models\Task;
 use App\Models\TaskUser;
 use App\Models\User;
-use Carbon\Carbon;
-use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use phpDocumentor\Reflection\Types\Null_;
 
 class TaskController extends Controller
 {
@@ -50,11 +43,14 @@ class TaskController extends Controller
                     'user_id' => $usr,
                     'project_id' => $request->project_id,
                     'sector_id' => $user->sector->id,
+                    'type_id' => $request->type_id,
+                    'priority_id' => $request->priority_id,
                     'name' => $request->name,
                     'description' => $request->description,
                     'deadline' => $new_deadline,
                     'status' => 'Новое',
                 ]);
+
                 $task->executers()->sync($request->helpers, false);
                 if($request->hasFile('file')){
                     foreach($request->file as $file){
@@ -94,6 +90,8 @@ class TaskController extends Controller
                             'user_id' => $user->id,
                             'project_id' => $request->project_id,
                             'sector_id' => $user->sector->id,
+                            'type_id' => $request->type_id,
+                            'priority_id' => $request->priority_id,
                             'name' => $request->name,
                             'description' => $request->description,
                             'deadline' => $new_deadline,
@@ -144,6 +142,8 @@ class TaskController extends Controller
                         'user_id' => $user->id,
                         'project_id' => $request->project_id,
                         'sector_id' => $user->sector->id,
+                        'type_id' => $request->type_id,
+                        'priority_id' => $request->priority_id,
                         'name' => $request->name,
                         'description' => $request->description,
                         'deadline' => $new_deadline,
@@ -190,15 +190,14 @@ class TaskController extends Controller
 
         $task = Task::where('id', $request->id)->first();
         $user = User::where('id', $request->user_id)->first();
-        // if($request->repeat_check != "on"){
-        //     $request->repeat = 'ordinary';
-        // }
 
         $task->update([
             'creator_id' => $request->creator_id,
             'user_id' => $request->user_id,
             'project_id' => $request->project_id,
             'sector_id' => $user->sector->id,
+            'type_id' => $request->type_id,
+            'priority_id' => $request->priority_id,
             'name' => $request->name,
             'description' => $request->description,
             'deadline' => $request->deadline,
@@ -288,5 +287,46 @@ class TaskController extends Controller
             $task->update(['status' => "Ждет подтверждения"]);
         }
         return redirect()->back();
+    }
+
+    public function getTaskInfo($id){
+        $task = Task::with(['executers', 'repeat'])->where('id', $id)->first();
+
+        return response()->json(['task' => $task]);
+    }
+
+    public function download($id){
+        $file = File::where('id', $id)->first();
+        return response()->download(storage_path('app/files/'.$file->name));
+    }
+
+    public function responseDownload($filename){
+        return response()->download(storage_path('app/files/responses/'.$filename));
+    }
+
+    public function searchTasks(Request $request){
+        $user = auth()->user();
+        if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer() || $user->isHR() || $user->role_id == 2){
+            $tasks = Task::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->orWhere('description', 'LIKE', "%{$request->term}%")->get();
+        }else{
+            $tasks = Task::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->where('user_id', $user->id)->get();
+        }
+        $users = User::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->get();
+
+        if($tasks){
+            $tasks->map(function($res){
+                $res->model = class_basename($res);
+            });
+        }
+
+        if($users){
+            $users->map(function($res){
+                $res->model = class_basename($res);
+            });
+        }
+
+        $tasks = $tasks->merge($users);
+
+        return $tasks->toJson();
     }
 }

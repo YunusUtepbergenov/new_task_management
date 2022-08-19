@@ -41,18 +41,18 @@
                             <th>Эффективность:</th>
                             <th>Все задачи</th>
                             <th>Выполнено</th>
+                            <th>Новое</th>
                             <th>Просроченный</th>
                             <th>Ждет подтверждения</th>
                         </tr>
                     </thead>
                     <tbody style="overflow: auto;">
                         @foreach ($users as $employee)
-                            {{-- @foreach ($sector->users as $employee) --}}
                                 @if (!$employee->isDirector() && $employee->filterTasks($startDate, $endDate)->count() > 0)
                                 <tr>
                                     <td>
                                         <h2 class="table-avatar">
-                                            <a href="{{ route('user.report', $employee->id) }}">{{ $employee->name }}</a>
+                                            <a href="{{ route('user.report', [$employee->id, $startDate, $endDate]) }}">{{ $employee->name }}</a>
                                         </h2>
                                     </td>
                                     <td class="text-wrap">{{ $employee->sector->name }}</td>
@@ -62,11 +62,11 @@
                                     </td>
                                     <td style="text-align: center">{{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->count()}}</td>
                                     <td style="text-align: center">{{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->where('status', 'Выполнено')->count()}}</td>
+                                    <td style="text-align: center">{{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->where('status', 'Новое')->where('overdue', 0)->count()}}</td>
                                     <td style="text-align: center">{{ $employee->overdueFilter($startDate, $endDate)->count() }}</td>
                                     <td style="text-align: center">{{ $employee->confirmFilter($startDate, $endDate)->count() }}</td>
                                 </tr>
                                 @endif
-                            {{-- @endforeach --}}
                         @endforeach
                     </tbody>
                 </table>

@@ -6,6 +6,7 @@ use App\Models\Digest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class DigestController extends Controller
 {
@@ -16,7 +17,7 @@ class DigestController extends Controller
      */
     public function index()
     {
-        $digests = Digest::all();
+        $digests = Digest::latest()->paginate(10);
         $users = User::select(['id', 'name'])->get();
 
         return view('page.documents.digests', [
@@ -118,5 +119,38 @@ class DigestController extends Controller
 
     public function paperDownload($filename){
         return response()->download(public_path('digest_sources/'.$filename));
+    }
+
+    public function getDigestInfo($id){
+        $digest = Digest::with(['user'])->where('id', $id)->first();
+        return response()->json(['digest' => $digest]);
+    }
+
+    public function digestDownload($filename){
+        return response()->download(storage_path('app/files/digests/'.$filename));
+    }
+
+    public function uploadTest(Request $request){
+        $request->validate([
+            'file' => 'file|max:6000|mimes:doc,docx'
+        ]);
+
+        $input = $request->file('file');
+
+        $filename = uniqid().$input->getClientOriginalName();
+        $upload = $input->move(public_path("/tmp_digests"), $filename);
+
+        $file = fopen(public_path("tmp_digests/".$filename), 'r');
+
+        $response = Http::attach(
+            'attachment', $file
+        )->post('http://192.168.1.60:8888/', [
+            'name' => auth()->user()->name
+        ]);
+
+        copy($response->json(), public_path("tmp_digests/".$filename));
+        // unlink(public_path("tmp_digests/".$filename));
+
+        return response()->download(public_path("tmp_digests/".$filename));
     }
 }

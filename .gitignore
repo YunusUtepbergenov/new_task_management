@@ -4,6 +4,7 @@
 /public/user_image
 /public/scraper
 /public/digest_sources
+/public/note_sources
 /public/tmp_digests
 /storage/*.key
 /storage/debugbar

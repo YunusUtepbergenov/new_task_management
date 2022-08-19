@@ -21,7 +21,7 @@
                     <div class="col-lg-5" style="margin-top: 10px">
                         <div class="progress">
                             @php $avg = 0; @endphp
-                            @foreach ($sector->users->where('leave', 0) as $user)
+                            @foreach ($sector->users as $user)
                                 @if (!$user->isDirector())
                                     @if ($user->tasks()->count() > 0)
                                         @php  $avg = $avg + round( ((1 - ( $user->overdueTasks()->count()
@@ -32,7 +32,11 @@
                                     @endif
                                 @endif
                             @endforeach
-                            <div class="progress-bar bg-progress" role="progressbar" style="width: {{ round(($avg) / ($sector->users()->count()), 1) }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">{{ round(($avg) / ($sector->users()->count()), 1) }}%</div>
+                            @if ($sector->id == 1)
+                                <div class="progress-bar bg-progress" role="progressbar" style="width: {{ round(($avg) / ($sector->users()->count() - 1), 1) }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">{{ round(($avg) / ($sector->users()->count()- 1), 1) }}%</div>
+                            @else
+                                <div class="progress-bar bg-progress" role="progressbar" style="width: {{ round(($avg) / ($sector->users()->count()), 1) }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">{{ round(($avg) / ($sector->users()->count()), 1) }}%</div>
+                            @endif
                         </div>
                     </div>
                 @endforeach

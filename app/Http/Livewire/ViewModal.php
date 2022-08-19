@@ -86,6 +86,7 @@ class ViewModal extends Component
 
         $this->task->update(['status' => "Ждет подтверждения"]);
         $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
+        $this->description  = '';
     }
 
     public function storeComment($id){
@@ -123,6 +124,17 @@ class ViewModal extends Component
         $task->update(['status' => "Выполняется"]);
         $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
         event(new TaskRejectedEvent($task));
+    }
+
+    public function reSubmit($id){
+        $task = Task::where('id', $id)->first();
+
+        if($task->response->filename)
+            Storage::delete('files/responses/'.$task->response->filename);
+
+        $task->response->delete();
+        $task->update(['status' => "Выполняется"]);
+        $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
     }
 
     //Profile Information Modal

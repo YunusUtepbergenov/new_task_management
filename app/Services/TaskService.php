@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Project;
 use App\Models\Sector;
+use App\Models\Type;
 use Illuminate\Support\Facades\Auth;
 
 class TaskService {
@@ -28,12 +29,24 @@ class TaskService {
         $user = Auth::user();
 
         if($user->isDirector() || $user->isMailer() || Auth::user()->isDeputy() || $user->isHead()){
-            $projects = Project::where('user_id', $user->id)->get();
+            $projects = Project::where('user_id', $user->id)->orderBy('created_at', 'DESC')->get();
         }else{
             $projects = NULL;
         }
 
         return $projects;
+    }
+
+    public function typeList(){
+        $user = Auth::user();
+
+        if($user->isDirector() || $user->isMailer() || Auth::user()->isDeputy() || $user->isHead()){
+            $types = Type::all();
+        }else{
+            $types = NULL;
+        }
+
+        return $types;
     }
 
 }

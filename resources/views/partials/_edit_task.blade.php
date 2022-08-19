@@ -25,6 +25,30 @@
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <div class="col-sm-1"></div>
+                        <label class="col-sm-3 col-form-label">Категория</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="type_id1" name="type_id">
+                                @foreach ($types as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-1"></div>
+                        <label class="col-sm-3 col-form-label">Важность</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="priority_id1" name="priority_id">
+                                @foreach ($priorities as $priority)
+                                    <option value="{{ $priority->id }}">{{ $priority->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">

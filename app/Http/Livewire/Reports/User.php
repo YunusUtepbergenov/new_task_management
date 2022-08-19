@@ -8,11 +8,11 @@ use Livewire\Component;
 
 class User extends Component
 {
-    public $userId, $user, $tasks;
+    public $userId, $start, $end, $user, $tasks;
 
     public function mount(){
         $this->user = ModelsUser::where('id', $this->userId)->first();
-        $this->tasks = Task::where('user_id', $this->userId)->get();
+        $this->tasks = Task::where('user_id', $this->userId)->whereBetween('deadline', [$this->start, $this->end])->get();
     }
     public function render()
     {

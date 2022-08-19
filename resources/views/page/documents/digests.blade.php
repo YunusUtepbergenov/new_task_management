@@ -40,9 +40,13 @@
                             </tr>
 						</thead>
 						<tbody style="overflow: auto;">
-                            @foreach ($digests as $key => $article)
+                            @php
+                                $key = ($digests->currentpage()-1) * $digests->perpage()
+                            @endphp
+
+                            @foreach ($digests as $article)
                                 <tr>
-                                    <td>{{ $key + 1 }}</td>
+                                    <td>{{ ++$key }}</td>
                                     <td>
                                         @if ($article->user_id == auth()->user()->id)
                                             <div class="dropdown dropdown-action profile-action">
@@ -97,8 +101,10 @@
                         </tbody>
 					</table>
 				</div>
-			</div>
+            </div>
 		</div>
+        {{ $digests->links() }}
+
         @include('partials._digest_modal')
         @include('partials._digest_formatter')
 

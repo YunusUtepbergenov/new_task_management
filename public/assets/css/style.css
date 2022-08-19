@@ -734,6 +734,10 @@ table.dataTable thead > tr > td.sorting {
     background: #f62d51;
     border: 1px solid #f62d51;
 }
+.btn-danger1 {
+    background-color: rgba(242, 17, 54, 0.12) !important;
+    color: #e63c3c !important;
+}
 
 .btn-danger:hover,
 .btn-danger:focus,
@@ -784,28 +788,31 @@ table.dataTable thead > tr > td.sorting {
     background: linear-gradient(to right, #f43b48 0%, #453a94 100%);
     color: #fff;
 }
+.pagination {
+    float: right;
+}
 .pagination > .active > a,
 .pagination > .active > a:focus,
 .pagination > .active > a:hover,
 .pagination > .active > span,
 .pagination > .active > span:focus,
 .pagination > .active > span:hover {
-    background-color: #f43b48;
-    border-color: #f43b48;
+    background-color: #256c6c;
+    border-color: #ccc;
 }
 .pagination > li > a,
 .pagination > li > span {
-    color: #f43b48;
+    color: black;
 }
 .page-link:hover {
-    color: #f43b48;
+    color: #256c6c;
 }
 .page-link:focus {
     box-shadow: unset;
 }
 .page-item.active .page-link {
-    background-color: #f43b48;
-    border-color: #f43b48;
+    background-color: #34444c;
+    border-color: black;
 }
 .dropdown-menu {
     border: 1px solid rgba(0, 0, 0, 0.1);

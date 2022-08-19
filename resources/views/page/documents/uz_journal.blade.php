@@ -36,7 +36,7 @@
             @foreach ($journals as $journal)
                 <div class="col-sm-6 col-md-4 col-lg-2">
                     <div class="card mb-4 box-shadow">
-                    <a href="{{ route('journal', $journal->id) }}"><img class="card-img-top" style="height: 300px; width: 100%; display: block;" src="{{ $journal->img }}" data-holder-rendered="true"></a>
+                    <a href="{{ route('journal', $journal->id) }}"><img class="card-img-top" style="height: 260px; width: 100%; display: block;" src="{{ $journal->img }}" data-holder-rendered="true"></a>
                     <div class="card-body">
                         <p class="card-text" style="text-align: center">{{ $journal->name }}</p>
                         <h4 style="text-align: center">Иқтисодий Шарҳ</h4>

@@ -86,24 +86,28 @@
                                         </div>
                                 @elseif ($task->response)
                                     <div class="card">
+                                        <div class="card-header">
+                                            <h4 class="card-title mb-0">Завершенная задача</h4>
+                                        </div>
                                         <div class="card-body">
-                                            <h5 class="card-title m-b-20">Завершенная задача</h5>
+                                            {{-- <h5 class="card-title m-b-20"></h5> --}}
                                             <p>{{ $task->response->description }}</p>
-                                            <ul class="files-list">
-                                                <li>
-                                                    <div class="files-cont">
-                                                        <div class="file-type">
-                                                            <span class="files-icon"><i class="fa fa-file-pdf-o"></i></span>
+                                            @if($task->response->filename)
+                                                <ul class="files-list">
+                                                    <li>
+                                                        <div class="files-cont">
+                                                            <div class="file-type">
+                                                                <span class="files-icon"><i class="fa fa-file-pdf-o"></i></span>
+                                                            </div>
+                                                            <div class="files-info">
+                                                                <span class="file-name text-ellipsis"><a href="{{ route('response.download', $task->response->filename) }}">{{ $task->response->filename }}</a></span>
+                                                                {{-- <div class="file-size">{{ round(Storage::size('/files/responses/'.$task->response->filename) / 1024, 1)  }} KB</div> --}}
+                                                            </div>
                                                         </div>
-                                                        @if($task->response->filename)
-                                                        <div class="files-info">
-                                                            <span class="file-name text-ellipsis"><a href="{{ route('response.download', $task->response->filename) }}">{{ $task->response->filename }}</a></span>
-                                                            {{-- <div class="file-size">{{ round(Storage::size('/files/responses/'.$task->response->filename) / 1024, 1)  }} KB</div> --}}
-                                                        </div>
-                                                        @endif
-                                                    </div>
-                                                </li>
-                                            </ul>
+                                                    </li>
+                                                </ul>
+                                            @endif
+
                                         </div>
                                     </div>
                                 @endif
@@ -151,9 +155,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        {{-- <div class="tab-pane" id="history">
-                                            <p>Task was given</p>
-                                        </div> --}}
                                     </div>
                                 </div>
                             </div>
@@ -172,6 +173,14 @@
                                                     <td class="text-right" id="task_deadline">{{ $task->deadline }}</td>
                                                 </tr>
                                                 <tr>
+                                                    <td>Категория:</td>
+                                                    <td class="text-right" id="task_type">{{ ($task->type) ? $task->type->name : '' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Важность:</td>
+                                                    <td class="text-right" id="task_priority">{{ ($task->priority) ? $task->priority->name : '' }}</td>
+                                                </tr>
+                                                <tr>
                                                     <td>Постановщик:</td>
                                                     <td class="text-right"><a href="#" id="task_creator">{{ $task->username($task->creator_id) }}</a></td>
                                                 </tr>
@@ -179,9 +188,9 @@
                                                     <td>Состояние:</td>
                                                     <td>
                                                         @if ($task->overdue)
-                                                            <span class="badge bg-inverse-warning">Просроченный</span>
+                                                            <span class="badge bg-inverse-warning" style="float: right">Просроченный</span>
                                                         @else
-                                                            <span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span>
+                                                            <span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}" style="float:right" >{{ $task->status }}</span>
                                                         @endif
                                                     </td>
                                                 </tr>
@@ -198,7 +207,7 @@
                                                             <td>Действия:</td>
                                                             <td class="nowrap">
                                                                 <div class="row">
-                                                                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                                                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" style="flex-wrap:initial">
                                                                         <div class="btn-group mr-2" role="group" aria-label="First group">
                                                                             <button class="btn btn-primary btn-sm" wire:click="taskConfirmed({{ $task->id }})">Подтвердить</button>
                                                                         </div>
@@ -214,7 +223,23 @@
                                                         </tr>
                                                     @endif
                                                 @endcan
-
+                                                @if ($task->deadline > date('Y-m-d') && $task->user_id == auth()->user()->id && $task->status == "Ждет подтверждения")
+                                                <tr>
+                                                    <td>Действия:</td>
+                                                    <td class="nowrap">
+                                                        <div class="row">
+                                                            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                                                <div class="btn-group mr-2" role="group" aria-label="Second group">
+                                                                    <form action="#" method="post">
+                                                                        <input type="hidden" name="_method" value="DELETE">
+                                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                                        <button class="btn btn-secondary btn-sm" wire:click.prevent="reSubmit({{ $task->id }})">Отменить</button>
+                                                                    </form>
+                                                                </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                @endif
                                             </tbody>
                                         </table>
                                     </div>

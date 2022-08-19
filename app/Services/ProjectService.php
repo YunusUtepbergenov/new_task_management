@@ -15,6 +15,7 @@ class ProjectService {
             array_push($projects_arr, $task->project->id);
         }
 
+        // $projects_arr = array_unique($projects_arr);
         foreach($projects_arr as $project){
             $project_collection = Project::where('id', $project)->first();
             $user_projects = $user_projects->merge([$project_collection]);

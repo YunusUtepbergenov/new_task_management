@@ -14,6 +14,8 @@ class Task extends Model
         'user_id',
         'sector_id',
         'project_id',
+        'type_id',
+        'priority_id',
         'name',
         'description',
         'deadline',
@@ -28,6 +30,14 @@ class Task extends Model
 
     public function executers(){
         return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    public function type(){
+        return $this->belongsTo(Type::class);
+    }
+
+    public function priority(){
+        return $this->belongsTo(Priority::class);
     }
 
     public function response(){

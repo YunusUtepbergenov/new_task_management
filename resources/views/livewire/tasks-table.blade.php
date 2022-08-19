@@ -3,18 +3,18 @@
         <div class="loading">Loading&#8230;</div>
     </div>
     <div class="row filter-row">
-        {{-- <div class="col-sm-4 col-md-2">
+        <div class="col-sm-4 col-md-2">
             <div class="form-group">
                 <label for="select">Проекты</label>
                 <select class="form-control" wire:model="projectId" aria-hidden="true">
-                    <option value="Empty"></option>
+                    <option value="Empty">Все</option>
                     <option value="">Не проект</option>
                     @foreach ($projects as $project)
                         <option value="{{ $project['id'] }}">{{ $project['name'] }}</option>
                     @endforeach
                 </select>
             </div>
-        </div> --}}
+        </div>
         <div class="col-sm-4 col-md-2">
             <div class="form-group">
                 <label for="select">Состояние</label>
@@ -84,50 +84,52 @@
                             </tbody>
                             @if ($chosen_project)
                             @foreach ($chosen_project as $prj)
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>{{ $prj['name'] }}</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            @php
-                                $cnt = 1;
-                            @endphp
-                            @foreach ($prj['tasks'] as $key=>$task)
-                                @if ($task['user_id'] == Auth::user()->id)
-                                    <tbody>
+                                @if(isset($prj['tasks']))
+                                    <thead>
                                         <tr>
-                                            <td>{{ $cnt }}</td>
-                                            <td>
-                                                @if ($task['status'] == "Выполнено")
-                                                    <a href="#" wire:click.prevent="view({{ $task['id'] }})"><del>{{ $task['name'] }}</del></a>
-                                                @else
-                                                    <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
-                                                @endif
-                                            </td>
-                                            <td>{{ substr($task['created_at'], 0, 10) }}</td>
-                                            <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
-                                            <td>{{ $task['creator']['name'] }}</td>
-                                            <td>{{ $username }}</td>
-                                            <td>
-                                                @if ($task['overdue'])
-                                                    <span class="badge bg-inverse-warning">Просроченный</span>
-                                                @else
-                                                    <span class="badge bg-inverse-{{ ($task['status'] == "Новое") ? 'success' : (($task['status'] == "Выполняется") ? 'primary' : (($task['status'] == "Ждет подтверждения") ? 'danger' : (($task['status'] == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task['status'] }}</span>
-                                                @endif
-                                            </td>
+                                            <th></th>
+                                            <th>{{ $prj['name'] }}</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
                                         </tr>
-                                    </tbody>
+                                    </thead>
                                     @php
-                                        $cnt++
+                                        $cnt = 1;
                                     @endphp
                                 @endif
-                            @endforeach
+                                @foreach ($prj['tasks'] as $key=>$task)
+                                    @if ($task['user_id'] == Auth::user()->id)
+                                        <tbody>
+                                            <tr>
+                                                <td>{{ $cnt }}</td>
+                                                <td>
+                                                    @if ($task['status'] == "Выполнено")
+                                                        <a href="#" wire:click.prevent="view({{ $task['id'] }})"><del>{{ $task['name'] }}</del></a>
+                                                    @else
+                                                        <a href="#" wire:click.prevent="view({{ $task['id'] }})">{{ $task['name'] }}</a>
+                                                    @endif
+                                                </td>
+                                                <td>{{ substr($task['created_at'], 0, 10) }}</td>
+                                                <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
+                                                <td>{{ $task['creator']['name'] }}</td>
+                                                <td>{{ $username }}</td>
+                                                <td>
+                                                    @if ($task['overdue'])
+                                                        <span class="badge bg-inverse-warning">Просроченный</span>
+                                                    @else
+                                                        <span class="badge bg-inverse-{{ ($task['status'] == "Новое") ? 'success' : (($task['status'] == "Выполняется") ? 'primary' : (($task['status'] == "Ждет подтверждения") ? 'danger' : (($task['status'] == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task['status'] }}</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        @php
+                                            $cnt++
+                                        @endphp
+                                    @endif
+                                @endforeach
                             @endforeach
 
                             @endif

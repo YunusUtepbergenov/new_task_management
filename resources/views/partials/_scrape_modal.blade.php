@@ -29,6 +29,7 @@
                                 <option value="jobs">Работы</option>
                                 <option value="cars">Автомобили</option>
                                 <option value="products">Продукты</option>
+                                <option value="corruption">Опросник по коррупции</option>
                             </select>
                         </div>
                     </div>
