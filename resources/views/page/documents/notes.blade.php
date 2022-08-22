@@ -49,7 +49,7 @@
                                             <div class="dropdown dropdown-action profile-action">
                                                 <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
                                                 <div class="dropdown-menu dropdown-menu-right">
-                                                    <form action="{{ route('digests.destroy', $note->id) }}" method="POST">
+                                                    <form action="{{ route('notes.destroy', $note->id) }}" method="POST">
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                         <button class="dropdown-item"><i class="fa fa-pencil m-r-5"></i>Удалить</button>

@@ -124,7 +124,12 @@ class NoteController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $note = Note::where('id', $id)->first();
+        $note->delete();
+
+        Storage::delete('files/notes/'.$note->file);
+
+        return back();
     }
 
     public function sourceDownload($filename){
