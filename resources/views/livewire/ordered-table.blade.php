@@ -40,7 +40,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-nowrap mb-0" id="myTable" wire.ignore.self>
+                        <table class="table table-nowrap mb-0" id="myTable">
                             <thead>
                                 <tr>
                                     <th class="skip-filter">#</th>

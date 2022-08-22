@@ -91,5 +91,6 @@ class TasksTable extends Component
 
     public function view($task_id){
         $this->emit('taskClicked', $task_id);
+        $this->updated();
     }
 }

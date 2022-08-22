@@ -7,15 +7,14 @@ use App\Models\Task;
 use App\Models\TaskUser;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class OrderedTable extends Component
 {
     public $tasks, $projects, $chosen_project, $username;
-    public $projectId, $status;
+    public $projectId="Empty", $status="Empty";
 
     public function mount(){
-        $this->projectId = "Empty";
-        $this->status = "Empty";
         $this->username = Auth::user()->name;
         $this->project = Project::all();
         $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->where('project_id', Null)
@@ -27,6 +26,7 @@ class OrderedTable extends Component
 
     public function view($task_id){
         $this->emit('taskClicked', $task_id);
+        $this->updated();
     }
 
     public function updated(){

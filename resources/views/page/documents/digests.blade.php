@@ -33,7 +33,7 @@
                                 <th class="skip-filter">Название</th>
 								<th>Автор</th>
 								<th>Отдел</th>
-								<th>Источник</th>
+								<th class="skip-filter">Источник</th>
                                 <th class="skip-filter">Дата</th>
                                 <th class="skip-filter">Cсылка</th>
                                 <th class="skip-filter">Файл</th>
@@ -69,7 +69,7 @@
                                     <td>{{ $article->user->sector->name }}</td>
                                     <td>
                                         @if ($article->paper)
-                                            <a href="{{ route('paper.download', $article->paper) }}">{{ substr($article->paper, 13) }}</a></td>
+                                            <a href="{{ route('paper.download', $article->paper) }}">{{ substr($article->paper, 13, 40) }}</a></td>
                                         @else
 
                                         @endif
@@ -114,10 +114,10 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('assets/js/ddtf.js') }}"></script>
+    {{-- <script src="{{ asset('assets/js/ddtf.js') }}"></script> --}}
     <script>
 
-        $('#myTable').ddTableFilter();
+        // $('#myTable').ddTableFilter();
 
         $("#digest_name").addClass("d-none");
         $("#digest_description").addClass("d-none");

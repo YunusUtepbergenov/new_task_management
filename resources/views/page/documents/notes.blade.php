@@ -110,10 +110,10 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('assets/js/ddtf.js') }}"></script>
+    {{-- <script src="{{ asset('assets/js/ddtf.js') }}"></script> --}}
     <script>
 
-        $('#myTable').ddTableFilter();
+        // $('#myTable').ddTableFilter();
 
         $("#note_name").addClass("d-none");
         $("#note_source").addClass("d-none");
