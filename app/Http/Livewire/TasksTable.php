@@ -11,15 +11,12 @@ use Livewire\Component;
 class TasksTable extends Component
 {
     public $tasks, $projects, $chosen_project, $username;
-    public $projectId, $status, $project_tasks;
+    public $projectId="Empty", $status="Empty", $project_tasks;
 
     public function mount(){
         $this->project_tasks = Task::with('project')->select('project_id')->where('user_id', Auth::user()->id)
             ->where('project_id', '<>', null)->distinct('project_id')->get();
         $this->projects = (new ProjectService())->projectsList($this->project_tasks);
-
-        $this->projectId = "Empty";
-        $this->status = "Empty";
         $this->username = Auth::user()->name;
         $this->chosen_project = Project::with(['tasks' => function($query){
                 $query->latest();
@@ -54,14 +51,18 @@ class TasksTable extends Component
                 })->latest()->get();
             }elseif($this->status == "Просроченный"){
                 $this->tasks = Task::with(['user', 'creator'])->where('project_id', Null)->where('user_id', Auth::user()->id)->where('overdue', 1)->orderBy('created_at', 'DESC')->get();
-                $this->chosen_project = Project::with(['tasks' => function($query){
-                    $query->with('user')->where('user_id', Auth::user()->id)->where('overdue', 1)->latest();
+                $this->chosen_project = Project::whereHas('tasks', function($query){
+                    $query->latest()->where('user_id', Auth::user()->id)->where('overdue', 1);
+                })->with(['tasks' => function($query){
+                    $query->with('user')->where('user_id', Auth::user()->id)->where('overdue', 1);
                 }])->latest()->get();
             }else{
                 $this->tasks = Task::with(['user', 'creator'])->where('project_id', Null)->where('user_id', Auth::user()->id)->where('overdue', 0)->where('status', $this->status)->latest()->get();
                 $this->chosen_project = Project::whereHas('tasks', function($query){
-                    $query->with('user')->where('user_id', Auth::user()->id)->where('status', $this->status)->where('overdue', 0)->latest();
-                })->latest()->get();
+                    $query->where('user_id', Auth::user()->id)->where('status', $this->status)->where('overdue', 0)->latest();
+                })->with(['tasks' => function($query){
+                    $query->with('user')->where('user_id', Auth::user()->id)->where('status', $this->status)->where('overdue', 0);
+                }])->latest()->get();
             }
         }
         else{

@@ -108,7 +108,7 @@ class NoteController extends Controller
                 $request->file,
                 $filename
             );
-            Storage::delete('files/notes/'.$digest->file);
+            Storage::delete('files/notes/'.$notes->file);
 
             $notes->file = $filename;
         }

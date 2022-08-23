@@ -4,10 +4,8 @@ namespace App\Http\Livewire;
 
 use App\Models\Project;
 use App\Models\Task;
-use App\Models\TaskUser;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 class OrderedTable extends Component
 {

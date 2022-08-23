@@ -50,7 +50,7 @@
                                     <th class="skip-filter">Крайний срок</th>
                                     <th class="skip-filter">Постановщик</th>
                                     <th>Ответственный</th>
-                                    <th>Состояние</th>
+                                    <th class="skip-filter">Состояние</th>
                                 </tr>
                             </thead>
                             <tbody>
