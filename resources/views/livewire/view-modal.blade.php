@@ -39,7 +39,7 @@
                                                     </div>
                                                 </div>
                                             @empty
-                                                <p style="margin-left: 15px">No files</p>
+                                                <p style="margin-left: 15px">Файлов нет</p>
                                             @endforelse
                                         </div>
                                     </div>
@@ -111,6 +111,7 @@
                                         </div>
                                     </div>
                                 @endif
+                                {{-- Comments section --}}
                                 <div class="project-task">
                                     <ul class="nav nav-tabs nav-tabs-top nav-justified mb-0">
                                         <li class="nav-item"><a class="nav-link active" href="#comments" data-toggle="tab" aria-expanded="true">Комментарии</a></li>
@@ -129,7 +130,6 @@
                                                                         <div class="form-group">
                                                                             <textarea class="form-control" wire:model.defer="comment" rows="2" name="comment" id="comment_textarea" placeholder="Введите комментарий" required></textarea>
                                                                         </div>
-
                                                                         <button class="btn btn-primary" wire:click="$refresh" style="float: right;">Отправить</button>
                                                                     </form>
                                                                 </div>
@@ -157,6 +157,8 @@
                                         </div>
                                     </div>
                                 </div>
+                            {{-- End of comments section --}}
+
                             </div>
                             <div class="col-lg-4 col-xl-3">
                                 <div class="card">

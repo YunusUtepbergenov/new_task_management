@@ -39,12 +39,20 @@
 
                     <div class="form-group row">
                         <div class="col-sm-1"></div>
-                        <label class="col-sm-3 col-form-label">Важность</label>
+                        <label class="col-sm-3 col-form-label">Приоритет</label>
                         <div class="col-sm-4">
                             <select class="form-control" id="priority_id1" name="priority_id">
-                                @foreach ($priorities as $priority)
-                                    <option value="{{ $priority->id }}">{{ $priority->name }}</option>
-                                @endforeach
+                                @if(Auth::user()->isDirector() || Auth::user()->isDeputy())
+                                    @foreach ($priorities as $priority)
+                                        <option value="{{ $priority->id }}">{{ $priority->name }}</option>
+                                    @endforeach
+                                @else
+                                    @foreach ($priorities as $priority)
+                                        @if ($priority->id != 4)
+                                            <option value="{{ $priority->id }}">{{ $priority->name }}</option>
+                                        @endif
+                                    @endforeach
+                                @endif
                             </select>
                         </div>
                     </div>
