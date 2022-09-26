@@ -115,7 +115,7 @@ class User extends Authenticatable
     }
 
     public function simple_priority_doneFilter($start, $end){
-        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('status', 'Выполнено')->where('priority_id', 1);
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->whereIn('status', ['Выполнено', 'Ждет подтверждения'])->where('priority_id', 1);
     }
 
     public function mid_priority_filterTasks($start, $end){
@@ -123,7 +123,7 @@ class User extends Authenticatable
     }
 
     public function mid_priority_doneFilter($start, $end){
-        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('status', 'Выполнено')->where('priority_id', 2);
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->whereIn('status', ['Выполнено', 'Ждет подтверждения'])->where('priority_id', 2);
     }
 
     public function high_priority_filterTasks($start, $end){
@@ -131,7 +131,7 @@ class User extends Authenticatable
     }
 
     public function high_priority_doneFilter($start, $end){
-        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('status', 'Выполнено')->where('priority_id', 3);
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->whereIn('status', ['Выполнено', 'Ждет подтверждения'])->where('priority_id', 3);
     }
 
 
@@ -140,7 +140,7 @@ class User extends Authenticatable
     }
 
     public function very_high_priority_doneFilter($start, $end){
-        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('status', 'Выполнено')->where('priority_id', 4);
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->whereIn('status', ['Выполнено', 'Ждет подтверждения'])->where('priority_id', 4);
     }
 
 

@@ -4,7 +4,7 @@
             <label for="input">Источник</label>
             <div class="form-group">
                 <select class="form-control" wire:model='type' name="type">
-                    <option value="houses">Опросник по Коррупции</option>
+                    <option value="houses">Опросник по коррупции</option>
                 </select>
             </div>
         </div>

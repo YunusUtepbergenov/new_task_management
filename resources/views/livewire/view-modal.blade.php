@@ -238,7 +238,7 @@
                                                         </tr>
                                                     @endif
                                                 @endcan
-                                                @if ($task->deadline > date('Y-m-d') && $task->user_id == auth()->user()->id && $task->status == "Ждет подтверждения")
+                                                @if ($task->deadline >= date('Y-m-d') && $task->user_id == auth()->user()->id && $task->status == "Ждет подтверждения")
                                                 <tr>
                                                     <td>Действия:</td>
                                                     <td class="nowrap">
