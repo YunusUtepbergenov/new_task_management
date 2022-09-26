@@ -64,7 +64,7 @@
                                                             </div>
                                                         @enderror
                                                     </div>
-                                            <input type="hidden" name="task_id" value="{{ $task->id }}">
+                                                    <input type="hidden" name="task_id" value="{{ $task->id }}">
                                                     <div class="form-group row">
                                                         <label class="col-lg-1 col-form-label">Файл</label>
                                                         <div class="col-lg-11">
@@ -147,6 +147,19 @@
                                                                             </div>
                                                                             <small style="margin-right: 10px;">{{ $cmt->created_at }}</small>
                                                                         </div>
+                                                                        @if ($cmt->user->id == auth()->user()->id)
+                                                                            <div class="user d-flex flex-row align-items-center" style="margin-left: 50px">
+                                                                                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                                                                    <div class="btn-group" role="group" aria-label="Second group">
+                                                                                        <form action="#" method="post">
+                                                                                            <input type="hidden" name="_method" value="DELETE">
+                                                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                                                            <button type="button" wire:click.prevent="deleteComment({{ $cmt->id }})" class="btn btn-primary search_btn btn-sm" style="line-height: 1">Удалить</button>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        @endif
                                                                     </div>
                                                                 @endforeach
                                                             </div>

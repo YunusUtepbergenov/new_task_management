@@ -48,7 +48,7 @@
                     </thead>
                     <tbody style="overflow: auto;">
                         @foreach ($users as $employee)
-                                @if (!$employee->isDirector() && $employee->filterTasks($startDate, $endDate)->count() > 0)
+                            @if (!$employee->isDirector() && !$employee->isDeputy())
                                 <tr>
                                     <td>
                                         <h2 class="table-avatar">
@@ -56,17 +56,23 @@
                                         </h2>
                                     </td>
                                     <td class="text-wrap">{{ $employee->sector->name }}</td>
-                                    <td style="text-align: center">
-                                        {{ round( ((1 - ( $employee->overdueFilter($startDate, $endDate)->count()
-                                        + (0.5 * $employee->newFilter($startDate, $endDate)->count()) ) / $employee->filterTasks($startDate, $endDate)->count() )) * 100, 1) }}%
-                                    </td>
+                                    @if ($employee->filterTasks($startDate, $endDate)->count() > 0)
+                                        <td style="text-align: center">
+                                            {{ round( ((1 - ( $employee->overdueFilter($startDate, $endDate)->count()
+                                            + (0.5 * $employee->newFilter($startDate, $endDate)->count()) ) / $employee->filterTasks($startDate, $endDate)->count() )) * 100, 1) }}%
+                                        </td>
+                                    @else
+                                        <td style="text-align: center">
+                                            0%
+                                        </td>
+                                    @endif
                                     <td style="text-align: center">{{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->count()}}</td>
-                                    <td style="text-align: center">{{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->where('status', 'Выполнено')->count()}}</td>
+                                    <td style="text-align: center">{{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->where('status', 'Выполнено')->where('overdue', 0)->count()}}</td>
                                     <td style="text-align: center">{{$employee->tasks->whereBetween('deadline', [$startDate, $endDate])->where('status', 'Новое')->where('overdue', 0)->count()}}</td>
                                     <td style="text-align: center">{{ $employee->overdueFilter($startDate, $endDate)->count() }}</td>
                                     <td style="text-align: center">{{ $employee->confirmFilter($startDate, $endDate)->count() }}</td>
                                 </tr>
-                                @endif
+                            @endif
                         @endforeach
                     </tbody>
                 </table>

@@ -74,6 +74,18 @@ class PageController extends Controller
         abort(404);
     }
 
+    public function testReport(){
+        $user = Auth::user();
+        if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer() || $user->isHR()){
+            $sectors = Sector::all();
+            return view('page.reports.test_report', [
+                'sectors' => $sectors
+            ]);
+        }
+
+        abort(404);
+    }
+
     public function userReport($id, $start, $end){
         $user = User::where('id', $id)->first();
 

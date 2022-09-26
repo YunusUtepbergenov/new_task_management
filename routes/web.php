@@ -33,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('journals/{year}/uz', [PageController::class, 'journalUz'])->name('journal.uz');
     Route::get('journal/{id}', [PageController::class, 'journal'])->name('journal');
     Route::get('reports/table', [PageController::class, 'reportTable'])->name('table.report');
+    Route::get('reports/test', [PageController::class, 'testReport'])->name('report.test');
     Route::get('report/{id}/{start}/{end}', [PageController::class, 'userReport'])->name('user.report');
     Route::get('notifications/read/all', [PageController::class, 'readNoti'])->name('read.noti');
     Route::get('reports/download/{start}/{end}', [PageController::class, 'downloadReport'])->name('download.report');

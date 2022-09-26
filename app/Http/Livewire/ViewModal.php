@@ -126,6 +126,13 @@ class ViewModal extends Component
         event(new TaskRejectedEvent($task));
     }
 
+    public function deleteComment($id){
+        $comment = Comment::where('id', $id)->first();
+        $comment->delete();
+
+        $this->comments = Comment::with('user')->where('task_id', $this->task->id)->latest()->get();
+    }
+
     public function reSubmit($id){
         $task = Task::where('id', $id)->first();
 

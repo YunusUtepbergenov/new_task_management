@@ -188,7 +188,10 @@
                         <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
                             <div class="card-body" style="background: #34444c; color: #fff; padding-top: 0; padding-bottom:5px;">
                                 <ul class="list-box">
-                                    @foreach ($birthdays as $birthday)
+                                    @php
+                                        $counter = 0;
+                                    @endphp
+                                    @foreach ($birthdays->where('leave', 0)->take(3) as $birthday)
                                         <li>
                                             <a href="#" onclick='profileModal("{{ $birthday->id }}")'>
                                                 <div class="list-item">

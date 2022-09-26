@@ -11,29 +11,21 @@ class FilterSection extends Component
     public $startDate, $endDate, $users;
 
     public function mount(){
-        $this->startDate = date('Y-m-d',strtotime('-1 months'));
-        $this->endDate = date('Y-m-d');
-
-        $this->users = User::with('tasks')->get();
+        $this->startDate = date('Y-m-01');
+        $this->endDate = date('Y-m-t');
     }
 
-    public function updated(){
-        if($this->startDate != Null && $this->endDate != Null){
-
-        }
-    }
-
-    // public function updateFilters($param){
-    //     $this->param = $param;
-    //     // $tasks = Task::whereBetween('created_at', [$param['start'], $param['end']])->get();
-    //     $this->users = User::with(['task', function($query){
-    //         $query->whereBetween('created_at', [$this->param['start'], $this->param['end']]);
-    //     }])->get();
-    //     dd($this->users);
-    // }
 
     public function render()
     {
+        $this->users = User::with('tasks')->where('leave', 0)->get();
+
+        foreach($this->users as $employee){
+            $employee->tasks_cnt =  $employee->filterTasks($this->startDate, $this->endDate)->count();
+        }
+
+        $this->users = $this->users->sortByDesc('tasks_cnt');
+
         return view('livewire.reports.filter-section');
     }
 }

@@ -11,6 +11,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use PDO;
+use phpDocumentor\Reflection\Types\Null_;
 
 class User extends Authenticatable
 {
@@ -99,6 +100,47 @@ class User extends Authenticatable
 
     public function confirmFilter($start, $end){
         return $this->tasks()->whereBetween('deadline', [$start, $end])->where('overdue', 0)->where('status', 'Ждет подтверждения');
+    }
+
+    public function priority_filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', '<>', 4);
+    }
+
+    public function priority_doneFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('status', 'Выполнено')->where('priority_id', '<>', 4);
+    }
+
+    public function simple_priority_filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', 1);
+    }
+
+    public function simple_priority_doneFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('status', 'Выполнено')->where('priority_id', 1);
+    }
+
+    public function mid_priority_filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', 2);
+    }
+
+    public function mid_priority_doneFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('status', 'Выполнено')->where('priority_id', 2);
+    }
+
+    public function high_priority_filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', 3);
+    }
+
+    public function high_priority_doneFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('status', 'Выполнено')->where('priority_id', 3);
+    }
+
+
+    public function very_high_priority_filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', 4);
+    }
+
+    public function very_high_priority_doneFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('status', 'Выполнено')->where('priority_id', 4);
     }
 
 

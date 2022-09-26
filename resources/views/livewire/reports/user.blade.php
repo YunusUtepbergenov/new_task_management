@@ -2,6 +2,13 @@
     <div wire:loading wire:target="view">
         <div class="loading">Loading&#8230;</div>
     </div>
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Задачи ({{ $user->name }})</h3>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -15,7 +22,7 @@
                                     <th>Дата Создание</th>
                                     <th>Крайний срок</th>
                                     <th>Постановщик</th>
-                                    <th>Ответственный</th>
+                                    <th>Важность</th>
                                     <th>Состояние</th>
                                 </tr>
                             </thead>
@@ -34,7 +41,7 @@
                                     <td>{{ $task->created_at->format('Y-m-d') }}</td>
                                     <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
                                     <td>{{ $task->creator->name }}</td>
-                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $task->priority->name }}</td>
                                     <td>
                                         @if ($task->overdue)
                                             <span class="badge bg-inverse-warning">Просроченный</span>
