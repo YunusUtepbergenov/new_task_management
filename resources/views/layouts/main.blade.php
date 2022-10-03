@@ -19,6 +19,8 @@
         <link rel="stylesheet" href="{{ asset('assets/css/line-awesome.min.css') }}">
 		<!-- Datatable CSS -->
 		<link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap4.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap-colorselector.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/docs.css') }}">
 		<!-- Select2 CSS -->
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/css/bootstrap-multiselect.css" integrity="sha512-Lif7u83tKvHWTPxL0amT2QbJoyvma0s9ubOlHpcodxRxpZo4iIGFw/lDWbPwSjNlnas2PsTrVTTcOoaVfb4kwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -211,6 +213,48 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card" style="border: 0">
+                        <div class="card-header sidebar_right_header" id="headingOne">
+                            <h6 class="sidebar_right_header_title m-b-5">
+                              <button class="btn btn btn-block text-left" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseTwo" style="width: 100%; text-align:left">
+                                New word for Digest Formatter <span class="menu-arrow"></span>
+                              </button>
+                            </h6>
+                        </div>
+
+                        <div id="collapseThree" class="collapse show" aria-labelledby="headingThree">
+                            <div class="card-body" style="background: #34444c; color: #fff; padding-top: 0;">
+                                <form action="{{ route('digest.new_word') }}" id="wordForm" method="POST">
+                                    @csrf
+                                <div class="row">
+                                        <div class="col-sm-1">
+                                        <div class="bs-docs-example">
+                                            <select id="colorselector_1" name="format">
+                                                <option value="red" data-color="#c00000" selected="selected">red</option>
+                                                <option value="green" data-color="#9bbb59">GREEN</option>
+                                                <option value="blue" data-color="#002060">BLUE</option>
+                                                <option value="violet" data-color="#7030a0">VIOLET</option>
+                                            </select>
+                                        </div>        
+                                        </div>
+                                        <div class="col-sm-9 offset-sm-1">
+                                            <div class="form-group" style="margin-bottom: 2px;">
+                                                <input class="form-control" style="height: 26px" type="text" name="word" id="added_word" placeholder="Write your word">
+                                            </div>
+                                            <ul class="list-group search_group words_search">
+                                            </ul>
+                                        </div>
+                                        <div class="col-sm-10 offset-sm-1" style="margin-top: 5px;">
+                                            <div class="form-group">
+                                                <button class="btn btn-primary btn-sm" style="width: 100%">Отправить</button>   
+                                            </div>    
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                
                 </div>
             </div>
 			<!-- End Right Sidebar -->
@@ -229,6 +273,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 		<!-- Datetimepicker JS -->
 		<script src="{{ asset('assets/js/moment.min.js') }}"></script>
+        <script src="{{ asset('js/bootstrap-colorselector.min.js') }}"></script>
 		<script src="{{ asset('assets/js/bootstrap-datetimepicker.min.js') }}"></script>
 		<!-- Custom JS -->
 		<script src="{{ asset('assets/js/app.js') }}"></script>
@@ -237,7 +282,67 @@
 		<script type="text/javascript">
 			$(document).ready(function() {
 				$('#example-getting-started').multiselect();
+                $('#colorselector_1').colorselector();
 			});
+
+            $('#colorselector_1').change(function(){
+                console.log("sheeeeeeesh");
+                var searchField1 = $('#added_word').val();
+
+                var formData2 = $("#wordForm");
+                if(searchField1.length > 2){
+                    console.log(formData2.serialize())
+                    $.ajax({
+                    url: 'http://192.168.1.60:8888/search',
+                    type: "GET",
+                    data: formData2.serialize(),
+                    success: function (res) {
+                        console.log(res.data.words);
+                        $('.words_search').html('');
+                        $('.words_search').show();
+                        $.each(res.data.words, function(key, value){
+                            console.log(value);
+                            $('.words_search').append("<li class='list-group-item search_dropdown'><a href='#'>" + value + "</a></li>");
+                        }); 
+                        res = '';
+                    },
+                    error: function (data) {
+                        var errors = data.responseJSON;
+                        console.log(errors);
+                    },
+                });
+            }});
+            $('#added_word').keyup(function(){
+                $('.words_search').html('');
+                var searchField1 = $('#added_word').val();
+
+                var formData2 = $("#wordForm");
+                if(searchField1.length > 2){
+                    console.log(formData2.serialize())
+                    $.ajax({
+                    url: 'http://192.168.1.60:8888/search',
+                    type: "GET",
+                    data: formData2.serialize(),
+                    success: function (res) {
+                        console.log(res.data.words);
+                        $('.words_search').html('');
+                        $('.words_search').show();
+                        $.each(res.data.words, function(key, value){
+                            console.log(value);
+                            $('.words_search').append("<li class='list-group-item search_dropdown'><a href='#'>" + value + "</a></li>");
+                        }); 
+                        res = '';
+                    },
+                    error: function (data) {
+                        var errors = data.responseJSON;
+                        console.log(errors);
+                    },
+                });
+                }else{
+                    // $('.result_search').hide();
+                }
+
+            });
 
             $('#search_field').keyup(function(){
                 $('.result_search').html('');

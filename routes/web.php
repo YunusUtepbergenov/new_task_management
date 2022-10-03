@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/scrape/download/{id}', [ResearchController::class, 'download'])->name('scrape.download');
     Route::get('/digest/source/download/{filename}', [DigestController::class, 'paperDownload'])->name('paper.download');
     Route::get('/note/source/download/{filename}', [NoteController::class, 'sourceDownload'])->name('note.source');
+    Route::post('/digest/adding/word', [DigestController::class, 'newWord'])->name('digest.new_word');
     Route::post('upload/test/digest', [DigestController::class, 'uploadTest'])->name('upload.test');
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
