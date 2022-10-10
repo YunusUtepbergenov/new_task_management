@@ -153,16 +153,4 @@ class DigestController extends Controller
 
         return response()->download(public_path("tmp_digests/".$filename));
     }
-
-    public function newWord(Request $request){
-        $response = Http::post('192.168.1.60:8888/add', [
-            'format' => $request->format,
-            'word' => $request->word,
-            'username' => auth()->user()->email
-        ]);
-
-        dd($response);
-
-        return redirect()->back();
-    }
 }
