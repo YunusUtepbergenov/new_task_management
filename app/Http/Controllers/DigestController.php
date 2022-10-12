@@ -153,4 +153,8 @@ class DigestController extends Controller
 
         return response()->download(public_path("tmp_digests/".$filename));
     }
+
+    public function formatter(){
+        return view('page.documents.digest_formatter');
+    }
 }

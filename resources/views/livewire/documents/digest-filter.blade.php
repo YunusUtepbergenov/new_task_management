@@ -18,13 +18,13 @@
         </ul>
     </div>
     <!-- /Page Header -->
+    <div class="form-group">
+        <input type="text" wire:model='search' class="form-control" placeholder="Поиск">
+    </div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="table-responsive" id="employeeTable">
-                <div class="col-md-3 form-group">
-                    <input type="text" wire:model='search' class="form-control" placeholder="Поиск">
-                </div>
-
                 <table class="table custom-table article-table" id="myTable" style="overflow-y: auto;">
                     <thead id="employee">
                         <tr>

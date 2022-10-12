@@ -213,7 +213,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card" style="border: 0">
+                    {{-- <div class="card" style="border: 0">
                         <div class="card-header sidebar_right_header" id="headingOne">
                             <h6 class="sidebar_right_header_title m-b-5">
                               <button class="btn btn btn-block text-left" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseTwo" style="width: 100%; text-align:left">
@@ -254,7 +254,7 @@
                                 </form>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                 </div>
             </div>

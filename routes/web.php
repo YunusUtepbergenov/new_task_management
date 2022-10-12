@@ -43,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/note/source/download/{filename}', [NoteController::class, 'sourceDownload'])->name('note.source');
     Route::post('/digest/adding/word', [DigestController::class, 'newWord'])->name('digest.new_word');
     Route::post('upload/test/digest', [DigestController::class, 'uploadTest'])->name('upload.test');
+    Route::get('digest/formatter', [DigestController::class, 'formatter'])->name('digest.formatter');
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
 

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+
 class DigestFilter extends Component
 {
     use WithPagination;
@@ -21,13 +22,14 @@ class DigestFilter extends Component
 
     public function render()
     {
+        dd(Digest::all());
         return view('livewire.documents.digest-filter', [
             'digests' => Digest::whereHas('user', function($query){
                 $query->where('name', 'like', '%'.$this->search.'%');
             })->orWhereHas('sector', function($query){
                 $query->where('name', 'like', '%'.$this->search.'%');
             })->orWhere('name', 'like', '%'.$this->search.'%')
-            ->paginate(10),
+            ->orderBy('created_at', 'DESC')->paginate(10),
         ]);
     }
 }
