@@ -8,7 +8,7 @@ use Livewire\Component;
 class TestReport extends Component
 {
     public $users;
-    public $startDate = "2022-09-01", $endDate = "2022-09-30";
+    public $startDate = "2022-10-01", $endDate = "2022-10-31";
     public function mount(){
         $this->users = User::with('tasks')->where('leave', 0)->get();
         foreach($this->users as $employee){

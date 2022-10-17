@@ -13,9 +13,9 @@
                             <th data-type="string">Ф.И.О</th>
                             <th data-type="string">Сектор</th>
                             <th data-type="number">KPI</th>
-                            <th data-type="number">По задачам <br>(макс: 60)</th>
-                            <th data-type="number">По важности <br>(макс: 30)</th>
-                            <th data-type="number">Оценка <br>(макс: 10)</th>
+                            <th data-type="number">Задачи <br>(макс: 60)</th>
+                            <th data-type="number">Особо важный <br>(макс: 30)</th>
+                            <th data-type="number">Дисциплина <br>(макс: 10)</th>
                         </tr>
                     </thead>
                     <tbody style="overflow: auto;" id="table1">

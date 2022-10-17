@@ -213,49 +213,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <div class="card" style="border: 0">
-                        <div class="card-header sidebar_right_header" id="headingOne">
-                            <h6 class="sidebar_right_header_title m-b-5">
-                              <button class="btn btn btn-block text-left" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseTwo" style="width: 100%; text-align:left">
-                                Ключевые слова дайджестов <span class="menu-arrow"></span>
-                              </button>
-                            </h6>
-                        </div>
-
-                        <div id="collapseThree" class="collapse show" aria-labelledby="headingThree">
-                            <div class="card-body" style="background: #34444c; color: #fff; padding-top: 0;">
-                                <form action="#" id="wordForm" method="POST">
-                                    @csrf
-                                <div class="row">
-                                    <input type="hidden" value="{{ auth()->user()->email }}" name="username" id="userEmail">
-                                        <div class="col-sm-1">
-                                        <div class="bs-docs-example">
-                                            <select id="colorselector_1" name="format">
-                                                <option value="red" data-color="#c00000">red</option>
-                                                <option value="green" data-color="#9bbb59">GREEN</option>
-                                                <option value="blue" data-color="#002060" selected="selected">BLUE</option>
-                                                <option value="violet" data-color="#7030a0">VIOLET</option>
-                                            </select>
-                                        </div>
-                                        </div>
-                                        <div class="col-sm-9 offset-sm-1">
-                                            <div class="form-group" style="margin-bottom: 2px;">
-                                                <input class="form-control" style="height: 26px" type="text" name="word" id="added_word" placeholder="Новое слово" autocomplete="off">
-                                            </div>
-                                            <ul class="list-group search_group words_search">
-                                            </ul>
-                                        </div>
-                                        <div class="col-sm-10 offset-sm-1" style="margin-top: 5px;">
-                                            <div class="form-group">
-                                                <button id="wordButton" class="btn btn-primary btn-sm" style="width: 100%">Отправить</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div> --}}
-
                 </div>
             </div>
 			<!-- End Right Sidebar -->

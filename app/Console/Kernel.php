@@ -37,10 +37,6 @@ class Kernel extends ConsoleKernel
         })->dailyAt('00:01');
 
         $schedule->call(function(){
-            DB::table('tasks')->where('priority_id', NULL)->update(['priority_id' => 1]);
-        })->everyMinute();
-
-        $schedule->call(function(){
             $repeats = Repeat::where('repeat', 'weekly')->where('deadline', '>', Carbon::now())->get();
             foreach($repeats as $repeat){
                 $day_of_week = $repeat->day;

@@ -41,7 +41,7 @@
                         <label class="col-sm-3 col-form-label">Приоритет</label>
                         <div class="col-sm-4">
                             <select class="form-control" id="priority_text" name="priority_id">
-                                @if(Auth::user()->isDirector() || Auth::user()->isDeputy())
+                                @if(Auth::user()->isDirector() || Auth::user()->isDeputy() || Auth::user()->isMailer())
                                     @foreach ($priorities as $priority)
                                         <option value="{{ $priority->id }}">{{ $priority->name }}</option>
                                     @endforeach
