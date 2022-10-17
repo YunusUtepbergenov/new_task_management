@@ -6,7 +6,7 @@
                 <h3 class="page-title">Дайджесты</h3>
             </div>
             <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#format_digest">Форматирование дайджеста</a>
+                <a href="{{ route('digest.formatter') }}" class="btn add-btn">Форматирование дайджеста</a>
             </div>
             <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
                 <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_digest">Добавить дайджест</a>

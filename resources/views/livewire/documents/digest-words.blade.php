@@ -5,44 +5,52 @@
                 <table class="table custom-table article-table" id="myTable" style="overflow-y: auto;">
                     <thead id="employee">
                         <tr>
-                            <th class="skip-filter"><span>&#8470;</span></th>
-                            <th class="skip-filter">
-                             <form class="form-inline" wire:submit.prevent="saveBlue">
-                                <div class="form-group mb-2">
-                                    <span class="btn-colorselector" style="background-color: rgb(0, 32, 96);"></span>
-                                </div>
-                                <div class="form-group mx-sm-3 mb-2">
-                                  <input type="text" class="form-control form-control-sm" id="blue_input" wire:model='blue' autocomplete="off">
+                            <th><span>&#8470;</span></th>
+                            <th>
+                             <form wire:submit.prevent="saveBlue">
+                                <div class="form-row">
+                                    <div class="col-sm-1">
+                                        <span class="btn-colorselector" style="background-color: rgb(0, 32, 96);"></span>
+                                    </div>
+                                    <div class="offset-sm-2 col-sm-9">
+                                      <input type="text" class="form-control form-control-sm" id="blue_input" wire:model='blue' autocomplete="off">
+                                    </div>    
                                 </div>
                               </form>
                             </th>
-                            <th class="skip-filter">
-                                <form class="form-inline" wire:submit.prevent="saveRed">
-                                    <div class="form-group mb-2">
-                                        <span class="btn-colorselector" style="background-color: rgb(192, 0, 0);"></span>
-                                    </div>
-                                    <div class="form-group mx-sm-3 mb-2">
-                                      <input type="text" class="form-control form-control-sm" id="red_input" wire:model='red' autocomplete="off">
+                            <th>
+                                <form wire:submit.prevent="saveRed">
+                                    <div class="form-row">
+                                        <div class="col-sm-1">
+                                            <span class="btn-colorselector" style="background-color: rgb(192, 0, 0);"></span>
+                                        </div>
+                                        <div class="offset-sm-2 col-sm-9">
+                                          <input type="text" class="form-control form-control-sm" id="red_input" wire:model='red' autocomplete="off">
+                                        </div>    
                                     </div>
                                 </form>
                             </th>
                             <th>
-                                <form class="form-inline" wire:submit.prevent="saveGreen">
-                                    <div class="form-group mb-2">
-                                        <span class="btn-colorselector" style="background-color: rgb(155, 187, 89);"></span>
-                                    </div>
-                                    <div class="form-group mx-sm-3 mb-2">
-                                        <input type="text" class="form-control form-control-sm" id="green_input" wire:model='green' autocomplete="off">
+                                <form wire:submit.prevent="saveGreen">
+                                    <div class="form-row">
+                                        <div class="col-sm-1">
+                                            <span class="btn-colorselector" style="background-color: rgb(155, 187, 89);"></span>
+                                        </div>
+                                        <div class="offset-sm-2 col-sm-9">
+                                            <input type="text" class="form-control form-control-sm" id="green_input" wire:model='green' autocomplete="off">
+                                        </div>    
                                     </div>
                                 </form>
                             </th>
                             <th>
-                                <form class="form-inline" wire:submit.prevent="saveViolet">
-                                    <div class="form-group mb-2">
-                                        <span class="btn-colorselector" style="background-color: rgb(112, 48, 160);"></span>
-                                    </div>
-                                    <div class="form-group mx-sm-3 mb-2">
-                                      <input type="text" class="form-control form-control-sm" id="violet_input" wire:model='violet' autocomplete="off">
+                                <form wire:submit.prevent="saveViolet">
+                                    <div class="form-row">
+                                        <div class="col-sm-1">
+                                            <span class="btn-colorselector" style="background-color: rgb(112, 48, 160);"></span>
+                                        </div>
+                                        <div class="offset-sm-2 col-sm-9">
+                                          <input type="text" class="form-control form-control-sm" id="violet_input" wire:model='violet' autocomplete="off">
+                                        </div>    
                                     </div>
                                   </form>
                             </th>

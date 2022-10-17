@@ -43,7 +43,6 @@ class DigestWords extends Component
             $this->color = 'blue';
         }else{
             $this->words = Http::get('http://192.168.1.60:8888/search?format=red&word='.$this->red)['data'];
-            // dd($this->words);
         }
     }
 
@@ -58,66 +57,63 @@ class DigestWords extends Component
     }
 
     public function saveBlue(){
-        if(!in_array(strtolower($this->blue), $this->temp['blue'])){
-            $response = Http::asForm()->post('http://192.168.1.60:8888/add', [
-                'format' => $this->color,
-                'word' => $this->blue,
-                'username' => auth()->user()->email
-            ]);
-
+        $response = Http::asForm()->post('http://192.168.1.60:8888/add', [
+            'format' => $this->color,
+            'word' => $this->blue,
+            'username' => auth()->user()->email
+        ]);
+        if($response->status() == 204){
+            $this->dispatchBrowserEvent('existing-word');
+        }else{
             $this->words = Http::get('http://192.168.1.60:8888/all')['data'];
             $this->color = 'blue';
             $this->blue = '';
-        }else{
-            $this->dispatchBrowserEvent('existing-word');
-        }
+        }        
     }
 
     public function saveRed(){
-        if(!in_array(strtolower($this->red), $this->temp['red'])){
-            $response = Http::asForm()->post('http://192.168.1.60:8888/add', [
-                'format' => $this->color,
-                'word' => $this->red,
-                'username' => auth()->user()->email
-            ]);
-
+        $response = Http::asForm()->post('http://192.168.1.60:8888/add', [
+            'format' => $this->color,
+            'word' => $this->red,
+            'username' => auth()->user()->email
+        ]);
+        if($response->status() == 204){
+            $this->dispatchBrowserEvent('existing-word');
+        }else{
             $this->words = Http::get('http://192.168.1.60:8888/all')['data'];
             $this->color = 'blue';
             $this->red = '';
-        }else{
-            $this->dispatchBrowserEvent('existing-word');
         }
     }
 
     public function saveGreen(){
-        if(!in_array(strtolower($this->green), $this->temp['green'])){
-            $response = Http::asForm()->post('http://192.168.1.60:8888/add', [
-                'format' => $this->color,
-                'word' => $this->green,
-                'username' => auth()->user()->email
-            ]);
-
+        $response = Http::asForm()->post('http://192.168.1.60:8888/add', [
+            'format' => $this->color,
+            'word' => $this->green,
+            'username' => auth()->user()->email
+        ]);
+        if($response->status() == 204){
+            $this->dispatchBrowserEvent('existing-word');
+        }else{
             $this->words = Http::get('http://192.168.1.60:8888/all')['data'];
             $this->color = 'blue';
             $this->green = '';
-        }else{
-            $this->dispatchBrowserEvent('existing-word');
+
         }
     }
 
     public function saveViolet(){
-        if(!in_array(strtolower($this->violet), $this->temp['violet'])){
-            $response = Http::asForm()->post('http://192.168.1.60:8888/add', [
-                'format' => $this->color,
-                'word' => $this->violet,
-                'username' => auth()->user()->email
-            ]);
-
+        $response = Http::asForm()->post('http://192.168.1.60:8888/add', [
+            'format' => $this->color,
+            'word' => $this->violet,
+            'username' => auth()->user()->email
+        ]);
+        if($response->status() == 204){
+            $this->dispatchBrowserEvent('existing-word');
+        }else{
             $this->words = Http::get('http://192.168.1.60:8888/all')['data'];
             $this->color = 'blue';
-            $this->violet = '';
-        }else{
-            $this->dispatchBrowserEvent('existing-word');
+            $this->violet = '';    
         }
     }
 

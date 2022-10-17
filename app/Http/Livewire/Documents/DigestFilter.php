@@ -22,7 +22,6 @@ class DigestFilter extends Component
 
     public function render()
     {
-        dd(Digest::all());
         return view('livewire.documents.digest-filter', [
             'digests' => Digest::whereHas('user', function($query){
                 $query->where('name', 'like', '%'.$this->search.'%');

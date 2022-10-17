@@ -20,7 +20,7 @@
 		<!-- /Page Header -->
 
         <div class="row">
-            <div class="offset-sm-2 col-sm-8" style="margin:auto; border: solid 1px rgb(0, 90, 63); border-radius: 10px; background-color: rgba(143, 219, 211, 0.562); box-shadow: 0px 5px 5px gray;">
+            <div class="offset-sm-1 col-sm-10" style="margin:auto; border: solid 1px rgb(0, 90, 63); border-radius: 10px; background-color: rgba(143, 219, 211, 0.562); box-shadow: 0px 5px 5px gray;">
                 <h4 style="text-align: center"> <b>Заметки для пользования</b> </h4>
                 <ul>
                     <li>Первые три параграфа дайджеста должны быть следующего характера:<br><b>"Информация"</b>, <b>&lt;тема дайджеста&gt;</b>, <b>"(материал ЦЭИР)"</b></li>
@@ -32,7 +32,7 @@
         <form method="POST" action="{{ route('upload.test') }}" id="createDigest" enctype="multipart/form-data">
             @csrf
             <div class="form-row">
-                <div class="offset-sm-3 col-sm-5">
+                <div class="offset-sm-2 col-sm-6">
                     <input type="file" class="form-control" name="file">
                 </div>
                 <div class="col-sm-2">
