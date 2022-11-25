@@ -1,11 +1,4 @@
-/*
-Author       : Dreamguys
-Template Name: SmartHR - Bootstrap Admin Template
-Version      : 3.6
-*/
-
 $(document).ready(function() {
-
 	// Variables declarations
 
 	var $wrapper = $('.main-wrapper');
@@ -57,14 +50,6 @@ $(document).ready(function() {
 			$wrapper.removeClass('slide-nav');
 			$('.sidebar-overlay').removeClass('opened');
 			$('#task_window').removeClass('opened');
-	});
-
-	// Chat sidebar overlay
-
-	$(document).on('click', '#task_chat', function() {
-		$('.sidebar-overlay').toggleClass('opened');
-		$('#task_window').addClass('opened');
-		return false;
 	});
 
 	// Select 2
@@ -136,7 +121,7 @@ $(document).ready(function() {
 
 	if($('.datetimepicker').length > 0) {
 		$('.datetimepicker').datetimepicker({
-			format: 'DD/MM/YYYY',
+			format: 'YYYY-MM-DD',
 			icons: {
 				up: "fa fa-angle-up",
 				down: "fa fa-angle-down",
@@ -147,51 +132,15 @@ $(document).ready(function() {
 	}
 
 	// Datatable
-
 	if($('.datatable').length > 0) {
 		$('.datatable').DataTable({
 			"bFilter": false,
 		});
 	}
-
 	// Tooltip
-
 	if($('[data-toggle="tooltip"]').length > 0) {
 		$('[data-toggle="tooltip"]').tooltip();
 	}
-
-	// Email Inbox
-
-	if($('.clickable-row').length > 0 ){
-		$(".clickable-row").click(function() {
-			window.location = $(this).data("href");
-		});
-	}
-
-	// Check all email
-
-	$(document).on('click', '#check_all', function() {
-		$('.checkmail').click();
-		return false;
-	});
-	if($('.checkmail').length > 0) {
-		$('.checkmail').each(function() {
-			$(this).on('click', function() {
-				if($(this).closest('tr').hasClass('checked')) {
-					$(this).closest('tr').removeClass('checked');
-				} else {
-					$(this).closest('tr').addClass('checked');
-				}
-			});
-		});
-	}
-
-	// Mail important
-
-	$(document).on('click', '.mail-important', function() {
-		$(this).find('i.fa').toggleClass('fa-star').toggleClass('fa-star-o');
-	});
-
 	// Summernote
 
 	if($('.summernote').length > 0) {
@@ -210,6 +159,80 @@ $(document).ready(function() {
 		return false;
 	});
 
+    jQuery("#createTask").on("submit", function (e) {
+        e.preventDefault();
+        var formData = new FormData($("#createTask")[0]);
+        var url = $(this).attr("action");
+
+        $.ajax({
+            url: url,
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                document.location.href = '/ordered';
+                toastr.options =
+                {
+                    "closeButton" : true,
+                    "progressBar" : true
+                }
+                toastr.success("Задача успешно создана");
+            },
+            error: function (data) {
+                console.log(data);
+                $("#name").addClass("d-none");
+                $("#deadline").addClass("d-none");
+                $("#description").addClass("d-none");
+                $("#file").addClass("d-none");
+
+                var errors = data.responseJSON;
+                if ($.isEmptyObject(errors) == false) {
+                    $.each(errors.errors, function (key, value) {
+                        var ErrorId = "#" + key;
+                        $(ErrorId).removeClass("d-none");
+                        $(ErrorId).text(value);
+                    });
+                }
+                toastr.error(errors.message);
+            },
+        });
+    });
+
+    jQuery("#createProject").on("submit", function (e) {
+        e.preventDefault();
+        var formData = new FormData($("#createProject")[0]);
+        var url = $(this).attr("action");
+
+        $.ajax({
+            url: url,
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                location.reload();
+				toastr.options =
+                {
+                    "closeButton" : true,
+                    "progressBar" : true
+                }
+                toastr.success("Проект успешно создан");
+            },
+            error: function (data) {
+                $("#project_name").addClass("d-none");
+                var errors = data.responseJSON;
+                if ($.isEmptyObject(errors) == false) {
+                    $.each(errors.errors, function (key, value) {
+                        var ErrorId = "#" + key;
+                        $(ErrorId).removeClass("d-none");
+                        $(ErrorId).text(value);
+                    });
+                }
+                toastr.error(errors.message);
+            },
+        });
+    });
 	// Multiselect
 
 	if($('#customleave_select').length > 0) {
@@ -220,7 +243,6 @@ $(document).ready(function() {
 	}
 
 	// Leave Settings button show
-
 	$(document).on('click', '.leave-edit-btn', function() {
 		$(this).removeClass('leave-edit-btn').addClass('btn btn-white leave-cancel-btn').text('Cancel');
 		$(this).closest("div.leave-right").append('<button class="btn btn-primary leave-save-btn" type="submit">Save</button>');
@@ -263,29 +285,27 @@ $(document).ready(function() {
 			$("#leave_"+id+" .leave-edit-btn").prop('disabled', true);
 		}
 	});
+	// // Placeholder Hide
 
-	// Placeholder Hide
+	// if ($('.otp-input, .zipcode-input input, .noborder-input input').length > 0) {
+	// 	$('.otp-input, .zipcode-input input, .noborder-input input').focus(function () {
+	// 		$(this).data('placeholder', $(this).attr('placeholder'))
+	// 			   .attr('placeholder', '');
+	// 	}).blur(function () {
+	// 		$(this).attr('placeholder', $(this).data('placeholder'));
+	// 	});
+	// }
+	// // OTP Input
 
-	if ($('.otp-input, .zipcode-input input, .noborder-input input').length > 0) {
-		$('.otp-input, .zipcode-input input, .noborder-input input').focus(function () {
-			$(this).data('placeholder', $(this).attr('placeholder'))
-				   .attr('placeholder', '');
-		}).blur(function () {
-			$(this).attr('placeholder', $(this).data('placeholder'));
-		});
-	}
-
-	// OTP Input
-
-	if ($('.otp-input').length > 0) {
-		$(".otp-input").keyup(function(e) {
-			if ((e.which >= 48 && e.which <= 57) || (e.which >= 96 && e.which <= 105)) {
-				$(e.target).next('.otp-input').focus();
-			} else if (e.which == 8) {
-				$(e.target).prev('.otp-input').focus();
-			}
-		});
-	}
+	// if ($('.otp-input').length > 0) {
+	// 	$(".otp-input").keyup(function(e) {
+	// 		if ((e.which >= 48 && e.which <= 57) || (e.which >= 96 && e.which <= 105)) {
+	// 			$(e.target).next('.otp-input').focus();
+	// 		} else if (e.which == 8) {
+	// 			$(e.target).prev('.otp-input').focus();
+	// 		}
+	// 	});
+	// }
 
 	// Small Sidebar
 
@@ -320,26 +340,14 @@ $(document).ready(function() {
         var children = "";
         for (var i = 0; i < input.files.length; ++i) {
             children += '<li>' + input.files.item(i).name + '</li>';
+            console.log(input.files.item(i).size / 1024 );
         }
         output.innerHTML = '<ul>'+children+'</ul>';
     }
 
-    // viewTask = function(id) {
-    //     $.get("/task/info/byid/" + id, function (task) {
-    //         // console.log(task);
-    //         $("#task_title").html(task.task.name);
-    //         $("#task_description").html(task.task.description);
-    //         $("#task_created").html(task.task.created_at.substr(0,10));
-    //         $("#task_deadline").html(task.task.deadline);
-    //         $("#task_creator").html(task.creator);
-    //         $("#task_status").html(task.task.status);
-    //         $('#view_task').modal('show');
-    //     });
-    // }
-
-	$(document).on('click', '.top-nav-search .responsive-search', function() {
-		$('.top-nav-search').toggleClass('active');
-	});
+    openModal = function(id){
+        window.livewire.emit('taskClicked', id);
+    }
 
 	$(document).on('click', '#file_sidebar_toggle', function() {
 		$('.file-wrap').toggleClass('file-sidebar-toggle');
@@ -349,19 +357,5 @@ $(document).ready(function() {
 		$('.file-wrap').removeClass('file-sidebar-toggle');
 	});
 
-	if($('.kanban-wrap').length > 0) {
-		$(".kanban-wrap").sortable({
-			connectWith: ".kanban-wrap",
-			handle: ".kanban-box",
-			placeholder: "drag-placeholder"
-		});
-	}
-
 });
 
-// Loader
-
-$(window).on ('load', function (){
-	$('#loader').delay(100).fadeOut('slow');
-	$('#loader-wrapper').delay(500).fadeOut('slow');
-});

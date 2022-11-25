@@ -34,6 +34,9 @@
                                     <input type="password" class="form-control rounded-left" placeholder="Пароль" name="password" required autocomplete="current-password">
                                 </div>
                                 <div class="form-group">
+                                    <a href="{{ route('password.request') }}" style="float: right; margin-bottom:5px; font-size:14px; color:#317ba2;">Забыл пароль?</a>
+                                </div>
+                                <div class="form-group">
                                     <button type="submit" class="form-control btn btn-primary rounded submit px-3">Войти</button>
                                 </div>
                             </form>

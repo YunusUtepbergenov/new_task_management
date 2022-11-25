@@ -14,10 +14,13 @@ class Task extends Model
         'user_id',
         'sector_id',
         'project_id',
+        'type_id',
+        'priority_id',
         'name',
         'description',
         'deadline',
-        'status'
+        'status',
+        'repeat_id',
     ];
 
     public function username($id){
@@ -29,12 +32,24 @@ class Task extends Model
         return $this->belongsToMany(User::class)->withTimestamps();
     }
 
+    public function type(){
+        return $this->belongsTo(Type::class);
+    }
+
+    public function priority(){
+        return $this->belongsTo(Priority::class);
+    }
+
     public function response(){
         return $this->hasOne(Response::class);
     }
 
     public function project(){
         return $this->belongsTo(Project::class);
+    }
+
+    public function creator(){
+        return $this->belongsTo(User::class);
     }
 
     public function user(){
@@ -49,4 +64,27 @@ class Task extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function overdueTasks(){
+        return $this->where('overdue', 1);
+    }
+
+    public function newTasks(){
+        return $this->where('overdue', 0)->where('status', 'Новое');
+    }
+
+    public function doingTasks(){
+        return $this->where('overdue', 0)->where('status', 'Выполняется');
+    }
+
+    public function confirmTasks(){
+        return $this->where('status', 'Ждет подтверждения');
+    }
+
+    public function finishedTasks(){
+        return $this->where('overdue', 0)->where('status', 'Выполнено');
+    }
+
+    public function repeat(){
+        return $this->hasOne(Repeat::class);
+    }
 }

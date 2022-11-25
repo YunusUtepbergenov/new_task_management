@@ -17,12 +17,11 @@ class CreateTasksTable extends Migration
             $table->id();
             $table->unsignedBigInteger('creator_id');
             $table->foreignId('user_id')->constrained();
-            $table->foreignId('sector_id')->constrained();
             $table->foreignId('project_id')->nullable()->constrained();
             $table->string('name');
             $table->text('description');
             $table->date('deadline');
-            $table->string('status');            
+            $table->string('status');
             $table->timestamps();
         });
     }

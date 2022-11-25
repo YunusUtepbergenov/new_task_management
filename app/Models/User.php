@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -9,6 +10,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use PDO;
+use phpDocumentor\Reflection\Types\Null_;
 
 class User extends Authenticatable
 {
@@ -16,7 +19,7 @@ class User extends Authenticatable
     use HasFactory;
     use HasProfilePhoto;
     use Notifiable;
-    use TwoFactorAuthenticatable;
+    // use TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +31,10 @@ class User extends Authenticatable
         'email',
         'sector_id',
         'role_id',
+        'phone',
+        'birth_date',
+        'avatar',
+        'leave',
         'password',
     ];
 
@@ -61,6 +68,8 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+    protected $dates = ['birth_date'];
+
     public function role(){
         return $this->belongsTo(Role::class);
     }
@@ -69,8 +78,92 @@ class User extends Authenticatable
         return $this->hasMany(Task::class);
     }
 
+    public function digests(){
+        return $this->hasMany(Digest::class);
+    }
+
     public function helpers(){
         return $this->belongsToMany(Task::class);
+    }
+
+    public function filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end]);
+    }
+
+    public function overdueFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('overdue', 1);
+    }
+
+    public function newFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('overdue', 0)->where('status', 'Новое');
+    }
+
+    public function confirmFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('overdue', 0)->where('status', 'Ждет подтверждения');
+    }
+
+    public function priority_filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', '<>', 4);
+    }
+
+    public function priority_doneFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('status', 'Выполнено')->where('priority_id', '<>', 4);
+    }
+
+    public function simple_priority_filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', 1);
+    }
+
+    public function simple_priority_doneFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->whereIn('status', ['Выполнено', 'Ждет подтверждения'])->where('priority_id', 1);
+    }
+
+    public function mid_priority_filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', 2);
+    }
+
+    public function mid_priority_doneFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->whereIn('status', ['Выполнено', 'Ждет подтверждения'])->where('priority_id', 2);
+    }
+
+    public function high_priority_filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', 3);
+    }
+
+    public function high_priority_doneFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->whereIn('status', ['Выполнено', 'Ждет подтверждения'])->where('priority_id', 3);
+    }
+
+
+    public function very_high_priority_filterTasks($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', 4);
+    }
+
+    public function very_high_priority_doneFilter($start, $end){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->whereIn('status', ['Выполнено', 'Ждет подтверждения'])->where('priority_id', 4);
+    }
+
+
+    public function overdueTasks(){
+        return $this->tasks()->where('overdue', 1);
+    }
+
+    public function newTasks(){
+        return $this->tasks()->where('overdue', 0)->where('status', 'Новое');
+    }
+
+    public function doingTasks(){
+        return $this->tasks()->where('overdue', 0)->where('status', 'Выполняется');
+    }
+    public function confirmTasks(){
+        return $this->tasks()->where('overdue', 0)->where('status', 'Ждет подтверждения');
+    }
+    public function finishedTasks(){
+        return $this->tasks()->where('overdue', 0)->where('status', 'Выполнено');
+    }
+
+    public function closedTasks(){
+        return $this->tasks()->where('status', 'Выполнено');
     }
 
     public function sector(){
@@ -87,5 +180,17 @@ class User extends Authenticatable
 
     public function isHead(){
         return $this->role->name === "Заведующий сектором";
+    }
+
+    public function isHR(){
+        return $this->role->name === "Спецалист по работе с персоналом";
+    }
+
+    public function isDeputy(){
+        return $this->role->name === "Заместитель директора";
+    }
+
+    public function isAccountant(){
+        return $this->role->name === "Главный бухгалтер" || $this->role->name === "Бухгалтер";
     }
 }

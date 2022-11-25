@@ -9,14 +9,15 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('project.store') }}" method="POST">
+                <form action="{{ route('project.store') }}" method="POST" id="createProject">
                     @csrf
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <label>Название</label>
-                                <input class="form-control" type="text" name="name">
+                                <input class="form-control" type="text" name="project_name">
                             </div>
+                            <div class="alert alert-danger" id="project_name"></div>
                         </div>
                     </div>
                     <div class="submit-section">

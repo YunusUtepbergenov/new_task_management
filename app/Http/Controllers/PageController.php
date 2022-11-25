@@ -2,89 +2,160 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\File;
-use App\Models\Project;
 use App\Models\Role;
-use App\Models\Sector;
-use App\Models\Task;
 use App\Models\User;
+use App\Models\Sector;
+use App\Models\Journal;
+use App\Models\Project;
+use App\Exports\TasksExport;
+use App\Models\Priority;
 use Illuminate\Http\Request;
+use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PageController extends Controller
 {
     public function dashboard(){
-        $projects = Project::with('tasks')->get();
-        $tasks = Task::where('user_id', Auth::user()->id)->where('project_id', null)->get();
-        $users = User::select(['id', 'name'])->get();
-        $project_tasks = Task::with('project')->where('user_id', Auth::user()->id)->where('project_id', '<>', null)->get();
-        $projects_arr = array();
+        $projects = (new TaskService())->projectList();
+        $sectors = (new TaskService())->sectorList();
+        $types = (new TaskService())->typeList();
+        $priorities = Priority::all();
 
-        $user_projects = collect([]);
-
-        foreach($project_tasks as $task){
-            array_push($projects_arr, $task->project->name);
-        }
-
-        $unique_projects = array_unique($projects_arr);
-        foreach($unique_projects as $project){
-            $project_collection = Project::where('name', $project)->first();
-            $user_projects = $user_projects->merge([$project_collection]);
-        }
-        $sectors = Sector::with('users')->get();
         return view('page.index', [
             'projects' => $projects,
-            'users' => $users,
-            'tasks' => $tasks,
             'sectors' => $sectors,
-            'user_projects' => $user_projects
+            'types' => $types,
+            'priorities' => $priorities
         ]);
     }
 
     public function ordered(){
-        $projects = Project::with('tasks')->get();
-        $tasks = Task::where('creator_id', Auth::user()->id)->where('project_id', null)->get();
-        $users = User::select(['id', 'name'])->get();
-        $project_tasks = Task::with('project')->where('creator_id', Auth::user()->id)->where('project_id', '<>', null)->get();
-        $projects_arr = array();
+        $sectors = (new TaskService())->sectorList();
+        $projects = (new TaskService())->projectList();
+        $types = (new TaskService())->typeList();
+        $priorities = Priority::all();
 
-        $user_projects = collect([]);
-
-        foreach($project_tasks as $task){
-            array_push($projects_arr, $task->project->name);
-        }
-
-        $unique_projects = array_unique($projects_arr);
-        foreach($unique_projects as $project){
-            $project_collection = Project::where('name', $project)->first();
-            $user_projects = $user_projects->merge([$project_collection]);
-        }
-        $sectors = Sector::with('users')->get();
-        return view('page.index', [
+        return view('page.ordered', [
             'projects' => $projects,
-            'users' => $users,
-            'tasks' => $tasks,
             'sectors' => $sectors,
-            'user_projects' => $user_projects
+            'types' => $types,
+            'priorities' => $priorities
         ]);
     }
 
+    public function helping(){
+        $projects = Project::where('user_id', Auth::user()->id)->get();
+        $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
+        $types = (new TaskService())->typeList();
+        $priorities = Priority::all();
+
+        return view('page.helping', [
+            'projects' => $projects,
+            'sectors' => $sectors,
+            'types' => $types,
+            'priorities' => $priorities
+        ]);
+    }
+
+    public function reports(){
+        return view('page.reports');
+    }
+
+    public function reportTable(){
+        $user = Auth::user();
+        if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer() || $user->isHR()){
+            $sectors = Sector::all();
+            return view('page.reports.new_report', [
+                'sectors' => $sectors
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function testReport(){
+        $user = Auth::user();
+        if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer() || $user->isHR()){
+            $sectors = Sector::all();
+            return view('page.reports.test_report', [
+                'sectors' => $sectors
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function userReport($id, $start, $end){
+        $user = User::where('id', $id)->first();
+
+        return view('page.reports.user', [
+            'user_id' => $user->id,
+            'start' => $start,
+            'end' => $end
+        ]);
+    }
+
+    public function downloadReport($param1, $param2){
+        return Excel::download(new TasksExport($param1, $param2), 'report.xlsx');
+    }
+
+    public function surveys(){
+        return view('page.research.survey');
+    }
+
     public function employees(){
-        $employees = User::all();
-        $sectors = Sector::all();
+        $sectors = Sector::with(['users' => function($query){
+            $query->with('role')->where('leave', 0)->orderBy('role_id', 'ASC');
+        }])->get();
         $roles = Role::all();
-        return view('page.employees', ['employees' => $employees, 'sectors' => $sectors, 'roles' => $roles]);
+
+        return view('page.employees', ['sectors' => $sectors, 'roles' => $roles]);
     }
 
-    public function getTaskInfo($id){
-        $task = Task::where('id', $id)->first();
-        $creator = $task->username($task->creator_id);
-        return response()->json(['task' => $task, 'creator' => $creator]);
+    public function journalRu($year)
+    {
+        $journals = Journal::where('lang', 'ru')->where('year', $year)->orderBy('number', 'DESC')->get();
+        $years = Journal::select('year')->distinct()->where('lang', 'ru')->orderBy('year', 'DESC')->get();
+
+        return view('page.documents.ru_journal', [
+            'journals' => $journals,
+            'years' => $years
+        ]);
     }
 
-    public function download($id){
-        $file = File::where('id', $id)->first();
-        return response()->download(storage_path('app/files/'.$file->name));
+    public function journalUz($year)
+    {
+        $journals = Journal::where('lang', 'uz')->where('year', $year)->orderBy('number', 'DESC')->get();
+        $years = Journal::select('year')->distinct()->where('lang', 'uz')->orderBy('year', 'DESC')->get();
+
+        return view('page.documents.uz_journal', [
+            'journals' => $journals,
+            'years' => $years
+        ]);
+    }
+
+    public function journal($id){
+        $journal = Journal::where('id', $id)->first();
+        $years = Journal::select('year')->distinct()->orderBy('year', 'DESC')->get();
+
+        return view('page.documents.journal', [
+            'journal' => $journal,
+            'years' => $years
+        ]);
+    }
+
+    public function settings(){
+        return view('page.settings');
+    }
+
+    public function read($id, Request $request){
+        Auth::user()->unreadNotifications->where('id', $id)->markAsRead();
+        return redirect()->back();
+    }
+
+    public function readNoti(){
+        Auth::user()->unreadNotifications->markAsRead();
+        return back();
     }
 }
