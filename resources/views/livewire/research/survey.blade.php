@@ -1,5 +1,5 @@
 <div>
-    <div class="row filter-row">
+    <!-- <div class="row filter-row">
         <div class="col-sm-4 col-md-2">
             <label for="input">Источник</label>
             <div class="form-group">
@@ -16,12 +16,12 @@
                 </div>
             </div>
         @endif --}}
-    </div>
+    </div> -->
 
     <div class="row">
         <div class="col-md-12">
-            <div class="table-responsive" id="employeeTable">
-                <table class="table custom-table" id="filteredTasks" style="overflow-y: auto; height: 110px;">
+            <div id="employeeTable">
+                <table class="table custom-table" id="filteredTasks" style="overflow-y: auto;">
                     <thead id="employee_header">
                         <tr>
                             <th><span>&#8470;</span></th>

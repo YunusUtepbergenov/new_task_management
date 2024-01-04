@@ -82,6 +82,10 @@ class User extends Authenticatable
         return $this->hasMany(Digest::class);
     }
 
+    public function mediaTasks($start, $end){
+        return $this->tasks()->whereBetween('tasks.deadline', [$start, $end])->whereIn('tasks.type_id', [4,12]);
+    }
+
     public function helpers(){
         return $this->belongsToMany(Task::class);
     }
@@ -143,6 +147,13 @@ class User extends Authenticatable
         return $this->tasks()->whereBetween('deadline', [$start, $end])->whereIn('status', ['Выполнено', 'Ждет подтверждения'])->where('priority_id', 4);
     }
 
+    public function kpiFilter($start, $end, $category_id){
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('score_id', $category_id)->where('status', 'Выполнено')->sum('total');
+    }
+
+    // public function kpiFilter($start, $end, $category_id){
+    //     return $this->tasks()->whereBetween('deadline', [$start, $end])->where('score_id', $category_id)->where('status', 'Выполнено');
+    // }
 
     public function overdueTasks(){
         return $this->tasks()->where('overdue', 1);

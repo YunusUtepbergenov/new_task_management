@@ -3,7 +3,6 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Новая задания</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -26,6 +25,17 @@
                     </div>
 
                     <div class="form-group row">
+                        <div class="col-sm-1"></div>
+                        <label class="col-sm-3 col-form-label">Категория</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="kpi_type" name="score_id">
+                                @foreach ($scores as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    {{-- <div class="form-group row">
                         <div class="col-sm-1"></div>
                         <label class="col-sm-3 col-form-label">Категория</label>
                         <div class="col-sm-4">
@@ -55,7 +65,7 @@
                                 @endif
                             </select>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="row">
                         <div class="col-sm-12">

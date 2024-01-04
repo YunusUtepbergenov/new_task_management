@@ -43,8 +43,9 @@ class TaskController extends Controller
                     'user_id' => $usr,
                     'project_id' => $request->project_id,
                     'sector_id' => $user->sector->id,
-                    'type_id' => $request->type_id,
-                    'priority_id' => $request->priority_id,
+                    'type_id' => 1,
+                    'priority_id' => 1,
+                    'score_id' => $request->score_id,
                     'name' => $request->name,
                     'description' => $request->description,
                     'deadline' => $new_deadline,
@@ -90,8 +91,9 @@ class TaskController extends Controller
                             'user_id' => $user->id,
                             'project_id' => $request->project_id,
                             'sector_id' => $user->sector->id,
-                            'type_id' => $request->type_id,
-                            'priority_id' => $request->priority_id,
+                            'type_id' => 1,
+                            'priority_id' => 1,
+                            'score_id' => $request->score_id,
                             'name' => $request->name,
                             'description' => $request->description,
                             'deadline' => $new_deadline,
@@ -99,6 +101,7 @@ class TaskController extends Controller
                         ]);
 
                         $task->executers()->sync($request->helpers, false);
+                        
                         if($request->hasFile('file')){
                             foreach($request->file as $file){
                                 $filename = time().$file->getClientOriginalName();
@@ -142,8 +145,9 @@ class TaskController extends Controller
                         'user_id' => $user->id,
                         'project_id' => $request->project_id,
                         'sector_id' => $user->sector->id,
-                        'type_id' => $request->type_id,
-                        'priority_id' => $request->priority_id,
+                        'type_id' => 1,
+                        'priority_id' => 1,
+                        'score_id' => $request->score_id,
                         'name' => $request->name,
                         'description' => $request->description,
                         'deadline' => $new_deadline,
@@ -196,12 +200,14 @@ class TaskController extends Controller
             'user_id' => $request->user_id,
             'project_id' => $request->project_id,
             'sector_id' => $user->sector->id,
-            'type_id' => $request->type_id,
-            'priority_id' => $request->priority_id,
+            'type_id' => 1,
+            'priority_id' => 1,
+            'score_id'  => $request->score_id,
             'name' => $request->name,
             'description' => $request->description,
             'deadline' => $request->deadline,
             'status' => 'Новое',
+            'overdue' => 0,
             'repeat' => $request->repeat
         ]);
 
@@ -300,8 +306,11 @@ class TaskController extends Controller
         return response()->download(storage_path('app/files/'.$file->name));
     }
 
-    public function responseDownload($filename){
-        return response()->download(storage_path('app/files/responses/'.$filename));
+    public function responseDownload($filename, $created_at){
+        $year = date('Y', strtotime($created_at));
+        $month = date('m', strtotime($created_at));
+
+        return response()->download(storage_path('app/files/responses/'.$year.'/'.$month.'/'.$filename));
     }
 
     public function searchTasks(Request $request){

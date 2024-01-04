@@ -285,27 +285,6 @@ $(document).ready(function() {
 			$("#leave_"+id+" .leave-edit-btn").prop('disabled', true);
 		}
 	});
-	// // Placeholder Hide
-
-	// if ($('.otp-input, .zipcode-input input, .noborder-input input').length > 0) {
-	// 	$('.otp-input, .zipcode-input input, .noborder-input input').focus(function () {
-	// 		$(this).data('placeholder', $(this).attr('placeholder'))
-	// 			   .attr('placeholder', '');
-	// 	}).blur(function () {
-	// 		$(this).attr('placeholder', $(this).data('placeholder'));
-	// 	});
-	// }
-	// // OTP Input
-
-	// if ($('.otp-input').length > 0) {
-	// 	$(".otp-input").keyup(function(e) {
-	// 		if ((e.which >= 48 && e.which <= 57) || (e.which >= 96 && e.which <= 105)) {
-	// 			$(e.target).next('.otp-input').focus();
-	// 		} else if (e.which == 8) {
-	// 			$(e.target).prev('.otp-input').focus();
-	// 		}
-	// 	});
-	// }
 
 	// Small Sidebar
 

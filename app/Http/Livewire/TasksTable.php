@@ -14,17 +14,17 @@ class TasksTable extends Component
     public $projectId="Empty", $status="Empty", $project_tasks;
 
     public function mount(){
-        $this->project_tasks = Task::with('project')->select('project_id')->where('user_id', Auth::user()->id)
+        $this->project_tasks = Task::with('project')->select('project_id')->where('user_id', Auth::user()->id)->where('status', '<>', "Выполнено")
             ->where('project_id', '<>', null)->distinct('project_id')->get();
         $this->projects = (new ProjectService())->projectsList($this->project_tasks);
         $this->username = Auth::user()->name;
         $this->chosen_project = Project::with(['tasks' => function($query){
-                $query->latest();
+                $query->with('creator')->where('status', '<>', "Выполнено")->latest();
                 }])->whereHas('tasks', function($query){
-                $query->where('user_id', Auth::user()->id)->where('project_id', '<>', Null);
+                $query->with('creator')->where('user_id', Auth::user()->id)->where('status', '<>', "Выполнено")->where('project_id', '<>', Null);
         })->latest()->get();
-        $this->tasks = Task::with('creator:id,name,sector_id,role_id')->where('user_id', Auth::user()->id)
-                            ->where('project_id', Null)->latest()->get();
+        $this->tasks = Task::with('creator')->where('user_id', Auth::user()->id)
+                            ->where('project_id', Null)->where('status', '<>', "Выполнено")->latest()->get();
     }
 
     public function updated(){
@@ -45,10 +45,12 @@ class TasksTable extends Component
         }
         elseif($this->projectId == "Empty"){
             if($this->status == "Empty"){
-                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('project_id', null)->latest()->get();
-                $this->chosen_project = Project::whereHas('tasks', function($query){
-                    $query->with('user')->where('user_id', Auth::user()->id)->where('project_id', '<>', Null)->latest();
-                })->latest()->get();
+                $this->tasks = Task::with(['creator:id,name,sector_id,role_id'])->where('user_id', Auth::user()->id)->where('status', '<>', "Выполнено")->where('project_id', null)->latest()->get();
+                $this->chosen_project = Project::with(['tasks' => function($query){
+                    $query->where('status', '<>', "Выполнено")->latest();
+                    }])->whereHas('tasks', function($query){
+                    $query->where('user_id', Auth::user()->id)->where('status', '<>', "Выполнено")->where('project_id', '<>', Null);
+            })->latest()->get();
             }elseif($this->status == "Просроченный"){
                 $this->tasks = Task::with(['user', 'creator'])->where('project_id', Null)->where('user_id', Auth::user()->id)->where('overdue', 1)->orderBy('created_at', 'DESC')->get();
                 $this->chosen_project = Project::whereHas('tasks', function($query){

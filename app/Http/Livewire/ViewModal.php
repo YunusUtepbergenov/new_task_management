@@ -23,10 +23,12 @@ class ViewModal extends Component
     public $description, $upload;
     public $phone, $internal;
     public $oldPassword, $newPassword, $confirmPassword;
-
+    public $errorMsg, $taskScore;
+    
     protected $listeners = ['taskClicked', 'profileClicked'];
 
     public function mount(){
+        $this->errorMsg = Null;
         $this->phone = auth()->user()->phone;
         $this->internal = auth()->user()->internal;
     }
@@ -72,7 +74,7 @@ class ViewModal extends Component
             $filename = str_replace($chars, "_", $filename);
 
             Storage::disk('local')->putFileAs(
-                'files/responses/',
+                'files/responses/'.date('Y').'/'.date('m'),
                 $uploadedFile,
                 $filename
             );
@@ -107,11 +109,19 @@ class ViewModal extends Component
     }
 
     public function taskConfirmed($id){
+        $this->errorMsg = Null;
         $task = Task::where('id', $id)->first();
-
-        $task->update(['status' => "Выполнено"]);
-        $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
-        event(new TaskConfirmedEvent($task));
+        if(!isset($this->taskScore) or floatval($this->taskScore) > $task->score->max_score or floatval($this->taskScore) < 0){
+            $this->errorMsg = 'Please enter number between 0-'.$this->task->score->max_score;
+        }
+        else{
+            $task->update([
+                'status' => "Выполнено",
+                'total'  => floatval($this->taskScore)
+            ]);
+            $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
+            event(new TaskConfirmedEvent($task));    
+        }
     }
 
     public function taskRejected($id){
@@ -158,7 +168,6 @@ class ViewModal extends Component
         $user->save();
 
         $this->dispatchBrowserEvent('success', ['msg' => "Информация профиля успешно изменена."]);
-
     }
 
     public function updatePassword(){
@@ -168,22 +177,17 @@ class ViewModal extends Component
             'confirmPassword' => 'required|same:newPassword'
         ]);
 
-        // $user = Auth::user();
         if(Hash::check($this->oldPassword, auth()->user()->password)){
             auth()->user()->update([
                 'password' => bcrypt($this->newPassword)
             ]);
-            // return back()->withMessage('Пароль успешно изменен');
             $this->dispatchBrowserEvent('success', ['msg' => "Пароль успешно изменен"]);
-
         }else{
             $this->dispatchBrowserEvent('danger', ['msg' => "Неправильный пароль"]);
-            // return back()->withError("Неправильный пароль");
         }
     }
 
-    public function render()
-    {
+    public function render(){
         return view('livewire.view-modal');
     }
 }

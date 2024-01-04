@@ -5,9 +5,7 @@ namespace App\Console;
 use App\Events\TaskCreatedEvent;
 use App\Models\Repeat;
 use App\Models\Task;
-use App\Models\User;
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\DB;
@@ -47,11 +45,14 @@ class Kernel extends ConsoleKernel
                         'creator_id' => $repeat->task->creator_id,
                         'user_id' => $repeat->task->user_id,
                         'project_id' => $repeat->task->project_id,
+                        'sector_id' => $repeat->task->user->sector_id,
                         'name' => $repeat->task->name,
                         'description' => $repeat->task->description,
                         'deadline' => $new_deadline,
                         'status' => 'Новое',
                         'repeat_id' => $repeat->id,
+                        'type_id' => $repeat->task->type_id,
+                        'priority_id' => $repeat->task->priority_id
                     ]);
                     event(new TaskCreatedEvent($task));
                 }
@@ -71,11 +72,14 @@ class Kernel extends ConsoleKernel
                         'creator_id' => $repeat->task->creator_id,
                         'user_id' => $repeat->task->user_id,
                         'project_id' => $repeat->task->project_id,
+                        'sector_id' => $repeat->task->user->sector_id,
                         'name' => $repeat->task->name,
                         'description' => $repeat->task->description,
                         'deadline' => $new_deadline,
                         'status' => 'Новое',
                         'repeat_id' => $repeat->id,
+                        'type_id' => $repeat->task->type_id,
+                        'priority_id' => $repeat->task->priority_id
                     ]);
                 }
             }

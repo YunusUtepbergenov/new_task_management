@@ -25,13 +25,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/digest/info/byid/{id}', [DigestController::class, 'getDigestInfo']);
     Route::get('/note/info/byid/{id}', [NoteController::class, 'getNoteInfo']);
     Route::get('task/download/{id}', [TaskController::class, 'download'])->name('file.download');
-    Route::get('task/response/download/{name}', [TaskController::class, 'responseDownload'])->name('response.download');
+    Route::get('task/response/download/{filename}/{created_at}', [TaskController::class, 'responseDownload'])->name('response.download');
     Route::get('article/download/{name}', [ArticleController::class, 'articleDownload'])->name('article.download');
     Route::get('digest/download/{name}', [DigestController::class, 'digestDownload'])->name('digest.download');
     Route::get('note/download/{name}', [NoteController::class, 'noteDownload'])->name('note.download');
     Route::get('journals/{year}/ru', [PageController::class, 'journalRu'])->name('journal.ru');
     Route::get('journals/{year}/uz', [PageController::class, 'journalUz'])->name('journal.uz');
     Route::get('journal/{id}', [PageController::class, 'journal'])->name('journal');
+    Route::get('kpi/table', [PageController::class, 'kpiReport'])->name('kpi');
     Route::get('reports/table', [PageController::class, 'reportTable'])->name('table.report');
     Route::get('reports/test', [PageController::class, 'testReport'])->name('report.test');
     Route::get('report/{id}/{start}/{end}', [PageController::class, 'userReport'])->name('user.report');
@@ -88,3 +89,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
 })->middleware('guest')->name('password.request');
+
+Route::get('check-telegram-login', [UserController::class, 'checkUserLogin']);
+Route::get('users/export', [UserController::class, 'export']);
+Route::get('sectors/export', [UserController::class, 'sector']);

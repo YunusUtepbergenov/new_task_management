@@ -62,7 +62,7 @@
                                         <div class="dropdown dropdown-action profile-action">
                                             <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                @if ($task->status != "Выполнено")
+                                                @if ($task->status != "Выполнено" && $task->status != "Ждет подтверждения")
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
                                                 @endif
                                                 @if ($task->repeat_id)
@@ -116,13 +116,7 @@
                                     <thead>
                                         <tr>
                                             <th></th>
-                                            <th></th>
-                                            <th>{{ $prj['name'] }}</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
+                                            <th colspan="7">{{ $prj['name'] }}</th>
                                         </tr>
                                     </thead>
                                     @php

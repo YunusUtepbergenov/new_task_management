@@ -16,11 +16,14 @@ class Task extends Model
         'project_id',
         'type_id',
         'priority_id',
+        'score_id',
         'name',
         'description',
         'deadline',
         'status',
+        'overdue',
         'repeat_id',
+        'total',
     ];
 
     public function username($id){
@@ -34,6 +37,10 @@ class Task extends Model
 
     public function type(){
         return $this->belongsTo(Type::class);
+    }
+
+    public function score(){
+        return $this->belongsTo(Scores::class);
     }
 
     public function priority(){

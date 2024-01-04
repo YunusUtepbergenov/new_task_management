@@ -28,6 +28,18 @@
                         <div class="col-sm-1"></div>
                         <label class="col-sm-3 col-form-label">Категория</label>
                         <div class="col-sm-4">
+                            <select class="form-control" id="type_text" name="score_id">
+                                @foreach ($scores as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- <div class="form-group row">
+                        <div class="col-sm-1"></div>
+                        <label class="col-sm-3 col-form-label">Категория</label>
+                        <div class="col-sm-4">
                             <select class="form-control" id="type_text" name="type_id">
                                 @foreach ($types as $type)
                                     <option value="{{ $type->id }}">{{ $type->name }}</option>
@@ -54,7 +66,7 @@
                                 @endif
                             </select>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="row">
                         <div class="col-sm-12">
@@ -206,7 +218,7 @@
                                         @foreach ($sector->users as $user)
                                             <option value="{{ $user->id }}">{{ $user->name }}</option>
                                         @endforeach
-                                        </optgroup>
+                                    </optgroup>
                                     @endforeach
                                 </select>
                             </div>

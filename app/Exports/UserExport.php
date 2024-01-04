@@ -1,22 +1,33 @@
 <?php
 
-namespace App\Http\Livewire\Reports;
+namespace App\Exports;
 
 use App\Models\User;
-use Livewire\Component;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 
-class TestReport extends Component
+class UserExport implements FromView
 {
-    public $users;
+    // /**
+    // * @return \Illuminate\Support\Collection
+    // */
+    // public function collection()
+    // {
+    //     return User::all();
+    // }
     public $startDate, $endDate;
-    public function mount(){
-        $this->startDate = date('Y-m-01');
-        $this->endDate = date('Y-m-t');
+    public $users;
+    public function view(): View
+    {
+        // $this->startDate = date('Y-m-01');
+        // $this->endDate = date('Y-m-t');
+        $this->startDate = '2023-01-01';
+        $this->endDate = "2023-12-12";
         $this->users = User::with('tasks')->where('leave', 0)->get();
         foreach($this->users as $employee){
             if ($employee->simple_priority_filterTasks($this->startDate, $this->endDate)->count() > 0){
                 $employee->simple_score = 0.1 * round((( $employee->simple_priority_doneFilter($this->startDate, $this->endDate)->count() /
-                                          $employee->simple_priority_filterTasks($this->startDate, $this->endDate)->count() )) * 100, 1);
+                                $employee->simple_priority_filterTasks($this->startDate, $this->endDate)->count() )) * 100, 1);
             }else{
                 $employee->simple_score = 0;
             }
@@ -36,8 +47,8 @@ class TestReport extends Component
             }
 
             if ($employee->very_high_priority_filterTasks($this->startDate, $this->endDate)->count() > 0){
-                $employee->very_high_score = round(( $employee->very_high_priority_doneFilter($this->startDate, $this->endDate)->count() /
-                                $employee->very_high_priority_filterTasks($this->startDate, $this->endDate)->count() ) * 30, 1);
+                $employee->very_high_score = 0.3 * round((( $employee->very_high_priority_doneFilter($this->startDate, $this->endDate)->count() /
+                                $employee->very_high_priority_filterTasks($this->startDate, $this->endDate)->count() )) * 100, 1);
             }else{
                 $employee->very_high_score = 0;
             }
@@ -45,9 +56,8 @@ class TestReport extends Component
             $employee->kpi_score = $employee->simple_score + $employee->mid_score + $employee->high_score + $employee->very_high_score + 10;
         }
         $this->users = $this->users->sortByDesc('kpi_score');
-    }
-    public function render()
-    {
-        return view('livewire.reports.test-report');
+        return view('exports.users', [
+            'users' => $this->users
+        ]);
     }
 }

@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\MediaExport;
+use App\Exports\UserExport;
 use App\Models\Repeat;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel as FacadesExcel;
 
 class UserController extends Controller
 {
@@ -91,5 +96,41 @@ class UserController extends Controller
         $user->update(['leave' => 1]);
 
         return back();
+    }
+
+    public function checkUserLogin(Request $request){
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ]);
+
+        $user = User::where('email', $request->email)->first();  
+
+        if(!$user)
+            return 'No email found';
+
+        if (RateLimiter::tooManyAttempts('send-message:'.$user->id, $perMinute = 2)) {
+            return 'Too many attempts!';
+        }else{
+            if (!Hash::check($request->password, $user->password))
+            {
+                return 'Email or password is wrong';
+            }
+            
+            return [
+                'status' => 'Success',
+                'user_id' => $user->id,
+            ];
+        }
+    }
+
+    public function export() 
+    {
+        return FacadesExcel::download(new UserExport, 'users.xlsx');
+    }
+
+    public function sector() 
+    {
+        return FacadesExcel::download(new MediaExport, 'media.xlsx');
     }
 }

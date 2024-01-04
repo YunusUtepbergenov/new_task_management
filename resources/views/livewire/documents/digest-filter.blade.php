@@ -93,6 +93,8 @@
                                             <span class="badge bg-inverse-danger">Pdf</span>
                                         @elseif (pathinfo($article->file, PATHINFO_EXTENSION) == "doc" || pathinfo($article->file, PATHINFO_EXTENSION) == "docx")
                                             <span class="badge bg-inverse-primary">Doc</span>
+                                        @elseif (pathinfo($article->file, PATHINFO_EXTENSION) == "rar")
+                                            <span class="badge bg-inverse-danger">rar</span>
                                         @endif
                                     </a>
                                 </td>

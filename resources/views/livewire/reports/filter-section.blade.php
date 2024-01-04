@@ -43,12 +43,12 @@
                                     <i class="fa fa-arrow-down {{ $sortColumnName === 'name' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
                                 </span>
                             </th>
-                            <th>Сектор
+                            {{-- <th>Сектор
                                 <span wire:click="sortBy('sector_name')" class="arrowss">
                                     <i class="fa fa-arrow-up {{ $sortColumnName === 'sector_name' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
                                     <i class="fa fa-arrow-down {{ $sortColumnName === 'sector_name' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
                                 </span>
-                            </th>
+                            </th> --}}
                             <th>Эффективность: 
                                 <span wire:click="sortBy('efficiency')" style="cursor: pointer">
                                     <i class="fa fa-arrow-up {{ $sortColumnName === 'efficiency' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
@@ -97,7 +97,13 @@
                         @php
                             $counter = 0;
                         @endphp
-                        @foreach ($users as $employee)
+                        @foreach ($sectors as $sector)
+                        @if ($sector->id != 1)
+                        <tr>
+                            <td colspan="9" style="text-align:center;font-weight:bold">{{$sector->name}}</td>
+                        </tr>
+                        @endif
+                            @foreach($sector->users as $employee)
                             @if (!$employee->isDirector() && !$employee->isDeputy())
                                 <tr>
                                     <td>{{ ++$counter }}</td>
@@ -106,7 +112,7 @@
                                             <a href="{{ route('user.report', [$employee->id, $startDate, $endDate]) }}">{{ $employee->name }}</a>
                                         </h2>
                                     </td>
-                                    <td class="text-wrap">{{ $employee->sector->name }}</td>
+                                    {{-- <td class="text-wrap">{{ $employee->sector->name }}</td> --}}
                                     <td style="text-align: center">{{ $employee->efficiency }}%</td>
                                     <td style="text-align: center">{{$employee->tasks_cnt}}</td>
                                     <td style="text-align: center">{{$employee->done_cnt}}</td>
@@ -116,6 +122,7 @@
                                     <td style="text-align: center">{{ $employee->confirm_cnt }}</td>
                                 </tr>
                             @endif
+                            @endforeach
                         @endforeach
                     </tbody>
                 </table>

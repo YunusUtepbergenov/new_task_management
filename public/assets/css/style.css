@@ -7783,6 +7783,7 @@ ul.comment-list li ul.children {
 
 #employeeTable {
     max-height: 770px;
+    overflow-y: auto;
 }
 
 #employeeTable1 {

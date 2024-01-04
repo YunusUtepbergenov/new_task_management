@@ -193,7 +193,8 @@
                                     @php
                                         $counter = 0;
                                     @endphp
-                                    @foreach ($birthdays->where('leave', 0)->take(3) as $birthday)
+
+                                    @foreach ($birthdays as $birthday)
                                         <li>
                                             <a href="#" onclick='profileModal("{{ $birthday->id }}")'>
                                                 <div class="list-item">

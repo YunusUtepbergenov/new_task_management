@@ -58,10 +58,11 @@
 
             $.get("/task/info/byid/" + id, function (task) {
                 $('#helpers1').val(null).trigger('change');
-                // document.getElementById('repeat_div_cont').style.display = 'none';
+                console.log(task.task.score_id);
                 $("#project_id1").val(task.task.project_id);
-                $("#type_id1").val(task.task.type_id);
-                $("#priority_id1").val(task.task.priority_id);
+                $("#kpi_type").val(task.task.score_id);
+                // $("#type_id1").val(task.task.type_id);
+                // $("#priority_id1").val(task.task.priority_id);
                 $("#id1").val(task.task.id);
                 $("#name1").val(task.task.name);
                 $("#deadline1").val(task.task.deadline);
@@ -77,25 +78,6 @@
                     }
                     $('#helpers1').trigger('change');
                 }
-                // console.log(task.task.repeat);
-                // if(task.task.repeat == null){
-                //     document.getElementById('flexCheckDefault3').checked = false;
-                //     document.getElementById('repeat_container1').style.display = "none";
-                // }else{
-                //     document.getElementById('flexCheckDefault3').checked = true;
-                //     document.getElementById('repeat_div_cont').style.display = 'block';
-                //     document.getElementById('repeat_container1').style.display = "block";
-                //     $('#repeat1').val(task.task.repeat.repeat);
-                //     if (task.task.repeat.repeat == "weekly") {
-                //         $("#days_container1").toggle(true);
-                //         $("#month_container1").toggle(false);
-                //         $("#dayss").val(task.task.repeat.repeat)
-                //     }else if(task.task.repeat.repeat == "monthly"){
-                //         $("#days_container1").toggle(false);
-                //         $("#month_container1").toggle(true);
-                //         $("#month_day").val(task.task.repeat.day);
-                //     }
-                // }
                 $("#helpers1").val(task.task.deadline);
                 $("#deadline1").val(task.task.deadline);
                 $("#description1").val(task.task.description);

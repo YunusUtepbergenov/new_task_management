@@ -189,12 +189,12 @@
                                                 </tr>
                                                 <tr>
                                                     <td>Категория:</td>
-                                                    <td class="text-right" id="task_type">{{ ($task->type) ? $task->type->name : '' }}</td>
+                                                    <td class="text-right" id="task_type">{{ ($task->score) ? $task->score->name : '' }}</td>
                                                 </tr>
-                                                <tr>
+                                                {{-- <tr>
                                                     <td>Важность:</td>
                                                     <td class="text-right" id="task_priority">{{ ($task->priority) ? $task->priority->name : '' }}</td>
-                                                </tr>
+                                                </tr> --}}
                                                 <tr>
                                                     <td>Постановщик:</td>
                                                     <td class="text-right"><a href="#" id="task_creator">{{ $task->username($task->creator_id) }}</a></td>
@@ -209,6 +209,12 @@
                                                         @endif
                                                     </td>
                                                 </tr>
+                                                @if ($task->status == "Выполнено")
+                                                    <tr>
+                                                        <td>Балл:</td>
+                                                        <td class="text-right">{{$task->total}}/{{$task->score->max_score}}</td>
+                                                    </tr>                                                    
+                                                @endif
                                                 @if ($task->response)
                                                     <tr>
                                                         <td>Время выполнения:</td>
@@ -222,6 +228,14 @@
                                                             <td>Действия:</td>
                                                             <td class="nowrap">
                                                                 <div class="row">
+                                                                    <div class="form-group">
+                                                                        <input type="number" class="form-control" wire:model="taskScore" id="taskScore" placeholder="Макс: {{$task->score->max_score}}" onkeydown="return event.key !== ','">
+                                                                        @isset($errorMsg)
+                                                                            <div id="error-message" class="invalid-feedback" style="display: block;">
+                                                                                {{$errorMsg}}
+                                                                            </div>                                                                            
+                                                                        @endisset
+                                                                    </div>
                                                                     <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" style="flex-wrap:initial">
                                                                         <div class="btn-group mr-2" role="group" aria-label="First group">
                                                                             <button class="btn btn-primary btn-sm" wire:click="taskConfirmed({{ $task->id }})">Подтвердить</button>
@@ -233,27 +247,29 @@
                                                                                 <button class="btn btn-secondary btn-sm" wire:click.prevent="taskRejected({{ $task->id }})">Отменить</button>
                                                                             </form>
                                                                         </div>
+                                                                    </div>
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                     @endif
                                                 @endcan
                                                 @if ($task->deadline >= date('Y-m-d') && $task->user_id == auth()->user()->id && $task->status == "Ждет подтверждения")
-                                                <tr>
-                                                    <td>Действия:</td>
-                                                    <td class="nowrap">
-                                                        <div class="row">
-                                                            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                                                                <div class="btn-group mr-2" role="group" aria-label="Second group">
-                                                                    <form action="#" method="post">
-                                                                        <input type="hidden" name="_method" value="DELETE">
-                                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                                        <button class="btn btn-secondary btn-sm" wire:click.prevent="reSubmit({{ $task->id }})">Отменить</button>
-                                                                    </form>
+                                                    <tr>
+                                                        <td>Действия:</td>
+                                                        <td class="nowrap">
+                                                            <div class="row">
+                                                                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                                                    <div class="btn-group mr-2" role="group" aria-label="Second group">
+                                                                        <form action="#" method="post">
+                                                                            <input type="hidden" name="_method" value="DELETE">
+                                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                                            <button class="btn btn-secondary btn-sm" wire:click.prevent="reSubmit({{ $task->id }})">Отменить</button>
+                                                                        </form>
+                                                                    </div>
                                                                 </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                                 @endif
                                             </tbody>
                                         </table>
@@ -334,7 +350,9 @@
                                     <h3 class="user-name m-t-0 mb-3" style="text-align: center"><b>{{ $profile->name }}</b></h3>
                                     <h4>Сектор: <b>{{ $profile->sector->name }}</b></h6>
                                     <h4>Должность: <b>{{ $profile->role->name }}</b></h4>
-                                    <h4>Дата рождения: <b>{{ $profile->birth_date->format('d-m-Y') }}</b></h4>
+                                    @if($profile->birth_date)
+                                        <h4>Дата рождения: <b>{{ $profile->birth_date->format('d-m-Y') }}</b></h4>
+                                    @endif
                                 </div>
                             </div>
                         </div>

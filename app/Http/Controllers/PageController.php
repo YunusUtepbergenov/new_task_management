@@ -19,42 +19,37 @@ class PageController extends Controller
     public function dashboard(){
         $projects = (new TaskService())->projectList();
         $sectors = (new TaskService())->sectorList();
-        $types = (new TaskService())->typeList();
-        $priorities = Priority::all();
+        $scores = (new TaskService())->scoresList();
 
         return view('page.index', [
             'projects' => $projects,
             'sectors' => $sectors,
-            'types' => $types,
-            'priorities' => $priorities
+            'scores' => $scores
         ]);
     }
 
     public function ordered(){
         $sectors = (new TaskService())->sectorList();
         $projects = (new TaskService())->projectList();
-        $types = (new TaskService())->typeList();
-        $priorities = Priority::all();
+        $scores = (new TaskService())->scoresList();
+
 
         return view('page.ordered', [
             'projects' => $projects,
             'sectors' => $sectors,
-            'types' => $types,
-            'priorities' => $priorities
+            'scores' => $scores,
         ]);
     }
 
     public function helping(){
         $projects = Project::where('user_id', Auth::user()->id)->get();
         $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
-        $types = (new TaskService())->typeList();
-        $priorities = Priority::all();
+        $scores = (new TaskService())->scoresList();
 
         return view('page.helping', [
             'projects' => $projects,
             'sectors' => $sectors,
-            'types' => $types,
-            'priorities' => $priorities
+            'scores' => $scores,
         ]);
     }
 
@@ -84,6 +79,10 @@ class PageController extends Controller
         }
 
         abort(404);
+    }
+
+    public function kpiReport(){
+        return view('page.reports.kpi');
     }
 
     public function userReport($id, $start, $end){

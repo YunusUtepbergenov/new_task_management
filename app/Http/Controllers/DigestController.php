@@ -144,7 +144,7 @@ class DigestController extends Controller
 
         $response = Http::attach(
             'attachment', $file
-        )->post('http://192.168.1.60:8888/', [
+        )->post('http://192.168.1.161:8888/', [
             'name' => auth()->user()->name
         ]);
 
