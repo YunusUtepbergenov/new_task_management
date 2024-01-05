@@ -19,10 +19,10 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Название</th>
-                                    <th>Дата Создание</th>
-                                    <th>Крайний срок</th>
                                     <th>Постановщик</th>
-                                    <th>Важность</th>
+                                    <th>Крайний срок</th>
+                                    <th>Категория</th>
+                                    <th>Балл</th>
                                     <th>Состояние</th>
                                 </tr>
                             </thead>
@@ -38,10 +38,10 @@
                                             <a href="#" wire:click.prevent="view({{ $task->id }})">{{ $task->name }}</a>
                                         @endif
                                     </td>
-                                    <td>{{ $task->created_at->format('Y-m-d') }}</td>
-                                    <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
                                     <td>{{ $task->creator->name }}</td>
-                                    <td>{{ $task->priority->name }}</td>
+                                    <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
+                                    <td>{{$task->score->name}}</td>
+                                    <td>{{ (isset($task->total)) ? $task->total.'/'.$task->score->max_score : ''}}</td>
                                     <td>
                                         @if ($task->overdue)
                                             <span class="badge bg-inverse-warning">Просроченный</span>

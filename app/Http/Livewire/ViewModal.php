@@ -111,7 +111,12 @@ class ViewModal extends Component
     public function taskConfirmed($id){
         $this->errorMsg = Null;
         $task = Task::where('id', $id)->first();
-        if(!isset($this->taskScore) or floatval($this->taskScore) > $task->score->max_score or floatval($this->taskScore) < 0){
+        if(!isset($task->score)){
+            $task->update(['status' => "Выполнено"]);
+            $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
+            event(new TaskConfirmedEvent($task));
+        }
+        else if(!isset($this->taskScore) or floatval($this->taskScore) > $task->score->max_score or floatval($this->taskScore) < 0){
             $this->errorMsg = 'Please enter number between 0-'.$this->task->score->max_score;
         }
         else{

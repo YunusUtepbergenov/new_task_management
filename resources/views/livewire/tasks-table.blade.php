@@ -48,7 +48,6 @@
                                     <th>Дата Создание</th>
                                     <th>Крайний срок</th>
                                     <th>Постановщик</th>
-                                    <th>Ответственный</th>
                                     <th>Состояние</th>
                                 </tr>
                             </thead>
@@ -67,7 +66,6 @@
                                     <td>{{ $task->created_at->format('Y-m-d') }}</td>
                                     <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
                                     <td>{{ $task->creator->name }}</td>
-                                    <td>{{ $username }}</td>
                                     <td>
                                         @if ($task->overdue)
                                             <span class="badge bg-inverse-warning">Просроченный</span>
@@ -110,7 +108,6 @@
                                                     <td>{{ substr($task['created_at'], 0, 10) }}</td>
                                                     <td><span class="badge bg-inverse-warning">{{ $task['deadline'] }}</span></td>
                                                     <td>{{ $task->creator->name }}</td>
-                                                    <td>{{ $username }}</td>
                                                     <td>
                                                         @if ($task['overdue'])
                                                             <span class="badge bg-inverse-warning">Просроченный</span>

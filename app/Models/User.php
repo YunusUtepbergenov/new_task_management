@@ -151,6 +151,22 @@ class User extends Authenticatable
         return $this->tasks()->whereBetween('deadline', [$start, $end])->where('score_id', $category_id)->where('status', 'Выполнено')->sum('total');
     }
 
+    public function kpiCalculate(){
+        $score = 0;
+        $startDate = date('Y-m-01');
+        $endDate = date('Y-m-t');
+
+        $categories = Scores::all();
+        foreach($categories as $category){
+            $cat_score = $this->kpiFilter($startDate, $endDate, $category->id);
+            if(isset($category->limit) && $cat_score > $category->limit)
+                $score += $category->limit;
+            else
+                $score += $cat_score;
+        }
+        return $score;
+    }
+
     // public function kpiFilter($start, $end, $category_id){
     //     return $this->tasks()->whereBetween('deadline', [$start, $end])->where('score_id', $category_id)->where('status', 'Выполнено');
     // }

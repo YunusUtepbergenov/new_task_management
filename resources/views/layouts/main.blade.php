@@ -71,10 +71,9 @@
 				<ul class="nav user-menu">
 					<li class="nav-item dropdown flag-nav">
                         @if (auth()->user()->tasks()->count())
-    						<a class="nav-link dropdown-toggle">Эффективность: {{ round( ((1 - ( auth()->user()->overdueTasks()->count()
-                            + (0.5 * auth()->user()->newTasks()->count()) ) / auth()->user()->tasks()->count() )) * 100, 1) }}%</a>
+    						<a class="nav-link dropdown-toggle">KPI: {{ auth()->user()->kpiCalculate() }} балл </a>
                         @else
-    						<a class="nav-link dropdown-toggle">Эффективность: 100%</a>
+    						<a class="nav-link dropdown-toggle">KPI: 0</a>
                         @endif
 					</li>
                     @include('partials.notifications')
@@ -194,7 +193,7 @@
                                         $counter = 0;
                                     @endphp
 
-                                    @foreach ($birthdays as $birthday)
+                                    @foreach ($birthdays->where('leave', 0)->take(3) as $birthday)
                                         <li>
                                             <a href="#" onclick='profileModal("{{ $birthday->id }}")'>
                                                 <div class="list-item">

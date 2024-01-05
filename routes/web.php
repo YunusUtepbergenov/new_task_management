@@ -25,7 +25,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/digest/info/byid/{id}', [DigestController::class, 'getDigestInfo']);
     Route::get('/note/info/byid/{id}', [NoteController::class, 'getNoteInfo']);
     Route::get('task/download/{id}', [TaskController::class, 'download'])->name('file.download');
-    Route::get('task/response/download/{filename}/{created_at}', [TaskController::class, 'responseDownload'])->name('response.download');
+    Route::get('task/response/download/{name}', [TaskController::class, 'responseDownload'])->name('response.download');
     Route::get('article/download/{name}', [ArticleController::class, 'articleDownload'])->name('article.download');
     Route::get('digest/download/{name}', [DigestController::class, 'digestDownload'])->name('digest.download');
     Route::get('note/download/{name}', [NoteController::class, 'noteDownload'])->name('note.download');

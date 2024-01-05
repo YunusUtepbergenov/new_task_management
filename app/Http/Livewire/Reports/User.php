@@ -12,7 +12,7 @@ class User extends Component
 
     public function mount(){
         $this->user = ModelsUser::where('id', $this->userId)->first();
-        $this->tasks = Task::where('user_id', $this->userId)->whereBetween('deadline', [$this->start, $this->end])->get();
+        $this->tasks = Task::where('user_id', $this->userId)->whereBetween('deadline', [$this->start, $this->end])->orderBy('score_id')->get();
     }
     public function render()
     {
