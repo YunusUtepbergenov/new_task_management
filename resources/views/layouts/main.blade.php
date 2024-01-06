@@ -71,9 +71,9 @@
 				<ul class="nav user-menu">
 					<li class="nav-item dropdown flag-nav">
                         @if (auth()->user()->tasks()->count())
-    						<a class="nav-link dropdown-toggle">KPI: {{ auth()->user()->kpiCalculate() }} балл </a>
+    						<a class="nav-link dropdown-toggle">KPI: {{ auth()->user()->kpiCalculate() }} баллов </a>
                         @else
-    						<a class="nav-link dropdown-toggle">KPI: 0</a>
+    						<a class="nav-link dropdown-toggle">KPI: 0 баллов</a>
                         @endif
 					</li>
                     @include('partials.notifications')

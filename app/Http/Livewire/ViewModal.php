@@ -74,7 +74,7 @@ class ViewModal extends Component
             $filename = str_replace($chars, "_", $filename);
 
             Storage::disk('local')->putFileAs(
-                'files/responses/'.date('Y').'/'.date('m'),
+                'files/responses/',
                 $uploadedFile,
                 $filename
             );
@@ -116,8 +116,8 @@ class ViewModal extends Component
             $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
             event(new TaskConfirmedEvent($task));
         }
-        else if(!isset($this->taskScore) or floatval($this->taskScore) > $task->score->max_score or floatval($this->taskScore) < 0){
-            $this->errorMsg = 'Please enter number between 0-'.$this->task->score->max_score;
+        else if(!isset($this->taskScore) or floatval($this->taskScore) > $task->score->max_score or floatval($this->taskScore) < $task->score->min_score){
+            $this->errorMsg = 'Please enter number between '. $task->score->min_score.'-'.$this->task->score->max_score;
         }
         else{
             $task->update([

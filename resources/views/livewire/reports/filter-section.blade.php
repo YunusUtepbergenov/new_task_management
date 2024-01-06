@@ -37,60 +37,14 @@
                     <thead id="employee_header">
                         <tr>
                             <th>#</th>
-                            <th>Ф.И.О 
-                                <span wire:click="sortBy('name')" class="arrowss">
-                                    <i class="fa fa-arrow-up {{ $sortColumnName === 'name' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                    <i class="fa fa-arrow-down {{ $sortColumnName === 'name' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                </span>
-                            </th>
-                            {{-- <th>Сектор
-                                <span wire:click="sortBy('sector_name')" class="arrowss">
-                                    <i class="fa fa-arrow-up {{ $sortColumnName === 'sector_name' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                    <i class="fa fa-arrow-down {{ $sortColumnName === 'sector_name' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                </span>
-                            </th> --}}
-                            <th>Эффективность: 
-                                <span wire:click="sortBy('efficiency')" style="cursor: pointer">
-                                    <i class="fa fa-arrow-up {{ $sortColumnName === 'efficiency' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                    <i class="fa fa-arrow-down {{ $sortColumnName === 'efficiency' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                </span>
-                            </th>
-                            <th>Все задачи
-                                <span wire:click="sortBy('tasks_cnt')" style="cursor: pointer">
-                                    <i class="fa fa-arrow-up {{ $sortColumnName === 'tasks_cnt' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                    <i class="fa fa-arrow-down {{ $sortColumnName === 'tasks_cnt' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                </span>
-                            </th>
-                            <th>Выполнено
-                                <span wire:click="sortBy('done_cnt')" style="cursor: pointer">
-                                    <i class="fa fa-arrow-up {{ $sortColumnName === 'done_cnt' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                    <i class="fa fa-arrow-down {{ $sortColumnName === 'done_cnt' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                </span>
-                            </th>
-                            <th>Новое
-                                <span wire:click="sortBy('new_cnt')" style="cursor: pointer">
-                                    <i class="fa fa-arrow-up {{ $sortColumnName === 'new_cnt' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                    <i class="fa fa-arrow-down {{ $sortColumnName === 'new_cnt' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                </span>
-                            </th>
-                            <th>Выполняется
-                                <span wire:click="sortBy('doing_cnt')" style="cursor: pointer">
-                                    <i class="fa fa-arrow-up {{ $sortColumnName === 'doing_cnt' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                    <i class="fa fa-arrow-down {{ $sortColumnName === 'doing_cnt' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                </span>
-                            </th>
-                            <th>Просроченный
-                                <span wire:click="sortBy('overdue_cnt')" style="cursor: pointer">
-                                    <i class="fa fa-arrow-up {{ $sortColumnName === 'overdue_cnt' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                    <i class="fa fa-arrow-down {{ $sortColumnName === 'overdue_cnt' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                </span>
-                            </th>
-                            <th>Ждет подтверждения
-                                <span wire:click="sortBy('confirm_cnt')" style="cursor: pointer">
-                                    <i class="fa fa-arrow-up {{ $sortColumnName === 'confirm_cnt' && $sortDirection === 'asc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                    <i class="fa fa-arrow-down {{ $sortColumnName === 'confirm_cnt' && $sortDirection === 'desc' ? '' : 'text-muted' }}" aria-hidden="true"></i>
-                                </span>
-                            </th>
+                            <th>Ф.И.О </th>
+                            <th>Эффективность: </th>
+                            <th>Все задачи</th>
+                            <th>Выполнено</th>
+                            <th>Новое</th>
+                            <th>Выполняется</th>
+                            <th>Просроченный</th>
+                            <th>Ждет подтверждения</th>
                         </tr>
                     </thead>
                     <tbody style="overflow: auto;">

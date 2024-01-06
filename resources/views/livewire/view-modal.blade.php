@@ -213,7 +213,7 @@
                                                     <tr>
                                                         <td>Балл:</td>
                                                         @isset($task->score)
-                                                            <td class="text-right">{{$task->total}}/{{$task->score->max_score}}</td>                                                            
+                                                            <td class="text-right">{{$task->total}}/{{$task->score->max_score}}</td>                                                        
                                                         @endisset
                                                     </tr>                                                    
                                                 @endif
@@ -233,7 +233,7 @@
                                                                 <div class="row">
                                                                     @isset($task->score)
                                                                         <div class="form-group">
-                                                                            <input type="number" class="form-control" wire:model="taskScore" id="taskScore" placeholder="Макс: {{$task->score->max_score}}" onkeydown="return event.key !== ','">
+                                                                            <input type="number" class="form-control" wire:model="taskScore" id="taskScore" placeholder="Макс: {{$task->score->max_score}}" onkeydown="return event.key !== ',' && event.key !== 'e' && event.key !== 'E'" oninput="this.value = this.value.replace(/[^0-9-]/g, '')">
                                                                             @isset($errorMsg)
                                                                                 <div id="error-message" class="invalid-feedback" style="display: block;">
                                                                                     {{$errorMsg}}

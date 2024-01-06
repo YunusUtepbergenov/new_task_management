@@ -306,11 +306,8 @@ class TaskController extends Controller
         return response()->download(storage_path('app/files/'.$file->name));
     }
 
-    public function responseDownload($filename, $created_at){
-        $year = date('Y', strtotime($created_at));
-        $month = date('m', strtotime($created_at));
-
-        return response()->download(storage_path('app/files/responses/'.$year.'/'.$month.'/'.$filename));
+    public function responseDownload($filename){
+        return response()->download(storage_path('app/files/responses/'.$filename));
     }
 
     public function searchTasks(Request $request){
