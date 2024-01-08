@@ -21,14 +21,17 @@
                         </li>
                     </ul>
                 </li>
-                <li class="submenu">
-                    <a href="#"><i class="la la-pie-chart"></i><span>Отчеты</span><span class="menu-arrow"></span></a>
-                    <ul style="display: none;" id="reports_menu">
-                        <li><a href="{{ route('reports') }}"><span>Отчеты</span></a></li>
-                        <li><a href="{{ route('table.report') }}"><span>Ежемесячный Отчет</span></a></li>
-                        <li><a href="{{ route('kpi') }}"><span>KPI</span></a></li>
-                    </ul>
-                </li>
+
+                @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() || Auth::user()->isHR() || Auth::user()->isAccountant())
+                    <li class="submenu">
+                        <a href="#"><i class="la la-pie-chart"></i><span>Отчеты</span><span class="menu-arrow"></span></a>
+                        <ul style="display: none;" id="reports_menu">
+                            <li><a href="{{ route('reports') }}"><span>Отчеты</span></a></li>
+                            <li><a href="{{ route('table.report') }}"><span>Ежемесячный Отчет</span></a></li>
+                            <li><a href="{{ route('kpi') }}"><span>KPI</span></a></li>
+                        </ul>
+                    </li>
+                @endif
                 <li class="submenu">
                     <a href="#"><i class="fa fa-database" aria-hidden="true"></i><span>Анализ данных</span><span class="menu-arrow"></span></a>
                     <ul style="display: none;">
