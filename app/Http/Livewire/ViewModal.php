@@ -111,8 +111,17 @@ class ViewModal extends Component
     public function taskConfirmed($id){
         $this->errorMsg = Null;
         $task = Task::where('id', $id)->first();
+        
         if(!isset($task->score)){
             $task->update(['status' => "Выполнено"]);
+            $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
+            event(new TaskConfirmedEvent($task));
+        }
+        else if(!isset($task->score->max_score)){
+            $task->update([
+                'status' => "Выполнено",
+                'total'  => floatval($this->taskScore)
+            ]);
             $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
             event(new TaskConfirmedEvent($task));
         }

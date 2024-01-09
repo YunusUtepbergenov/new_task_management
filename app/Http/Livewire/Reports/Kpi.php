@@ -19,17 +19,7 @@ class Kpi extends Component
         $this->users = User::where('leave', 0)->get();
 
         foreach($this->users as $user){
-            $score = 0;
-            // $userTasks = $user->tasks()->whereBetween('deadline', [$this->startDate, $this->endDate])->whereIn('status', 'Выполнено')->get();
-            $categories = Scores::all();
-            foreach($categories as $category){
-                $cat_score = $user->kpiFilter($this->startDate, $this->endDate, $category->id);
-                if(isset($category->limit) && $cat_score > $category->limit)
-                    $score += $category->limit;
-                else
-                    $score += $cat_score;
-            }
-            $user->kpi_score = $score;
+            $user->kpi_score = $user->kpiCalculate();
         }
 
         $this->users = $this->users->sortByDesc('kpi_score');

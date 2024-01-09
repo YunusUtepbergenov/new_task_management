@@ -156,9 +156,12 @@ class User extends Authenticatable
         $startDate = date('Y-m-01');
         $endDate = date('Y-m-t');
 
-        $categories = Scores::all();
+        $categories = Scores::with(['tasks' => function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('deadline', [$startDate, $endDate])->where('user_id', $this->id)->where('status', 'Выполнено');
+        }])->get();
+    
         foreach($categories as $category){
-            $cat_score = $this->kpiFilter($startDate, $endDate, $category->id);
+            $cat_score = $category->tasks->sum('total');
             if(isset($category->limit) && $cat_score > $category->limit)
                 $score += $category->limit;
             else
