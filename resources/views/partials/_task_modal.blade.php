@@ -28,7 +28,7 @@
                         <div class="col-sm-1"></div>
                         <label class="col-sm-3 col-form-label">Категория</label>
                         <div class="col-sm-4">
-                            <select class="form-control" id="type_text" name="score_id">
+                            <select class="form-control select" id="type_text" name="score_id">
                                 @foreach ($scores as $type)
                                     <option value="{{ $type->id }}">{{ $type->name }}</option>
                                 @endforeach

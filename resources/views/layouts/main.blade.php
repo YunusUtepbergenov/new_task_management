@@ -76,6 +76,13 @@
     						<a class="nav-link dropdown-toggle">KPI: 0 баллов</a>
                         @endif
 					</li>
+                    <li class="nav-item dropdown flag-nav">
+                        @if (auth()->user()->tasks()->count())
+    						<a class="nav-link dropdown-toggle">KPI (итого): {{ auth()->user()->kpiCalculate() }} баллов </a>
+                        @else
+    						<a class="nav-link dropdown-toggle">KPI (итого): 0 баллов</a>
+                        @endif
+					</li>
                     @include('partials.notifications')
 					<li class="nav-item dropdown has-arrow main-drop">
 						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">

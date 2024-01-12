@@ -35,28 +35,20 @@ $(document).ready(function() {
 
 	// Mobile menu sidebar overlay
 
-	$('body').append('<div class="sidebar-overlay"></div>');
-	$(document).on('click', '#mobile_btn', function() {
-		$wrapper.toggleClass('slide-nav');
-		$('.sidebar-overlay').toggleClass('opened');
-		$('html').addClass('menu-opened');
-		$('#task_window').removeClass('opened');
-		return false;
-	});
 
 	$(".sidebar-overlay").on("click", function () {
-			$('html').removeClass('menu-opened');
-			$(this).removeClass('opened');
-			$wrapper.removeClass('slide-nav');
-			$('.sidebar-overlay').removeClass('opened');
-			$('#task_window').removeClass('opened');
+		$('html').removeClass('menu-opened');
+		$(this).removeClass('opened');
+		$wrapper.removeClass('slide-nav');
+		$('.sidebar-overlay').removeClass('opened');
+		$('#task_window').removeClass('opened');
 	});
 
 	// Select 2
 
 	if($('.select').length > 0) {
 		$('.select').select2({
-			minimumResultsForSearch: -1,
+			// minimumResultsForSearch: -1,
 			width: '100%'
 		});
 	}

@@ -13,6 +13,7 @@
                             <th data-type="string">Ф.И.О</th>
                             <th data-type="string">Сектор</th>
                             <th data-type="number">KPI</th>
+                            <th data-type="number">KPI (итого)</th>
                         </tr>
                     </thead>
                     <tbody style="overflow: auto;" id="table1">
@@ -31,6 +32,9 @@
                                 <td class="text-wrap">{{ $employee->sector->name }}</td>
                                 <td style="text-align: center" class="score">
                                     {{ $employee->kpi_score }}
+                                </td>
+                                <td style="text-align: center" class="score">
+                                    {{ $employee->ovr_kpi }}
                                 </td>
                             </tr>
                             @endif

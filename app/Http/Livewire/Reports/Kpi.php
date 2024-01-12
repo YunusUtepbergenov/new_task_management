@@ -20,9 +20,10 @@ class Kpi extends Component
 
         foreach($this->users as $user){
             $user->kpi_score = $user->kpiCalculate();
+            $user->ovr_kpi = $user->ovrKpiCalculate();
         }
 
-        $this->users = $this->users->sortByDesc('kpi_score');
+        $this->users = $this->users->sortByDesc('ovr_kpi');
         return view('livewire.reports.kpi');
     }
 }

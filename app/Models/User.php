@@ -170,9 +170,20 @@ class User extends Authenticatable
         return $score;
     }
 
-    // public function kpiFilter($start, $end, $category_id){
-    //     return $this->tasks()->whereBetween('deadline', [$start, $end])->where('score_id', $category_id)->where('status', 'Выполнено');
-    // }
+    public function ovrKpiCalculate(){
+        $score = 0;
+        $startDate = date('Y-m-01');
+        $endDate = date('Y-m-t');
+
+        $categories = Scores::with(['tasks' => function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('deadline', [$startDate, $endDate])->where('user_id', $this->id)->where('status', 'Выполнено');
+        }])->get();
+    
+        foreach($categories as $category){
+            $score += $category->tasks->sum('total');
+        }
+        return $score;
+    }
 
     public function overdueTasks(){
         return $this->tasks()->where('overdue', 1);
