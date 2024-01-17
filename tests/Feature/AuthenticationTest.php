@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticationTest extends TestCase
 {
@@ -20,11 +21,12 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen()
     {
-        $user = User::factory()->create();
+
+        $this->seed();
 
         $response = $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'password',
+            'email' => 'y.utepbergenov@cerr.uz',
+            'password' => 'yu3667500',
         ]);
 
         $this->assertAuthenticated();
@@ -33,10 +35,10 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_not_authenticate_with_invalid_password()
     {
-        $user = User::factory()->create();
-
+        $this->seed();
+        
         $this->post('/login', [
-            'email' => $user->email,
+            'email' => 'y.utepbergenov@cerr.uz',
             'password' => 'wrong-password',
         ]);
 

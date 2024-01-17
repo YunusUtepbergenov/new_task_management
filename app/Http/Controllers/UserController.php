@@ -84,7 +84,7 @@ class UserController extends Controller
     }
 
     public function userLeave(Request $request){
-        $user = \App\Models\User::where('id', $request->user_id)->first();
+        $user = User::where('id', $request->user_id)->first();
         $repeat_tasks = Task::where('creator_id', $user->id)->where('repeat_id', '<>', NULL)->get();
 
         foreach($repeat_tasks as $repeat){
