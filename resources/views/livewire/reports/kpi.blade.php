@@ -12,7 +12,7 @@
                             <th>#</th>
                             <th data-type="string">Ф.И.О</th>
                             <th data-type="string">Сектор</th>
-                            <th data-type="number">KPI</th>
+                            <th data-type="number">KPI (норма)</th>
                             <th data-type="number">KPI (итого)</th>
                         </tr>
                     </thead>
