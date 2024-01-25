@@ -40,7 +40,7 @@
                                     </td>
                                     <td>{{ $task->creator->name }}</td>
                                     <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
-                                    <td>{{(isset($task->score->name)) ? $task->score->name : ''}}</td>
+                                    <td>{{(isset($task->score)) ? substr($task->score->name, strpos($task->score->name, '.') + 1) : ''}}</td>
                                     <td>{{ (isset($task->total)) ? $task->total.'/'.$task->score->max_score : ''}}</td>
                                     <td>
                                         @if ($task->overdue)

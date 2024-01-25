@@ -19,10 +19,9 @@ class UserExport implements FromView
     public $users;
     public function view(): View
     {
-        // $this->startDate = date('Y-m-01');
-        // $this->endDate = date('Y-m-t');
-        $this->startDate = '2023-01-01';
-        $this->endDate = "2023-12-12";
+        $this->startDate = date('Y-m-01');
+        $this->endDate = date('Y-m-t');
+
         $this->users = User::with('tasks')->where('leave', 0)->get();
         foreach($this->users as $employee){
             if ($employee->simple_priority_filterTasks($this->startDate, $this->endDate)->count() > 0){
