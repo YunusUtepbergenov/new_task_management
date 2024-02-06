@@ -30,7 +30,7 @@
                         <div class="col-sm-4">
                             <select class="form-control select" id="type_text" name="score_id">
                                 @foreach ($scores as $type)
-                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                    <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
                                 @endforeach
                             </select>
                         </div>
