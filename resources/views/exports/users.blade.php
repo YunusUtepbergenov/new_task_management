@@ -2,6 +2,7 @@
     <link rel="stylesheet" href="css/table.css">
     <table>
         <thead>
+            {{-- @dd($norms) --}}
             <tr>
                 <td colspan="5" height="40" style="vertical-align:middle;text-align: center; font-weight:bold; font-family:Cambria;font-size:14px;border:1px solid #000">
                     {{date('01:m:Y')}} - {{date('t:m:Y')}} оралиғида Марказ ходимлари томонидан бажарилган топшириқлари тўғрисида маълумот<br>
@@ -18,10 +19,13 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($users as $count=>$user)
-                @if (!$user->isDirector() && !$user->isDeputy())
+            @php
+                $count = 0;
+            @endphp
+            @foreach($users as $user)
+                @if (!$user->isDirector() && !$user->isDeputy() && $user->role_id < 5)
                     <tr>
-                        <td colspan="5" style="font-family:Cambria;text-align:center;font-weight:bold; border:1px solid #000">{{($loop->index + 1).'. '.$user->name}}</td>
+                        <td colspan="5" style="font-family:Cambria;text-align:center;font-weight:bold; border:1px solid #000">{{(++$count).'. '.$user->name}} ({{ $user->ovrKpiCalculate() }} балл / {{$norms[$user->role_id]}})</td>
                     </tr>
                     @foreach ($user->tasks()->whereBetween('deadline', [date('Y-m-01'), date('Y-m-t')])->get() as $key=>$task)
                         <tr>

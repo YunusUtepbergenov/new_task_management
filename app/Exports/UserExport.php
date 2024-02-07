@@ -19,6 +19,12 @@ class UserExport implements FromView
     public $users;
     public function view(): View
     {
+        $norms = [
+            '2' => 100,
+            '3' => 90,
+            '4' => 80
+        ];
+
         $this->startDate = date('Y-m-01');
         $this->endDate = date('Y-m-t');
 
@@ -30,7 +36,8 @@ class UserExport implements FromView
 
         $this->users = $this->users->sortByDesc('ovr_kpi');
         return view('exports.users', [
-            'users' => $this->users
+            'users' => $this->users,
+            'norms' => $norms,
         ]);
     }
 }
