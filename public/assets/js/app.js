@@ -51,6 +51,31 @@ $(document).ready(function() {
 			// minimumResultsForSearch: -1,
 			width: '100%'
 		});
+
+		let optgroupState = {};
+
+		$("body").on('click', '.select2-container--open .select2-results__group', function() {
+		  $(this).siblings().toggle();
+		  let id = $(this).closest('.select2-results__options').attr('id');
+		  let index = $('.select2-results__group').index(this);
+		  optgroupState[id][index] = !optgroupState[id][index];
+		})
+		
+		$('.select').on('select2:open', function() {
+		  $('.select2-dropdown--below').css('opacity', 0);
+		  setTimeout(() => {
+			let groups = $('.select2-container--open .select2-results__group');
+			let id = $('.select2-results__options').attr('id');
+			if (!optgroupState[id]) {
+			  optgroupState[id] = {};
+			}
+			$.each(groups, (index, v) => {
+			  optgroupState[id][index] = optgroupState[id][index] || false;
+			  optgroupState[id][index] ? $(v).siblings().show() : $(v).siblings().hide();
+			})
+			$('.select2-dropdown--below').css('opacity', 1);
+		  }, 0);
+		});
 	}
 
 	// Modal Popup hide show

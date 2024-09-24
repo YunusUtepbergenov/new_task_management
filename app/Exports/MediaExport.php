@@ -15,7 +15,7 @@ class MediaExport implements FromView
     public function view(): View
     {
         $sectors = Sector::with(['users.tasks' => function($query){
-            $query->whereIn('type_id', [4,12]);
+            $query->whereIn('score_id', [4,12]);
         }])->get();
 
         // foreach($sectors as $s){

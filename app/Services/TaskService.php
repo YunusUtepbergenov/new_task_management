@@ -30,7 +30,7 @@ class TaskService {
     public function projectList(){
         $user = Auth::user();
 
-        if($user->isDirector() || $user->isMailer() || $user->isDeputy() || $user->isHead()){
+        if($user->isDirector() || $user->isMailer() || $user->isDeputy() || $user->isHead() || $user->isHR()){
             $projects = Project::where('user_id', $user->id)->orderBy('created_at', 'DESC')->get();
         }else{
             $projects = NULL;

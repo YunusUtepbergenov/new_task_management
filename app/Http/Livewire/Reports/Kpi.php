@@ -16,7 +16,7 @@ class Kpi extends Component
     }
     public function render()
     {
-        $this->users = User::where('leave', 0)->get();
+        $this->users = User::whereIn('sector_id', [1,2,3,4,5,6,7,8,9,10,12,13,14,15,16])->where('leave', 0)->get();
 
         foreach($this->users as $user){
             $user->kpi_score = $user->kpiCalculate();

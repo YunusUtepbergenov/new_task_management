@@ -138,7 +138,6 @@ class User extends Authenticatable
         return $this->tasks()->whereBetween('deadline', [$start, $end])->whereIn('status', ['Выполнено', 'Ждет подтверждения'])->where('priority_id', 3);
     }
 
-
     public function very_high_priority_filterTasks($start, $end){
         return $this->tasks()->whereBetween('deadline', [$start, $end])->where('priority_id', 4);
     }
@@ -159,7 +158,7 @@ class User extends Authenticatable
         $categories = Scores::with(['tasks' => function ($query) use ($startDate, $endDate) {
             $query->whereBetween('deadline', [$startDate, $endDate])->where('user_id', $this->id)->where('status', 'Выполнено');
         }])->get();
-    
+
         foreach($categories as $category){
             $cat_score = $category->tasks->sum('total');
             if(isset($category->limit) && $cat_score > $category->limit)
@@ -178,7 +177,7 @@ class User extends Authenticatable
         $categories = Scores::with(['tasks' => function ($query) use ($startDate, $endDate) {
             $query->whereBetween('deadline', [$startDate, $endDate])->where('user_id', $this->id)->where('status', 'Выполнено');
         }])->get();
-    
+
         foreach($categories as $category){
             $score += $category->tasks->sum('total');
         }
@@ -196,9 +195,11 @@ class User extends Authenticatable
     public function doingTasks(){
         return $this->tasks()->where('overdue', 0)->where('status', 'Выполняется');
     }
+
     public function confirmTasks(){
         return $this->tasks()->where('overdue', 0)->where('status', 'Ждет подтверждения');
     }
+
     public function finishedTasks(){
         return $this->tasks()->where('overdue', 0)->where('status', 'Выполнено');
     }

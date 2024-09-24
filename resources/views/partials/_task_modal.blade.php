@@ -17,9 +17,11 @@
                         <div class="col-sm-4">
                             <select class="form-control" id="project_text" name="project_id">
                                 <option value="">Не проект</option>
-                                @foreach ($projects as $project)
+                                @forelse ($projects as $project)
                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
-                                @endforeach
+                                @empty
+
+                                @endforelse
                             </select>
                         </div>
                     </div>
