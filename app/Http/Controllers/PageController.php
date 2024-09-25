@@ -20,11 +20,21 @@ class PageController extends Controller
         $projects = (new TaskService())->projectList();
         $sectors = (new TaskService())->sectorList();
         $scores = (new TaskService())->scoresList();
+        $hrScores = (new TaskService())->hrList();
+        $accountantScores = (new TaskService())->accountantList();
+        $lawyerScores = (new TaskService())->lawyerList();
+        $maintainerScores = (new TaskService())->maintainerList();
+        $ictScores = (new TaskService())->ictList();
 
         return view('page.index', [
             'projects' => $projects,
             'sectors' => $sectors,
-            'scores' => $scores
+            'scores' => $scores,
+            'hrScores' => $hrScores,
+            'accountantScores' => $accountantScores,
+            'lawyerScores' => $lawyerScores,
+            'maintainerScores' => $maintainerScores,
+            'ictScores' => $ictScores,
         ]);
     }
 
@@ -32,12 +42,21 @@ class PageController extends Controller
         $sectors = (new TaskService())->sectorList();
         $projects = (new TaskService())->projectList();
         $scores = (new TaskService())->scoresList();
+        $hrScores = (new TaskService())->hrList();
+        $accountantScores = (new TaskService())->accountantList();
+        $lawyerScores = (new TaskService())->lawyerList();
+        $maintainerScores = (new TaskService())->maintainerList();
+        $ictScores = (new TaskService())->ictList();
 
-
-        return view('page.ordered', [
+        return view('page.index', [
             'projects' => $projects,
             'sectors' => $sectors,
             'scores' => $scores,
+            'hrScores' => $hrScores,
+            'accountantScores' => $accountantScores,
+            'lawyerScores' => $lawyerScores,
+            'maintainerScores' => $maintainerScores,
+            'ictScores' => $ictScores,
         ]);
     }
 
@@ -45,11 +64,21 @@ class PageController extends Controller
         $projects = Project::where('user_id', Auth::user()->id)->get();
         $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
         $scores = (new TaskService())->scoresList();
+        $hrScores = (new TaskService())->hrList();
+        $accountantScores = (new TaskService())->accountantList();
+        $lawyerScores = (new TaskService())->lawyerList();
+        $maintainerScores = (new TaskService())->maintainerList();
+        $ictScores = (new TaskService())->ictList();
 
-        return view('page.helping', [
+        return view('page.index', [
             'projects' => $projects,
             'sectors' => $sectors,
             'scores' => $scores,
+            'hrScores' => $hrScores,
+            'accountantScores' => $accountantScores,
+            'lawyerScores' => $lawyerScores,
+            'maintainerScores' => $maintainerScores,
+            'ictScores' => $ictScores,
         ]);
     }
 

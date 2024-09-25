@@ -52,7 +52,28 @@ class TaskService {
     }
 
     public function scoresList(){
-        $types = Scores::all();
+        $types = Scores::whereIn('id', range(1, 48))->get();
+        return $types;
+    }
+
+    public function hrList(){
+        $types = Scores::whereIn('id', range(49, 57))->get();
+        return $types;
+    }
+    public function accountantList(){
+        $types = Scores::whereIn('id', range(58, 64))->get();
+        return $types;
+    }
+    public function lawyerList(){
+        $types = Scores::whereIn('id', range(65, 71))->get();
+        return $types;
+    }
+    public function maintainerList(){
+        $types = Scores::whereIn('id', range(72, 75))->get();
+        return $types;
+    }
+    public function ictList(){
+        $types = Scores::whereIn('id', range(76, 80))->get();
         return $types;
     }
 }

@@ -31,9 +31,45 @@
                         <label class="col-sm-3 col-form-label">Категория</label>
                         <div class="col-sm-4">
                             <select class="form-control select" id="type_text" name="score_id">
-                                @foreach ($scores as $type)
-                                    <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
-                                @endforeach
+                                @if (Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy())
+                                    <optgroup label="Научные сотрудники">
+                                        @foreach ($scores as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
+                                        @endforeach
+                                    </optgroup>
+                                    <optgroup label="Специалиста по работе с персоналом">
+                                        @foreach ($hrScores as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
+                                        @endforeach
+                                    </optgroup>
+                                    <optgroup label="Главный бухгалтер">
+                                        @foreach ($accountantScores as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
+                                        @endforeach
+                                    </optgroup>
+                                    <optgroup label="Юристконсульта">
+                                        @foreach ($lawyerScores as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
+                                        @endforeach
+                                    </optgroup>
+                                    <optgroup label="Заведующего хозяйством">
+                                        @foreach ($maintainerScores as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
+                                        @endforeach
+                                    </optgroup>
+                                    <optgroup label="Специалист ИКТ">
+                                        @foreach ($ictScores as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
+                                        @endforeach
+                                    </optgroup>                   
+                                
+                                @elseif (Auth::user()->isHead())
+                                    @foreach ($scores as $type)
+                                        <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
+                                    @endforeach
+                                @endif
+
+
                             </select>
                         </div>
                     </div>
