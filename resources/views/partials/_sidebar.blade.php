@@ -42,6 +42,9 @@
                 <li>
                     <a href="{{ route('employees') }}"><i class="la la-user"></i> <span> Сотрудники </span></a>
                 </li>
+                <li>
+                    <a href="{{ route('vacations') }}"><i class="la la-calendar"></i> <span>График Отпусков </span></a>
+                </li>
             </ul>
 
             <ul style="position: absolute; bottom: 0px; margin-bottom: 50px;">

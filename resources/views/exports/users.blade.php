@@ -23,7 +23,7 @@
                 $count = 0;
             @endphp
             @foreach($users as $user)
-                @if (!$user->isDirector() && !$user->isDeputy() && $user->role_id < 5)
+                @if (!$user->isDirector() && !$user->isDeputy() && !$user->isEditor() && $user->role_id > 4)
                     <tr>
                         <td colspan="5" style="font-family:Cambria;text-align:center;font-weight:bold; border:1px solid #000">{{(++$count).'. '.$user->name}} ({{ $user->ovrKpiCalculate() }} балл / {{$norms[$user->role_id]}})</td>
                     </tr>

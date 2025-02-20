@@ -46,7 +46,6 @@
                                 @if (Auth::user()->isHR())
                                     <th>Действие</th>
                                 @endif
-
                             </tr>
 						</thead>
 						<tbody style="overflow: auto;">

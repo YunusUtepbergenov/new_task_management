@@ -16,6 +16,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('helping', [PageController::class, 'helping'])->name('helping');
     Route::get('reports', [PageController::class, 'reports'])->name('reports');
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
+    Route::get('vacations', [PageController::class, 'vacations'])->name('vacations');
     Route::get('settings', [PageController::class, 'settings'])->name('settings');
     Route::get('surveys', [PageController::class, 'surveys'])->name('surveys');
     Route::get('notes', [NoteController::class, 'index'])->name('notes.index');

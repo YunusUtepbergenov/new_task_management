@@ -47,12 +47,12 @@
                                             <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
                                         @endforeach
                                     </optgroup>
-                                    <optgroup label="Юристконсульта">
+                                    <optgroup label="Юристконсульт">
                                         @foreach ($lawyerScores as $type)
                                             <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
                                         @endforeach
                                     </optgroup>
-                                    <optgroup label="Заведующего хозяйством">
+                                    <optgroup label="Заведующий хозяйством">
                                         @foreach ($maintainerScores as $type)
                                             <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
                                         @endforeach

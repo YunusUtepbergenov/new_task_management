@@ -42,7 +42,7 @@
                                         <td width="25" style="font-family:Cambria;color:#e63c3c ; background-color:#fde2e7; font-weight:bold; border: 2px solid #000;">Ждет подтверждения</td>
                                     @endif --}}
                                 <td width="20" style="font-family:Cambria;border:1px solid #000">{{$task->deadline}}</td>
-                                <td width="20" style="font-family:Cambria;border:1px solid #000; font-weight:bold">{{$task->type->name}}</td>
+                                <td width="20" style="font-family:Cambria;border:1px solid #000; font-weight:bold">{{$task->score->name}}</td>
                             </tr>
                             {{$count++}}
                         @endforeach

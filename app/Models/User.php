@@ -86,6 +86,10 @@ class User extends Authenticatable
         return $this->tasks()->whereBetween('tasks.deadline', [$start, $end])->whereIn('tasks.type_id', [4,12]);
     }
 
+    public function vacations(){
+        return $this->hasMany(Vacation::class);
+    }
+
     public function helpers(){
         return $this->belongsToMany(Task::class);
     }
@@ -234,5 +238,10 @@ class User extends Authenticatable
 
     public function isAccountant(){
         return $this->role->name === "Главный бухгалтер" || $this->role->name === "Бухгалтер";
+    }
+
+    public function isEditor(){
+        return $this->role->name === "Старший редактор" || $this->role->name === "Инженер по компыютерной верстке" || $this->role->name === "Редактор (Литературный)" || $this->role->name === "Редактор (Вэб)";
+
     }
 }

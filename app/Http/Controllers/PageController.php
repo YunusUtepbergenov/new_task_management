@@ -8,7 +8,7 @@ use App\Models\Sector;
 use App\Models\Journal;
 use App\Models\Project;
 use App\Exports\TasksExport;
-use App\Models\Priority;
+use App\Models\Vacation;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
@@ -48,7 +48,7 @@ class PageController extends Controller
         $maintainerScores = (new TaskService())->maintainerList();
         $ictScores = (new TaskService())->ictList();
 
-        return view('page.index', [
+        return view('page.ordered', [
             'projects' => $projects,
             'sectors' => $sectors,
             'scores' => $scores,
@@ -70,7 +70,7 @@ class PageController extends Controller
         $maintainerScores = (new TaskService())->maintainerList();
         $ictScores = (new TaskService())->ictList();
 
-        return view('page.index', [
+        return view('page.helping', [
             'projects' => $projects,
             'sectors' => $sectors,
             'scores' => $scores,
@@ -141,6 +141,32 @@ class PageController extends Controller
 
         return view('page.employees', ['sectors' => $sectors, 'roles' => $roles]);
     }
+
+
+
+    
+    public function vacations(){
+        $sectors = Sector::with(['users' => function($query){
+            $query->with('role')->where('leave', 0)->orderBy('role_id', 'ASC');
+        }])->get();
+
+        $roles = Role::all();
+
+        $vacations = Vacation::with('user')->select('month')
+                            ->groupBy('month')
+                            ->get()
+                            ->map(function ($vacation) {
+                                $vacation->users = Vacation::where('month', $vacation->month)
+                                    ->with('user')
+                                    ->get()
+                                    ->pluck('user');
+                                return $vacation;
+                            });
+        return view('page.vacation', ['vacations' => $vacations, 'sectors' => $sectors, 'roles' => $roles]);
+    }
+
+
+
 
     public function journalRu($year)
     {
