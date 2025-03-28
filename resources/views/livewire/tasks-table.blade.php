@@ -31,7 +31,8 @@
         <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
             @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() || Auth::user()->isResearcher())
                 <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
-            @endif        
+            @endif
+
             @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
                 <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Проект</a>
             @endif
@@ -131,6 +132,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>{{ $cnt }}</td>
+                                                    <td></td>
                                                     <td>
                                                         @if ($task['status'] == "Выполнено")
                                                             <a href="#" wire:click.prevent="view({{ $task['id'] }})"><del>{{ $task['name'] }}</del></a>
