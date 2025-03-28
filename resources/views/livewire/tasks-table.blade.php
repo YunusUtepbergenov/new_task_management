@@ -29,9 +29,11 @@
             </div>
         </div>
         <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
+            @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() || Auth::user()->isResearcher())
+                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
+            @endif        
             @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
                 <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Проект</a>
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
             @endif
         </div>
     </div>
@@ -44,6 +46,7 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th></th>
                                     <th>Название</th>
                                     <th>Дата Создание</th>
                                     <th>Крайний срок</th>
@@ -56,6 +59,36 @@
                                 @forelse ($tasks as $key=>$task)
                                 <tr>
                                     <td>{{ $key+1 }}</td>
+                                    <td>
+                                        @can('creator', $task)
+                                            <div class="dropdown dropdown-action profile-action">
+                                                <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    @if ($task->status != "Выполнено" && $task->status != "Ждет подтверждения")
+                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
+                                                    @endif
+                                                    @if ($task->repeat_id)
+                                                        <form action="{{ route('task.destroy', $task->id) }}" method="POST">
+                                                            <input type="hidden" name="_method" value="DELETE">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить текущую задачу</button>
+                                                        </form>
+                                                        <form action="{{ route('repeat.delete', $task->repeat_id) }}" method="POST">
+                                                            <input type="hidden" name="_method" value="DELETE">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Остановить цикл</button>
+                                                        </form>
+                                                    @else
+                                                        <form action="{{ route('task.destroy', $task->id) }}" method="POST">
+                                                            <input type="hidden" name="_method" value="DELETE">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
+                                                        </form>
+                                                    @endif
+                                                </div>
+                                            </div>                                            
+                                        @endcan
+                                    </td>
                                     <td>
                                         @if ($task->status == "Выполнено")
                                             <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>

@@ -17,12 +17,14 @@ class TasksTable extends Component
         $this->project_tasks = Task::with('project')->select('project_id')->where('user_id', Auth::user()->id)->where('status', '<>', "Выполнено")
             ->where('project_id', '<>', null)->distinct('project_id')->get();
         $this->projects = (new ProjectService())->projectsList($this->project_tasks);
+
         $this->username = Auth::user()->name;
         $this->chosen_project = Project::with(['tasks' => function($query){
                 $query->with('creator')->where('status', '<>', "Выполнено")->latest();
                 }])->whereHas('tasks', function($query){
                 $query->with('creator')->where('user_id', Auth::user()->id)->where('status', '<>', "Выполнено")->where('project_id', '<>', Null);
         })->latest()->get();
+        
         $this->tasks = Task::with('creator')->where('user_id', Auth::user()->id)
                             ->where('project_id', Null)->where('status', '<>', "Выполнено")->latest()->get();
     }

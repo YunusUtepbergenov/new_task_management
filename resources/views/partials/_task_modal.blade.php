@@ -63,13 +63,11 @@
                                         @endforeach
                                     </optgroup>                   
                                 
-                                @elseif (Auth::user()->isHead())
+                                @else
                                     @foreach ($scores as $type)
                                         <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
                                     @endforeach
                                 @endif
-
-
                             </select>
                         </div>
                     </div>
@@ -159,7 +157,7 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Постановщик</label>
                             <div class="col-sm-4">
-                                <select class="form-control" name="creator_id" id="">
+                                <select class="form-control" name="creator_id" id="task_creator">
                                         <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
                                 </select>
                             </div>
@@ -184,7 +182,7 @@
                         </div>
 
                     @elseif(Auth::user()->isDeputy())
-                        @if(Auth::user()->id == 7)
+                        @if(Auth::user()->id == 2)
                             <div class="form-group row">
                                 <div class="col-sm-1"></div>
                                 <label class="col-sm-3 col-form-label">Ответственный</label>
@@ -329,6 +327,44 @@
                                 </select>
                             </div>
                         </div>
+                    @elseif (Auth::user()->isResearcher())
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-3 col-form-label">Ответственный</label>
+                            <div class="col-sm-4">
+                                <select class="form-control select" name="users[]" multiple>
+                                    <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-3 col-form-label">Постановщик</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="creator_id" id="">
+                                    <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
+                            <div class="col-sm-4">
+                                <select class="form-control select" name="helpers[]" multiple>
+                                    @foreach ($sectors as $sector)
+                                    <optgroup label="{{ $sector->name }}">
+                                        @foreach ($sector->users as $user)
+                                            @if($user->id != Auth::user()->id && $user->id != 1)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @endif
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                                </select>
+                            </div>
+                        </div> --}}
                     @endif
                     <div class="form-group row">
                         <div class="col-sm-1"></div>

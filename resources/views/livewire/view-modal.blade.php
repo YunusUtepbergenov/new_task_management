@@ -225,7 +225,7 @@
                                                     </tr>
                                                 @endif
 
-                                                @can('creator', $task)
+                                                @can('evaluate', $task)
                                                     @if ($task->status == "Ждет подтверждения")
                                                         <tr>
                                                             <td>Действия:</td>

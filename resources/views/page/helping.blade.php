@@ -27,11 +27,9 @@
     <!-- /Page Header -->
     @livewire('helping-tasks')
 
-    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
-        @include('partials._project_modal')
+    @include('partials._project_modal')
+    @include('partials._task_modal')
 
-        @include('partials._task_modal')
-    @endif
     <!-- View Project Modal -->
     {{-- @include('partials._view_modal')--}}
     @livewire('view-modal')

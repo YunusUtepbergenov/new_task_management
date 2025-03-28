@@ -97,6 +97,38 @@ class TaskPolicy
         return $task->creator_id === $user->id;
     }
 
+    public function evaluate(User $user, Task $task){
+        // Director, deputy, or mailer can ONLY evaluate tasks they created
+        if ($user->isDirector() || $user->isDeputy() || $user->isMailer()) {
+            return $task->creator_id === $user->id;
+        }
+
+        // Sector heads can evaluate:
+        // 1. Tasks they created themselves
+        // 2. Tasks created by researchers in their sector
+        if ($user->isHead()) {
+            // If sector head created the task
+            if ($task->creator_id === $user->id) {
+                return true;
+            }
+            
+            // Check if task was created by a researcher in this sector head's sector
+            $taskCreator = $task->creator;
+            if ($taskCreator && $taskCreator->sector_id === $user->sector_id) {
+                // Make sure creator is a researcher (not another head/director/etc)
+                return !$taskCreator->isHead() && 
+                    !$taskCreator->isDirector() && 
+                    !$taskCreator->isDeputy() && 
+                    !$taskCreator->isMailer();
+            }
+            
+            return false;
+        }
+
+        // Research employees cannot evaluate tasks
+        return false;
+    }
+
     public function overdue(User $user, Task $task){
         return $task->deadline > Carbon::now();
     }

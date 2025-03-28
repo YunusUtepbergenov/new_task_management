@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Task;
+use ZipArchive;
+
 
 class PageController extends Controller
 {
@@ -141,9 +144,6 @@ class PageController extends Controller
 
         return view('page.employees', ['sectors' => $sectors, 'roles' => $roles]);
     }
-
-
-
     
     public function vacations(){
         $sectors = Sector::with(['users' => function($query){
@@ -212,5 +212,27 @@ class PageController extends Controller
     public function readNoti(){
         Auth::user()->unreadNotifications->markAsRead();
         return back();
+    }
+    
+    public function getDocuments(){
+        $tasks = Task::where('score_id', 5)->where('deadline', '>', '2025-01-01')->where('status', 'Выполнено')->get();
+
+        // Create a ZIP file to download all files at once
+        $zipFileName = 'files_2025.zip';
+        $zip = new ZipArchive;
+        $zipPath = storage_path('app/' . $zipFileName);
+
+        if ($zip->open($zipPath, ZipArchive::CREATE) === TRUE) {
+            foreach ($tasks as $task) {
+                $filePath = storage_path('app/files/responses/' . $task->response->filename);
+                if (file_exists($filePath)) {
+                    $zip->addFile($filePath, basename($filePath));
+                }
+            }
+            $zip->close();
+        }
+
+        // return file download
+        return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 }

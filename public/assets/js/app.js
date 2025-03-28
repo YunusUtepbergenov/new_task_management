@@ -180,7 +180,9 @@ $(document).ready(function() {
         e.preventDefault();
         var formData = new FormData($("#createTask")[0]);
         var url = $(this).attr("action");
-
+		var currentUserId = $('#task_creator').val()
+		console.log(currentUserId);
+		
         $.ajax({
             url: url,
             method: "POST",
@@ -188,7 +190,7 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             success: function (res) {
-                document.location.href = '/ordered';
+                document.location.href = '/';
                 toastr.options =
                 {
                     "closeButton" : true,

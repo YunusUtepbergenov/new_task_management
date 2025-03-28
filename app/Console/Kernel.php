@@ -52,7 +52,8 @@ class Kernel extends ConsoleKernel
                         'status' => 'Новое',
                         'repeat_id' => $repeat->id,
                         'type_id' => $repeat->task->type_id,
-                        'priority_id' => $repeat->task->priority_id
+                        'priority_id' => $repeat->task->priority_id,
+                        'score_id' => $repeat->task->score_id
                     ]);
                     event(new TaskCreatedEvent($task));
                 }
@@ -79,7 +80,8 @@ class Kernel extends ConsoleKernel
                         'status' => 'Новое',
                         'repeat_id' => $repeat->id,
                         'type_id' => $repeat->task->type_id,
-                        'priority_id' => $repeat->task->priority_id
+                        'priority_id' => $repeat->task->priority_id,
+                        'score_id' => $repeat->task->score_id
                     ]);
                 }
             }

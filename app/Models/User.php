@@ -242,6 +242,9 @@ class User extends Authenticatable
 
     public function isEditor(){
         return $this->role->name === "Старший редактор" || $this->role->name === "Инженер по компыютерной верстке" || $this->role->name === "Редактор (Литературный)" || $this->role->name === "Редактор (Вэб)";
+    }
 
+    public function isResearcher(){
+        return $this->role->name === "Главный научный сотрудник" || $this->role->name === "Ведущий научный сотрудник";
     }
 }

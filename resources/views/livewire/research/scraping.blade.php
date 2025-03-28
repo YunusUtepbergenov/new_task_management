@@ -5,9 +5,7 @@
             <div class="form-group">
                 <select class="form-control" wire:model='type' name="type">
                     <option value="houses">Недвижимости</option>
-                    <option value="jobs">Работы</option>
                     <option value="cars">Автомобили</option>
-                    <option value="products">Продукты</option>
                 </select>
             </div>
         </div>

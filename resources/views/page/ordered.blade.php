@@ -31,6 +31,7 @@
 
     @include('partials._task_modal')
     @include('partials._edit_task')
+    
     <!-- View Project Modal -->
     {{-- @include('partials._view_modal')--}}
     @livewire('view-modal')
@@ -97,7 +98,7 @@
             e.preventDefault();
             var formData1 = new FormData($("#editTask")[0]);
             var url = document.getElementById('editTask').getAttribute("action");
-
+            
             $.ajax({
                 url: url,
                 type: "POST",

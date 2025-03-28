@@ -55,28 +55,27 @@
                         </thead>
                         <tbody>
                             @foreach ($vacations as $vacation)
-                            <tr>
-                                <td>{{ $vacation->month }}</td>
-                                <td>{{ $months[$vacation->month] }}</td>
-                                <td>
-                                    {!! $vacation->users->map(function ($user) {
-                                        return '<a href="'.$user->id.'">'.$user->name.'</a>';
-                                    })->join('<br>') !!}
-                                </td>
-                                <td>
-                                    {!! $vacation->users->map(function ($user) {
-                                        return $user->role->name;
-                                    })->join('<br>') !!}
-                                </td>
-                                <td>
-                                    {!! $vacation->users->map(function ($user) {
-                                        $date = \Carbon\Carbon::parse($user->join_date);
-                                        return $date->year(now()->year - 1)->format('Y.m.d') . ' - ' . 
-                                               $date->year(now()->year)->format('Y.m.d');
-                                    })->join('<br>') !!}
-                                </td>
-                            </tr>
-                                                       
+                                <tr style="{{(now()->month == $vacation->month) ? 'background-color: #ebe9a8' : ''}}">
+                                    <td>{{ $vacation->month }}</td>
+                                    <td>{{ $months[$vacation->month] }}</td>
+                                    <td>
+                                        {!! $vacation->users->map(function ($user) {
+                                            return $user->name;
+                                        })->join('<br>') !!}
+                                    </td>
+                                    <td>
+                                        {!! $vacation->users->map(function ($user) {
+                                            return $user->role->name;
+                                        })->join('<br>') !!}
+                                    </td>
+                                    <td>
+                                        {!! $vacation->users->map(function ($user) {
+                                            $date = \Carbon\Carbon::parse($user->join_date);
+                                            return $date->year(now()->year - 1)->format('Y.m.d') . ' - ' . 
+                                                $date->year(now()->year)->format('Y.m.d');
+                                        })->join('<br>') !!}
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
