@@ -95,3 +95,7 @@ Route::get('check-telegram-login', [UserController::class, 'checkUserLogin']);
 Route::get('users/export', [UserController::class, 'export']);
 Route::get('sectors/export', [UserController::class, 'sector']);
 Route::get('/getdocuments', [PageController::class, 'getDocuments']);
+
+Route::get('workload', function(){
+    return view('page.reports.workload');
+});
