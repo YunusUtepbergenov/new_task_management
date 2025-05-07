@@ -338,6 +338,55 @@
 
             });
 
+
+            
+            let taskIndex = 1;
+
+            $('#add-task').on('click', function () {
+                let templateHtml = $('#task-template').html().replace(/__index__/g, taskIndex);
+                let $newTask = $(templateHtml);
+
+                // Remove any old Select2 residue
+                $newTask.find('.select2').each(function () {
+                    $(this).removeClass('select2-hidden-accessible')
+                        .removeAttr('data-select2-id')
+                        .removeAttr('tabindex')
+                        .removeAttr('aria-hidden');
+                    $(this).next('.select2').remove(); // Remove the attached container
+                });
+
+                // Append to the page
+                $('#task-entries').append($newTask);
+
+                // Re-initialize select2 on the newly added select
+                $newTask.find('.select2').select2({ width: '100%' });
+
+                if($('.datetimepicker').length > 0) {
+		            $('.datetimepicker').datetimepicker({
+                    format: 'YYYY-MM-DD',
+                    icons: {
+                        up: "fa fa-angle-up",
+                        down: "fa fa-angle-down",
+                        next: 'fa fa-angle-right',
+                        previous: 'fa fa-angle-left'
+                    }
+		            });
+	            }
+
+                taskIndex++;
+            });
+
+            $(document).on('click', '.remove-task', function () {
+                if ($('.task-group').length > 1) {
+                    $(this).closest('.task-group').remove();
+                }
+            });
+
+            $(document).ready(function () {
+                $('.select2').select2({ width: '100%' });
+            });
+
+
             $('#search_field').keyup(function(){
                 $('.result_search').html('');
                 var searchField = $('#search_field').val();

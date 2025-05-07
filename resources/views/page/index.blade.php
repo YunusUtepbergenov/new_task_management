@@ -17,9 +17,9 @@
                             <a class="nav-link {{ (Route::current()->uri == 'ordered') ? 'active' : '' }}" href="{{ route('ordered') }}">Поручил</a>
                         </li>
                     @endif
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a class="nav-link {{ (Route::current()->uri == 'helping') ? 'active' : '' }}" href="{{ route('helping') }}">Помогаю</a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </div>

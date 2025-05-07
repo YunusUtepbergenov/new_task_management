@@ -3,7 +3,7 @@
         <div class="loading">Loading&#8230;</div>
     </div>
     <div class="row filter-row">
-        <div class="col-sm-4 col-md-2">
+        {{-- <div class="col-sm-4 col-md-2">
             <div class="form-group">
                 <label for="select">Проекты</label>
                 <select class="form-control" wire:model="projectId" aria-hidden="true">
@@ -14,7 +14,7 @@
                     @endforeach
                 </select>
             </div>
-        </div>
+        </div> --}}
         <div class="col-sm-4 col-md-2">
             <div class="form-group">
                 <label for="select">Состояние</label>
@@ -34,7 +34,7 @@
             @endif
 
             @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Проект</a>
+                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить еженедельные задачи</a>
             @endif
         </div>
     </div>

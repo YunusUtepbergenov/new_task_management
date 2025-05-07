@@ -47,8 +47,8 @@ $(document).ready(function() {
 	// Select 2
 
 	if($('.select').length > 0) {
+		
 		$('.select').select2({
-			// minimumResultsForSearch: -1,
 			width: '100%'
 		});
 
@@ -77,6 +77,7 @@ $(document).ready(function() {
 		  }, 0);
 		});
 	}
+
 
 	// Modal Popup hide show
 

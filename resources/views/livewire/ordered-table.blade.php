@@ -31,7 +31,7 @@
         <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
             <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
             @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() )
-            <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Проект</a>
+            <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить еженедельные задачи</a>
             @endif
         </div>
     </div>

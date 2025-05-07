@@ -17,17 +17,18 @@
                             <a class="nav-link {{ (Route::current()->uri == 'ordered') ? 'active' : '' }}" href="{{ route('ordered') }}">Поручил</a>
                         </li>
                     @endif
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a class="nav-link {{ (Route::current()->uri == 'helping') ? 'active' : '' }}" href="{{ route('helping') }}">Помогаю</a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </div>
     </div>
     <!-- /Page Header -->
     @livewire('ordered-table', ['projects' => $projects])
-
-    @include('partials._project_modal')
+    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
+        @include('partials._project_modal')
+    @endif
 
     @include('partials._task_modal')
     @include('partials._edit_task')

@@ -29,15 +29,27 @@ class PageController extends Controller
         $maintainerScores = (new TaskService())->maintainerList();
         $ictScores = (new TaskService())->ictList();
 
+
+        
+        $scoresGrouped = [];
+
+        if (Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy()) {
+            $scoresGrouped = [
+                'Научные сотрудники' => $scores,
+                'Специалиста по работе с персоналом' => $hrScores,
+                'Главный бухгалтер' => $accountantScores,
+                'Юристконсульт' => $lawyerScores,
+                'Заведующий хозяйством' => $maintainerScores,
+                'Специалист ИКТ' => $ictScores,
+            ];
+        } else {
+            $scoresGrouped = ['Категории' => $scores];
+        }
+
         return view('page.index', [
             'projects' => $projects,
             'sectors' => $sectors,
-            'scores' => $scores,
-            'hrScores' => $hrScores,
-            'accountantScores' => $accountantScores,
-            'lawyerScores' => $lawyerScores,
-            'maintainerScores' => $maintainerScores,
-            'ictScores' => $ictScores,
+            'scoresGrouped' => $scoresGrouped
         ]);
     }
 
@@ -51,37 +63,25 @@ class PageController extends Controller
         $maintainerScores = (new TaskService())->maintainerList();
         $ictScores = (new TaskService())->ictList();
 
+        $scoresGrouped = [];
+
+        if (Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy()) {
+            $scoresGrouped = [
+                'Научные сотрудники' => $scores,
+                'Специалиста по работе с персоналом' => $hrScores,
+                'Главный бухгалтер' => $accountantScores,
+                'Юристконсульт' => $lawyerScores,
+                'Заведующий хозяйством' => $maintainerScores,
+                'Специалист ИКТ' => $ictScores,
+            ];
+        } else {
+            $scoresGrouped = ['Категории' => $scores];
+        }
+
         return view('page.ordered', [
             'projects' => $projects,
             'sectors' => $sectors,
-            'scores' => $scores,
-            'hrScores' => $hrScores,
-            'accountantScores' => $accountantScores,
-            'lawyerScores' => $lawyerScores,
-            'maintainerScores' => $maintainerScores,
-            'ictScores' => $ictScores,
-        ]);
-    }
-
-    public function helping(){
-        $projects = Project::where('user_id', Auth::user()->id)->get();
-        $sectors = Sector::with('users:id,name,sector_id,role_id')->get();
-        $scores = (new TaskService())->scoresList();
-        $hrScores = (new TaskService())->hrList();
-        $accountantScores = (new TaskService())->accountantList();
-        $lawyerScores = (new TaskService())->lawyerList();
-        $maintainerScores = (new TaskService())->maintainerList();
-        $ictScores = (new TaskService())->ictList();
-
-        return view('page.helping', [
-            'projects' => $projects,
-            'sectors' => $sectors,
-            'scores' => $scores,
-            'hrScores' => $hrScores,
-            'accountantScores' => $accountantScores,
-            'lawyerScores' => $lawyerScores,
-            'maintainerScores' => $maintainerScores,
-            'ictScores' => $ictScores,
+            'scoresGrouped' => $scoresGrouped
         ]);
     }
 

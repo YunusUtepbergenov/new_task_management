@@ -335,4 +335,34 @@ class TaskController extends Controller
 
         return $tasks->toJson();
     }
+
+    public function bulkStore(Request $request){
+
+        $request->validate([
+            'tasks' => 'required|array|min:1',
+            'tasks.*.name' => 'required|string|max:255',
+            'tasks.*.deadline' => 'required|date',
+            'tasks.*.workers' => 'required|array|min:1',
+            'tasks.*.task_score' => 'exists:scores,id',
+        ]);
+
+        foreach ($request->tasks as $taskData) {
+            foreach ($taskData['workers'] as $workerId) {
+                Task::create([
+                    'creator_id' => auth()->id(),
+                    'user_id' => $workerId,
+                    'name' => $taskData['name'],
+                    'description' => $taskData['description'] ?? null,
+                    'deadline' => $taskData['deadline'],
+                    'status' => 'Новое',
+                    'overdue' => false,
+                    'sector_id' => User::find($workerId)->sector_id,
+                    'score_id' => $taskData['task_score'],
+                    'total' => null,
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Все задачи были успешно созданы для выбранных сотрудников.');
+    }
 }

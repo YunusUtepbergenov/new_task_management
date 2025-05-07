@@ -11,27 +11,19 @@
                 <form action="{{ route('task.update') }}" method="POST" enctype="multipart/form-data" id="editTask">
                     @csrf
                     <input type="hidden" name="_method" value="PUT">
-                    <div class="form-group row">
-                        <div class="col-sm-1"></div>
-                        <label class="col-sm-3 col-form-label">Проект</label>
-                        <div class="col-sm-4">
-                            <select class="form-control" id="project_id1" name="project_id">
-                                <option value="">Не проект</option>
-                                @foreach ($projects as $project)
-                                    <option value="{{ $project->id }}">{{ $project->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
 
                     <div class="form-group row">
                         <div class="col-sm-1"></div>
                         <label class="col-sm-3 col-form-label">Категория</label>
                         <div class="col-sm-4">
                             <select class="form-control" id="kpi_type" name="score_id">
-                                @foreach ($scores as $type)
-                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
-                                @endforeach
+                                @foreach ($scoresGrouped as $group => $items)
+                                <optgroup label="{{ $group }}">
+                                    @foreach ($items as $type)
+                                        <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score }})</option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
                             </select>
                         </div>
                     </div>

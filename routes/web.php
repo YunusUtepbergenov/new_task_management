@@ -81,6 +81,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('upload/scraper', [ResearchController::class, 'storeScrape'])->name('scrape.upload');
 
     Route::delete('task/repeat/destroy/{id}', [TaskController::class, 'destroyRepeat'])->name('repeat.delete');
+
+    Route::post('tasks/bulk-store', [TaskController::class, 'bulkStore'])->name('tasks.bulk_store');
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {

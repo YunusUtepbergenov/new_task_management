@@ -11,98 +11,16 @@
             <div class="modal-body">
                 <form action="{{ route('task.store') }}" method="POST" enctype="multipart/form-data" id="createTask">
                     @csrf
-                    <div class="form-group row">
-                        <div class="col-sm-1"></div>
-                        <label class="col-sm-3 col-form-label">Проект</label>
-                        <div class="col-sm-4">
-                            <select class="form-control" id="project_text" name="project_id">
-                                <option value="">Не проект</option>
-                                @forelse ($projects as $project)
-                                    <option value="{{ $project->id }}">{{ $project->name }}</option>
-                                @empty
 
-                                @endforelse
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-sm-1"></div>
-                        <label class="col-sm-3 col-form-label">Категория</label>
-                        <div class="col-sm-4">
-                            <select class="form-control select" id="type_text" name="score_id">
-                                @if (Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy())
-                                    <optgroup label="Научные сотрудники">
-                                        @foreach ($scores as $type)
-                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Специалиста по работе с персоналом">
-                                        @foreach ($hrScores as $type)
-                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Главный бухгалтер">
-                                        @foreach ($accountantScores as $type)
-                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Юристконсульт">
-                                        @foreach ($lawyerScores as $type)
-                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Заведующий хозяйством">
-                                        @foreach ($maintainerScores as $type)
-                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Специалист ИКТ">
-                                        @foreach ($ictScores as $type)
-                                            <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
-                                        @endforeach
-                                    </optgroup>                   
-                                
-                                @else
-                                    @foreach ($scores as $type)
-                                        <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score}})</option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-                    </div>
-
-                    {{-- <div class="form-group row">
-                        <div class="col-sm-1"></div>
-                        <label class="col-sm-3 col-form-label">Категория</label>
-                        <div class="col-sm-4">
-                            <select class="form-control" id="type_text" name="type_id">
-                                @foreach ($types as $type)
-                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                    <x-form.select-group label="Категория" name="score_id" :multiple='false'>
+                        @foreach ($scoresGrouped as $group => $items)
+                            <optgroup label="{{ $group }}">
+                                @foreach ($items as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score }})</option>
                                 @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-sm-1"></div>
-                        <label class="col-sm-3 col-form-label">Приоритет</label>
-                        <div class="col-sm-4">
-                            <select class="form-control" id="priority_text" name="priority_id">
-                                @if(Auth::user()->isDirector() || Auth::user()->isDeputy() || Auth::user()->isMailer())
-                                    @foreach ($priorities as $priority)
-                                        <option value="{{ $priority->id }}">{{ $priority->name }}</option>
-                                    @endforeach
-                                @else
-                                    @foreach ($priorities as $priority)
-                                        @if ($priority->id != 4)
-                                            <option value="{{ $priority->id }}">{{ $priority->name }}</option>
-                                        @endif
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-                    </div> --}}
+                            </optgroup>
+                        @endforeach
+                    </x-form.select-group>
 
                     <div class="row">
                         <div class="col-sm-12">
@@ -136,7 +54,7 @@
                         </div>
                     </div>
 
-                    @if (Auth::user()->isDirector())
+                    @if (Auth::user()->isDirector() || Auth::user()->isMailer())
                         <div class="form-group row">
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
@@ -163,35 +81,19 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
-                            <div class="col-sm-4">
-                                <select class="form-control select" name="helpers[]" multiple>
-                                    @foreach ($sectors as $sector)
-                                        <optgroup label="{{ $sector->name }}">
-                                            @foreach ($sector->users as $user)
-                                                @if($user->id != Auth::user()->id)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                @endif
-                                            @endforeach
-                                        </optgroup>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
                     @elseif(Auth::user()->isDeputy())
                         @if(Auth::user()->id == 2)
                             <div class="form-group row">
                                 <div class="col-sm-1"></div>
                                 <label class="col-sm-3 col-form-label">Ответственный</label>
                                 <div class="col-sm-4">
-                                    <select class="form-control select" name="users[]" multiple>
+                                    <select class="form-control select2" name="users[]" multiple>
                                         @foreach ($sectors as $sector)
                                             <optgroup label="{{ $sector->name }}">
                                                 @foreach ($sector->users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @if (!$user->isDirector() && $user->id != 3)
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>                                                        
+                                                    @endif
                                                 @endforeach
                                             </optgroup>
                                         @endforeach
@@ -207,7 +109,9 @@
                                         @foreach ($sectors as $sector)
                                             <optgroup label="{{ $sector->name }}">
                                                 @foreach ($sector->users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @if (!$user->isDirector() && $user->id != 2)
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>                                                        
+                                                    @endif
                                                 @endforeach
                                             </optgroup>
                                         @endforeach
@@ -222,67 +126,6 @@
                             <div class="col-sm-4">
                                 <select class="form-control" name="creator_id" id="">
                                         <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
-                            <div class="col-sm-4">
-
-                                <select class="form-control select" name="helpers[]" multiple>
-                                    @foreach ($sectors as $sector)
-                                    <optgroup label="{{ $sector->name }}">
-                                        @foreach ($sector->users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                        </optgroup>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                    @elseif(Auth::user()->isMailer())
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Ответственный</label>
-                            <div class="col-sm-4">
-                                <select class="form-control select" name="users[]" multiple>
-                                    @foreach ($sectors as $sector)
-                                    <optgroup label="{{ $sector->name }}">
-                                        @foreach ($sector->users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Постановщик</label>
-                            <div class="col-sm-4">
-                                <select class="form-control" name="creator_id" id="">
-                                        <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
-                            <div class="col-sm-4">
-
-                                <select class="form-control select" name="helpers[]" multiple>
-                                    @foreach ($sectors as $sector)
-                                    <optgroup label="{{ $sector->name }}">
-                                        @foreach ($sector->users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                        </optgroup>
-                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -310,23 +153,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
-                            <div class="col-sm-4">
-                                <select class="form-control select" name="helpers[]" multiple>
-                                    @foreach ($sectors as $sector)
-                                    <optgroup label="{{ $sector->name }}">
-                                        @foreach ($sector->users as $user)
-                                            @if($user->id != Auth::user()->id && $user->id != 1)
-                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                            @endif
-                                        @endforeach
-                                    </optgroup>
-                                @endforeach
-                                </select>
-                            </div>
-                        </div>
                     @elseif (Auth::user()->isResearcher())
                         <div class="form-group row">
                             <div class="col-sm-1"></div>
@@ -348,23 +174,6 @@
                             </div>
                         </div>
 
-                        {{-- <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
-                            <div class="col-sm-4">
-                                <select class="form-control select" name="helpers[]" multiple>
-                                    @foreach ($sectors as $sector)
-                                    <optgroup label="{{ $sector->name }}">
-                                        @foreach ($sector->users as $user)
-                                            @if($user->id != Auth::user()->id && $user->id != 1)
-                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                            @endif
-                                        @endforeach
-                                    </optgroup>
-                                @endforeach
-                                </select>
-                            </div>
-                        </div> --}}
                     @endif
                     <div class="form-group row">
                         <div class="col-sm-1"></div>

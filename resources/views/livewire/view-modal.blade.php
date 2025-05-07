@@ -300,31 +300,6 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <div class="card-body">
-                                        <h6 class="card-title m-b-20">
-                                            Соисполнители
-                                        </h6>
-                                        <ul class="list-box">
-                                            @forelse ($task->executers as $user)
-                                                <li>
-                                                    <a href="profile.html">
-                                                        <div class="list-item">
-                                                            <div class="list-left">
-                                                                <span class="avatar"><img alt="" src="{{ ($user->avatar) ? asset('user_image/'.$user->avatar) : asset('user_image/avatar.jpg') }}"></span>
-                                                            </div>
-                                                            <div class="list-body">
-                                                                <span class="message-author">{{ $user->name }}</span>
-                                                                <div class="clearfix"></div>
-                                                                <span class="message-content">{{ $user->role->name }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                            @empty
-                                                <li>Нет Соисполнители</li>
-                                            @endforelse
-                                        </ul>
-                                    </div>
                                 </div>
                             </div>
                         </div>
