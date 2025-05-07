@@ -40,12 +40,8 @@
                             <div class="form-group col-md-3">
                               <label>Ответственный</label>
                               <select name="tasks[0][workers][]" class="form-control select2" multiple required>
-                                @foreach ($sectors as $sector)
-                                  <optgroup label="{{ $sector->name }}">
-                                      @foreach ($sector->users as $user)
-                                          <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                      @endforeach
-                                  </optgroup>
+                                @foreach (Auth::user()->sector->users->where('leave', 0) as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
                                 @endforeach
                               </select>
                             </div>
@@ -94,12 +90,8 @@
                         <div class="form-group col-md-3">
                           <label>Ответственный</label>
                           <select name="tasks[__index__][workers][]" class="form-control select2" multiple required>
-                            @foreach ($sectors as $sector)
-                            <optgroup label="{{ $sector->name }}">
-                                @foreach ($sector->users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                @endforeach
-                                </optgroup>
+                            @foreach (Auth::user()->sector->users->where('leave', 0) as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @endforeach
                           </select>
                         </div>

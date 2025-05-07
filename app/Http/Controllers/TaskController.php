@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\TaskCreatedEvent;
+use App\Exports\WeeklyTasksExport;
 use App\Models\File;
 use App\Models\Repeat;
 use App\Models\Task;
@@ -10,6 +11,7 @@ use App\Models\TaskUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TaskController extends Controller
 {
@@ -101,7 +103,7 @@ class TaskController extends Controller
                         ]);
 
                         $task->executers()->sync($request->helpers, false);
-                        
+
                         if($request->hasFile('file')){
                             foreach($request->file as $file){
                                 $filename = time().$file->getClientOriginalName();
@@ -341,7 +343,7 @@ class TaskController extends Controller
         $request->validate([
             'tasks' => 'required|array|min:1',
             'tasks.*.name' => 'required|string|max:255',
-            'tasks.*.deadline' => 'required|date',
+            'tasks.*.deadline' => 'required|date|after_or_equal:today',
             'tasks.*.workers' => 'required|array|min:1',
             'tasks.*.task_score' => 'exists:scores,id',
         ]);
@@ -359,10 +361,16 @@ class TaskController extends Controller
                     'sector_id' => User::find($workerId)->sector_id,
                     'score_id' => $taskData['task_score'],
                     'total' => null,
+                    'planning_type' => 'weekly',
                 ]);
             }
         }
 
         return redirect()->back()->with('success', 'Все задачи были успешно созданы для выбранных сотрудников.');
+    }
+
+    public function exportWeeklyTasks()
+    {
+        return Excel::download(new WeeklyTasksExport, 'weekly-tasks.xlsx');
     }
 }

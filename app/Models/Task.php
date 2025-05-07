@@ -24,6 +24,7 @@ class Task extends Model
         'overdue',
         'repeat_id',
         'total',
+        'planning_type',
     ];
 
     public function username($id){
