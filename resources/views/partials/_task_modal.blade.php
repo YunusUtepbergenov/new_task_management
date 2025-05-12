@@ -59,7 +59,7 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
-                                <select class="form-control select" name="users[]" multiple>
+                                <select class="form-control select2" name="users[]" multiple>
                                     @foreach ($sectors as $sector)
                                     <optgroup label="{{ $sector->name }}">
                                         @foreach ($sector->users as $user)
@@ -92,7 +92,7 @@
                                             <optgroup label="{{ $sector->name }}">
                                                 @foreach ($sector->users as $user)
                                                     @if (!$user->isDirector() && $user->id != 3)
-                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>                                                        
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                     @endif
                                                 @endforeach
                                             </optgroup>
@@ -105,12 +105,12 @@
                                 <div class="col-sm-1"></div>
                                 <label class="col-sm-3 col-form-label">Ответственный</label>
                                 <div class="col-sm-4">
-                                    <select class="form-control select" name="users[]" multiple>
+                                    <select class="form-control select2" name="users[]" multiple>
                                         @foreach ($sectors as $sector)
                                             <optgroup label="{{ $sector->name }}">
                                                 @foreach ($sector->users as $user)
                                                     @if (!$user->isDirector() && $user->id != 2)
-                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>                                                        
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                     @endif
                                                 @endforeach
                                             </optgroup>
@@ -118,7 +118,8 @@
                                     </select>
                                 </div>
                             </div>
-                        @endif
+
+                    @endif
 
                         <div class="form-group row">
                             <div class="col-sm-1"></div>
@@ -135,7 +136,7 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
-                                <select class="form-control select" name="users[]" multiple>
+                                <select class="form-control select2" name="users[]" multiple>
                                     @foreach (Auth::user()->sector->users->where('leave', 0) as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach

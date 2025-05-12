@@ -83,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('task/repeat/destroy/{id}', [TaskController::class, 'destroyRepeat'])->name('repeat.delete');
 
     Route::post('tasks/bulk-store', [TaskController::class, 'bulkStore'])->name('tasks.bulk_store');
+    Route::get('/reports/weekly-tasks', [TaskController::class, 'exportWeeklyTasks'])->name('tasks.weekly_report');
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
