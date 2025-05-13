@@ -159,7 +159,7 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
-                                <select class="form-control select" name="users[]" multiple>
+                                <select class="form-control select2" name="users[]" multiple>
                                     <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
                                 </select>
                             </div>
@@ -169,8 +169,8 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Постановщик</label>
                             <div class="col-sm-4">
-                                <select class="form-control" name="creator_id" id="">
-                                    <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
+                                <select class="form-control" name="creator_id">
+                                    <option value="{{ Auth::user()->sector->head()->id }}">{{ Auth::user()->sector->head()->name }}</option>
                                 </select>
                             </div>
                         </div>
@@ -204,7 +204,7 @@
                                 </select>
                             </div>
                             <div class="col-sm-6" id="days_container" style="display:none">
-                                <select class="form-control select" name="days[]" multiple>
+                                <select class="form-control select2" name="days[]" multiple>
                                     <option value="1">Понедельник</option>
                                     <option value="2">Вторник</option>
                                     <option value="3">Среда</option>

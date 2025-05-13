@@ -30,11 +30,11 @@
         </div>
         <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
             @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() || Auth::user()->isResearcher())
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
+                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Внеплановые Задачи</a>
             @endif
 
             @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить еженедельные задачи</a>
+                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Недельный план</a>
             @endif
         </div>
     </div>
