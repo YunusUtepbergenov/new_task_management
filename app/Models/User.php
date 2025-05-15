@@ -2,16 +2,13 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
-use PDO;
-use phpDocumentor\Reflection\Types\Null_;
+use Illuminate\Support\Str;
+
 
 class User extends Authenticatable
 {
@@ -246,5 +243,10 @@ class User extends Authenticatable
 
     public function isResearcher(){
         return $this->role->name === "Главный научный сотрудник" || $this->role->name === "Ведущий научный сотрудник";
+    }
+
+    public function employee_name(){
+        $name = Str::words($this->name, 2, '');
+        return $name;
     }
 }

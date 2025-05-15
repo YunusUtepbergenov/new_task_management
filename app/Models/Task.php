@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Task extends Model
 {
@@ -25,11 +26,23 @@ class Task extends Model
         'repeat_id',
         'total',
         'planning_type',
+        'extended_deadline'
     ];
 
     public function username($id){
         $user = User::find($id);
-        return $user->name;
+        $name = Str::words($user->name, 2, '');
+        return $name;
+    }
+
+    public function employee_name(){
+        $name = Str::words($this->user->name, 2, '');
+        return $name;
+    }
+
+    public function creator_name(){
+        $name = Str::words($this->user->name, 2, '');
+        return $name;
     }
 
     public function executers(){

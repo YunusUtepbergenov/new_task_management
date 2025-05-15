@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('tasks.bulk_store') }}" method="POST" id="createProject">
+                {{-- <form action="{{ route('tasks.bulk_store') }}" method="POST" id="createProject">
                     @csrf
                     <div id="task-entries">
                         <!-- Task row group -->
@@ -147,7 +147,7 @@
                         </div>
                       </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

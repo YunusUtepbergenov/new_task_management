@@ -184,9 +184,15 @@
                                                     <td class="text-right" id="task_created">{{ $task->created_at->format('Y-m-d') }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Крайний срок:</td>
+                                                    <td>Срок:</td>
                                                     <td class="text-right" id="task_deadline">{{ $task->deadline }}</td>
                                                 </tr>
+                                                @isset($task->extended_deadline)
+                                                    <tr>
+                                                        <td>Продление:</td>
+                                                        <td class="text-right" id="task_deadline">{{ $task->extended_deadline }}</td>
+                                                    </tr>
+                                                @endisset
                                                 <tr>
                                                     <td>Категория:</td>
                                                     <td class="text-right" id="task_type">{{ ($task->score) ? $task->score->name : '' }}</td>

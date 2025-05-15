@@ -2,19 +2,8 @@
     <div wire:loading wire:target="view">
         <div class="loading">Loading&#8230;</div>
     </div>
-    <div class="row filter-row">
-        {{-- <div class="col-sm-4 col-md-2">
-            <div class="form-group">
-                <label for="select">Проекты</label>
-                <select class="form-control" wire:model="projectId" aria-hidden="true">
-                    <option value="Empty">Все</option>
-                    <option value="">Не проект</option>
-                    @foreach ($projects as $project)
-                        <option value="{{ $project->id }}">{{ $project->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div> --}}
+    {{-- <div class="row filter-row">
+
         <div class="col-sm-4 col-md-2">
             <div class="form-group">
                 <label for="select">Состояние</label>
@@ -34,7 +23,79 @@
             <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Недельный план</a>
             @endif
         </div>
-    </div>
+    </div> --}}
+        <form action="{{ route('tasks.bulk_store') }}" method="POST" id="createProject">
+            @csrf
+            <div class="task-group border p-3 mb-3 bg-light rounded">
+                <div class="row">
+                    <!-- Task row group -->
+                    <div class="form-group col-lg-2">
+                        <label>Категория</label>
+                        <select class="form-control select2" name="tasks[0][task_score]">
+                            @foreach ($scoresGrouped as $group => $items)
+                                <optgroup label="{{ $group }}">
+                                    @foreach ($items as $type)
+                                        <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score }})</option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-4">
+                        <label>Название</label>
+                        <textarea type="text" name="tasks[0][name]" class="form-control" rows="1" required></textarea>
+                    </div>
+                    <div class="form-group col-lg-2">
+                        <label>Срок</label>
+                        <div class="cal-icon">
+                            <input name="tasks[0][deadline]" class="form-control datetimepicker" required>
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-2">
+                        <label>Ответственный</label>
+                        <select name="tasks[0][workers][]" class="form-control select2" multiple required>
+                            @if (Auth::user()->isDirector() || Auth::user()->isMailer())
+                                @foreach ($sectors as $sector)
+                                    <optgroup label="{{ $sector->name }}">
+                                        @foreach ($sector->users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->employee_name() }}</option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+
+                            @elseif(Auth::user()->isDeputy())
+                                @foreach ($sectors as $sector)
+                                    <optgroup label="{{ $sector->name }}">
+                                        @foreach ($sector->users as $user)
+                                            @if (!$user->isDirector() && !$user->isDeputy())
+                                                <option value="{{ $user->id }}">{{ $user->employee_name() }}</option>                                                        
+                                            @endif
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                                
+                                @elseif(Auth::user()->isHead())
+                                    @foreach (Auth::user()->sector->users()->where('leave', 0)->orderBy('role_id', 'ASC')->get() as $user)
+                                        <option value="{{ $user->id }}">{{ $user->employee_name() }}</option>
+                                    @endforeach
+                            @endif
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-2">
+                        <label>Тип</label>
+                        <select name="plan_type" class="form-control" required>
+                            <option value="" disabled selected>Выберите</option>
+                            <option value="weekly">Еженедельный план</option>
+                            <option value="unplanned">Внепланровая задача</option>
+                        </select>
+                    </div>
+                    {{-- <div class="form-group col-lg-1 text-right">
+                        <button type="button" class="btn btn-success remove-task">+</button>
+                    </div> --}}
+                </div>
+            </div>
+        </form>
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -47,9 +108,9 @@
                                     <th class="skip-filter"></th>
                                     <th class="skip-filter">Название</th>
                                     <th class="skip-filter">Дата Создание</th>
-                                    <th class="skip-filter">Крайний срок</th>
+                                    <th class="skip-filter">Срок</th>
                                     <th class="skip-filter">Ответственный</th>
-                                    <th class="skip-filter">Состояние</th>
+                                    <th class="skip-filter">Статус</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -93,8 +154,16 @@
                                         @endif
                                     </td>
                                     <td>{{ $task->created_at->format('Y-m-d') }}</td>
-                                    <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
-                                    <td>{{ $task->user->name }}</td>
+                                    <td>
+                                        @if ($task->extended_deadline)
+                                            <span class="badge bg-inverse-warning" title="Оригинальный срок: {{ $task->deadline }}">
+                                                {{ \Carbon\Carbon::parse($task->extended_deadline)->format('Y-m-d') }} <i class="fa fa-clock-o text-danger" title="Срок продлен"></i>
+                                            </span>
+                                        @else
+                                            <span class="badge bg-inverse-warning">{{ \Carbon\Carbon::parse($task->deadline)->format('Y-m-d') }}</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $task->employee_name() }}</td>
                                     <td>
                                         @if ($task->overdue)
                                             <span class="badge bg-inverse-warning">Просроченный</span>

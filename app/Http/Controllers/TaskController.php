@@ -189,7 +189,6 @@ class TaskController extends Controller
         // $repeat_arr = ['ordinary', 'weekly', 'monthly', 'quarterly'];
         $request->validate([
             'name' => 'required|min:3|max:255',
-            'description' => 'required|min:3',
             'deadline' => 'required|date_format:Y-m-d|after:yesterday',
             'file.*' => 'nullable|file|max:5000'
         ]);
@@ -207,7 +206,7 @@ class TaskController extends Controller
             'score_id'  => $request->score_id,
             'name' => $request->name,
             'description' => $request->description,
-            'deadline' => $request->deadline,
+            'extended_deadline' => $request->deadline,
             'status' => 'Новое',
             'overdue' => 0,
             'repeat' => $request->repeat
@@ -299,6 +298,7 @@ class TaskController extends Controller
 
     public function getTaskInfo($id){
         $task = Task::with(['executers', 'repeat'])->where('id', $id)->first();
+        $task->extended_deadline = \Carbon\Carbon::parse($task->extended_deadline)->format('Y-m-d');
 
         return response()->json(['task' => $task]);
     }

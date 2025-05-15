@@ -27,37 +27,6 @@
                             </select>
                         </div>
                     </div>
-                    {{-- <div class="form-group row">
-                        <div class="col-sm-1"></div>
-                        <label class="col-sm-3 col-form-label">Категория</label>
-                        <div class="col-sm-4">
-                            <select class="form-control" id="type_id1" name="type_id">
-                                @foreach ($types as $type)
-                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-sm-1"></div>
-                        <label class="col-sm-3 col-form-label">Приоритет</label>
-                        <div class="col-sm-4">
-                            <select class="form-control" id="priority_id1" name="priority_id">
-                                @if(Auth::user()->isDirector() || Auth::user()->isDeputy() || Auth::user()->isMailer())
-                                    @foreach ($priorities as $priority)
-                                        <option value="{{ $priority->id }}">{{ $priority->name }}</option>
-                                    @endforeach
-                                @else
-                                    @foreach ($priorities as $priority)
-                                        @if ($priority->id != 4)
-                                            <option value="{{ $priority->id }}">{{ $priority->name }}</option>
-                                        @endif
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-                    </div> --}}
 
                     <div class="row">
                         <div class="col-sm-12">
@@ -232,23 +201,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
-                            <div class="col-sm-4">
-
-                                <select class="form-control select" name="helpers[]" id="helpers1" multiple>
-                                    @foreach ($sectors as $sector)
-                                    <optgroup label="{{ $sector->name }}">
-                                        @foreach ($sector->users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                        </optgroup>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
                     @elseif(Auth::user()->isHead())
                         <div class="form-group row">
                             <div class="col-sm-1"></div>
@@ -272,23 +224,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
-                            <div class="col-sm-4">
-                                <select class="form-control select" name="helpers[]" id="helpers1" multiple>
-                                    @foreach ($sectors as $sector)
-                                    <optgroup label="{{ $sector->name }}">
-                                        @foreach ($sector->users as $user)
-                                            @if($user->id != Auth::user()->id && $user->id != 1)
-                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                            @endif
-                                        @endforeach
-                                    </optgroup>
-                                @endforeach
-                                </select>
-                            </div>
-                        </div>
                     @endif
                     <div class="form-group row">
                         <div class="col-sm-1"></div>

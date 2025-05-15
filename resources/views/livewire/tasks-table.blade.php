@@ -3,18 +3,7 @@
         <div class="loading">Loading&#8230;</div>
     </div>
     <div class="row filter-row">
-        {{-- <div class="col-sm-4 col-md-2">
-            <div class="form-group">
-                <label for="select">Проекты</label>
-                <select class="form-control" wire:model="projectId" aria-hidden="true">
-                    <option value="Empty">Все</option>
-                    <option value="">Не проект</option>
-                    @foreach ($projects as $project)
-                        <option value="{{ $project['id'] }}">{{ $project['name'] }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div> --}}
+
         <div class="col-sm-4 col-md-2">
             <div class="form-group">
                 <label for="select">Состояние</label>
@@ -50,9 +39,9 @@
                                     <th></th>
                                     <th>Название</th>
                                     <th>Дата Создание</th>
-                                    <th>Крайний срок</th>
+                                    <th>Cрок</th>
                                     <th>Постановщик</th>
-                                    <th>Состояние</th>
+                                    <th>Cтатус</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,7 +88,7 @@
                                     </td>
                                     <td>{{ $task->created_at->format('Y-m-d') }}</td>
                                     <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
-                                    <td>{{ $task->creator->name }}</td>
+                                    <td>{{ $task->creator_name() }}</td>
                                     <td>
                                         @if ($task->overdue)
                                             <span class="badge bg-inverse-warning">Просроченный</span>

@@ -58,14 +58,21 @@
 
             $.get("/task/info/byid/" + id, function (task) {
                 $('#helpers1').val(null).trigger('change');
-                console.log(task.task.score_id);
                 $("#project_id1").val(task.task.project_id);
                 $("#kpi_type").val(task.task.score_id);
                 // $("#type_id1").val(task.task.type_id);
                 // $("#priority_id1").val(task.task.priority_id);
                 $("#id1").val(task.task.id);
                 $("#name1").val(task.task.name);
-                $("#deadline1").val(task.task.deadline);
+                console.log(task.task.deadline);
+                console.log(task.task.extended_deadline);
+                
+                if(task.task.extended_deadline === null){
+                    $("#deadline1").val(task.task.deadline);                    
+                }else{
+                    $("#deadline1").val(task.task.extended_deadline);
+                }
+                
                 $("#user_id1").val(task.task.user_id);
                 $("#creator_id1").val(task.task.creator_id);
                 if(task.task.executers.length > 0){
@@ -78,8 +85,7 @@
                     }
                     $('#helpers1').trigger('change');
                 }
-                $("#helpers1").val(task.task.deadline);
-                $("#deadline1").val(task.task.deadline);
+
                 $("#description1").val(task.task.description);
             });
         }

@@ -5,12 +5,14 @@ namespace App\Http\Livewire;
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
+use App\Services\TaskService;
 use Livewire\Component;
 
 class OrderedTable extends Component
 {
     public $tasks, $projects, $chosen_project, $username;
     public $projectId="Empty", $status="Empty";
+    public $scoresGrouped = [];
 
     public function mount(){
         $this->username = Auth::user()->name;
@@ -91,6 +93,8 @@ class OrderedTable extends Component
 
     public function render()
     {
+        $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
+
         return view('livewire.ordered-table');
     }
 }
