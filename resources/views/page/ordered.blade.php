@@ -24,17 +24,14 @@
     </div>
     <!-- /Page Header -->
     @livewire('ordered-table', ['projects' => $projects])
-    @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
+    {{-- @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
         @include('partials._project_modal')
-    @endif
+    @endif --}}
 
     @include('partials._task_modal')
     @include('partials._edit_task')
-    
-    <!-- View Project Modal -->
-    {{-- @include('partials._view_modal')--}}
+
     @livewire('view-modal')
-    <!-- /View Project Modal -->
 @endsection
 
 @section('scripts')
@@ -42,26 +39,15 @@
     <script src="{{ asset('assets/js/ddtf.js') }}"></script>
     <script>
         $('#myTable').ddTableFilter();
-        // $('#flexCheckDefault3').removeAttr('checked');
         $("#name2").addClass("d-none");
         $("#deadline2").addClass("d-none");
         $("#description2").addClass("d-none");
 
         function editTask(id) {
-            var helpers = $('#helpers1 option');
-
-            for(var c=0; c < helpers.length; c++){
-                if (helpers[c].hasAttribute('selected')) {
-                    helpers[c].removeAttribute('selected');
-                }
-            }
-
             $.get("/task/info/byid/" + id, function (task) {
                 $('#helpers1').val(null).trigger('change');
                 $("#project_id1").val(task.task.project_id);
                 $("#kpi_type").val(task.task.score_id);
-                // $("#type_id1").val(task.task.type_id);
-                // $("#priority_id1").val(task.task.priority_id);
                 $("#id1").val(task.task.id);
                 $("#name1").val(task.task.name);
                 console.log(task.task.deadline);
@@ -83,7 +69,6 @@
                             }
                         }
                     }
-                    $('#helpers1').trigger('change');
                 }
 
                 $("#description1").val(task.task.description);
@@ -131,4 +116,5 @@
             });
         });
     </script>
+    @stack('scripts')
 @endsection

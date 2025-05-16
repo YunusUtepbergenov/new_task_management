@@ -2,28 +2,60 @@
 
 namespace App\Http\Livewire;
 
+use App\Events\TaskCreatedEvent;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Services\TaskService;
 use Livewire\Component;
 
 class OrderedTable extends Component
 {
-    public $tasks, $projects, $chosen_project, $username;
+    public $weeklyTasks, $unplannedTasks, $projects, $username;
     public $projectId="Empty", $status="Empty";
     public $scoresGrouped = [];
 
-    public function mount(){
-        $this->username = Auth::user()->name;
-        $this->project = Project::all();
+    public $task_score = 'def';
+    public $task_name;
+    public $deadline;
+    public $task_employee = [];
+    public $task_plan = 1;
 
-        $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->where('status', '<>', "Выполнено")->where('project_id', Null)
-                        ->latest()->get();
+    public function taskStore()
+    {
+        $this->validate([
+            'task_name' => 'required|string|max:255',
+            'deadline' => 'required|date|after:yesterday',
+            'task_plan' => 'required|string',
+            'task_employee' => 'required|array|min:1',
+            'task_score' => 'required|integer',
+        ]);
 
-        $this->chosen_project = Project::with(['tasks' => function($query){
-            $query->with('user')->where('status', '<>', "Выполнено")->where('creator_id', Auth::user()->id)->latest();
-        }])->where('user_id', Auth::user()->id)->latest()->get();
+        foreach ($this->task_employee as $usr) {
+            $user = User::find($usr);
+
+            $task = Task::create([
+                'creator_id' => Auth::id(),
+                'user_id' => $user->id,
+                'project_id' => null,
+                'sector_id' => $user->sector->id,
+                'type_id' => 1,
+                'priority_id' => 1,
+                'score_id' => $this->task_score,
+                'name' => $this->task_name,
+                'description' => null,
+                'deadline' => $this->deadline,
+                'status' => 'Новое',
+                'planning_type' => $this->task_plan,
+            ]);
+
+            event(new TaskCreatedEvent($task));
+        }
+
+        $this->reset(['task_score', 'task_name', 'task_employee', 'deadline', 'task_plan']);
+
+        $this->mount();
     }
 
     public function view($task_id){
@@ -31,68 +63,29 @@ class OrderedTable extends Component
         $this->updated();
     }
 
-    public function updated(){
-        if($this->projectId == Null){
-            if($this->status == "Empty"){
-                $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)
-                                ->where('project_id', null)->latest()->get();
-            }else{
-                if($this->status == "Просроченный"){
-                    $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)
-                                    ->where('project_id', null)->where('overdue', 1)->latest()->get();
-                }else{
-                    $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)
-                                    ->where('project_id', null)->where('status', $this->status)->where('overdue', 0)->latest()->get();
-                }
-            }
-            $this->chosen_project = Null;
-        }elseif($this->projectId == "Empty"){
-            if($this->status == "Empty"){
-                $this->tasks = Task::with('user:id,name,sector_id,role_id')->where('creator_id', Auth::user()->id)->where('status', '<>', "Выполнено")
-                ->where('project_id', null)->latest()->get();
-
-                $this->chosen_project = Project::with(['tasks' => function($query){
-                    $query->with('user')->where('creator_id', Auth::user()->id)->where('status', '<>', "Выполнено")->latest();
-                }])->where('user_id', Auth::user()->id)->latest()->get();
-            }else{
-                if($this->status == "Просроченный"){
-                    $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)
-                    ->where('project_id', null)->where('overdue', 1)->latest()->get();
-
-                    $this->chosen_project = Project::with(['tasks' => function($query){
-                        $query->with('user')->where('creator_id', Auth::user()->id)->where('overdue', 1)->latest();
-                    }])->where('user_id', Auth::user()->id)->latest()->get();
-                }else{
-                   $this->tasks = Task::with(['user:id,name,sector_id,role_id'])->where('creator_id', Auth::user()->id)
-                                        ->where('project_id', null)->where('status', $this->status)->where('overdue', 0)->latest()->get();
-                    $this->chosen_project = Project::with(['tasks' => function($query){
-                        $query->with('user')->where('creator_id', Auth::user()->id)->where('status', $this->status)->where('overdue', 0)->latest();
-                    }])->where('user_id', Auth::user()->id)->latest()->get();
-                }
-            }
-        }else{
-            $this->tasks = Null;
-            if($this->status == "Empty"){
-                $this->chosen_project = Project::with(['tasks' => function($query){
-                    $query->with('user')->where('creator_id', Auth::user()->id)->latest();
-                }])->where('id', $this->projectId)->get();
-            }else{
-                if($this->status == "Просроченный"){
-                    $this->chosen_project = Project::with(['tasks' => function($query){
-                        $query->with('user')->where('creator_id', Auth::user()->id)->where('overdue', 1)->latest();
-                    }])->where('id', $this->projectId)->get();
-                }
-                else{
-                    $this->chosen_project = Project::with(['tasks' => function($query){
-                        $query->with('user')->where('creator_id', Auth::user()->id)->where('status', $this->status)->where('overdue', 0)->latest();
-                    }])->where('id', $this->projectId)->get();
-                }
-            }
-        }
+    public function updatedTaskPlan($value)
+    {
+        $this->emit('task_plan_updated', $value);
     }
 
     public function render()
     {
+        $this->username = Auth::user()->name;
+
+        $this->weeklyTasks = Task::with('user:id,name,sector_id,role_id')
+            ->where('creator_id', Auth::id())
+            ->where('planning_type', 'weekly')
+            ->where('status', '<>', 'Выполнено')
+            ->whereNull('project_id')
+            ->latest()->get();
+
+        $this->unplannedTasks = Task::with('user:id,name,sector_id,role_id')
+            ->where('creator_id', Auth::id())
+            ->where('planning_type', 'unplanned')
+            ->where('status', '<>', 'Выполнено')
+            ->whereNull('project_id')
+            ->latest()->get();
+
         $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
 
         return view('livewire.ordered-table');

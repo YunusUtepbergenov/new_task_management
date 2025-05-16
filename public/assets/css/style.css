@@ -215,10 +215,7 @@ a:focus {
     box-shadow: none;
     outline: 0 none;
 }
-.form-control[disabled],
-fieldset[disabled] .form-control {
-    cursor: not-allowed;
-}
+
 input,
 button,
 a {
@@ -2510,10 +2507,18 @@ table.dataTable thead > tr > td.sorting {
 .btn-text {
     color: #fff;
 }
+
 .submit-section {
     text-align: center;
     margin-top: 40px;
 }
+
+.create-task-btn{
+    padding: 5px;
+    max-width: 180px;
+    font-size: 12px;
+}
+
 .submit-btn {
     border-radius: 50px;
     font-size: 18px;
