@@ -8,11 +8,11 @@
 	<!-- Page Content -->
 	<div class="content container-fluid">
         <!-- Page Content -->
-	<div class="content container-fluid">
-		<!-- Page Filter -->
-		@livewire('reports.kpi')
-	</div>
-    <iframe id="txtArea1" style="display:none"></iframe>
+		<div class="content container-fluid">
+			<!-- Page Filter -->
+			@livewire('reports.kpi')
+		</div>
+    	<iframe id="txtArea1" style="display:none"></iframe>
 
 	<!-- /Page Content -->
 @endsection

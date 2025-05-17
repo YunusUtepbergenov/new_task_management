@@ -50,6 +50,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('upload/test/digest', [DigestController::class, 'uploadTest'])->name('upload.test');
     Route::get('digest/formatter', [DigestController::class, 'formatter'])->name('digest.formatter');
 
+    Route::get('/weekly-tasks', function () {
+        return view('page.reports.weekly');
+    })->name('weekly.tasks');
+
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
 
     Route::resource('project', ProjectController::class)->only([

@@ -3,30 +3,13 @@
         <div class="loading">Loading&#8230;</div>
     </div>
     <div class="row filter-row">
-
-        <div class="col-sm-4 col-md-2">
-            <div class="form-group">
-                <label for="select">Состояние</label>
-                <select class="form-control" wire:model="status" aria-hidden="true">
-                    <option value="Empty">Все</option>
-                    <option value="Новое">Новое</option>
-                    <option value="Выполняется">Выполняется</option>
-                    <option value="Ждет подтверждения">Ждет подтверждения</option>
-                    <option value="Выполнено">Выполнено</option>
-                    <option value="Просроченный">Просроченный</option>
-                </select>
-            </div>
-        </div>
         <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
             @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() || Auth::user()->isResearcher())
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Внеплановые Задачи</a>
-            @endif
-
-            @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_project"> Добавить Недельный план</a>
+                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
             @endif
         </div>
     </div>
+    <br>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
