@@ -47,9 +47,11 @@
             $.get("/task/info/byid/" + id, function (task) {
                 $('#helpers1').val(null).trigger('change');
                 $("#project_id1").val(task.task.project_id);
-                $("#kpi_type").val(task.task.score_id);
+                $("#kpi_type1").val(task.task.score_id);
                 $("#id1").val(task.task.id);
                 $("#name1").val(task.task.name);
+                $("#plan_type1").val(task.task.planning_type);
+
                 console.log(task.task.deadline);
                 console.log(task.task.extended_deadline);
                 

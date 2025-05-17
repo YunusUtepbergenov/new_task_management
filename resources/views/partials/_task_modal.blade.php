@@ -22,6 +22,18 @@
                         @endforeach
                     </x-form.select-group>
 
+                    <div class="form-group row">
+                        <div class="col-sm-1"></div>
+                        <label class="col-sm-3 col-form-label">Тип</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="plan_type">
+                                <option value="1" selected disabled>Выберите</option>
+                                <option value="weekly">Еженедельный план</option>
+                                <option value="unplanned">Внеплановая задача</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
@@ -29,16 +41,6 @@
                                 <input class="form-control" name="name" type="text">
                             </div>
                             <div class="alert alert-danger" id="name"></div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label>Поручение / Комментария</label>
-                                <textarea rows="4" class="form-control" name="description" placeholder="Поручение / Комментария"></textarea>
-                            </div>
-                            <div class="alert alert-danger" id="description"></div>
                         </div>
                     </div>
 
@@ -75,7 +77,7 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Постановщик</label>
                             <div class="col-sm-4">
-                                <select class="form-control" name="creator_id" id="task_creator">
+                                <select class="form-control" name="creator_id" id="task_creator9">
                                         <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
                                 </select>
                             </div>
@@ -188,41 +190,7 @@
                             <div class="alert alert-danger" id="deadline"></div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <div class="col-sm-1"></div>
-                        <div class="col-sm-3 form-check">
-                            <input class="form-check-input" type="checkbox" name="repeat_check" id="flexCheckDefault">
-                            <label class="form-check-label" style="margin-top: 3px" for="flexCheckDefault">
-                                Повторяющаяся задача
-                            </label>
-                        </div>
-                        <div class="col-sm-8 row repeat_div" style="display: none">
-                            <div class="col-sm-6" id="repeat_container" style="display: none">
-                                <select class="form-control" name="repeat" id="repeat">
-                                    <option value="weekly" selected>Еженедельная</option>
-                                    <option value="monthly">Ежемесячная</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-6" id="days_container" style="display:none">
-                                <select class="form-control select2" name="days[]" multiple>
-                                    <option value="1">Понедельник</option>
-                                    <option value="2">Вторник</option>
-                                    <option value="3">Среда</option>
-                                    <option value="4">Четверг</option>
-                                    <option value="5" selected>Пятница</option>
-                                    <option value="6">Суббота</option>
-                                    <option value="7">Воскресенье</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-3" id="month_container" style="display:none">
-                                <select class="form-control" name="month_day">
-                                    @for ($a = 1; $a <= 28; $a++)
-                                        <option value="{{ $a }}">{{ $a }}</option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="submit-section">
                         <button class="btn btn-primary submit-btn">Поставить Задачу</button>
                     </div>

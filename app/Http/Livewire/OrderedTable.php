@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Events\TaskCreatedEvent;
 use App\Models\Project;
+use App\Models\Sector;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,7 @@ class OrderedTable extends Component
     public $weeklyTasks, $unplannedTasks, $projects, $username;
     public $projectId="Empty", $status="Empty";
     public $scoresGrouped = [];
+    public $sectors = [];
 
     public $task_score = 'def';
     public $task_name;
@@ -54,8 +56,6 @@ class OrderedTable extends Component
         }
 
         $this->reset(['task_score', 'task_name', 'task_employee', 'deadline', 'task_plan']);
-
-        $this->mount();
     }
 
     public function view($task_id){
@@ -68,9 +68,25 @@ class OrderedTable extends Component
         $this->emit('task_plan_updated', $value);
     }
 
+    public function updatePlanType($taskId, $newType)
+    {
+        $task = Task::where('id', $taskId)
+            ->where('creator_id', Auth::id())
+            ->firstOrFail();
+
+        if (in_array($newType, ['weekly', 'unplanned'])) {
+            $task->planning_type = $newType;
+            $task->save();
+        }
+
+        $this->dispatchBrowserEvent('toastr:success', ['message' => 'Тип задачи обновлен.']);
+    }
+
     public function render()
     {
         $this->username = Auth::user()->name;
+
+        $this->sectors = Sector::with('users')->get();
 
         $this->weeklyTasks = Task::with('user:id,name,sector_id,role_id')
             ->where('creator_id', Auth::id())

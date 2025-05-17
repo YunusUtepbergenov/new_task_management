@@ -67,7 +67,7 @@
                             @foreach ($sectors as $sector)
                                 <optgroup label="{{ $sector->name }}">
                                     @foreach ($sector->users as $user)
-                                        @if (!$user->isDirector() && !$user->isDeputy())
+                                        @if (!$user->isDirector() && (! $user->isDeputy() || $user->id == Auth::id()))
                                             <option value="{{ $user->id }}">{{ $user->employee_name() }}</option>                                                        
                                         @endif
                                     @endforeach
@@ -95,69 +95,70 @@
         </div>
     </form>
 
-<div class="row">
-    <!-- Weekly Tasks Table -->
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header"><strong>Еженедельный план</strong></div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-nowrap mb-0">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th></th>
-                                <th>Название</th>
-                                <th>Дата Создание</th>
-                                <th>Срок</th>
-                                <th>Ответственный</th>
-                                <th>Статус</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($weeklyTasks as $key => $task)
-                                @include('partials.task-row', ['task' => $task, 'key' => $key])
-                            @empty
-                                <tr><td colspan="7">Нет еженедельных задач</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+    <div class="row">
+        <!-- Weekly Tasks Table -->
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header"><strong>Еженедельный план</strong></div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-nowrap mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th></th>
+                                    <th>Название</th>
+                                    <th>Дата Создание</th>
+                                    <th>Срок</th>
+                                    <th>Ответственный</th>
+                                    <th>Статус</th>
+                                    <th>Тип</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($weeklyTasks as $key => $task)
+                                    @include('partials.task-row', ['task' => $task, 'key' => $key])
+                                @empty
+                                    <tr><td colspan="7">Нет еженедельных задач</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Unplanned Tasks Table -->
-    <div class="col-lg-12 mt-4">
-        <div class="card">
-            <div class="card-header"><strong>Внеплановые задачи</strong></div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-nowrap mb-0">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th></th>
-                                <th>Название</th>
-                                <th>Дата Создание</th>
-                                <th>Срок</th>
-                                <th>Ответственный</th>
-                                <th>Статус</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($unplannedTasks as $key => $task)
-                                @include('partials.task-row', ['task' => $task, 'key' => $key])
-                            @empty
-                                <tr><td colspan="7">Нет внеплановых задач</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+        <!-- Unplanned Tasks Table -->
+        <div class="col-lg-12 mt-4">
+            <div class="card">
+                <div class="card-header"><strong>Внеплановые задачи</strong></div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-nowrap mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th></th>
+                                    <th>Название</th>
+                                    <th>Дата Создание</th>
+                                    <th>Срок</th>
+                                    <th>Ответственный</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($unplannedTasks as $key => $task)
+                                    @include('partials.task-row', ['task' => $task, 'key' => $key])
+                                @empty
+                                    <tr><td colspan="7">Нет внеплановых задач</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 @push('scripts')
@@ -209,6 +210,14 @@
             initSelect2Bindings();
             initDateTimePicker();
         });
+    });
+
+    window.addEventListener('toastr:success', event => {
+        toastr.options = {
+            "closeButton" : true,
+            "progressBar" : true
+        };
+        toastr.success(event.detail.message);
     });
 </script>
 @endpush

@@ -16,7 +16,7 @@
                         <div class="col-sm-1"></div>
                         <label class="col-sm-3 col-form-label">Категория</label>
                         <div class="col-sm-4">
-                            <select class="form-control" id="kpi_type" name="score_id">
+                            <select class="form-control select2" id="kpi_type1" name="score_id">
                                 @foreach ($scoresGrouped as $group => $items)
                                 <optgroup label="{{ $group }}">
                                     @foreach ($items as $type)
@@ -24,6 +24,18 @@
                                     @endforeach
                                 </optgroup>
                             @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-1"></div>
+                        <label class="col-sm-3 col-form-label">Тип</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="plan_type1" name="plan_type">
+                                <option value="1" selected disabled>Выберите</option>
+                                <option value="weekly">Еженедельный план</option>
+                                <option value="unplanned">Внеплановая задача</option>
                             </select>
                         </div>
                     </div>
@@ -36,16 +48,6 @@
                                 <input class="form-control" id="name1" name="name" type="text">
                             </div>
                             <div class="alert alert-danger" id="name2"></div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label>Поручение / Комментария</label>
-                                <textarea rows="4" class="form-control" name="description" id="description1" placeholder="Поручение / Комментария"></textarea>
-                            </div>
-                            <div class="alert alert-danger" id="description2"></div>
                         </div>
                     </div>
 
@@ -90,24 +92,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
-                            <div class="col-sm-4">
-                                <select class="form-control select" name="helpers[]" id="helpers1" multiple>
-                                    @foreach ($sectors as $sector)
-                                        <optgroup label="{{ $sector->name }}">
-                                            @foreach ($sector->users as $user)
-                                                @if($user->id != Auth::user()->id)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                @endif
-                                            @endforeach
-                                        </optgroup>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
                         @elseif(Auth::user()->isDeputy())
                         @if(Auth::user()->id == 7)
                             <div class="form-group row">
@@ -118,7 +102,7 @@
                                         @foreach ($sectors as $sector)
                                             <optgroup label="{{ $sector->name }}">
                                                 @foreach ($sector->users as $user)
-                                                    @if($user->id != Auth::user()->id)
+                                                    @if(!$user->isDirector() && (! $user->isDeputy() || $user->id == Auth::id()))
                                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                     @endif
                                                 @endforeach
@@ -127,7 +111,7 @@
                                     </select>
                                 </div>
                             </div>
-                        @elseif (Auth::user()->id == 3)
+                        @elseif (Auth::user()->id == 2)
                             <div class="form-group row">
                                 <div class="col-sm-1"></div>
                                 <label class="col-sm-3 col-form-label">Ответственный</label>
@@ -136,7 +120,7 @@
                                             @foreach ($sectors as $sector)
                                                 <optgroup label="{{ $sector->name }}">
                                                     @foreach ($sector->users as $user)
-                                                        @if($user->id != Auth::user()->id)
+                                                        @if(!$user->isDirector() && (! $user->isDeputy() || $user->id == Auth::id()))
                                                             <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                         @endif
                                                     @endforeach
@@ -153,23 +137,6 @@
                             <div class="col-sm-4">
                                 <select class="form-control" name="creator_id" id="">
                                         <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-3 col-form-label">Соисполнитель</label>
-                            <div class="col-sm-4">
-
-                                <select class="form-control select" name="helpers[]" id="helpers1" multiple>
-                                    @foreach ($sectors as $sector)
-                                    <optgroup label="{{ $sector->name }}">
-                                        @foreach ($sector->users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                        </optgroup>
-                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -237,43 +204,6 @@
                             <div class="alert alert-danger" id="deadline2"></div>
                         </div>
                     </div>
-                    {{-- <div class="form-group row">
-                        <div class="col-sm-1"></div>
-                        <div class="col-sm-3 form-check">
-                            <input class="form-check-input" type="checkbox" name="repeat_check" id="flexCheckDefault3" checked="false">
-                            <label class="form-check-label" style="margin-top: 3px" for="flexCheckDefault3">
-                                Повторяющаяся задача
-                            </label>
-                        </div>
-                        <div class="col-sm-8" id="repeat_div_cont" style="display: none">
-                            <div class="row">
-                                <div class="col-sm-6" id="repeat_container1" style="display: none">
-                                    <select class="form-control" name="repeat" id="repeat1">
-                                        <option value="weekly" selected>Еженедельная</option>
-                                        <option value="monthly">Ежемесячная</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-6" id="days_container1" style="display:none">
-                                    <select class="form-control select" id="dayss" name="days[]" multiple>
-                                        <option value="1">Понедельник</option>
-                                        <option value="2">Вторник</option>
-                                        <option value="3">Среда</option>
-                                        <option value="4">Четверг</option>
-                                        <option value="5">Пятница</option>
-                                        <option value="6">Суббота</option>
-                                        <option value="7">Воскресенье</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-3" id="month_container1" style="display:none">
-                                    <select class="form-control" id="month_day" name="month_day">
-                                        @for ($a = 1; $a <= 28; $a++)
-                                            <option value="{{ $a }}">{{ $a }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
                     <div class="submit-section">
                         <button class="btn btn-primary submit-btn">Поставить Задачу</button>
                     </div>

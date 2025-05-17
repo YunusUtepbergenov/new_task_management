@@ -29,167 +29,165 @@ class TaskController extends Controller
     {
         $request->validate([
             'name' => 'required|min:3|max:255',
-            'description' => 'required|min:3',
             'deadline' => 'required|date_format:Y-m-d|after:yesterday',
             'file.*' => 'nullable|file|max:5000'
         ]);
 
         $user = User::where('id', $request->user_id)->first();
 
-        if($request->repeat_check != "on"){
-            $new_deadline = $request->deadline;
-            foreach($request->users as $usr){
-                $user = User::where('id', $usr)->first();
-                $task = Task::create([
-                    'creator_id' => $request->creator_id,
-                    'user_id' => $usr,
-                    'project_id' => $request->project_id,
-                    'sector_id' => $user->sector->id,
-                    'type_id' => 1,
-                    'priority_id' => 1,
-                    'score_id' => $request->score_id,
-                    'name' => $request->name,
-                    'description' => $request->description,
-                    'deadline' => $new_deadline,
-                    'status' => 'Новое',
-                ]);
+        // if($request->repeat_check != "on"){
+        $new_deadline = $request->deadline;
+        foreach($request->users as $usr){
+            $user = User::where('id', $usr)->first();
+            $task = Task::create([
+                'creator_id' => $request->creator_id,
+                'user_id' => $usr,
+                'project_id' => $request->project_id,
+                'sector_id' => $user->sector->id,
+                'type_id' => 1,
+                'priority_id' => 1,
+                'score_id' => $request->score_id,
+                'name' => $request->name,
+                'deadline' => $new_deadline,
+                'status' => 'Новое',
+                'planning_type' => $request->plan_type,
+            ]);
 
-                $task->executers()->sync($request->helpers, false);
-                if($request->hasFile('file')){
-                    foreach($request->file as $file){
-                        $filename = time().$file->getClientOriginalName();
-                        preg_replace( '/[\r\n\t -]+/', '-', $filename );
-                        Storage::disk('local')->putFileAs(
-                            'files/',
-                            $file,
-                            $filename
-                        );
-                        $fileModel = new File;
-                        $fileModel->task_id = $task->id;
-                        $fileModel->name = $filename;
-                        $fileModel->save();
-                    }
-                }
-                event(new TaskCreatedEvent($task));
-            }
-        }
-        else{
-            if($request->repeat == 'weekly'){
-                $today = intval(date('N', strtotime(date('l'))));
-
-                foreach($request->days as $day){
-                    $day_of_week = intval($day);
-
-                    if($today <= $day_of_week){
-                        $new_deadline = date('Y-m-d', strtotime(date('l', strtotime($this->days[$day_of_week].' this week'))));
-                    }else{
-                        $new_deadline = date('Y-m-d', strtotime(date('l', strtotime($this->days[$day_of_week].' next week'))));
-                    }
-                    foreach($request->users as $usr){
-                        $user = User::where('id', $usr)->first();
-
-                        $task = Task::create([
-                            'creator_id' => $request->creator_id,
-                            'user_id' => $user->id,
-                            'project_id' => $request->project_id,
-                            'sector_id' => $user->sector->id,
-                            'type_id' => 1,
-                            'priority_id' => 1,
-                            'score_id' => $request->score_id,
-                            'name' => $request->name,
-                            'description' => $request->description,
-                            'deadline' => $new_deadline,
-                            'status' => 'Новое',
-                        ]);
-
-                        $task->executers()->sync($request->helpers, false);
-
-                        if($request->hasFile('file')){
-                            foreach($request->file as $file){
-                                $filename = time().$file->getClientOriginalName();
-                                Storage::disk('local')->putFileAs(
-                                    'files/',
-                                    $file,
-                                    $filename
-                                );
-                                $fileModel = new File;
-                                $fileModel->task_id = $task->id;
-                                $fileModel->name = $filename;
-                                $fileModel->save();
-                            }
-                        }
-
-                        Repeat::create([
-                            'task_id' => $task->id,
-                            'repeat' => 'weekly',
-                            'day' => $day,
-                            'deadline' => $request->deadline,
-                        ]);
-                        event(new TaskCreatedEvent($task));
-                    }
+            $task->executers()->sync($request->helpers, false);
+            if($request->hasFile('file')){
+                foreach($request->file as $file){
+                    $filename = time().$file->getClientOriginalName();
+                    preg_replace( '/[\r\n\t -]+/', '-', $filename );
+                    Storage::disk('local')->putFileAs(
+                        'files/',
+                        $file,
+                        $filename
+                    );
+                    $fileModel = new File;
+                    $fileModel->task_id = $task->id;
+                    $fileModel->name = $filename;
+                    $fileModel->save();
                 }
             }
-            elseif($request->repeat == 'monthly'){
-                $today = intval(date('d'));
-                $day_of_month = $request->month_day;
-
-                if($today <= intval($day_of_month)){
-                    $new_deadline = date('Y-m-d', mktime(0,0,0, date("m"),$day_of_month, date('Y')));
-                }
-                else{
-                    $new_deadline = date('Y-m-d', mktime(0,0,0, date("m") + 1,$day_of_month, date('Y')));
-                }
-                foreach($request->users as $usr){
-                    $user = User::where('id', $usr)->first();
-
-                    $task = Task::create([
-                        'creator_id' => $request->creator_id,
-                        'user_id' => $user->id,
-                        'project_id' => $request->project_id,
-                        'sector_id' => $user->sector->id,
-                        'type_id' => 1,
-                        'priority_id' => 1,
-                        'score_id' => $request->score_id,
-                        'name' => $request->name,
-                        'description' => $request->description,
-                        'deadline' => $new_deadline,
-                        'status' => 'Новое',
-                    ]);
-
-                    $task->executers()->sync($request->helpers, false);
-                    if($request->hasFile('file')){
-                        foreach($request->file as $file){
-                            $filename = time().$file->getClientOriginalName();
-                            Storage::disk('local')->putFileAs(
-                                'files/',
-                                $file,
-                                $filename
-                            );
-                            $fileModel = new File;
-                            $fileModel->task_id = $task->id;
-                            $fileModel->name = $filename;
-                            $fileModel->save();
-                        }
-                    }
-
-                    Repeat::create([
-                        'task_id' => $task->id,
-                        'repeat' => 'monthly',
-                        'day' => $day_of_month,
-                        'deadline' => $request->deadline,
-                    ]);
-                    event(new TaskCreatedEvent($task));
-                }
-            }
+            event(new TaskCreatedEvent($task));
         }
     }
+        // else{
+        //     if($request->repeat == 'weekly'){
+        //         $today = intval(date('N', strtotime(date('l'))));
+
+        //         foreach($request->days as $day){
+        //             $day_of_week = intval($day);
+
+        //             if($today <= $day_of_week){
+        //                 $new_deadline = date('Y-m-d', strtotime(date('l', strtotime($this->days[$day_of_week].' this week'))));
+        //             }else{
+        //                 $new_deadline = date('Y-m-d', strtotime(date('l', strtotime($this->days[$day_of_week].' next week'))));
+        //             }
+        //             foreach($request->users as $usr){
+        //                 $user = User::where('id', $usr)->first();
+
+        //                 $task = Task::create([
+        //                     'creator_id' => $request->creator_id,
+        //                     'user_id' => $user->id,
+        //                     'project_id' => $request->project_id,
+        //                     'sector_id' => $user->sector->id,
+        //                     'type_id' => 1,
+        //                     'priority_id' => 1,
+        //                     'score_id' => $request->score_id,
+        //                     'name' => $request->name,
+        //                     'description' => $request->description,
+        //                     'deadline' => $new_deadline,
+        //                     'status' => 'Новое',
+        //                 ]);
+
+        //                 $task->executers()->sync($request->helpers, false);
+
+        //                 if($request->hasFile('file')){
+        //                     foreach($request->file as $file){
+        //                         $filename = time().$file->getClientOriginalName();
+        //                         Storage::disk('local')->putFileAs(
+        //                             'files/',
+        //                             $file,
+        //                             $filename
+        //                         );
+        //                         $fileModel = new File;
+        //                         $fileModel->task_id = $task->id;
+        //                         $fileModel->name = $filename;
+        //                         $fileModel->save();
+        //                     }
+        //                 }
+
+        //                 Repeat::create([
+        //                     'task_id' => $task->id,
+        //                     'repeat' => 'weekly',
+        //                     'day' => $day,
+        //                     'deadline' => $request->deadline,
+        //                 ]);
+        //                 event(new TaskCreatedEvent($task));
+        //             }
+        //         }
+        //     }
+        //     elseif($request->repeat == 'monthly'){
+        //         $today = intval(date('d'));
+        //         $day_of_month = $request->month_day;
+
+        //         if($today <= intval($day_of_month)){
+        //             $new_deadline = date('Y-m-d', mktime(0,0,0, date("m"),$day_of_month, date('Y')));
+        //         }
+        //         else{
+        //             $new_deadline = date('Y-m-d', mktime(0,0,0, date("m") + 1,$day_of_month, date('Y')));
+        //         }
+        //         foreach($request->users as $usr){
+        //             $user = User::where('id', $usr)->first();
+
+        //             $task = Task::create([
+        //                 'creator_id' => $request->creator_id,
+        //                 'user_id' => $user->id,
+        //                 'project_id' => $request->project_id,
+        //                 'sector_id' => $user->sector->id,
+        //                 'type_id' => 1,
+        //                 'priority_id' => 1,
+        //                 'score_id' => $request->score_id,
+        //                 'name' => $request->name,
+        //                 'description' => $request->description,
+        //                 'deadline' => $new_deadline,
+        //                 'status' => 'Новое',
+        //             ]);
+
+        //             $task->executers()->sync($request->helpers, false);
+        //             if($request->hasFile('file')){
+        //                 foreach($request->file as $file){
+        //                     $filename = time().$file->getClientOriginalName();
+        //                     Storage::disk('local')->putFileAs(
+        //                         'files/',
+        //                         $file,
+        //                         $filename
+        //                     );
+        //                     $fileModel = new File;
+        //                     $fileModel->task_id = $task->id;
+        //                     $fileModel->name = $filename;
+        //                     $fileModel->save();
+        //                 }
+        //             }
+
+        //             Repeat::create([
+        //                 'task_id' => $task->id,
+        //                 'repeat' => 'monthly',
+        //                 'day' => $day_of_month,
+        //                 'deadline' => $request->deadline,
+        //             ]);
+        //             event(new TaskCreatedEvent($task));
+        //         }
+        //     }
+        // }
+    // }
 
     public function update(Request $request)
     {
         // $repeat_arr = ['ordinary', 'weekly', 'monthly', 'quarterly'];
         $request->validate([
             'name' => 'required|min:3|max:255',
-            'deadline' => 'required|date_format:Y-m-d|after:yesterday',
             'file.*' => 'nullable|file|max:5000'
         ]);
 
@@ -205,11 +203,10 @@ class TaskController extends Controller
             'priority_id' => 1,
             'score_id'  => $request->score_id,
             'name' => $request->name,
-            'description' => $request->description,
             'extended_deadline' => $request->deadline,
             'status' => 'Новое',
             'overdue' => 0,
-            'repeat' => $request->repeat
+            'planning_type' => $request->plan_type,
         ]);
 
         $task->executers()->detach();

@@ -253,8 +253,9 @@
 
             $('#wordForm').submit(function(event){
                 event.preventDefault();
-                console.log('asdsada');
                 var formData2 = $("#wordForm");
+                console.log(formData2);
+                
                 $.ajax({
                     url: 'http://192.168.1.60:8888/add',
                     type: "POST",
@@ -448,7 +449,6 @@
             $("#name").addClass("d-none");
             $("#project_name").addClass("d-none");
             $("#deadline").addClass("d-none");
-            $("#description").addClass("d-none");
             $("#file").addClass("d-none");
 
             searchResult = function(id){
