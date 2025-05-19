@@ -27,7 +27,7 @@
                     <label>Тип</label>
                     <select wire:model.defer="task_plan" class="form-control" required>
                         <option value="1" selected disabled>Выберите</option>
-                        <option value="weekly">Еженедельный план</option>
+                        <option value="weekly">Плановая</option>
                         <option value="unplanned">Внеплановая задача</option>
                     </select>
                     @error('task_plan')
@@ -99,7 +99,7 @@
         <!-- Weekly Tasks Table -->
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header"><strong>Еженедельный план</strong></div>
+                <div class="card-header"><strong>Задачи на неделю</strong></div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-nowrap mb-0">
@@ -108,7 +108,6 @@
                                     <th>#</th>
                                     <th></th>
                                     <th>Название</th>
-                                    <th>Дата Создание</th>
                                     <th>Срок</th>
                                     <th>Ответственный</th>
                                     <th>Статус</th>
@@ -131,7 +130,7 @@
         <!-- Unplanned Tasks Table -->
         <div class="col-lg-12 mt-4">
             <div class="card">
-                <div class="card-header"><strong>Внеплановые задачи</strong></div>
+                <div class="card-header"><strong>Прочие задачи</strong></div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-nowrap mb-0">
@@ -140,7 +139,6 @@
                                     <th>#</th>
                                     <th></th>
                                     <th>Название</th>
-                                    <th>Дата Создание</th>
                                     <th>Срок</th>
                                     <th>Ответственный</th>
                                     <th>Статус</th>

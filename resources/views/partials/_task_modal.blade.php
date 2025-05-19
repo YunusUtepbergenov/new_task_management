@@ -156,7 +156,7 @@
                             </div>
                         </div>
 
-                    @elseif (Auth::user()->isResearcher())
+                    {{-- @elseif (Auth::user()->isResearcher())
                         <div class="form-group row">
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
@@ -175,7 +175,7 @@
                                     <option value="{{ Auth::user()->sector->head()->id }}">{{ Auth::user()->sector->head()->name }}</option>
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
                     @endif
                     <div class="form-group row">

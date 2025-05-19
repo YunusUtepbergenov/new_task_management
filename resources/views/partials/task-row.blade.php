@@ -37,7 +37,6 @@
             <a href="#" wire:click.prevent="view({{ $task->id }})">{{ $task->name }}</a>
         @endif
     </td>
-    <td>{{ $task->created_at->format('Y-m-d') }}</td>
     <td>
         @if ($task->extended_deadline)
             <span class="badge bg-inverse-warning" title="Оригинальный срок: {{ $task->deadline }}">
@@ -57,7 +56,7 @@
     </td>
     <td>
         <select wire:change="updatePlanType({{ $task->id }}, $event.target.value)" class="form-control form-control-sm">
-            <option value="weekly" {{ $task->planning_type === 'weekly' ? 'selected' : '' }}>Еженедельный</option>
+            <option value="weekly" {{ $task->planning_type === 'weekly' ? 'selected' : '' }}>Плановая</option>
             <option value="unplanned" {{ $task->planning_type === 'unplanned' ? 'selected' : '' }}>Внеплановая</option>
         </select>
     </td>

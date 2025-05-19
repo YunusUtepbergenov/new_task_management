@@ -4,7 +4,7 @@
     </div>
     <div class="row filter-row">
         <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
-            @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() || Auth::user()->isResearcher())
+            @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
                 <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
             @endif
         </div>
@@ -21,7 +21,6 @@
                                     <th>#</th>
                                     <th></th>
                                     <th>Название</th>
-                                    <th>Дата Создание</th>
                                     <th>Cрок</th>
                                     <th>Постановщик</th>
                                     <th>Cтатус</th>

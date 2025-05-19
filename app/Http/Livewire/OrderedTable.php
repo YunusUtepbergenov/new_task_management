@@ -9,6 +9,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Services\TaskService;
+use Carbon\Carbon;
 use Livewire\Component;
 
 class OrderedTable extends Component
@@ -88,19 +89,39 @@ class OrderedTable extends Component
 
         $this->sectors = Sector::with('users')->get();
 
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
         $this->weeklyTasks = Task::with('user:id,name,sector_id,role_id')
             ->where('creator_id', Auth::id())
-            ->where('planning_type', 'weekly')
-            ->where('status', '<>', 'Выполнено')
-            ->whereNull('project_id')
+            ->whereBetween('deadline', [
+                Carbon::now()->startOfWeek(),
+                Carbon::now()->endOfWeek(),
+            ])
+            ->orWhere('planning_type', 'weekly')
             ->latest()->get();
+
+
+        $this->weeklyTasks = Task::where(function($query) use ($startOfWeek, $endOfWeek) {
+                $query->where('planning_type', 'unplanned')
+                    ->whereBetween('deadline', [$startOfWeek, $endOfWeek]);
+            })
+            ->orWhere(function($query) {
+                $query->where('planning_type', 'weekly')
+                    ->where('status', '<>', 'Выполнено');
+            })
+            ->latest()
+            ->get();
+
+        $weeklyTaskIds = $this->weeklyTasks->pluck('id');
 
         $this->unplannedTasks = Task::with('user:id,name,sector_id,role_id')
             ->where('creator_id', Auth::id())
-            ->where('planning_type', 'unplanned')
             ->where('status', '<>', 'Выполнено')
             ->whereNull('project_id')
-            ->latest()->get();
+            ->whereNotIn('id', $weeklyTaskIds)
+            ->latest()
+            ->get();
 
         $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
 
