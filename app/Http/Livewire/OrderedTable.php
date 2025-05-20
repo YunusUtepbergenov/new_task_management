@@ -19,11 +19,11 @@ class OrderedTable extends Component
     public $scoresGrouped = [];
     public $sectors = [];
 
-    public $task_score = 'def';
-    public $task_name;
-    public $deadline;
-    public $task_employee = [];
-    public $task_plan = 1;
+    public $task_score = 'def', $task_name, $deadline, $task_employee = [], $task_plan = 1;
+
+    public $is_repeating = false;
+    public $repeat_type = null; 
+    public $repeat_day = null;
 
     public function taskStore()
     {

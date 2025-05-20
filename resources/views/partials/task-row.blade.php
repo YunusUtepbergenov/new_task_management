@@ -45,6 +45,10 @@
         @else
             <span class="badge bg-inverse-warning">{{ \Carbon\Carbon::parse($task->deadline)->format('Y-m-d') }}</span>
         @endif
+
+        @if ($task->repeat)
+            <i class="fa fa-refresh text-info" title="Повторяющаяся задача"></i>
+        @endif
     </td>
     <td>{{ $task->employee_name() }}</td>
     <td>

@@ -23,6 +23,8 @@
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
+
+
                 <div class="form-group col-lg-2">
                     <label>Тип</label>
                     <select wire:model.defer="task_plan" class="form-control" required>
@@ -45,7 +47,13 @@
                 <div class="form-group col-lg-2">
                     <label>Срок</label>
                     <div class="cal-icon">
-                        <input wire:model.defer="deadline" class="form-control datetimepicker" required>
+                        <input
+                            wire:model.defer="deadline"
+                            class="form-control datetimepicker"
+                            @if($is_repeating) value="" disabled @endif
+                             placeholder="{{ $is_repeating ? 'Определяется автоматически' : '' }}"
+                            required
+                        >
                         @error('deadline')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror                           
@@ -84,6 +92,52 @@
                         <div class="text-danger">{{ $message }}</div>
                     @enderror                         
                 </div>
+
+                                
+                <div class="form-group col-lg-2">
+                    <label><br>
+                        <input type="checkbox" wire:model="is_repeating">
+                        Повторяется?
+                    </label>
+                </div>
+
+                @if($is_repeating)
+                    <div class="form-group col-lg-2">
+                        <label>Частота</label>
+                        <select wire:model="repeat_type" class="form-control">
+                            <option value="" disabled selected>Выберите</option>
+                            <option value="weekly">Еженедельно</option>
+                            <option value="monthly">Ежемесячно</option>
+                            <option value="quarterly">Ежеквартально</option>
+                        </select>
+                    </div>
+
+                    @if($repeat_type === 'weekly')
+                        <div class="form-group col-lg-2">
+                            <label>День недели</label>
+                            <select wire:model="repeat_day" class="form-control">
+                                <option value="" disabled selected>Выберите</option>
+                                <option value="1">Понедельник</option>
+                                <option value="2">Вторник</option>
+                                <option value="3">Среда</option>
+                                <option value="4">Четверг</option>
+                                <option value="5">Пятница</option>
+                                <option value="6">Суббота</option>
+                                <option value="7">Воскресенье</option>
+                            </select>
+                        </div>
+                    @elseif($repeat_type === 'monthly')
+                        <div class="form-group col-lg-2">
+                            <label>День месяца</label>
+                            <input type="number" min="1" max="31" wire:model="repeat_day" class="form-control">
+                        </div>
+                    @elseif($repeat_type === 'quarterly')
+                        <div class="form-group col-lg-2">
+                            <label>Дней после конца квартала</label>
+                            <input type="number" min="1" max="30" wire:model="repeat_day" class="form-control">
+                        </div>
+                    @endif
+                @endif
 
                 <div class="form-group col-lg-12 text-right mt-1">
                     <button class="btn btn-primary create-task-btn">Создать Задачу</button>
