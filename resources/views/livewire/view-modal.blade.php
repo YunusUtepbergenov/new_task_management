@@ -211,7 +211,7 @@
                                                         @if ($task->overdue)
                                                             <span class="badge bg-inverse-warning" style="float: right">Просроченный</span>
                                                         @else
-                                                            <span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}" style="float:right" >{{ $task->status }}</span>
+                                                            <span class="badge bg-inverse-{{ ($task->status == "Не прочитано") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}" style="float:right" >{{ $task->status }}</span>
                                                         @endif
                                                     </td>
                                                 </tr>

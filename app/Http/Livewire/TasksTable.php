@@ -27,6 +27,12 @@ class TasksTable extends Component
         
         $this->tasks = Task::with('creator')->where('user_id', Auth::user()->id)
                             ->where('project_id', Null)->where('status', '<>', "Выполнено")->latest()->get();
+
+        foreach ($this->tasks as $task) {
+            if ($task->status === 'Не прочитано') {
+                $task->update(['status' => 'Выполняется']);
+            }
+        }
     }
 
     public function updated(){

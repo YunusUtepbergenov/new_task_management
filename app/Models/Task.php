@@ -90,7 +90,7 @@ class Task extends Model
     }
 
     public function newTasks(){
-        return $this->where('overdue', 0)->where('status', 'Новое');
+        return $this->where('overdue', 0)->where('status', 'Не прочитано');
     }
 
     public function doingTasks(){

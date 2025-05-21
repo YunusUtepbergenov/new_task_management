@@ -3,7 +3,6 @@
 namespace App\Http\Livewire;
 
 use App\Events\TaskCreatedEvent;
-use App\Models\Project;
 use App\Models\Sector;
 use App\Models\Task;
 use App\Models\User;
@@ -11,11 +10,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\TaskService;
 use Carbon\Carbon;
 use Livewire\Component;
+use Illuminate\Support\Facades\DB;
+use App\Models\Repeat;
 
 class OrderedTable extends Component
 {
-    public $weeklyTasks, $unplannedTasks, $projects, $username;
-    public $projectId="Empty", $status="Empty";
+    public $weeklyTasks, $unplannedTasks, $username;
     public $scoresGrouped = [];
     public $sectors = [];
 
@@ -29,34 +29,63 @@ class OrderedTable extends Component
     {
         $this->validate([
             'task_name' => 'required|string|max:255',
-            'deadline' => 'required|date|after:yesterday',
-            'task_plan' => 'required|string',
-            'task_employee' => 'required|array|min:1',
+            'task_plan' => 'required|in:weekly,unplanned',
             'task_score' => 'required|integer',
+            'task_employee' => 'required|array|min:1',
+            'deadline' => $this->is_repeating ? 'nullable' : 'required|date|after:yesterday',
+            'repeat_type' => $this->is_repeating ? 'required|in:weekly,monthly,quarterly' : 'nullable',
+            'repeat_day' => $this->is_repeating ? 'required|integer|min:1|max:31' : 'nullable',
         ]);
 
-        foreach ($this->task_employee as $usr) {
-            $user = User::find($usr);
+        foreach ($this->task_employee as $userId) {
+            $user = User::find($userId);
+            if (!$user || $user->leave) continue;
 
-            $task = Task::create([
-                'creator_id' => Auth::id(),
-                'user_id' => $user->id,
-                'project_id' => null,
-                'sector_id' => $user->sector->id,
-                'type_id' => 1,
-                'priority_id' => 1,
-                'score_id' => $this->task_score,
-                'name' => $this->task_name,
-                'description' => null,
-                'deadline' => $this->deadline,
-                'status' => 'Новое',
-                'planning_type' => $this->task_plan,
-            ]);
+            DB::transaction(function () use ($user) {
+                $repeatId = null;
 
-            event(new TaskCreatedEvent($task));
+            $deadline = $this->is_repeating
+                ? $this->calculateInitialRepeatDeadline($this->repeat_type, (int) $this->repeat_day)
+                : $this->deadline;
+
+                if ($this->is_repeating) {
+                    $repeat = Repeat::create([
+                        'task_id' => null,
+                        'repeat' => $this->repeat_type,
+                        'day' => $this->repeat_day,
+                    ]);
+                    $repeatId = $repeat->id;
+                }
+
+                $task = Task::create([
+                    'creator_id' => Auth::id(),
+                    'user_id' => $user->id,
+                    'sector_id' => $user->sector->id,
+                    'project_id' => null,
+                    'type_id' => 1,
+                    'priority_id' => 1,
+                    'score_id' => $this->task_score,
+                    'name' => $this->task_name,
+                    'description' => null,
+                    'deadline' => $deadline,
+                    'status' => 'Не прочитано',
+                    'planning_type' => $this->task_plan,
+                    'repeat_id' => $repeatId,
+                ]);
+
+                if ($this->is_repeating) {
+                    $repeat->update(['task_id' => $task->id]);
+                }
+
+                event(new TaskCreatedEvent($task));
+            });
         }
+        $this->reset([
+            'task_score', 'task_name', 'task_employee',
+            'deadline', 'task_plan', 'is_repeating',
+            'repeat_type', 'repeat_day',
+        ]);
 
-        $this->reset(['task_score', 'task_name', 'task_employee', 'deadline', 'task_plan']);
     }
 
     public function view($task_id){
@@ -93,7 +122,6 @@ class OrderedTable extends Component
         $endOfWeek = Carbon::now()->endOfWeek();
 
         $this->weeklyTasks = Task::with('user:id,name,sector_id,role_id')
-            ->where('creator_id', Auth::id())
             ->whereBetween('deadline', [
                 Carbon::now()->startOfWeek(),
                 Carbon::now()->endOfWeek(),
@@ -102,7 +130,7 @@ class OrderedTable extends Component
             ->latest()->get();
 
 
-        $this->weeklyTasks = Task::where(function($query) use ($startOfWeek, $endOfWeek) {
+        $this->weeklyTasks = Task::where('creator_id', Auth::id())->where(function($query) use ($startOfWeek, $endOfWeek) {
                 $query->where('planning_type', 'unplanned')
                     ->whereBetween('deadline', [$startOfWeek, $endOfWeek]);
             })
@@ -127,4 +155,42 @@ class OrderedTable extends Component
 
         return view('livewire.ordered-table');
     }
+
+    private function calculateInitialRepeatDeadline(string $type, int $day): ?\Carbon\Carbon
+    {
+        $today = now();
+
+        if ($type === 'weekly') {
+            $targetDay = $day;
+            $currentDay = $today->dayOfWeekIso;
+
+            $daysUntil = $targetDay - $currentDay;
+            if ($daysUntil <= 0) {
+                $daysUntil += 7; // Next week's target day
+            }
+
+            return $today->copy()->addDays($daysUntil)->startOfDay();
+        }
+
+        if ($type === 'monthly') {
+            $targetDay = $day;
+            $daysInMonth = $today->daysInMonth;
+
+            if ($targetDay >= $today->day && $targetDay <= $daysInMonth) {
+                return $today->copy()->startOfMonth()->addDays($targetDay - 1)->startOfDay();
+            } else {
+                $next = $today->copy()->addMonth();
+                $safeDay = min($targetDay, $next->daysInMonth);
+                return $next->startOfMonth()->addDays($safeDay - 1)->startOfDay();
+            }
+        }
+
+        if ($type === 'quarterly') {
+            $nextQuarterStart = $today->firstOfQuarter()->addMonths(3);
+            return $nextQuarterStart->copy()->addDays($day)->startOfDay();
+        }
+
+        return null;
+    }
+
 }

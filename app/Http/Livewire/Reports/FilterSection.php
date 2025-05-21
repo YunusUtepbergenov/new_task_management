@@ -44,7 +44,7 @@ class FilterSection extends Component
                 $employee->efficiency = round( ((1 - ( $employee->overdueFilter($this->startDate, $this->endDate)->count()
                 + (0.5 * $employee->newFilter($this->startDate, $this->endDate)->count()) ) / $employee->filterTasks($this->startDate, $this->endDate)->count() )) * 100, 1);
             $employee->done_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Выполнено')->where('overdue', 0)->count();
-            $employee->new_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Новое')->where('overdue', 0)->count();
+            $employee->new_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Не прочитано')->where('overdue', 0)->count();
             $employee->doing_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Выполняется')->where('overdue', 0)->count();            
             $employee->overdue_cnt = $employee->overdueFilter($this->startDate, $this->endDate)->count();
             $employee->confirm_cnt = $employee->confirmFilter($this->startDate, $this->endDate)->count();
@@ -76,7 +76,7 @@ class FilterSection extends Component
         //         $employee->efficiency = round( ((1 - ( $employee->overdueFilter($this->startDate, $this->endDate)->count()
         //         + (0.5 * $employee->newFilter($this->startDate, $this->endDate)->count()) ) / $employee->filterTasks($this->startDate, $this->endDate)->count() )) * 100, 1);
         //     $employee->done_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Выполнено')->where('overdue', 0)->count();
-        //     $employee->new_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Новое')->where('overdue', 0)->count();
+        //     $employee->new_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Не прочитано')->where('overdue', 0)->count();
         //     $employee->doing_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Выполняется')->where('overdue', 0)->count();            
         //     $employee->overdue_cnt = $employee->overdueFilter($this->startDate, $this->endDate)->count();
         //     $employee->confirm_cnt = $employee->confirmFilter($this->startDate, $this->endDate)->count();

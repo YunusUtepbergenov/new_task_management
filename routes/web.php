@@ -16,7 +16,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/test-tasks', TestTasks::class);
     Route::get('/', [PageController::class, 'dashboard'])->name('home');
     Route::get('ordered', [PageController::class, 'ordered'])->name('ordered');
-    Route::get('helping', [PageController::class, 'helping'])->name('helping');
     Route::get('reports', [PageController::class, 'reports'])->name('reports');
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
     Route::get('vacations', [PageController::class, 'vacations'])->name('vacations');
@@ -49,6 +48,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/digest/adding/word', [DigestController::class, 'newWord'])->name('digest.new_word');
     Route::post('upload/test/digest', [DigestController::class, 'uploadTest'])->name('upload.test');
     Route::get('digest/formatter', [DigestController::class, 'formatter'])->name('digest.formatter');
+    Route::get('workload', [PageController::class, 'workload'])->name('workload');
+
 
     Route::get('/weekly-tasks', function () {
         return view('page.reports.weekly');
@@ -105,7 +106,3 @@ Route::get('check-telegram-login', [UserController::class, 'checkUserLogin']);
 Route::get('users/export', [UserController::class, 'export']);
 Route::get('sectors/export', [UserController::class, 'sector']);
 Route::get('/getdocuments', [PageController::class, 'getDocuments']);
-
-Route::get('workload', function(){
-    return view('page.reports.workload');
-});

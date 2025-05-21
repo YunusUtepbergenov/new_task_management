@@ -165,7 +165,13 @@ class PageController extends Controller
         return view('page.vacation', ['vacations' => $vacations, 'sectors' => $sectors, 'roles' => $roles]);
     }
 
+    public function workload(){
+        $sectors = Sector::with(['users.tasks' => function($query) {
+            $query->where('status', '<>', 'Выполнено');
+        }])->whereIn('id', [2,3,4,5,6,7,8,9,10,12,13,14,15,16])->get();
 
+        return view('page.reports.workload', compact('sectors'));
+    }
 
 
     public function journalRu($year)

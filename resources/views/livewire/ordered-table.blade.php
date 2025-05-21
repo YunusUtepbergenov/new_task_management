@@ -24,19 +24,6 @@
                     @enderror
                 </div>
 
-
-                <div class="form-group col-lg-2">
-                    <label>Тип</label>
-                    <select wire:model.defer="task_plan" class="form-control" required>
-                        <option value="1" selected disabled>Выберите</option>
-                        <option value="weekly">Плановая</option>
-                        <option value="unplanned">Внеплановая задача</option>
-                    </select>
-                    @error('task_plan')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                    
-                </div>
                 <div class="form-group col-lg-4">
                     <label>Название</label>
                     <textarea type="text" class="form-control" rows="1" wire:model.defer="task_name" required></textarea>
@@ -139,12 +126,14 @@
                     @endif
                 @endif
 
+                @error('repeat_day')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror   
+
                 <div class="form-group col-lg-12 text-right mt-1">
                     <button class="btn btn-primary create-task-btn">Создать Задачу</button>
                 </div>
-                {{-- <div class="form-group col-lg-1 text-right">
-                    <button type="button" class="btn btn-success remove-task">+</button>
-                </div> --}}
+
             </div>
         </div>
     </form>
@@ -165,7 +154,6 @@
                                     <th>Срок</th>
                                     <th>Ответственный</th>
                                     <th>Статус</th>
-                                    <th>Тип</th>
                                 </tr>
                             </thead>
                             <tbody>

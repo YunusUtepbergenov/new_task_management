@@ -22,7 +22,7 @@ class TaskFactory extends Factory
             'name' => $this->faker->sentence(8),
             'description' => $this->faker->sentence(20),
             'deadline' => $this->faker->dateTimeBetween('-1 week', '+5 week')->format('Y-m-d'),
-            'status' => $this->faker->randomElement(['Выполнено' ,'Выполняется', 'Ждет подтверждения', 'Новое', 'Просроченный']),
+            'status' => $this->faker->randomElement(['Выполнено' ,'Выполняется', 'Ждет подтверждения', 'Не прочитано', 'Просроченный']),
         ];
     }
 }

@@ -32,8 +32,8 @@
                                 
                                     {{-- @if ($task->overdue)
                                         <td width="25" style="font-family:Cambria;color:#cb6546; background-color:#fff3e0; font-weight:bold; border: 2px solid #000;">Просроченный</td>
-                                    @elseif ($task->status == "Новое")
-                                        <td width="25" style="font-family:Cambria;color:#26af48; background-color:#e2eaed; font-weight:bold; border: 2px solid #000;">Новое</td>
+                                    @elseif ($task->status == "Не прочитано")
+                                        <td width="25" style="font-family:Cambria;color:#26af48; background-color:#e2eaed; font-weight:bold; border: 2px solid #000;">Не прочитано</td>
                                     @elseif ($task->status == "Выполняется")
                                         <td width="25" style="font-family:Cambria;color:#4d8af0 ; background-color:#dbe8fc; font-weight:bold; border: 2px solid #000;">Выполняется</td>
                                     @elseif ($task->status == "Выполнено")

@@ -100,7 +100,7 @@ class User extends Authenticatable
     }
 
     public function newFilter($start, $end){
-        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('overdue', 0)->where('status', 'Новое');
+        return $this->tasks()->whereBetween('deadline', [$start, $end])->where('overdue', 0)->where('status', 'Не прочитано');
     }
 
     public function confirmFilter($start, $end){
@@ -190,7 +190,7 @@ class User extends Authenticatable
     }
 
     public function newTasks(){
-        return $this->tasks()->where('overdue', 0)->where('status', 'Новое');
+        return $this->tasks()->where('overdue', 0)->where('status', 'Не прочитано');
     }
 
     public function doingTasks(){

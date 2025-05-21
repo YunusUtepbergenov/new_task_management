@@ -29,91 +29,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+
+        $schedule->command('tasks:generate-repeats')->dailyAt('01:00');
+
         $schedule->call(function(){
-            DB::table('tasks')->where('deadline', '<=', Carbon::yesterday())->whereIn('status', ['Новое' ,'Выполняется', 'Просроченный'])->
+            DB::table('tasks')->where('deadline', '<=', Carbon::yesterday())->whereIn('status', ['Не прочитано' ,'Выполняется', 'Просроченный'])->
                 where('overdue', 0)->update(['overdue' => 1]);
         })->dailyAt('00:01');
-
-        $schedule->call(function(){
-            $repeats = Repeat::where('repeat', 'weekly')->where('deadline', '>', Carbon::now())->get();
-            foreach($repeats as $repeat){
-                $day_of_week = $repeat->day;
-                $new_deadline = date('Y-m-d', strtotime(date('l', strtotime($this->days[$day_of_week].' this week'))));
-
-                if(!Task::where('name', $repeat->task->name)->where('user_id', $repeat->task->user_id)->where('deadline', $new_deadline)->first()){
-                    $task = Task::create([
-                        'creator_id' => $repeat->task->creator_id,
-                        'user_id' => $repeat->task->user_id,
-                        'project_id' => $repeat->task->project_id,
-                        'sector_id' => $repeat->task->user->sector_id,
-                        'name' => $repeat->task->name,
-                        'description' => $repeat->task->description,
-                        'deadline' => $new_deadline,
-                        'status' => 'Новое',
-                        'repeat_id' => $repeat->id,
-                        'type_id' => $repeat->task->type_id,
-                        'priority_id' => $repeat->task->priority_id,
-                        'score_id' => $repeat->task->score_id
-                    ]);
-                    event(new TaskCreatedEvent($task));
-                }
-            }
-        })->weeklyOn(1, '01:00');
-
-        $schedule->call(function(){
-            $repeats = Repeat::where('repeat', 'monthly')->where('deadline', '>', Carbon::now())->get();
-            foreach($repeats as $repeat){
-                $day_of_month = $repeat->day;
-                $new_deadline = date('Y-m-'.$day_of_month);
-                $sample = Task::where('name', $repeat->task->name)->where('user_id', $repeat->task->user_id)->where('deadline', $new_deadline)->get()->isEmpty();
-                error_log($sample);
-
-                if($sample){
-                    Task::create([
-                        'creator_id' => $repeat->task->creator_id,
-                        'user_id' => $repeat->task->user_id,
-                        'project_id' => $repeat->task->project_id,
-                        'sector_id' => $repeat->task->user->sector_id,
-                        'name' => $repeat->task->name,
-                        'description' => $repeat->task->description,
-                        'deadline' => $new_deadline,
-                        'status' => 'Новое',
-                        'repeat_id' => $repeat->id,
-                        'type_id' => $repeat->task->type_id,
-                        'priority_id' => $repeat->task->priority_id,
-                        'score_id' => $repeat->task->score_id
-                    ]);
-                }
-            }
-        })->monthlyOn(1, '03:00');
-
-        // $schedule->call(function(){
-        //     $tasks = Task::where('repeat', 'quarterly')->get();
-        //     foreach($tasks as $task){
-        //         $date = new DateTime();
-        //         $deadline = strtotime($task->deadline);
-        //         if($task->deadline <= Carbon::now()){
-        //             $day_of_month = date('d', $deadline);
-        //             $new_deadline = date('Y-m-'.$day_of_month);
-
-        //             Task::create([
-        //                 'creator_id' => $task->creator_id,
-        //                 'user_id' => $task->user_id,
-        //                 'project_id' => $task->project_id,
-        //                 'name' => $task->name,
-        //                 'description' => $task->description,
-        //                 'deadline' => $new_deadline,
-        //                 'status' => 'Новое',
-        //                 'repeat' => 'ordinary',
-        //                 'repeat_id' => $task->id
-        //             ]);
-        //         }
-        //     }
-        // })->quarterly();
-
-        // $schedule->call(function(){
-        //     DB::table('tasks')->where('deadline', '<', Carbon::now())->where('status', '<>', 'Просроченный')->whereIn('status', ['Новое' ,'Выполняется'])->update(['status' => 'Просроченный']);
-        // })->everyMinute();
     }
 
     /**

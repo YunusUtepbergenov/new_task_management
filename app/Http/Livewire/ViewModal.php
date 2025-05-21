@@ -37,7 +37,7 @@ class ViewModal extends Component
         $this->dispatchBrowserEvent('show-modal');
         $this->task = Task::with(['comments', 'files'])->where('id', $id)->first();
 
-        if ($this->task->status == "Новое") {
+        if ($this->task->status == "Не прочитано") {
             if (Auth::user()->id == $this->task->user_id) {
                 $this->task->update(['status' => "Выполняется"]);
             }

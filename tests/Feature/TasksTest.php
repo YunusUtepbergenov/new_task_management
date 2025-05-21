@@ -95,7 +95,7 @@ class TasksTest extends TestCase
             'name' => 'Test task',
             'description' => 'Test description',
             'deadline' => '2024-12-20',
-            'status' => 'Новое',
+            'status' => 'Не прочитано',
             'overdue' => 0,
         ]);
 
@@ -121,7 +121,7 @@ class TasksTest extends TestCase
             'name' => 'Test task',
             'description' => 'Test description',
             'deadline' => '2024-12-20',
-            'status' => 'Новое',
+            'status' => 'Не прочитано',
             'overdue' => 0,
         ]);
 
@@ -146,7 +146,7 @@ class TasksTest extends TestCase
             'name' => 'Test task',
             'description' => 'Test description',
             'deadline' => '2024-12-20',
-            'status' => 'Новое',
+            'status' => 'Не прочитано',
             'overdue' => 0,
         ]);
 

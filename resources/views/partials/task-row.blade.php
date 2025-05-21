@@ -55,13 +55,7 @@
         @if ($task->overdue)
             <span class="badge bg-inverse-warning">Просроченный</span>
         @else
-            <span class="badge bg-inverse-{{ ($task->status == 'Новое') ? 'success' : (($task->status == 'Выполняется') ? 'primary' : (($task->status == 'Ждет подтверждения') ? 'danger' : (($task->status == 'Выполнено') ? 'purple' : ''))) }}">{{ $task->status }}</span>
+            <span class="badge bg-inverse-{{ ($task->status == 'Не прочитано') ? 'success' : (($task->status == 'Выполняется') ? 'primary' : (($task->status == 'Ждет подтверждения') ? 'danger' : (($task->status == 'Выполнено') ? 'purple' : ''))) }}">{{ $task->status }}</span>
         @endif
-    </td>
-    <td>
-        <select wire:change="updatePlanType({{ $task->id }}, $event.target.value)" class="form-control form-control-sm">
-            <option value="weekly" {{ $task->planning_type === 'weekly' ? 'selected' : '' }}>Плановая</option>
-            <option value="unplanned" {{ $task->planning_type === 'unplanned' ? 'selected' : '' }}>Внеплановая</option>
-        </select>
     </td>
 </tr>

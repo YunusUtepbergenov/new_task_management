@@ -4,7 +4,6 @@
     @livewireStyles
 @endsection
 @section('main')
-    <!-- Page Header -->
     <div class="page-header">
         <div class="row">
             <div class="col-sm-12">
@@ -22,13 +21,8 @@
             </div>
         </div>
     </div>
-    <!-- /Page Header -->
     @livewire('ordered-table', ['projects' => $projects])
-    {{-- @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy())
-        @include('partials._project_modal')
-    @endif --}}
 
-    @include('partials._task_modal')
     @include('partials._edit_task')
 
     @livewire('view-modal')
@@ -52,9 +46,6 @@
                 $("#name1").val(task.task.name);
                 $("#plan_type1").val(task.task.planning_type);
 
-                console.log(task.task.deadline);
-                console.log(task.task.extended_deadline);
-                
                 if(task.task.extended_deadline === null){
                     $("#deadline1").val(task.task.deadline);                    
                 }else{

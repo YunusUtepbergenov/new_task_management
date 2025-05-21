@@ -49,7 +49,7 @@ class TaskController extends Controller
                 'score_id' => $request->score_id,
                 'name' => $request->name,
                 'deadline' => $new_deadline,
-                'status' => 'Новое',
+                'status' => 'Не прочитано',
                 'planning_type' => $request->plan_type,
             ]);
 
@@ -98,7 +98,7 @@ class TaskController extends Controller
         //                     'name' => $request->name,
         //                     'description' => $request->description,
         //                     'deadline' => $new_deadline,
-        //                     'status' => 'Новое',
+        //                     'status' => 'Не прочитано',
         //                 ]);
 
         //                 $task->executers()->sync($request->helpers, false);
@@ -152,7 +152,7 @@ class TaskController extends Controller
         //                 'name' => $request->name,
         //                 'description' => $request->description,
         //                 'deadline' => $new_deadline,
-        //                 'status' => 'Новое',
+        //                 'status' => 'Не прочитано',
         //             ]);
 
         //             $task->executers()->sync($request->helpers, false);
@@ -204,7 +204,7 @@ class TaskController extends Controller
             'score_id'  => $request->score_id,
             'name' => $request->name,
             'extended_deadline' => $request->deadline,
-            'status' => 'Новое',
+            'status' => 'Не прочитано',
             'overdue' => 0,
             'planning_type' => $request->plan_type,
         ]);
@@ -353,7 +353,7 @@ class TaskController extends Controller
                     'name' => $taskData['name'],
                     'description' => $taskData['description'] ?? null,
                     'deadline' => $taskData['deadline'],
-                    'status' => 'Новое',
+                    'status' => 'Не прочитано',
                     'overdue' => false,
                     'sector_id' => User::find($workerId)->sector_id,
                     'score_id' => $taskData['task_score'],

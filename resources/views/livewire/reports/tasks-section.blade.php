@@ -12,8 +12,8 @@
                         <label class="form-check-label" for="inlineRadio0" style="color: #34444c; font-weight:bold">Все ({{ ($user) ? $user->tasks()->count() : '0' }})</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" wire:model="filter" name="filter" id="inlineRadio1" value="Новое">
-                        <label class="form-check-label" for="inlineRadio1" style="color: #55ce63; font-weight:bold">Новое ({{ ($user) ? $user->newTasks()->count() : '0' }})</label>
+                        <input class="form-check-input" type="radio" wire:model="filter" name="filter" id="inlineRadio1" value="Не прочитано">
+                        <label class="form-check-label" for="inlineRadio1" style="color: #55ce63; font-weight:bold">Не прочитано ({{ ($user) ? $user->newTasks()->count() : '0' }})</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" wire:model="filter" name="filter" id="inlineRadio2" value="Выполняется">
@@ -70,7 +70,7 @@
                                         @if ($task->overdue)
                                             <span class="badge bg-inverse-warning">Просроченный</span>
                                         @else
-                                            <span class="badge bg-inverse-{{ ($task->status == "Новое") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span>
+                                            <span class="badge bg-inverse-{{ ($task->status == "Не прочитано") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -113,7 +113,7 @@
                                                     @if ($task['overdue'])
                                                         <span class="badge bg-inverse-warning">Просроченный</span>
                                                     @else
-                                                        <span class="badge bg-inverse-{{ ($task['status'] == "Новое") ? 'success' : (($task['status'] == "Выполняется") ? 'primary' : (($task['status'] == "Ждет подтверждения") ? 'danger' : (($task['status'] == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task['status'] }}</span>
+                                                        <span class="badge bg-inverse-{{ ($task['status'] == "Не прочитано") ? 'success' : (($task['status'] == "Выполняется") ? 'primary' : (($task['status'] == "Ждет подтверждения") ? 'danger' : (($task['status'] == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task['status'] }}</span>
                                                     @endif
                                                 </td>
                                             </tr>
