@@ -138,11 +138,28 @@
         </div>
     </form>
 
+    @php
+        use Carbon\Carbon;
+
+        setlocale(LC_TIME, 'ru_RU.UTF-8'); // Linux
+        Carbon::setLocale('ru');           // Carbon localization
+
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+        $weekRange = sprintf(
+            '%d–%d %s, %d',
+            $startOfWeek->day,
+            $endOfWeek->day,
+            $startOfWeek->translatedFormat('F'),
+            $startOfWeek->year
+        );
+    @endphp
+
     <div class="row">
-        <!-- Weekly Tasks Table -->
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header"><strong>Задачи на неделю</strong></div>
+                <div class="card-header"><strong>Задачи на неделю ({{ $weekRange }})</strong></div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-nowrap mb-0">
@@ -169,31 +186,39 @@
             </div>
         </div>
 
-        <!-- Unplanned Tasks Table -->
         <div class="col-lg-12 mt-4">
             <div class="card">
-                <div class="card-header"><strong>Прочие задачи</strong></div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-nowrap mb-0">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th></th>
-                                    <th>Название</th>
-                                    <th>Срок</th>
-                                    <th>Ответственный</th>
-                                    <th>Статус</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($unplannedTasks as $key => $task)
-                                    @include('partials.task-row', ['task' => $task, 'key' => $key])
-                                @empty
-                                    <tr><td colspan="7">Нет внеплановых задач</td></tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                <div class="card-header">
+                    <a data-toggle="collapse" href="#unplannedTasksCollapse" role="button" aria-expanded="false" aria-controls="unplannedTasksCollapse" class="d-block w-100 text-decoration-none text-dark">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>Все задачи</strong>
+                            <i class="fa fa-chevron-down ml-2 transition" id="unplannedTasksChevron"></i>
+                        </div>
+                    </a>
+                </div>
+                <div id="unplannedTasksCollapse" class="collapse">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-nowrap mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th></th>
+                                        <th>Название</th>
+                                        <th>Срок</th>
+                                        <th>Ответственный</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($all_tasks as $key => $task)
+                                        @include('partials.task-row', ['task' => $task, 'key' => $key])
+                                    @empty
+                                        <tr><td colspan="7">Нет внеплановых задач</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -202,67 +227,70 @@
 </div>
 
 @push('scripts')
-<script>
-    function initSelect2Bindings() {
-        const $taskScore = $('#task_score');
-        if ($taskScore.length && !$taskScore.hasClass('select2-initialized')) {
-            $taskScore.select2().addClass('select2-initialized');
-            $taskScore.on('change', function () {
-                @this.set('task_score', $(this).val());
+    <script>
+        $(document).ready(function () {
+            $('#unplannedTasksCollapse').on('show.bs.collapse', function () {
+                $('#unplannedTasksChevron').removeClass('fa-chevron-right').addClass('fa-chevron-down');
             });
+            $('#unplannedTasksCollapse').on('hide.bs.collapse', function () {
+                $('#unplannedTasksChevron').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+            });
+        });
+        function initSelect2Bindings() {
+            const $taskScore = $('#task_score');
+            if ($taskScore.length && !$taskScore.hasClass('select2-initialized')) {
+                $taskScore.select2().addClass('select2-initialized');
+                $taskScore.on('change', function () {
+                    @this.set('task_score', $(this).val());
+                });
+            }
+
+            const $taskEmployee = $('#task_employee');
+            if ($taskEmployee.length && !$taskEmployee.hasClass('select2-initialized')) {
+                $taskEmployee.select2().addClass('select2-initialized');
+                $taskEmployee.on('change', function () {
+                    @this.set('task_employee', $(this).val());
+                });
+            }
         }
 
-        const $taskEmployee = $('#task_employee');
-        if ($taskEmployee.length && !$taskEmployee.hasClass('select2-initialized')) {
-            $taskEmployee.select2().addClass('select2-initialized');
-            $taskEmployee.on('change', function () {
-                @this.set('task_employee', $(this).val());
-            });
+        function initDateTimePicker() {
+            const $deadline = $('.datetimepicker');
+            if ($deadline.length && !$deadline.hasClass('datetimepicker-initialized')) {
+                $deadline.addClass('datetimepicker-initialized');
+                $deadline.datetimepicker({
+                    format: 'YYYY-MM-DD',
+                    useCurrent: false,
+                    icons: {
+                        up: "fa fa-angle-up",
+                        down: "fa fa-angle-down",
+                        next: 'fa fa-angle-right',
+                        previous: 'fa fa-angle-left'
+                    }
+                });
+
+                $deadline.on('dp.change', function (e) {
+                    @this.set('deadline', e.date ? e.date.format('YYYY-MM-DD') : null);
+                });
+            }
         }
-    }
 
-    function initDateTimePicker() {
-        const $deadline = $('.datetimepicker');
-        if ($deadline.length && !$deadline.hasClass('datetimepicker-initialized')) {
-            $deadline.addClass('datetimepicker-initialized');
-            $deadline.datetimepicker({
-                format: 'YYYY-MM-DD',
-                useCurrent: false,
-                icons: {
-                    up: "fa fa-angle-up",
-                    down: "fa fa-angle-down",
-                    next: 'fa fa-angle-right',
-                    previous: 'fa fa-angle-left'
-                }
-            });
-
-            $deadline.on('dp.change', function (e) {
-                @this.set('deadline', e.date ? e.date.format('YYYY-MM-DD') : null);
-            });
-        }
-    }
-
-    document.addEventListener('livewire:load', function () {
-        initSelect2Bindings();
-        initDateTimePicker();
-
-        Livewire.hook('message.processed', () => {
+        document.addEventListener('livewire:load', function () {
             initSelect2Bindings();
             initDateTimePicker();
+
+            Livewire.hook('message.processed', () => {
+                initSelect2Bindings();
+                initDateTimePicker();
+            });
         });
-    });
 
-    window.addEventListener('toastr:success', event => {
-        toastr.options = {
-            "closeButton" : true,
-            "progressBar" : true
-        };
-        toastr.success(event.detail.message);
-    });
-</script>
+        window.addEventListener('toastr:success', event => {
+            toastr.options = {
+                "closeButton" : true,
+                "progressBar" : true
+            };
+            toastr.success(event.detail.message);
+        });
+    </script>
 @endpush
-
-
-
-
-

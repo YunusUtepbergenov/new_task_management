@@ -15,7 +15,7 @@ use App\Models\Repeat;
 
 class OrderedTable extends Component
 {
-    public $weeklyTasks, $unplannedTasks, $username;
+    public $weeklyTasks, $all_tasks, $username;
     public $scoresGrouped = [];
     public $sectors = [];
 
@@ -29,7 +29,6 @@ class OrderedTable extends Component
     {
         $this->validate([
             'task_name' => 'required|string|max:255',
-            'task_plan' => 'required|in:weekly,unplanned',
             'task_score' => 'required|integer',
             'task_employee' => 'required|array|min:1',
             'deadline' => $this->is_repeating ? 'nullable' : 'required|date|after:yesterday',
@@ -117,39 +116,28 @@ class OrderedTable extends Component
         $this->username = Auth::user()->name;
 
         $this->sectors = Sector::with('users')->get();
-
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
 
         $this->weeklyTasks = Task::with('user:id,name,sector_id,role_id')
-            ->whereBetween('deadline', [
-                Carbon::now()->startOfWeek(),
-                Carbon::now()->endOfWeek(),
-            ])
-            ->orWhere('planning_type', 'weekly')
-            ->latest()->get();
-
-
-        $this->weeklyTasks = Task::where('creator_id', Auth::id())->where(function($query) use ($startOfWeek, $endOfWeek) {
-                $query->where('planning_type', 'unplanned')
-                    ->whereBetween('deadline', [$startOfWeek, $endOfWeek]);
-            })
-            ->orWhere(function($query) {
-                $query->where('planning_type', 'weekly')
-                    ->where('status', '<>', 'Выполнено');
-            })
-            ->latest()
-            ->get();
-
-        $weeklyTaskIds = $this->weeklyTasks->pluck('id');
-
-        $this->unplannedTasks = Task::with('user:id,name,sector_id,role_id')
             ->where('creator_id', Auth::id())
             ->where('status', '<>', 'Выполнено')
-            ->whereNull('project_id')
-            ->whereNotIn('id', $weeklyTaskIds)
-            ->latest()
+            ->where(function ($query) {
+                $query->where(function ($q) {
+                    $q->whereNull('extended_deadline')->where('deadline', '<=', Carbon::now()->endOfWeek());
+                })->orWhere(function ($q) {
+                    $q->whereNotNull('extended_deadline')->where('extended_deadline', '<=', Carbon::now()->endOfWeek());
+                });
+            })
+            ->orderByRaw('COALESCE(extended_deadline, deadline)')
             ->get();
+
+        $this->all_tasks = Task::with('user:id,name,sector_id,role_id')
+                ->where('creator_id', Auth::id())
+                ->where('status', '<>', 'Выполнено')
+                ->whereNull('project_id')
+                ->orderByRaw('COALESCE(extended_deadline, deadline)')
+                ->get();
 
         $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
 
