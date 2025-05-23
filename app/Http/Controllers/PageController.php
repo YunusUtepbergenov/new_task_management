@@ -55,7 +55,6 @@ class PageController extends Controller
 
     public function ordered(){
         $sectors = (new TaskService())->sectorList();
-        $projects = (new TaskService())->projectList();
         $scores = (new TaskService())->scoresList();
         $hrScores = (new TaskService())->hrList();
         $accountantScores = (new TaskService())->accountantList();
@@ -79,10 +78,13 @@ class PageController extends Controller
         }
 
         return view('page.ordered', [
-            'projects' => $projects,
             'sectors' => $sectors,
             'scoresGrouped' => $scoresGrouped
         ]);
+    }
+
+    public function finished_tasks(){
+        return view('page.finished_tasks');
     }
 
     public function reports(){

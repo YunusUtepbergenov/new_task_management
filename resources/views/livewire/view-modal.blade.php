@@ -13,11 +13,6 @@
                         <div class="row">
                             <div class="col-lg-8 col-xl-9">
                                 <div class="card">
-                                    <div class="card-body">
-                                        <p id="task_description">{!! nl2br(e($task->description)) !!}</p>
-                                    </div>
-                                </div>
-                                <div class="card">
                                     <div class="card-header">
                                         <h4 class="card-title mb-0">Прикрепленный файлы</h4>
                                     </div>
@@ -33,7 +28,6 @@
                                                             <div class="files-info">
                                                                 <span class="file-name text-ellipsis"><a href="{{ route('file.download', $file->id)}}">{{ $file->name }}</a></span>
                                                                 <span class="file-date">{{ $file->created_at->format('Y-m-d') }}</span>
-                                                                {{-- <div class="file-size">{{ round(Storage::size(storage_path('/app/files/'.$file->name)) / 1024, 1)  }} KB</div> --}}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -90,7 +84,6 @@
                                             <h4 class="card-title mb-0">Завершенная задача</h4>
                                         </div>
                                         <div class="card-body">
-                                            {{-- <h5 class="card-title m-b-20"></h5> --}}
                                             <p>{{ $task->response->description }}</p>
                                             @if($task->response->filename)
                                                 <ul class="files-list">
@@ -101,7 +94,6 @@
                                                             </div>
                                                             <div class="files-info">
                                                                 <span class="file-name text-ellipsis"><a href="{{ route('response.download', $task->response->filename) }}">{{ $task->response->filename }}</a></span>
-                                                                {{-- <div class="file-size">{{ round(Storage::size('/files/responses/'.$task->response->filename) / 1024, 1)  }} KB</div> --}}
                                                             </div>
                                                         </div>
                                                     </li>
@@ -111,11 +103,9 @@
                                         </div>
                                     </div>
                                 @endif
-                                {{-- Comments section --}}
                                 <div class="project-task">
                                     <ul class="nav nav-tabs nav-tabs-top nav-justified mb-0">
                                         <li class="nav-item"><a class="nav-link active" href="#comments" data-toggle="tab" aria-expanded="true">Комментарии</a></li>
-                                        {{-- <li class="nav-item"><a class="nav-link" href="#history" data-toggle="tab" aria-expanded="false">История</a></li> --}}
                                     </ul>
                                     <div class="tab-content">
                                         <div class="tab-pane show active" id="comments">
@@ -170,7 +160,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            {{-- End of comments section --}}
 
                             </div>
                             <div class="col-lg-4 col-xl-3">
@@ -197,10 +186,7 @@
                                                     <td>Категория:</td>
                                                     <td class="text-right" id="task_type">{{ ($task->score) ? $task->score->name : '' }}</td>
                                                 </tr>
-                                                {{-- <tr>
-                                                    <td>Важность:</td>
-                                                    <td class="text-right" id="task_priority">{{ ($task->priority) ? $task->priority->name : '' }}</td>
-                                                </tr> --}}
+
                                                 <tr>
                                                     <td>Постановщик:</td>
                                                     <td class="text-right"><a href="#" id="task_creator">{{ $task->username($task->creator_id) }}</a></td>

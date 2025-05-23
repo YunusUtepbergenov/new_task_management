@@ -18,21 +18,19 @@
                         </li>
                     @endif
                     <li class="nav-item">
-                        <a class="nav-link {{ (Route::current()->uri == '/finished') ? 'active' : '' }}" href="{{ route('finished') }}">Завершённые задачи</a>
+                        <a class="nav-link {{ (Route::current()->uri == 'finished') ? 'active' : '' }}" href="{{ route('finished') }}">Завершённые задачи</a>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
-
-    @livewire('tasks-table')
-
-    {{-- @include('partials._task_modal') --}}
+    @livewire('finished-tasks')
 
     @livewire('view-modal')
-
 @endsection
 
 @section('scripts')
     @livewireScripts
+    @stack('scripts')
 @endsection
+

@@ -16,12 +16,15 @@
                             <a class="nav-link {{ (Route::current()->uri == 'ordered') ? 'active' : '' }}" href="{{ route('ordered') }}">Поручено</a>
                         </li>
                     @endif
+                    <li class="nav-item">
+                        <a class="nav-link {{ (Route::current()->uri == '/finished') ? 'active' : '' }}" href="{{ route('finished') }}">Завершённые задачи</a>
+                    </li>
 
                 </ul>
             </div>
         </div>
     </div>
-    @livewire('ordered-table', ['projects' => $projects])
+    @livewire('ordered-table')
 
     @include('partials._edit_task')
 

@@ -36,6 +36,4 @@
             </div>
         </div>
     </li>
-    <!-- /Notifications -->
-
 </div>

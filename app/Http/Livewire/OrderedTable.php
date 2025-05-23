@@ -116,8 +116,6 @@ class OrderedTable extends Component
         $this->username = Auth::user()->name;
 
         $this->sectors = Sector::with('users')->get();
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
 
         $this->weeklyTasks = Task::with('user:id,name,sector_id,role_id')
             ->where('creator_id', Auth::id())
