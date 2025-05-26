@@ -22,7 +22,7 @@
         <div class="card mb-4">
             <div class="card-header" style="background: #34444c;color:#fff; text-align:center"><strong>{{ $sector }}</strong></div>
             <div class="card-body table-responsive">
-                <table class="table table-bordered">
+                <table class="table table-nowrap mb-0">
                     <thead>
                         <tr>
                             <th>#</th>

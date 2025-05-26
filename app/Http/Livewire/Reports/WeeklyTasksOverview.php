@@ -6,7 +6,7 @@ use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\WeeklyTasksExport;
 use App\Models\Task;
-use Carbon\{Carbon,CarbonPeriod};
+use Carbon\{Carbon, CarbonPeriod};
 
 class WeeklyTasksOverview extends Component
 {
@@ -49,11 +49,13 @@ class WeeklyTasksOverview extends Component
     public function render()
     {
         [$start, $end] = $this->getWeekRange();
+        $allowedSectors = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16];
 
         $tasks = Task::with('user', 'sector')
             ->whereBetween('deadline', [$start, $end])
+            ->whereIn('sector_id', $allowedSectors)
             ->get()
-            ->groupBy('sector.name');
+            ->groupBy(fn($task) => $task->sector->name ?? 'Без сектора');
 
         return view('livewire.reports.weekly-tasks-overview', [
             'groupedTasks' => $tasks,

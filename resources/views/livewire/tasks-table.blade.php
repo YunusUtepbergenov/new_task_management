@@ -6,25 +6,19 @@
     @php
         use Carbon\Carbon;
 
-        setlocale(LC_TIME, 'ru_RU.UTF-8'); // Linux
-        Carbon::setLocale('ru');           // Carbon localization
+        setlocale(LC_TIME, 'ru_RU.UTF-8');
+        Carbon::setLocale('ru');
 
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
-
-        $weekRange = sprintf(
-            '%d–%d %s, %d',
-            $startOfWeek->day,
-            $endOfWeek->day,
-            $startOfWeek->translatedFormat('F'),
-            $startOfWeek->year
-        );
     @endphp
 <br>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header"><strong>Задачи на неделю ({{ $weekRange }})</strong></div>
+                <div class="card-header"><strong>Задачи на неделю 
+                        ({{ \Carbon\Carbon::parse($startOfWeek)->format('d M Y') }} -
+                        {{ \Carbon\Carbon::parse($endOfWeek)->endOfWeek()->format('d M Y') }})</strong></div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-nowrap mb-0">
