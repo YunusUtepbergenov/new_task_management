@@ -1,5 +1,9 @@
 @extends('layouts.main')
 
+@section('styles')
+    @livewireStyles
+@endsection
+
 @section('main')
 	<div class="content container-fluid">
         <!-- Page Content -->
@@ -8,4 +12,8 @@
 
         @livewire('reports.weekly-tasks-overview')
 
+@endsection
+
+@section('scripts')
+    @livewireScripts
 @endsection

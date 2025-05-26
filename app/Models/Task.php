@@ -28,6 +28,10 @@ class Task extends Model
         'extended_deadline'
     ];
 
+    public function sector(){
+        return $this->belongsTo(Sector::class);
+    }
+
     public function username($id){
         $user = User::find($id);
         $name = Str::words($user->name, 2, '');

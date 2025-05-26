@@ -28,6 +28,7 @@
                         <ul style="display: none;" id="reports_menu">
                             <li><a href="{{ route('reports') }}"><span>Отчеты</span></a></li>
                             <li><a href="{{ route('table.report') }}"><span>Ежемесячный Отчет</span></a></li>
+                            <li><a href="{{ route('weekly.tasks') }}"><span>Недельные задачи по секторам</span></a></li>
                             <li><a href="{{ route('kpi') }}"><span>KPI</span></a></li>
                         </ul>
                     </li>

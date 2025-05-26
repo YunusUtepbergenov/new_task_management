@@ -1,40 +1,51 @@
 <div>
 
     <h4 class="mb-4">Еженедельный план по секторам</h4>
-    @foreach ($sectors as $sector)
-        @if ($sector->tasks->count())
-            <div class="card mb-3">
-                <div class="card-header bg-progress text-white text-center">
-                    <strong>{{ $sector->name }}</strong>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table mb-0">
-                        <thead>
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <label>Выберите неделю:</label>
+            <select wire:model="selectedWeek" class="form-control">
+                @foreach ($weeks as $weekStart)
+                    <option value="{{ $weekStart }}">
+                        {{ \Carbon\Carbon::parse($weekStart)->format('d M Y') }} -
+                        {{ \Carbon\Carbon::parse($weekStart)->endOfWeek()->format('d M Y') }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="align-self-end">
+            <button wire:click="export" class="btn btn-primary">Экспорт в Excel</button>
+        </div>
+    </div>
+
+    @foreach ($groupedTasks as $sector => $tasks)
+        <div class="card mb-4">
+            <div class="card-header" style="background: #34444c;color:#fff; text-align:center"><strong>{{ $sector }}</strong></div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Название</th>
+                            <th>Срок</th>
+                            <th>Ответственный</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($tasks as $index => $task)
                             <tr>
-                                <th>#</th>
-                                <th>Название</th>
-                                <th>Категория</th>
-                                <th>Сотрудник</th>
-                                <th>Срок</th>
-                                <th>Состояние</th>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $task->name }}</td>
+                                <td>{{ \Carbon\Carbon::parse($task->deadline)->format('d.m.Y') }}</td>
+                                <td>{{ $task->user->employee_name() }}</td>
+                                <td>{{ $task->status }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($sector->tasks as $index => $task)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $task->name }}</td>
-                                    <td>{{ optional($task->score)->name }}</td>
-                                    <td>{{ optional($task->user)->employee_name() }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($task->deadline)->format('d.m.Y') }}</td>
-                                    <td>{{ $task->status }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-        @endif
+        </div>
     @endforeach
 
 </div>
