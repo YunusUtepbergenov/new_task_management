@@ -1,34 +1,37 @@
 <tr>
     <td>{{ $key + 1 }}</td>
     <td>
-        <div class="dropdown dropdown-action profile-action">
-            <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                <i class="material-icons">more_vert</i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right">
-                @if ($task->status != "Выполнено" && $task->status != "Ждет подтверждения")
-                    <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
-                @endif
-                @if ($task->repeat_id)
-                    <form action="{{ route('task.destroy', $task->id) }}" method="POST">
-                        @method('DELETE')
-                        @csrf
-                        <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить текущую задачу</button>
-                    </form>
-                    <form action="{{ route('repeat.delete', $task->repeat_id) }}" method="POST">
-                        @method('DELETE')
-                        @csrf
-                        <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Остановить цикл</button>
-                    </form>
-                @else
-                    <form action="{{ route('task.destroy', $task->id) }}" method="POST">
-                        @method('DELETE')
-                        @csrf
-                        <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
-                    </form>
-                @endif
+        @if ($task->creator_id == Auth::user()->id)
+            <div class="dropdown dropdown-action profile-action">
+                <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i class="material-icons">more_vert</i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    @if ($task->status != "Выполнено" && $task->status != "Ждет подтверждения")
+                        <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
+                    @endif
+                    @if ($task->repeat_id)
+                        <form action="{{ route('task.destroy', $task->id) }}" method="POST">
+                            @method('DELETE')
+                            @csrf
+                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить текущую задачу</button>
+                        </form>
+                        <form action="{{ route('repeat.delete', $task->repeat_id) }}" method="POST">
+                            @method('DELETE')
+                            @csrf
+                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Остановить цикл</button>
+                        </form>
+                    @else
+                        <form action="{{ route('task.destroy', $task->id) }}" method="POST">
+                            @method('DELETE')
+                            @csrf
+                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
+                        </form>
+                    @endif
+                </div>
             </div>
-        </div>
+        @endif
+
     </td>
     <td>
         @if ($task->status == "Выполнено")

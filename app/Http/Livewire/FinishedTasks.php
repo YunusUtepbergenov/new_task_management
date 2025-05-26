@@ -52,7 +52,9 @@ class FinishedTasks extends Component
         if ($user->isResearcher()) {
             $query->where('user_id', $user->id);
         } elseif ($user->isHead()) {
-            $query->whereHas('user', fn($q) => $q->where('sector_id', $user->sector_id));
+            $query->whereHas('user', function ($q) use ($user) {
+                $q->where('sector_id', $user->sector_id);
+            });
             if ($this->worker_id) {
                 $query->where('user_id', $this->worker_id);
             }

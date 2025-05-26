@@ -22,7 +22,7 @@ class OrderedTable extends Component
     public $task_score = 'def', $task_name, $deadline, $task_employee = [], $task_plan = 1;
 
     public $is_repeating = false;
-    public $repeat_type = null; 
+    public $repeat_type = "null"; 
     public $repeat_day = null;
 
     public function taskStore()

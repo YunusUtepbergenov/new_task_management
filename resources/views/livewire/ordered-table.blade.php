@@ -92,7 +92,7 @@
                     <div class="form-group col-lg-2">
                         <label>Частота</label>
                         <select wire:model="repeat_type" class="form-control">
-                            <option value="" disabled selected>Выберите</option>
+                            <option value="null" disabled selected>Выберите</option>
                             <option value="weekly">Еженедельно</option>
                             <option value="monthly">Ежемесячно</option>
                             <option value="quarterly">Ежеквартально</option>
