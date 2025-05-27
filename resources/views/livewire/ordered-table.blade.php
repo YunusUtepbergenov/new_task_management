@@ -33,10 +33,10 @@
                 </div>
                 <div class="form-group col-lg-2">
                     <label>Срок</label>
-                    <div class="cal-icon">
                         <input
+                        type="date"
                             wire:model.defer="deadline"
-                            class="form-control datetimepicker"
+                            class="form-control"
                             @if($is_repeating) value="" disabled @endif
                              placeholder="{{ $is_repeating ? 'Определяется автоматически' : '' }}"
                             required
@@ -44,7 +44,6 @@
                         @error('deadline')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror                           
-                    </div>
                 </div>
                 <div class="form-group col-lg-2">
                     <label>Ответственный</label>
@@ -140,9 +139,6 @@
 
     @php
         use Carbon\Carbon;
-
-        setlocale(LC_TIME, 'ru_RU.UTF-8'); // Linux
-        Carbon::setLocale('ru');           // Carbon localization
 
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();

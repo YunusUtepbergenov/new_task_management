@@ -55,7 +55,9 @@ class WeeklyTasksOverview extends Component
             ->whereBetween('deadline', [$start, $end])
             ->whereIn('sector_id', $allowedSectors)
             ->get()
-            ->groupBy(fn($task) => $task->sector->name ?? 'Без сектора');
+            ->groupBy(function ($task) {
+                return $task->sector->name ?? 'Без сектора';
+            });
 
         return view('livewire.reports.weekly-tasks-overview', [
             'groupedTasks' => $tasks,
