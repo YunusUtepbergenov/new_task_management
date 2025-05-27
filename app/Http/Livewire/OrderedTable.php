@@ -85,6 +85,8 @@ class OrderedTable extends Component
             'repeat_type', 'repeat_day',
         ]);
 
+        $this->dispatchBrowserEvent('toastr:success', ['message' => 'Задача успешно создана']);
+
     }
 
     public function view($task_id){

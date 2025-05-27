@@ -190,7 +190,7 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             success: function (res) {
-                document.location.href = '/ordered';
+                document.location.href = '/';
                 toastr.options =
                 {
                     "closeButton" : true,

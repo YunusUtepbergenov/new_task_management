@@ -22,18 +22,6 @@
                         @endforeach
                     </x-form.select-group>
 
-                    <div class="form-group row">
-                        <div class="col-sm-1"></div>
-                        <label class="col-sm-3 col-form-label">Тип</label>
-                        <div class="col-sm-4">
-                            <select class="form-control" name="plan_type">
-                                <option value="1" selected disabled>Выберите</option>
-                                <option value="weekly">Еженедельный план</option>
-                                <option value="unplanned">Внеплановая задача</option>
-                            </select>
-                        </div>
-                    </div>
-
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
@@ -156,7 +144,7 @@
                             </div>
                         </div>
 
-                    {{-- @elseif (Auth::user()->isResearcher())
+                    @elseif (Auth::user()->isResearcher())
                         <div class="form-group row">
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
@@ -175,7 +163,7 @@
                                     <option value="{{ Auth::user()->sector->head()->id }}">{{ Auth::user()->sector->head()->name }}</option>
                                 </select>
                             </div>
-                        </div> --}}
+                        </div>
 
                     @endif
                     <div class="form-group row">

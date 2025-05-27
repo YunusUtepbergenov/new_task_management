@@ -27,7 +27,7 @@
 
     @livewire('tasks-table')
 
-    {{-- @include('partials._task_modal') --}}
+    @include('partials._task_modal')
 
     @livewire('view-modal')
 
