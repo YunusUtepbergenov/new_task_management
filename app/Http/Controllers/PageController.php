@@ -95,6 +95,40 @@ class PageController extends Controller
         return view('page.reports');
     }
 
+    public function weeklyTasks(){
+        if (Auth::user()->isResearcher()){
+            return redirect()->route('home');
+        }
+
+        $sectors = (new TaskService())->sectorList();
+        $scores = (new TaskService())->scoresList();
+        $hrScores = (new TaskService())->hrList();
+        $accountantScores = (new TaskService())->accountantList();
+        $lawyerScores = (new TaskService())->lawyerList();
+        $maintainerScores = (new TaskService())->maintainerList();
+        $ictScores = (new TaskService())->ictList();
+
+        $scoresGrouped = [];
+
+        if (Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy()) {
+            $scoresGrouped = [
+                'Научные сотрудники' => $scores,
+                'Специалиста по работе с персоналом' => $hrScores,
+                'Главный бухгалтер' => $accountantScores,
+                'Юристконсульт' => $lawyerScores,
+                'Заведующий хозяйством' => $maintainerScores,
+                'Специалист ИКТ' => $ictScores,
+            ];
+        } else {
+            $scoresGrouped = ['Категории' => $scores];
+        }
+        return view('page.reports.weekly', [
+            'sectors' => $sectors,
+            'scoresGrouped' => $scoresGrouped
+        ]);
+
+    }
+
     public function reportTable(){
         $sectors = Sector::all();
         return view('page.reports.new_report', [

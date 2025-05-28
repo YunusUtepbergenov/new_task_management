@@ -54,6 +54,7 @@ class WeeklyTasksOverview extends Component
         $tasks = Task::with('user', 'sector')
             ->whereBetween('deadline', [$start, $end])
             ->whereIn('sector_id', $allowedSectors)
+            ->orderBy('sector_id')
             ->get()
             ->groupBy(function ($task) {
                 return $task->sector->name ?? 'Без сектора';

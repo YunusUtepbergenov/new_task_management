@@ -26,6 +26,7 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th></th>
                             <th>Название</th>
                             <th>Срок</th>
                             <th>Ответственный</th>
@@ -36,6 +37,25 @@
                         @foreach ($tasks as $index => $task)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
+                                <td>
+                                    @if (Auth::user()->isDeputy())
+                                        <div class="dropdown dropdown-action profile-action">
+                                            <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                <i class="material-icons">more_vert</i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                @if ($task->status != "Выполнено" && $task->status != "Ждет подтверждения")
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
+                                                @endif
+                                                <form action="{{ route('task.destroy', $task->id) }}" method="POST">
+                                                    @method('DELETE')
+                                                    @csrf
+                                                    <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </td>
                                 <td>{{ $task->name }}</td>
                                 <td>{{ \Carbon\Carbon::parse($task->deadline)->format('d.m.Y') }}</td>
                                 <td>{{ $task->user->employee_name() }}</td>
@@ -47,5 +67,4 @@
             </div>
         </div>
     @endforeach
-
 </div>

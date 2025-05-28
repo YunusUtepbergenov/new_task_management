@@ -34,7 +34,7 @@
                 <div class="form-group col-lg-2">
                     <label>Срок</label>
                         <input
-                        type="date"
+                            type="date"
                             wire:model.defer="deadline"
                             class="form-control"
                             @if($is_repeating) value="" disabled @endif

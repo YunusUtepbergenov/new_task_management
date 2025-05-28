@@ -249,4 +249,8 @@ class User extends Authenticatable
         $name = Str::words($this->name, 2, '');
         return $name;
     }
+
+    public function taskOwners(){
+        return $this->whereIn('role_id', [1, 2, 14]);
+    }
 }

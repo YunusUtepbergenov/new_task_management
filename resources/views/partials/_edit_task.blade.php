@@ -81,29 +81,11 @@
                         </div>
 
                         @elseif(Auth::user()->isDeputy())
-                        @if(Auth::user()->id == 7)
-                            <div class="form-group row">
-                                <div class="col-sm-1"></div>
-                                <label class="col-sm-3 col-form-label">Ответственный</label>
-                                <div class="col-sm-4">
-                                <select class="form-control" name="user_id" id="user_id1">
-                                        @foreach ($sectors as $sector)
-                                            <optgroup label="{{ $sector->name }}">
-                                                @foreach ($sector->users as $user)
-                                                    @if(!$user->isDirector() && (! $user->isDeputy() || $user->id == Auth::id()))
-                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                    @endif
-                                                @endforeach
-                                            </optgroup>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        @elseif (Auth::user()->id == 2)
-                            <div class="form-group row">
-                                <div class="col-sm-1"></div>
-                                <label class="col-sm-3 col-form-label">Ответственный</label>
-                                <div class="col-sm-4">
+                            @if(Auth::user()->id == 7)
+                                <div class="form-group row">
+                                    <div class="col-sm-1"></div>
+                                    <label class="col-sm-3 col-form-label">Ответственный</label>
+                                    <div class="col-sm-4">
                                     <select class="form-control" name="user_id" id="user_id1">
                                             @foreach ($sectors as $sector)
                                                 <optgroup label="{{ $sector->name }}">
@@ -115,16 +97,38 @@
                                                 </optgroup>
                                             @endforeach
                                         </select>
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+                            @elseif (Auth::user()->id == 2)
+                                <div class="form-group row">
+                                    <div class="col-sm-1"></div>
+                                    <label class="col-sm-3 col-form-label">Ответственный</label>
+                                    <div class="col-sm-4">
+                                        <select class="form-control" name="user_id" id="user_id1">
+                                                @foreach ($sectors as $sector)
+                                                    <optgroup label="{{ $sector->name }}">
+                                                        @foreach ($sector->users as $user)
+                                                            @if(!$user->isDirector() && (! $user->isDeputy() || $user->id == Auth::id()))
+                                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                            @endif
+                                                        @endforeach
+                                                    </optgroup>
+                                                @endforeach
+                                            </select>
+                                    </div>
+                                </div>
+                            @endif
 
                         <div class="form-group row">
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Постановщик</label>
                             <div class="col-sm-4">
-                                <select class="form-control" name="creator_id" id="">
-                                        <option value="{{ Auth::user()->id }}">{{ Auth::user()->name }}</option>
+                                <select class="form-control" name="creator_id" id="creator_id1">
+                                    @foreach ($sectors as $sector)
+                                        @foreach ($sector->users->whereIn('role_id', [2, 14]) as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endforeach
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -182,7 +186,7 @@
                     @endif
                     <div class="form-group row">
                         <div class="col-sm-1"></div>
-                        <label class="col-sm-3 col-form-label">Крайний срок</label>
+                        <label class="col-sm-3 col-form-label">Срок</label>
                         <div class="col-sm-4">
                             <div class="form-group cal-icon">
                                 <input class="form-control datetimepicker" name="deadline" id="deadline1" type="text">
@@ -193,7 +197,7 @@
                         </div>
                     </div>
                     <div class="submit-section">
-                        <button class="btn btn-primary submit-btn">Поставить Задачу</button>
+                        <button class="btn btn-primary submit-btn">Изменить</button>
                     </div>
                 </form>
             </div>

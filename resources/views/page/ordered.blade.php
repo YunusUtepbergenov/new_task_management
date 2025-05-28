@@ -43,12 +43,11 @@
         function editTask(id) {
             $.get("/task/info/byid/" + id, function (task) {
                 $('#helpers1').val(null).trigger('change');
-                $("#project_id1").val(task.task.project_id);
-                $("#kpi_type1").val(task.task.score_id);
+                $("#kpi_type1").val(task.task.score_id).trigger('change');
                 $("#id1").val(task.task.id);
                 $("#name1").val(task.task.name);
                 $("#plan_type1").val(task.task.planning_type);
-
+                
                 if(task.task.extended_deadline === null){
                     $("#deadline1").val(task.task.deadline);                    
                 }else{

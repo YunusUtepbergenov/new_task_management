@@ -52,9 +52,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('workload', [PageController::class, 'workload'])->name('workload');
 
 
-    Route::get('/weekly-tasks', function () {
-        return view('page.reports.weekly');
-    })->name('weekly.tasks');
+    Route::get('/weekly-tasks', [PageController::class, 'weeklyTasks'])->name('weekly.tasks');
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
 

@@ -9,6 +9,7 @@ use App\Models\Repeat;
 use App\Models\Task;
 use App\Models\TaskUser;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -79,25 +80,22 @@ class TaskController extends Controller
             'file.*' => 'nullable|file|max:5000'
         ]);
 
-        $task = Task::where('id', $request->id)->first();
-        $user = User::where('id', $request->user_id)->first();
+        $task = Task::where('id', $request->id)->firstOrFail();
+        $user = User::where('id', $request->user_id)->firstOrFail();
+
+        $newDeadline = Carbon::parse($request->deadline);
+        $isExtended = $newDeadline->gt(Carbon::parse($task->deadline));
 
         $task->update([
             'creator_id' => $request->creator_id,
             'user_id' => $request->user_id,
-            'project_id' => $request->project_id,
             'sector_id' => $user->sector->id,
-            'type_id' => 1,
-            'priority_id' => 1,
             'score_id'  => $request->score_id,
             'name' => $request->name,
-            'extended_deadline' => $request->deadline,
+            'extended_deadline' => $isExtended ? $newDeadline : null,
             'status' => 'Не прочитано',
             'overdue' => 0,
         ]);
-
-        $task->executers()->detach();
-        $task->executers()->sync($request->helpers, false);
 
         if($request->hasFile('file')){
             $files = File::where('task_id', $task->id)->get();
@@ -182,7 +180,9 @@ class TaskController extends Controller
 
     public function getTaskInfo($id){
         $task = Task::with(['executers', 'repeat'])->where('id', $id)->first();
-        $task->extended_deadline = \Carbon\Carbon::parse($task->extended_deadline)->format('Y-m-d');
+        if($task->extended_deadline){
+            $task->extended_deadline = \Carbon\Carbon::parse($task->extended_deadline)->format('Y-m-d');
+        }
 
         return response()->json(['task' => $task]);
     }
