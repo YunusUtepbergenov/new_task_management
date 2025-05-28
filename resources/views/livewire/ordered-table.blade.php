@@ -69,8 +69,14 @@
                             @endforeach
                             
                         @elseif(Auth::user()->isHead())
-                            @foreach (Auth::user()->sector->users()->where('leave', 0)->orderBy('role_id', 'ASC')->get() as $user)
-                                <option value="{{ $user->id }}">{{ $user->employee_name() }}</option>
+                            @foreach ($sectors as $sector)
+                                <optgroup label="{{ $sector->name }}">
+                                    @foreach ($sector->users as $user)
+                                        @if (!$user->isDirector() && (! $user->isDeputy()))
+                                            <option value="{{ $user->id }}">{{ $user->employee_name() }}</option>                                                        
+                                        @endif
+                                    @endforeach
+                                </optgroup>
                             @endforeach
                         @endif
                     </select>

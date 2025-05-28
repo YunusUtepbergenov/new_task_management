@@ -54,6 +54,10 @@ class PageController extends Controller
     }
 
     public function ordered(){
+        if (Auth::user()->isResearcher()){
+            return redirect()->route('home');
+        }
+
         $sectors = (new TaskService())->sectorList();
         $scores = (new TaskService())->scoresList();
         $hrScores = (new TaskService())->hrList();
