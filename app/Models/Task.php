@@ -25,7 +25,8 @@ class Task extends Model
         'overdue',
         'repeat_id',
         'total',
-        'extended_deadline'
+        'extended_deadline',
+        'for_protocol'
     ];
 
     public function sector(){

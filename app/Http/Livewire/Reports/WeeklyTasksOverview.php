@@ -33,6 +33,16 @@ class WeeklyTasksOverview extends Component
         $this->weeks = array_reverse($this->weeks);
     }
 
+    public function toggleProtocol($taskId)
+    {
+        $task = Task::where('id', $taskId)
+            ->first();
+
+        $current = $task->for_protocol;
+        $task->for_protocol = !$current;
+        $task->save();
+    }
+
     public function getWeekRange()
     {
         $start = Carbon::parse($this->selectedWeek)->startOfWeek();

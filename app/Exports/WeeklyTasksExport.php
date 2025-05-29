@@ -23,8 +23,8 @@ class WeeklyTasksExport implements FromView
     {
         $tasks = Task::with('user', 'sector')
             ->whereBetween('deadline', [$this->start, $this->end])
-            ->get()
-            ->groupBy('sector.name');
+            ->where('for_protocol', true)
+            ->get();
 
          $sectors = Sector::with(['tasks' => function ($query) {
                 $query->whereBetween('deadline', [$this->start, $this->end])
@@ -35,6 +35,7 @@ class WeeklyTasksExport implements FromView
 
 
         return view('exports.weekly_tasks', [
+            'tasks' => $tasks,
             'sectors' => $sectors,
             'start' => $this->start,
             'end' => $this->end

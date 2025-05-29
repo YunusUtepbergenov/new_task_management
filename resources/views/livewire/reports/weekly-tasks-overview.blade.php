@@ -31,6 +31,9 @@
                             <th>Срок</th>
                             <th>Ответственный</th>
                             <th>Статус</th>
+                            @if (Auth::user()->isDeputy())
+                                <th></th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -60,6 +63,12 @@
                                 <td>{{ \Carbon\Carbon::parse($task->deadline)->format('d.m.Y') }}</td>
                                 <td>{{ $task->user->employee_name() }}</td>
                                 <td>{{ $task->status }}</td>
+                                @if (Auth::user()->isDeputy())
+                                    <td>
+                                        <input type="checkbox" wire:click="toggleProtocol({{ $task->id }})"
+                                                @if($task->for_protocol) checked @endif />
+                                    </td>                                    
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>
