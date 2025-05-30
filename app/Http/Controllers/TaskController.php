@@ -93,7 +93,7 @@ class TaskController extends Controller
             'score_id'  => $request->score_id,
             'name' => $request->name,
             'extended_deadline' => $isExtended ? $newDeadline : null,
-            'status' => 'Не прочитано',
+            'status' => in_array($task->status, ['Ждет подтверждения', 'Выполнено']) ? $task->status : 'Не прочитано',
             'overdue' => 0,
         ]);
 

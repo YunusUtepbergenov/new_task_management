@@ -32,7 +32,7 @@
                             <th>Ответственный</th>
                             <th>Статус</th>
                             @if (Auth::user()->isDeputy())
-                                <th></th>
+                                <th>Для протокола</th>
                             @endif
                         </tr>
                     </thead>
@@ -47,9 +47,7 @@
                                                 <i class="material-icons">more_vert</i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                @if ($task->status != "Выполнено" && $task->status != "Ждет подтверждения")
-                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
-                                                @endif
+                                                <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
                                                 <form action="{{ route('task.destroy', $task->id) }}" method="POST">
                                                     @method('DELETE')
                                                     @csrf
@@ -66,7 +64,7 @@
                                 @if (Auth::user()->isDeputy())
                                     <td>
                                         <input type="checkbox" wire:click="toggleProtocol({{ $task->id }})"
-                                                @if($task->for_protocol) checked @endif />
+                                            @if($task->for_protocol) checked @endif />
                                     </td>                                    
                                 @endif
                             </tr>
