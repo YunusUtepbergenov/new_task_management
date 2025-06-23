@@ -32,7 +32,13 @@
                 <tr>
                     <td width="5" style="font-family:Cambria; border:1px solid #000;font-size: 12px;">{{ $i++ }}</td>
                     <td width="100" style="border:1px solid #000; font-family:Cambria;font-size: 12px;">{{ $task->name }}</td>
-                    <td width="15" style="font-family:Cambria;border:1px solid #000;font-size: 12px;">{{ \Carbon\Carbon::parse($task->deadline)->format('d.m.Y') }}</td>
+                    <td width="15" style="font-family:Cambria;border:1px solid #000;font-size: 12px;">
+                        @if ($task->extended_deadline)
+                            {{ \Carbon\Carbon::parse($task->extended_deadline)->format('Y-m-d') }}
+                        @else
+                            {{ \Carbon\Carbon::parse($task->deadline)->format('Y-m-d') }}
+                        @endif    
+                    </td>
                     <td width="40" style="font-family:Cambria;border:1px solid #000;font-size: 12px; font-weight:bold">{{ $task->merged_responsibles }}</td>
                 </tr>
             @endforeach

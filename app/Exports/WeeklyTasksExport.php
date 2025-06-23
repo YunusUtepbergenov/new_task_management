@@ -19,13 +19,8 @@ class WeeklyTasksExport implements FromView
 
     public function view(): View
     {
-        $tasks = Task::with('user', 'sector')
-            ->whereBetween('deadline', [$this->start, $this->end])
-            ->where('for_protocol', true)
-            ->get();
-
         $tasks = Task::with(['user', 'sector', 'score'])
-                ->whereBetween('deadline', [$this->start, $this->end])
+                 ->whereRaw('COALESCE(extended_deadline, deadline) BETWEEN ? AND ?', [$this->start, $this->end])
                 ->where('for_protocol', true)
                 ->get()
                 ->groupBy(function ($task) {
@@ -43,7 +38,6 @@ class WeeklyTasksExport implements FromView
 
         return view('exports.weekly_tasks', [
             'tasks' => $tasks,
-            // 'sectors' => $sectors,
             'start' => $this->start,
             'end' => $this->end
         ]);

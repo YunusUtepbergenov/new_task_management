@@ -30,7 +30,7 @@ class TaskController extends Controller
     {
         $request->validate([
             'name' => 'required|min:3|max:255',
-            'deadline' => 'required|date_format:Y-m-d|after:yesterday',
+            'deadline' => 'required|date_format:Y-m-d',
             'file.*' => 'nullable|file|max:5000'
         ]);
 

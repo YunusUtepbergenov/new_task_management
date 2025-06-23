@@ -68,7 +68,7 @@ class WeeklyTasksOverview extends Component
     {
         [$start, $end] = $this->getWeekRange();
         $allowedSectors = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16];
-
+        
         $tasks = Task::with(['user', 'sector', 'score'])
             ->whereRaw('COALESCE(extended_deadline, deadline) BETWEEN ? AND ?', [$start, $end])
             ->whereIn('sector_id', $allowedSectors)
