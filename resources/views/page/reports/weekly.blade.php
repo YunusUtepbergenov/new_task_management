@@ -12,7 +12,6 @@
         @livewire('reports.weekly-tasks-overview')
 
         @include('partials._edit_task')
-
 @endsection
 
 @section('scripts')
@@ -23,10 +22,10 @@
 
         function editTask(id) {
             $("#name2").addClass("d-none");
-            $("#description2").addClass("d-none");
             
             $.get("/task/info/byid/" + id, function (task) {
-                console.log(task.task.score_id);
+                const group_users = task.group_users;
+
                 $("#kpi_type1").val(task.task.score_id).trigger('change');
                 $("#id1").val(task.task.id);
                 $("#name1").val(task.task.name);
@@ -37,7 +36,8 @@
                     $("#deadline1").val(task.task.extended_deadline);
                 }
                 
-                $("#user_id1").val(task.task.user_id);
+                $('#user_id1').val(group_users).trigger('change');
+
                 $("#creator_id1").val(task.task.creator_id);
             });
         }

@@ -34,24 +34,32 @@ class TasksTable extends Component
         $this->sectors = Sector::with('users')->get();
 
         $this->weeklyTasks = Task::with('user:id,name,sector_id,role_id')
-            ->where('user_id', Auth::id())
-            ->where('status', '<>', 'Выполнено')
-            ->where(function ($query) {
-                $query->where(function ($q) {
-                    $q->whereNull('extended_deadline')->where('deadline', '<=', Carbon::now()->endOfWeek());
-                })->orWhere(function ($q) {
-                    $q->whereNotNull('extended_deadline')->where('extended_deadline', '<=', Carbon::now()->endOfWeek());
-                });
-            })
-            ->orderByRaw('COALESCE(extended_deadline, deadline)')
-            ->get();
+                    ->where('user_id', Auth::id())
+                    ->where('status', '<>', 'Выполнено')
+                    ->where(function ($query) {
+                        $query->where(function ($q) {
+                            $q->whereNull('extended_deadline')->where('deadline', '<=', Carbon::now()->endOfWeek());
+                        })->orWhere(function ($q) {
+                            $q->whereNotNull('extended_deadline')->where('extended_deadline', '<=', Carbon::now()->endOfWeek());
+                        });
+                    })
+                    ->orderByRaw('COALESCE(extended_deadline, deadline)')
+                    ->get()
+                    ->groupBy(function ($task) {
+                        return $task->group_id ?: $task->id;
+                    })
+                    ->toArray();
 
         $this->all_tasks = Task::with('user:id,name,sector_id,role_id')
-                ->where('user_id', Auth::id())
-                ->where('status', '<>', 'Выполнено')
-                ->whereNull('project_id')
-                ->orderByRaw('COALESCE(extended_deadline, deadline)')
-                ->get();
+                    ->where('user_id', Auth::id())
+                    ->where('status', '<>', 'Выполнено')
+                    ->whereNull('project_id')
+                    ->orderByRaw('COALESCE(extended_deadline, deadline)')
+                    ->get()
+                    ->groupBy(function ($task) {
+                        return $task->group_id ?: $task->id;
+                    })
+                    ->toArray();
 
         $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
         return view('livewire.tasks-table');

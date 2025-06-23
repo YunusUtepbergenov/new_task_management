@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    @foreach ($groupedTasks as $sector => $tasks)
+    @foreach ($groupedTasks as $sector => $groups)
         <div class="card mb-4">
             <div class="card-header" style="background: #34444c;color:#fff; text-align:center"><strong>{{ $sector }}</strong></div>
             <div class="card-body table-responsive">
@@ -30,6 +30,7 @@
                             <th>Название</th>
                             <th>Срок</th>
                             <th>Ответственный</th>
+                            <th>Категория</th>
                             <th>Статус</th>
                             @if (Auth::user()->isDeputy())
                                 <th>Для протокола</th>
@@ -37,7 +38,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($tasks as $index => $task)
+                        @foreach ($groups as $index => $taskGroup)
+                            @php
+                                $main = $taskGroup[0];
+                                $users = collect($taskGroup)->pluck('user.name')->unique()->join(', ');
+                            @endphp
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>
@@ -47,8 +52,8 @@
                                                 <i class="material-icons">more_vert</i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $task->id }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
-                                                <form action="{{ route('task.destroy', $task->id) }}" method="POST">
+                                                <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $main['id'] }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
+                                                <form action="{{ route('task.destroy', $main['id']) }}" method="POST">
                                                     @method('DELETE')
                                                     @csrf
                                                     <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
@@ -57,16 +62,31 @@
                                         </div>
                                     @endif
                                 </td>
-                                <td>{{ $task->name }}</td>
-                                <td>{{ \Carbon\Carbon::parse($task->deadline)->format('d.m.Y') }}</td>
-                                <td>{{ $task->user->employee_name() }}</td>
-                                <td>{{ $task->status }}</td>
+                                <td>{{ $main['name'] }}</td>
+                                <td>
+                                    @if ($main['extended_deadline'])
+                                        <span class="badge bg-inverse-warning" title="Оригинальный срок: {{ $main['deadline'] }}">
+                                            {{ \Carbon\Carbon::parse($main['extended_deadline'])->format('Y-m-d') }} <i class="fa fa-clock-o text-danger" title="Срок продлен"></i>
+                                        </span>
+                                    @else
+                                        <span class="badge bg-inverse-warning">{{ \Carbon\Carbon::parse($main['deadline'])->format('Y-m-d') }}</span>
+                                    @endif
+
+                                    @if (!empty($main['repeat']))
+                                        <i class="fa fa-refresh text-info" title="Повторяющаяся задача"></i>
+                                    @endif
+                                </td>
+                                <td>{{ $users }}</td>
+                                <td>{{ $main['score']['name'] ?? '' }}</td>
+                                <td>{{ $main['status'] }}</td>
+
                                 @if (Auth::user()->isDeputy())
                                     <td>
-                                        <input type="checkbox" wire:click="toggleProtocol({{ $task->id }})"
-                                            @if($task->for_protocol) checked @endif />
-                                    </td>                                    
+                                        <input type="checkbox" wire:click="toggleProtocol({{ $main['id'] }})"
+                                            @if($main['for_protocol']) checked @endif />
+                                    </td>
                                 @endif
+
                             </tr>
                         @endforeach
                     </tbody>

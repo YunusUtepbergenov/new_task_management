@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use App\Models\Repeat;
+use Illuminate\Support\Str;
 
 class OrderedTable extends Component
 {
@@ -27,20 +28,25 @@ class OrderedTable extends Component
 
     public function taskStore()
     {
+        
         $this->validate([
             'task_name' => 'required|string|max:255',
             'task_score' => 'required|integer',
             'task_employee' => 'required|array|min:1',
-            'deadline' => $this->is_repeating ? 'nullable' : 'required|date|after:yesterday',
+            'deadline' => $this->is_repeating ? 'nullable' : 'required|date',
             'repeat_type' => $this->is_repeating ? 'required|in:weekly,monthly,quarterly' : 'nullable',
             'repeat_day' => $this->is_repeating ? 'required|integer|min:1|max:31' : 'nullable',
         ]);
+
+        $isMultiple = count($this->task_employee) > 1;
+
+        $groupId = $isMultiple ? Str::uuid() : null;
 
         foreach ($this->task_employee as $userId) {
             $user = User::find($userId);
             if (!$user || $user->leave) continue;
 
-            DB::transaction(function () use ($user) {
+            DB::transaction(function () use ($user, $groupId) {
                 $repeatId = null;
 
             $deadline = $this->is_repeating
@@ -70,6 +76,7 @@ class OrderedTable extends Component
                     'status' => 'Не прочитано',
                     'planning_type' => $this->task_plan,
                     'repeat_id' => $repeatId,
+                    'group_id' => $groupId,
                 ]);
 
                 if ($this->is_repeating) {
@@ -86,7 +93,6 @@ class OrderedTable extends Component
         ]);
 
         $this->dispatchBrowserEvent('toastr:success', ['message' => 'Задача успешно создана']);
-
     }
 
     public function view($task_id){
@@ -130,14 +136,21 @@ class OrderedTable extends Component
                 });
             })
             ->orderByRaw('COALESCE(extended_deadline, deadline)')
-            ->get();
+            ->get()
+            ->groupBy(function ($task) {
+                return $task->group_id ?: $task->id;
+            })->toArray();
 
         $this->all_tasks = Task::with('user:id,name,sector_id,role_id')
-                ->where('creator_id', Auth::id())
-                ->where('status', '<>', 'Выполнено')
-                ->whereNull('project_id')
-                ->orderByRaw('COALESCE(extended_deadline, deadline)')
-                ->get();
+                        ->where('creator_id', Auth::id())
+                        ->where('status', '<>', 'Выполнено')
+                        ->whereNull('project_id')
+                        ->orderByRaw('COALESCE(extended_deadline, deadline)')
+                        ->get()
+                        ->groupBy(function ($task) {
+                            return $task->group_id ?: $task->id;
+                        })
+                        ->toArray();
 
         $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
 

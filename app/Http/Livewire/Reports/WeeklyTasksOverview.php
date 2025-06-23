@@ -35,12 +35,20 @@ class WeeklyTasksOverview extends Component
 
     public function toggleProtocol($taskId)
     {
-        $task = Task::where('id', $taskId)
-            ->first();
+        $task = Task::findOrFail($taskId);
 
-        $current = $task->for_protocol;
-        $task->for_protocol = !$current;
-        $task->save();
+        // Determine the group key (group_id or its own id if not grouped)
+        $groupId = $task->group_id ?? $task->id;
+
+        // Determine new value (toggle based on current value)
+        $newValue = !$task->for_protocol;
+
+        // Update all tasks in the group
+        Task::where(function ($query) use ($groupId) {
+                $query->where('group_id', $groupId)
+                    ->orWhere('id', $groupId); // Include single tasks as well
+            })
+            ->update(['for_protocol' => $newValue]);
     }
 
     public function getWeekRange()
@@ -61,17 +69,25 @@ class WeeklyTasksOverview extends Component
         [$start, $end] = $this->getWeekRange();
         $allowedSectors = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16];
 
-        $tasks = Task::with('user', 'sector')
-            ->whereBetween('deadline', [$start, $end])
+        $tasks = Task::with(['user', 'sector', 'score'])
+            ->whereRaw('COALESCE(extended_deadline, deadline) BETWEEN ? AND ?', [$start, $end])
             ->whereIn('sector_id', $allowedSectors)
             ->orderBy('sector_id')
             ->get()
             ->groupBy(function ($task) {
-                return $task->sector->name ?? 'Без сектора';
+                return $task->group_id ?? $task->id;
             });
 
+        $groupedBySector = [];
+
+        foreach ($tasks as $group) {
+            $main = $group->first();
+            $sectorName = $main->sector->name ?? 'Без сектора';
+            $groupedBySector[$sectorName][] = $group->toArray(); // convert each group to array
+        }
+
         return view('livewire.reports.weekly-tasks-overview', [
-            'groupedTasks' => $tasks,
+            'groupedTasks' => $groupedBySector,
         ]);
     }
 }

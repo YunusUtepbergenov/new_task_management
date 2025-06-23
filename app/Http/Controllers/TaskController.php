@@ -77,46 +77,93 @@ class TaskController extends Controller
     {
         $request->validate([
             'name' => 'required|min:3|max:255',
-            'file.*' => 'nullable|file|max:5000'
+            'user_ids' => 'required|array|min:1',
+            'user_ids.*' => 'exists:users,id',
+            'file.*' => 'nullable|file|max:5000',
         ]);
 
-        $task = Task::where('id', $request->id)->firstOrFail();
-        $user = User::where('id', $request->user_id)->firstOrFail();
+        $baseTask = Task::findOrFail($request->id);
+        $groupId = $baseTask->group_id;
 
         $newDeadline = Carbon::parse($request->deadline);
-        $isExtended = $newDeadline->gt(Carbon::parse($task->deadline));
+        $isExtended = $newDeadline->gt(Carbon::parse($baseTask->deadline));
 
-        $task->update([
-            'creator_id' => $request->creator_id,
-            'user_id' => $request->user_id,
-            'sector_id' => $user->sector->id,
-            'score_id'  => $request->score_id,
-            'name' => $request->name,
-            'extended_deadline' => $isExtended ? $newDeadline : null,
-            'status' => in_array($task->status, ['Ждет подтверждения', 'Выполнено']) ? $task->status : 'Не прочитано',
-            'overdue' => 0,
-        ]);
+        $groupTasks = $groupId
+            ? Task::where('group_id', $groupId)->get()
+            : collect([$baseTask]);
 
-        if($request->hasFile('file')){
-            $files = File::where('task_id', $task->id)->get();
-            foreach($files as $file){
-                $file->delete();
-                Storage::delete('files/'.$file->name);
+        $existingUserIds = $groupTasks->pluck('user_id')->toArray();
+        $newUserIds = $request->user_ids;
+
+        // Remove all old grouped tasks if user_ids changed
+        if (array_diff($existingUserIds, $newUserIds) || array_diff($newUserIds, $existingUserIds)) {
+            foreach ($groupTasks as $task) {
+                File::where('task_id', $task->id)->delete();
+                $task->delete();
             }
-            foreach($request->file as $file){
-                $filename = time().$file->getClientOriginalName();
-                Storage::disk('local')->putFileAs(
-                    'files/',
-                    $file,
-                    $filename
-                );
-                $fileModel = new File;
-                $fileModel->task_id = $task->id;
-                $fileModel->name = $filename;
-                $fileModel->save();
+
+            // If it was not grouped, we generate a new group_id
+            $newGroupId = $groupId ?? now()->timestamp;
+
+            foreach ($newUserIds as $userId) {
+                $user = User::findOrFail($userId);
+                $newTask = Task::create([
+                    'group_id' => $newGroupId,
+                    'creator_id' => $request->creator_id,
+                    'user_id' => $userId,
+                    'sector_id' => $user->sector_id,
+                    'score_id' => $request->score_id,
+                    'name' => $request->name,
+                    'deadline' => $baseTask->deadline,
+                    'extended_deadline' => $isExtended ? $newDeadline : null,
+                    'status' => 'Не прочитано',
+                    'overdue' => 0,
+                ]);
+
+                // Save files for each recreated task
+                if ($request->hasFile('file')) {
+                    foreach ($request->file as $file) {
+                        $filename = time().$file->getClientOriginalName();
+                        Storage::disk('local')->putFileAs('files/', $file, $filename);
+
+                        File::create([
+                            'task_id' => $newTask->id,
+                            'name' => $filename,
+                        ]);
+                    }
+                }
+            }
+        } else {
+            // If user_ids didn't change, update existing grouped tasks
+            foreach ($groupTasks as $task) {
+                $user = User::findOrFail($task->user_id);
+                $task->update([
+                    'creator_id' => $request->creator_id,
+                    'sector_id' => $user->sector_id,
+                    'score_id' => $request->score_id,
+                    'name' => $request->name,
+                    'extended_deadline' => $isExtended ? $newDeadline : null,
+                    'status' => in_array($task->status, ['Ждет подтверждения', 'Выполнено']) ? $task->status : 'Не прочитано',
+                    'overdue' => 0,
+                ]);
+
+                // Replace old files
+                File::where('task_id', $task->id)->delete();
+                if ($request->hasFile('file')) {
+                    foreach ($request->file as $file) {
+                        $filename = time().$file->getClientOriginalName();
+                        Storage::disk('local')->putFileAs('files/', $file, $filename);
+
+                        File::create([
+                            'task_id' => $task->id,
+                            'name' => $filename,
+                        ]);
+                    }
+                }
             }
         }
     }
+
 
     public function destroy($id)
     {
@@ -184,7 +231,13 @@ class TaskController extends Controller
             $task->extended_deadline = \Carbon\Carbon::parse($task->extended_deadline)->format('Y-m-d');
         }
 
-        return response()->json(['task' => $task]);
+        if(isset($task->group_id)){
+            $group_users = Task::select('user_id')->where('group_id', $task->group_id)->get()->pluck('user_id')->toArray();
+        }else{
+            $group_users = [$task->user_id];
+        }
+
+        return response()->json(['task' => $task, 'group_users' => $group_users]);
     }
 
     public function download($id){

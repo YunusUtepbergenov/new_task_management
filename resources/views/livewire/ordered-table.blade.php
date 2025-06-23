@@ -154,8 +154,9 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header"><strong>Задачи на неделю 
-                        ({{ \Carbon\Carbon::parse($startOfWeek)->format('d M Y') }} -
-                        {{ \Carbon\Carbon::parse($endOfWeek)->endOfWeek()->format('d M Y') }})</strong></div>
+                    ({{ \Carbon\Carbon::parse($startOfWeek)->format('d M Y') }} -
+                    {{ \Carbon\Carbon::parse($endOfWeek)->endOfWeek()->format('d M Y') }})</strong>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-nowrap mb-0">
@@ -170,8 +171,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($weeklyTasks as $key => $task)
-                                    @include('partials.task-row', ['task' => $task, 'key' => $key])
+                                @php
+                                    $key = 1;
+                                @endphp
+                                @forelse ($weeklyTasks as $task)
+                                    @include('partials.task-row', ['task' => $task, 'key'=> $key++])
                                 @empty
                                     <tr><td colspan="7">Нет еженедельных задач</td></tr>
                                 @endforelse

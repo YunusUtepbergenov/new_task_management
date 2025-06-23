@@ -29,12 +29,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-
         $schedule->command('tasks:generate-repeats')->dailyAt('01:00');
 
         $schedule->call(function(){
-            DB::table('tasks')->where('deadline', '<=', Carbon::yesterday())->whereIn('status', ['Не прочитано' ,'Выполняется', 'Просроченный'])->
-                where('overdue', 0)->update(['overdue' => 1]);
+            DB::table('tasks')
+                    ->whereRaw('COALESCE(extended_deadline, deadline) <= ?', [Carbon::yesterday()])
+                    ->whereIn('status', ['Не прочитано' ,'Выполняется', 'Просроченный'])
+                    ->where('overdue', 0)->update(['overdue' => 1]);
         })->dailyAt('00:01');
     }
 

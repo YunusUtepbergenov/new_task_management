@@ -199,7 +199,6 @@
 
             jQuery("#createUser").on("submit", function (e) {
                 e.preventDefault();
-                console.log("sheeeeeeesh");
                 var formData = new FormData($("#createUser")[0]);
                 var url = $(this).attr("action");
 

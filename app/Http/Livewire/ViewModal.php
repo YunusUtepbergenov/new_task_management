@@ -23,7 +23,8 @@ class ViewModal extends Component
     public $description, $upload;
     public $phone, $internal;
     public $oldPassword, $newPassword, $confirmPassword;
-    public $errorMsg, $taskScore;
+    public $errorMsg, $taskScore, $coTasks;
+    public $groupScores = [];
     
     protected $listeners = ['taskClicked', 'profileClicked'];
 
@@ -35,7 +36,9 @@ class ViewModal extends Component
 
     public function taskClicked($id){
         $this->dispatchBrowserEvent('show-modal');
-        $this->task = Task::with(['comments', 'files'])->where('id', $id)->first();
+        $this->task = Task::with(['user','comments', 'files'])->where('id', $id)->first();
+
+        $this->coTasks = $this->getCoTasks($this->task);
 
         if ($this->task->status == "Не прочитано") {
             if (Auth::user()->id == $this->task->user_id) {
@@ -43,6 +46,14 @@ class ViewModal extends Component
             }
         }
         $this->comments = $this->task->comments()->latest()->get();
+    }
+
+    public function getCoTasks($task){
+        if(isset($task->group_id)){
+            return Task::with('user')->where('group_id', $task->group_id)->get();
+        }else{
+            return [];
+        }
     }
 
     public function profileClicked($id){
@@ -108,34 +119,77 @@ class ViewModal extends Component
         }
     }
 
-    public function taskConfirmed($id){
-        $this->errorMsg = Null;
-        $task = Task::where('id', $id)->first();
-        
-        if(!isset($task->score)){
-            $task->update(['status' => "Выполнено"]);
-            $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
+    public function taskConfirmed($id)
+    {
+        $this->errorMsg = null;
+        $task = Task::with('score')->findOrFail($id);
+
+        // Check if this is a grouped task
+        if ($task->group_id) {
+            $groupTasks = Task::where('group_id', $task->group_id)
+                            ->with(['score', 'user'])
+                            ->get();
+
+            $totalGroupScore = 0;
+
+            // Validate each user's score
+            foreach ($groupTasks as $groupTask) {
+                $scoreValue = $this->groupScores[$groupTask->id] ?? null;
+
+                if (!is_numeric($scoreValue)) {
+                    $this->errorMsg = 'Введите балл для пользователя: ' . $groupTask->user->name;
+                    return;
+                }
+
+                if ($groupTask->score) {
+                    if ($scoreValue < $groupTask->score->min_score || $scoreValue > $groupTask->score->max_score) {
+                        $this->errorMsg = 'Оценка для ' . $groupTask->user->name . ' должна быть между ' .
+                                        $groupTask->score->min_score . ' и ' . $groupTask->score->max_score;
+                        return;
+                    }
+                }
+
+                $totalGroupScore += floatval($scoreValue);
+            }
+
+            // Check if total exceeds the overall max_score
+            if ($task->score && $totalGroupScore > $task->score->max_score) {
+                $this->errorMsg = 'Сумма всех оценок (' . $totalGroupScore . ') превышает максимально допустимое значение (' . $task->score->max_score . ').';
+                return;
+            }
+
+            // All good: Update all grouped tasks
+            foreach ($groupTasks as $groupTask) {
+                $groupTask->update([
+                    'status' => 'Выполнено',
+                    'total' => floatval($this->groupScores[$groupTask->id])
+                ]);
+
+                event(new TaskConfirmedEvent($groupTask));
+            }
+
+        } else {
+            // Single task logic
+            if ($task->score) {
+                if (!isset($this->taskScore) ||
+                    floatval($this->taskScore) < $task->score->min_score ||
+                    floatval($this->taskScore) > $task->score->max_score) {
+                    $this->errorMsg = 'Оценка должна быть между ' .
+                                    $task->score->min_score . ' и ' . $task->score->max_score;
+                    return;
+                }
+            }
+
+            $task->update([
+                'status' => 'Выполнено',
+                'total' => $task->score ? floatval($this->taskScore) : null,
+            ]);
+
             event(new TaskConfirmedEvent($task));
         }
-        else if(!isset($task->score->max_score)){
-            $task->update([
-                'status' => "Выполнено",
-                'total'  => floatval($this->taskScore)
-            ]);
-            $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
-            event(new TaskConfirmedEvent($task));
-        }
-        else if(!isset($this->taskScore) or floatval($this->taskScore) > $task->score->max_score or floatval($this->taskScore) < $task->score->min_score){
-            $this->errorMsg = 'Please enter number between '. $task->score->min_score.'-'.$this->task->score->max_score;
-        }
-        else{
-            $task->update([
-                'status' => "Выполнено",
-                'total'  => floatval($this->taskScore)
-            ]);
-            $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
-            event(new TaskConfirmedEvent($task));    
-        }
+
+        // Refresh modal task data
+        $this->task = Task::with(['comments', 'files'])->find($id);
     }
 
     public function taskRejected($id){
@@ -145,7 +199,7 @@ class ViewModal extends Component
             Storage::delete('files/responses/'.$task->response->filename);
 
         $task->response->delete();
-        $task->update(['status' => "Выполняется"]);
+        $task->update(['status' => "Дорабатывается"]);
         $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
         event(new TaskRejectedEvent($task));
     }

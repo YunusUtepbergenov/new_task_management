@@ -160,7 +160,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                             <div class="col-lg-4 col-xl-3">
                                 <div class="card">
@@ -179,7 +178,7 @@
                                                 @isset($task->extended_deadline)
                                                     <tr>
                                                         <td>Продление:</td>
-                                                        <td class="text-right" id="task_deadline">{{ $task->extended_deadline }}</td>
+                                                        <td class="text-right" id="task_extended_deadline">{{ $task->extended_deadline }}</td>
                                                     </tr>
                                                 @endisset
                                                 <tr>
@@ -191,6 +190,7 @@
                                                     <td>Постановщик:</td>
                                                     <td class="text-right"><a href="#" id="task_creator">{{ $task->username($task->creator_id) }}</a></td>
                                                 </tr>
+
                                                 <tr>
                                                     <td>Состояние:</td>
                                                     <td>
@@ -201,6 +201,7 @@
                                                         @endif
                                                     </td>
                                                 </tr>
+                                                
                                                 @if ($task->status == "Выполнено")
                                                     <tr>
                                                         <td>Балл:</td>
@@ -220,16 +221,40 @@
                                                 @can('evaluate', $task)
                                                     @if ($task->status == "Ждет подтверждения")
                                                         <tr>
-                                                            <td>Действия:</td>
+                                                            <td>Действия: (Макс: {{ $task->score->max_score }})</td>
                                                             <td class="nowrap">
                                                                 <div class="row">
                                                                     @isset($task->score)
                                                                         <div class="form-group">
-                                                                            <input type="number" class="form-control" wire:model="taskScore" id="taskScore" placeholder="Макс: {{$task->score->max_score}}" onkeydown="return event.key !== ',' && event.key !== 'e' && event.key !== 'E'" oninput="this.value = this.value.replace(/[^0-9-]/g, '')">
+                                                                            {{-- <input type="number" class="form-control" wire:model="taskScore" id="taskScore" placeholder="Макс: {{$task->score->max_score}}" onkeydown="return event.key !== ',' && event.key !== 'e' && event.key !== 'E'" oninput="this.value = this.value.replace(/[^0-9-]/g, '')"> --}}
+
+                                                                            @if ($task->group_id)
+                                                                                @foreach ($coTasks as $t)
+                                                                                    <div class="form-group">
+                                                                                        <label>{{ $t->user->name }}</label>
+                                                                                        <input type="number"
+                                                                                            class="form-control"
+                                                                                            wire:model.defer="groupScores.{{ $t->id }}"
+                                                                                            placeholder="Оценка"
+                                                                                            min="{{ $t->score->min_score }}"
+                                                                                            max="{{ $t->score->max_score }}"
+                                                                                            onkeydown="return event.key !== ',' && event.key !== 'e' && event.key !== 'E'"
+                                                                                            oninput="this.value = this.value.replace(/[^0-9-]/g, '')">
+                                                                                    </div>
+                                                                                @endforeach
+                                                                            @else
+                                                                                <div class="form-group">
+                                                                                    <input type="number" class="form-control" wire:model="taskScore"
+                                                                                        placeholder="Макс: {{$task->score->max_score}}"
+                                                                                        onkeydown="return event.key !== ',' && event.key !== 'e' && event.key !== 'E'"
+                                                                                        oninput="this.value = this.value.replace(/[^0-9-]/g, '')">
+                                                                                </div>
+                                                                            @endif
+
                                                                             @isset($errorMsg)
-                                                                                <div id="error-message" class="invalid-feedback" style="display: block;">
-                                                                                    {{$errorMsg}}
-                                                                                </div>                                                                            
+                                                                                <div class="invalid-feedback" style="display: block;">
+                                                                                    {{ $errorMsg }}
+                                                                                </div>
                                                                             @endisset
                                                                         </div>                                                                      
                                                                     @endisset
@@ -276,20 +301,37 @@
                                     <div class="card-body">
                                         <h6 class="card-title m-b-20">Ответственный</h6>
                                         <ul class="list-box">
-                                            <li>
-                                                <a href="#">
-                                                    <div class="list-item">
-                                                        <div class="list-left">
-                                                            <span class="avatar"><img alt="" src="{{ ($task->user->avatar) ? asset('user_image/'.$task->user->avatar) : asset('user_image/avatar.jpg') }}"></span>
+                                            @forelse ($coTasks as $task)
+                                                <li>
+                                                    <a href="#">
+                                                        <div class="list-item">
+                                                            <div class="list-left">
+                                                                <span class="avatar"><img alt="" src="{{ ($task->user->avatar) ? asset('user_image/'.$task->user->avatar) : asset('user_image/avatar.jpg') }}"></span>
+                                                            </div>
+                                                            <div class="list-body">
+                                                                <span class="message-author">{{ $task->username($task->user_id) }} ( {{ $task->total }}/{{ $task->score->max_score }} )</span>
+                                                                <div class="clearfix"></div>
+                                                                <span class="message-content">{{ $task->user->role->name }}</span>
+                                                            </div>
                                                         </div>
-                                                        <div class="list-body">
-                                                            <span class="message-author">{{ $task->username($task->user_id) }}</span>
-                                                            <div class="clearfix"></div>
-                                                            <span class="message-content">{{ $task->user->role->name }}</span>
+                                                    </a>
+                                                </li>                                                
+                                            @empty
+                                                <li>
+                                                    <a href="#">
+                                                        <div class="list-item">
+                                                            <div class="list-left">
+                                                                <span class="avatar"><img alt="" src="{{ ($task->user->avatar) ? asset('user_image/'.$task->user->avatar) : asset('user_image/avatar.jpg') }}"></span>
+                                                            </div>
+                                                            <div class="list-body">
+                                                                <span class="message-author">{{ $task->username($task->user_id) }}</span>
+                                                                <div class="clearfix"></div>
+                                                                <span class="message-content">{{ $task->user->role->name }}</span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </a>
-                                            </li>
+                                                    </a>
+                                                </li>                                                
+                                            @endforelse
                                         </ul>
                                     </div>
                                 </div>

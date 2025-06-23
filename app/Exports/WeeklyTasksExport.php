@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Exports;
-
-use App\Models\Sector;
 use App\Models\Task;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -26,17 +24,26 @@ class WeeklyTasksExport implements FromView
             ->where('for_protocol', true)
             ->get();
 
-         $sectors = Sector::with(['tasks' => function ($query) {
-                $query->whereBetween('deadline', [$this->start, $this->end])
-                      ->with('user'); // optional, if you need user info
-            }])
-            ->whereIn('id', [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16])
-            ->get();
-
+        $tasks = Task::with(['user', 'sector', 'score'])
+                ->whereBetween('deadline', [$this->start, $this->end])
+                ->where('for_protocol', true)
+                ->get()
+                ->groupBy(function ($task) {
+                    return $task->group_id ?? $task->id;
+                })
+                ->map(function ($group) {
+                    $main = $group->first();
+                    $responsibles = $group->pluck('user')->filter()->map(fn($u) => $u->employee_name())->unique()->join(', ');
+                    $main->merged_responsibles = $responsibles;
+                    return $main;
+                })
+                ->groupBy(function ($task) {
+                    return optional($task->score)->name ?? 'Без категории';
+                });
 
         return view('exports.weekly_tasks', [
             'tasks' => $tasks,
-            'sectors' => $sectors,
+            // 'sectors' => $sectors,
             'start' => $this->start,
             'end' => $this->end
         ]);

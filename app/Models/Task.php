@@ -26,7 +26,8 @@ class Task extends Model
         'repeat_id',
         'total',
         'extended_deadline',
-        'for_protocol'
+        'for_protocol',
+        'group_id',
     ];
 
     public function sector(){

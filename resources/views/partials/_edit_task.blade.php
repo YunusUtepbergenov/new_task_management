@@ -56,7 +56,7 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
-                                <select class="form-control" name="user_id" id="user_id1">
+                                <select class="form-control select2" name="user_ids[]" id="user_id1" multiple>
                                     @foreach ($sectors as $sector)
                                         <optgroup label="{{ $sector->name }}">
                                             @foreach ($sector->users as $user)
@@ -86,7 +86,7 @@
                                     <div class="col-sm-1"></div>
                                     <label class="col-sm-3 col-form-label">Ответственный</label>
                                     <div class="col-sm-4">
-                                    <select class="form-control" name="user_id" id="user_id1">
+                                    <select class="form-control  select2" name="user_ids[]" id="user_id1" multiple>
                                             @foreach ($sectors as $sector)
                                                 <optgroup label="{{ $sector->name }}">
                                                     @foreach ($sector->users as $user)
@@ -104,7 +104,7 @@
                                     <div class="col-sm-1"></div>
                                     <label class="col-sm-3 col-form-label">Ответственный</label>
                                     <div class="col-sm-4">
-                                        <select class="form-control" name="user_id" id="user_id1">
+                                        <select class="form-control select2" name="user_ids[]" id="user_id1" multiple>
                                                 @foreach ($sectors as $sector)
                                                     <optgroup label="{{ $sector->name }}">
                                                         @foreach ($sector->users as $user)
@@ -114,7 +114,7 @@
                                                         @endforeach
                                                     </optgroup>
                                                 @endforeach
-                                            </select>
+                                        </select>
                                     </div>
                                 </div>
                             @endif
@@ -125,7 +125,7 @@
                             <div class="col-sm-4">
                                 <select class="form-control" name="creator_id" id="creator_id1">
                                     @foreach ($sectors as $sector)
-                                        @foreach ($sector->users->whereIn('role_id', [2, 14]) as $user)
+                                        @foreach ($sector->users->whereIn('role_id', [2, 14, 19]) as $user)
                                             <option value="{{ $user->id }}">{{ $user->name }}</option>
                                         @endforeach
                                     @endforeach
@@ -138,7 +138,7 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
-                                <select class="form-control" name="user_id" id="user_id1">
+                                <select class="form-control select2" name="user_ids[]" id="user_id1" multiple>
                                     @foreach ($sectors as $sector)
                                         <optgroup label="{{ $sector->name }}">
                                             @foreach ($sector->users as $user)
@@ -165,7 +165,7 @@
                             <div class="col-sm-1"></div>
                             <label class="col-sm-3 col-form-label">Ответственный</label>
                             <div class="col-sm-4">
-                                <select class="form-control" name="user_id" id="user_id1">
+                                <select class="form-control select2" name="user_ids[]" id="user_id1" multiple>
                                     @foreach (Auth::user()->sector->users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                                     @endforeach

@@ -3,6 +3,7 @@
 @section('styles')
     @livewireStyles
 @endsection
+
 @section('main')
     <div class="page-header">
         <div class="row">
@@ -38,15 +39,14 @@
         $('#myTable').ddTableFilter();
         $("#name2").addClass("d-none");
         $("#deadline2").addClass("d-none");
-        $("#description2").addClass("d-none");
 
         function editTask(id) {
             $.get("/task/info/byid/" + id, function (task) {
+                const group_users = task.group_users;
                 $('#helpers1').val(null).trigger('change');
                 $("#kpi_type1").val(task.task.score_id).trigger('change');
                 $("#id1").val(task.task.id);
                 $("#name1").val(task.task.name);
-                $("#plan_type1").val(task.task.planning_type);
                 
                 if(task.task.extended_deadline === null){
                     $("#deadline1").val(task.task.deadline);                    
@@ -54,19 +54,9 @@
                     $("#deadline1").val(task.task.extended_deadline);
                 }
                 
-                $("#user_id1").val(task.task.user_id);
-                $("#creator_id1").val(task.task.creator_id);
-                if(task.task.executers.length > 0){
-                    for(var i=0; i < task.task.executers.length; i++){
-                        for(var c=0; c < helpers.length; c++){
-                            if (task.task.executers[i].id == helpers[c].value) {
-                                helpers[c].setAttribute('selected', 'selected');
-                            }
-                        }
-                    }
-                }
+                $('#user_id1').val(group_users).trigger('change');
 
-                $("#description1").val(task.task.description);
+                $("#creator_id1").val(task.task.creator_id);
             });
         }
         updateList1 = function() {
