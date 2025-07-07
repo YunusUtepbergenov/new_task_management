@@ -28,7 +28,6 @@ class OrderedTable extends Component
 
     public function taskStore()
     {
-        
         $this->validate([
             'task_name' => 'required|string|max:255',
             'task_score' => 'required|integer',
@@ -44,9 +43,16 @@ class OrderedTable extends Component
 
         foreach ($this->task_employee as $userId) {
             $user = User::find($userId);
+            
+            if($user->role_id == 2){
+                $creator = 2;
+            }else{
+                $creator = Auth::id();
+            }
+
             if (!$user || $user->leave) continue;
 
-            DB::transaction(function () use ($user, $groupId) {
+            DB::transaction(function () use ($user, $groupId, $creator) {
                 $repeatId = null;
 
             $deadline = $this->is_repeating
@@ -63,7 +69,7 @@ class OrderedTable extends Component
                 }
 
                 $task = Task::create([
-                    'creator_id' => Auth::id(),
+                    'creator_id' => $creator,
                     'user_id' => $user->id,
                     'sector_id' => $user->sector->id,
                     'project_id' => null,
