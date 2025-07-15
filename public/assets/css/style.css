@@ -500,6 +500,9 @@ table.dataTable thead > tr > td.sorting {
 .badge-purple {
     background-color: #7460ee !important;
 }
+.bg-holiday{
+    background-color: #c3c5b6 !important;
+}
 .bg-primary,
 .badge-primary {
     background-color: #f43b48 !important;
@@ -9291,4 +9294,10 @@ td a {
 .arrowss {
     float: right;
     cursor: pointer;
+}
+
+.sector_name{
+    font-size: 14px;
+    background-color: #e9ecef;
+    text-align: center;
 }

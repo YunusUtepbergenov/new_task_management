@@ -211,8 +211,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $cnt = 1;
+                                    @endphp
                                     @forelse ($all_tasks as $key => $task)
-                                        @include('partials.task-row', ['task' => $task, 'key' => $key])
+                                        @include('partials.task-row', ['task' => $task, 'key' => $cnt++])
                                     @empty
                                         <tr><td colspan="7">Нет внеплановых задач</td></tr>
                                     @endforelse

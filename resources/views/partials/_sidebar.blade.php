@@ -46,6 +46,11 @@
                 <li>
                     <a href="{{ route('vacations') }}"><i class="la la-calendar"></i> <span>График Отпусков </span></a>
                 </li>
+                @if (Auth::user()->isHR())
+                    <li>
+                        <a href="{{ route('attendance') }}"><i class="la la-calendar"></i> <span>Турникет </span></a>
+                    </li>                    
+                @endif
             </ul>
 
             <ul style="position: absolute; bottom: 0px; margin-bottom: 50px;">

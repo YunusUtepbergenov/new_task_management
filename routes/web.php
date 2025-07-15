@@ -51,6 +51,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('digest/formatter', [DigestController::class, 'formatter'])->name('digest.formatter');
     Route::get('workload', [PageController::class, 'workload'])->name('workload');
 
+    Route::get('/user_logs', function(){
+        return view('page.attendance');
+    })->name('attendance');
+
 
     Route::get('/weekly-tasks', [PageController::class, 'weeklyTasks'])->name('weekly.tasks');
 

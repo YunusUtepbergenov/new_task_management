@@ -63,6 +63,20 @@ return [
             ]) : [],
         ],
 
+        'turnstile' => [
+            'driver' => 'mysql',
+            'host' => env('DB_TURNSTILE_HOST'),
+            'port' => env('DB_TURNSTILE_PORT'),
+            'database' => env('DB_TURNSTILE_DATABASE'),
+            'username' => env('DB_TURNSTILE_USERNAME'),
+            'password' => env('DB_TURNSTILE_PASSWORD'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
