@@ -16,7 +16,6 @@ class Attendance extends Component
 public function mount()
     {
         $allowedSectors = [2,3,4,5,6,7,8,9,10];
-        // Generate all days in current month, reversed (latest first)
         $start = Carbon::now()->startOfMonth();
         $today = Carbon::today();
 
@@ -27,7 +26,6 @@ public function mount()
         }
         $this->dates = array_reverse($dates);
 
-        // Get users with sectors and log_id (required for matching)
         $users = User::with('sector')->whereNotNull('log_id')->whereIn('sector_id', $allowedSectors)->orderBy('sector_id', 'ASC')->orderBy('role_id', 'ASC')->get();
 
         foreach ($users->groupBy(fn($u) => $u->sector->name ?? 'Без сектора') as $sector => $groupedUsers) {

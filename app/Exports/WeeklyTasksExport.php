@@ -29,12 +29,6 @@ class WeeklyTasksExport implements FromView
                 ->map(function ($group) {
                     $main = $group->first();
                     $responsibles = $group->pluck('user')->filter()->map(fn($u) => $u->employee_name())->unique()->join(', ');
-                    $main->merged_responsibles = $responsibles;
-                    return $main;
-                })
-                ->groupBy(function ($task) {
-                    return optional($task->score)->name ?? 'Без категории';
-                });
 
         return view('exports.weekly_tasks', [
             'tasks' => $tasks,

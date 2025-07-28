@@ -59,7 +59,7 @@
     </td>
     <td>{{ $responsibles }}</td>
     <td>
-        @if ($main_task['overdue'])
+        @if ($main_task['overdue'] && $main_task['status'] != 'Ждет подтверждения')
             <span class="badge bg-inverse-warning">Просроченный</span>
         @else
         @php
