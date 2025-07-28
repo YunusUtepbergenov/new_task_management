@@ -6,6 +6,7 @@
                 <li>
                     <a href="{{ route('home') }}"><i class="la la-rocket"></i> <span> Проекты и задачи </span></a>
                 </li>
+
                 <li class="submenu">
                     <a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span><span class="menu-arrow"></span></a>
                     <ul style="display: none;" id="journals_menu">
@@ -33,6 +34,7 @@
                         </ul>
                     </li>
                 @endif
+
                 <li class="submenu">
                     <a href="#"><i class="fa fa-database" aria-hidden="true"></i><span>Анализ данных</span><span class="menu-arrow"></span></a>
                     <ul style="display: none;">
@@ -40,16 +42,19 @@
                         <li><a href="{{ route('surveys') }}"><span>Опросники</span></a></li>
                     </ul>
                 </li>
+
                 <li>
                     <a href="{{ route('employees') }}"><i class="la la-user"></i> <span> Сотрудники </span></a>
                 </li>
+
                 <li>
                     <a href="{{ route('vacations') }}"><i class="la la-calendar"></i> <span>График Отпусков </span></a>
                 </li>
-                @if (Auth::user()->isHR())
+
+                @if (Auth::user()->isDirector() || Auth::user()->isDeputy() || Auth::user()->isHR())
                     <li>
-                        <a href="{{ route('attendance') }}"><i class="la la-calendar"></i> <span>Турникет </span></a>
-                    </li>                    
+                        <a href="{{ route('attendance') }}"><i class="la la-calendar"></i> <span>Турникет</span></a>
+                    </li>
                 @endif
             </ul>
 
@@ -57,6 +62,7 @@
                 <li>
                     <a href="#"><i class="fa fa-book" aria-hidden="true"></i><span>Справочники</span></a>
                 </li>
+
                 <li>
                     <a href="{{ route('settings') }}"><i class="fa fa-cog"></i><span>Настройки</span></a>
                 </li>

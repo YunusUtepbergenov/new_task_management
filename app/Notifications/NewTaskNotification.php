@@ -34,6 +34,7 @@ class NewTaskNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         $user = User::where('id', $this->task->creator_id)->first();
+        
         return [
             'name' => $this->task->name,
             'task_id' => $this->task->id,

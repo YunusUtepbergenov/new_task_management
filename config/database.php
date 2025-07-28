@@ -77,6 +77,20 @@ return [
             'engine' => null,
         ],
 
+        'telegram' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_TELEGRAM_HOST'),
+            'port' => env('DB_TELEGRAM_PORT'),
+            'database' => env('DB_TELEGRAM_DATABASE'),
+            'username' => env('DB_TELEGRAM_USERNAME'),
+            'password' => env('DB_TELEGRAM_PASSWORD'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),

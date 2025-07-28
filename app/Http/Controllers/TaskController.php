@@ -8,11 +8,13 @@ use App\Models\File;
 use App\Models\Repeat;
 use App\Models\Task;
 use App\Models\TaskUser;
+use App\Models\TelegramDb;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Http;
 
 class TaskController extends Controller
 {
@@ -76,7 +78,17 @@ class TaskController extends Controller
                 }
             }
             event(new TaskCreatedEvent($task));
+
+            $chat_id = TelegramDb::where('ijro_id', $usr->id)->first()->tg_user_id;
+            dd($chat_id);
+
+            Http::post("https://api.telegram.org/bot7415384316:AAFZ_I7HCXSCjTETAankHa1plhPzVydfIkY/sendMessage", [
+                    'chat_id' => $chat_id,
+                    'text' => 'New Task',
+                    'parse_mode' => 'HTML',
+            ]);
         }
+
     }
 
     public function update(Request $request)

@@ -9,6 +9,12 @@
             </div>
         </div>
     </div>
+    @if (session()->has('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    @endif
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -41,7 +47,28 @@
                                     <td>{{ $task->creator->name }}</td>
                                     <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
                                     <td>{{(isset($task->score)) ? substr($task->score->name, strpos($task->score->name, '.') + 1) : ''}}</td>
-                                    <td>{{ (isset($task->total)) ? $task->total.'/'.$task->score->max_score : ''}}</td>
+
+                                    <td>
+                                        @if(auth()->user()->isDeputy() && isset($task->total))
+                                                <div class="d-flex align-items-center">
+                                                    <input type="number"
+                                                        wire:model.defer="editedScores.{{ $task->id }}"
+                                                        min="0"
+                                                        max="{{ $task->score->max_score }}"
+                                                        placeholder="{{ (isset($task->total)) ? $task->total.'/'.$task->score->max_score : '' }}"
+                                                        class="form-control form-control-sm"
+                                                        style="width: 70px; margin-right: 5px;">
+                                                    <button class="btn btn-sm btn-primary"
+                                                            wire:click="saveScore({{ $task->id }})">Сохранить</button>
+                                                </div>
+                                                @error("editedScores.{$task->id}")
+                                                    <div class="text-danger small">{{ $message }}</div>
+                                                @enderror
+                                            @else
+                                                {{ (isset($task->total)) ? $task->total.'/'.$task->score->max_score : '' }}
+                                        @endif
+                                    </td>
+                                    
                                     <td>
                                         @if ($task->overdue)
                                             <span class="badge bg-inverse-warning">Просроченный</span>

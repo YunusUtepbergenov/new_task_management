@@ -12,7 +12,9 @@ use Carbon\Carbon;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use App\Models\Repeat;
+use App\Models\TelegramDb;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 
 class OrderedTable extends Component
 {
@@ -90,8 +92,17 @@ class OrderedTable extends Component
                 }
 
                 event(new TaskCreatedEvent($task));
+
+                $chat_id = TelegramDb::where('ijro_id', $user->id)->first()->tg_user_id;
+
+                Http::post("https://api.telegram.org/bot7415384316:AAFZ_I7HCXSCjTETAankHa1plhPzVydfIkY/sendMessage", [
+                        'chat_id' => $chat_id,
+                        'text' => 'New Task is created',
+                        'parse_mode' => 'HTML',
+                ]);
             });
         }
+
         $this->reset([
             'task_score', 'task_name', 'task_employee',
             'deadline', 'task_plan', 'is_repeating',
