@@ -48,7 +48,7 @@ class UserExport implements FromView
             $user->ovr_kpi = $user->ovrKpiCalculate();
         }
 
-        $this->users = $this->users->sortByDesc('ovr_kpi');
+        $this->users = $this->users->sortByDesc('kpi_score');
         return view('exports.users', [
             'users' => $this->users,
             'norms' => $norms,

@@ -23,9 +23,9 @@
                 $count = 0;
             @endphp
             @foreach($users as $user)
-                @if (!$user->isDirector() && !$user->isDeputy() && !$user->isEditor() && $user->role_id > 4)
+                @if (!$user->isDirector() && !$user->isDeputy() && !$user->isEditor() && $user->role_id <= 4)
                     <tr>
-                        <td colspan="5" style="font-family:Cambria;text-align:center;font-weight:bold; border:1px solid #000">{{(++$count).'. '.$user->name}} ({{ $user->ovrKpiCalculate() }} балл / {{$norms[$user->role_id]}})</td>
+                        <td colspan="5" style="font-family:Cambria;text-align:center;font-weight:bold; border:1px solid #000">{{(++$count).'. '.$user->name}} ({{ $user->kpiCalculate() }} балл / {{$norms[$user->role_id]}})</td>
                     </tr>
                     @foreach ($user->tasks()->whereBetween('deadline', [date('Y-m-01'), date('Y-m-t')])->get() as $key=>$task)
                         <tr>
@@ -41,6 +41,8 @@
                                     <td width="22" style="font-family:Cambria;color:#6c61f6; background-color:#e2dffd; font-weight:bold; border: 2px solid #000;">Выполнено</td>
                                 @elseif ($task->status == "Ждет подтверждения")
                                     <td width="22" style="font-family:Cambria;color:#e63c3c; background-color:#fde2e7; font-weight:bold; border: 2px solid #000;">Ждет подтверждения</td>
+                                @else
+                                    <td width="22" style="font-family:Cambria;color:#e63c3c; background-color:#fde2e7; font-weight:bold; border: 2px solid #000;">{{ $task->status }}</td>
                                 @endif
                             <td width="15" style="font-family:Cambria;border:1px solid #000">{{$task->deadline}}</td>
                             <td width="60" style="font-family:Cambria;border:1px solid #000; font-weight:bold">{{(isset($task->score)) ? substr($task->score->name, strpos($task->score->name, '.') + 1) : ''}}</td>

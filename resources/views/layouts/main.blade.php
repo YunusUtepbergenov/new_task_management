@@ -143,6 +143,16 @@
                           <div class="card-body" style="background: #34444c; color: #fff; padding-top: 0; padding-bottom:1px;">
                             <ul class="list-box">
                                 <li>
+                                    <a href="https://link.springer.com/" data-toggle="tooltip" target="blank" style="color: white">
+                                        <div class="list-item">
+                                            <div class="list-body" style="padding: 0;">
+                                                <img class="links-websites" src="{{ asset('img/springer.svg') }}" alt="Springer">
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+
+                                <li>
                                     <a href="https://search.ebscohost.com" data-toggle="tooltip" data-html="true" data-placement="left" title="User ID: <b>ns123207</b> <br> Password: <b>Databases1!</b>" target="blank" style="color: white">
                                         <div class="list-item">
                                             <div class="list-body" style="padding: 0;">

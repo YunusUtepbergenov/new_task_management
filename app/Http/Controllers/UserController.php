@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\MediaExport;
 use App\Exports\UserExport;
+use App\Exports\LateComersExport;
 use App\Models\Repeat;
 use App\Models\Task;
 use App\Models\User;
@@ -127,6 +128,11 @@ class UserController extends Controller
     public function export() 
     {
         return FacadesExcel::download(new UserExport, 'users.xlsx');
+    }
+
+    public function lateComersExport(){
+        $fileName = 'Кечикишлар_стат_' . now()->format('Y_m_d_His') . '.xlsx';
+        return FacadesExcel::download(new LateComersExport, $fileName);
     }
 
     public function sector() 

@@ -36,19 +36,19 @@ class TaskController extends Controller
             'file.*' => 'nullable|file|max:5000'
         ]);
 
-        $user = User::where('id', $request->user_id)->first();
+        // $user = User::where('id', $request->user_id)->first();
 
-        if($user->role_id == 2){
-            $creator = 2;
-        }else{
-            $creator = $user->id;
-        }
+        // if($user->role_id == 2){
+        //     $creator = 2;
+        // }else{
+        //     $creator = $user->id;
+        // }
 
         $new_deadline = $request->deadline;
         foreach($request->users as $usr){
             $user = User::where('id', $usr)->first();
             $task = Task::create([
-                'creator_id' => $creator,
+                'creator_id' => $request->creator_id,
                 'user_id' => $usr,
                 'project_id' => $request->project_id,
                 'sector_id' => $user->sector->id,
@@ -78,15 +78,6 @@ class TaskController extends Controller
                 }
             }
             event(new TaskCreatedEvent($task));
-
-            $chat_id = TelegramDb::where('ijro_id', $usr->id)->first()->tg_user_id;
-            dd($chat_id);
-
-            Http::post("https://api.telegram.org/bot7415384316:AAFZ_I7HCXSCjTETAankHa1plhPzVydfIkY/sendMessage", [
-                    'chat_id' => $chat_id,
-                    'text' => 'New Task',
-                    'parse_mode' => 'HTML',
-            ]);
         }
 
     }

@@ -12,20 +12,20 @@
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
     @endphp
-{{-- <div class="row filter-row">
-    <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
-        @if(Auth::user()->isResearcher())
-            <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
-        @endif
+    <div class="row filter-row">
+        <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
+            @if(Auth::user()->isResearcher())
+                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
+            @endif
+        </div>
     </div>
-</div> --}}
-<br>
+    <br>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header"><strong>Задачи на неделю 
-                        ({{ \Carbon\Carbon::parse($startOfWeek)->format('d M Y') }} -
-                        {{ \Carbon\Carbon::parse($endOfWeek)->endOfWeek()->format('d M Y') }})</strong>
+                    ({{ \Carbon\Carbon::parse($startOfWeek)->format('d M Y') }} -
+                    {{ \Carbon\Carbon::parse($endOfWeek)->endOfWeek()->format('d M Y') }})</strong>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
