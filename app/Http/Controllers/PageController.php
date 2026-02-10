@@ -7,12 +7,14 @@ use App\Models\User;
 use App\Models\Sector;
 use App\Models\Journal;
 use App\Models\Project;
+use App\Exports\OffDaysWorkExport;
 use App\Exports\TasksExport;
 use App\Models\Vacation;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\TopUsersExport;
 use App\Models\Task;
 use ZipArchive;
 
@@ -184,6 +186,11 @@ class PageController extends Controller
 
         return view('page.employees', ['sectors' => $sectors, 'roles' => $roles]);
     }
+
+     public function offDaysWorkExport(){
+        $file = 'off_days_work_' . now()->format('Y_m_d_His') . '.xlsx';
+        return Excel::download(new OffDaysWorkExport, $file);
+    }
     
     public function vacations(){
         $sectors = Sector::with(['users' => function($query){
@@ -280,5 +287,15 @@ class PageController extends Controller
 
         // return file download
         return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+    public function exportTopReportWriters()
+    {
+        $year = now()->year;
+
+        return Excel::download(
+            new TopUsersExport($year),
+            "top_report_writers_{$year}.xlsx"
+        );
     }
 }

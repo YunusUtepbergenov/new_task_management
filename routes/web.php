@@ -110,3 +110,8 @@ Route::get('users/export', [UserController::class, 'export']);
 Route::get('users/late/export', [UserController::class, 'lateComersExport']);
 Route::get('sectors/export', [UserController::class, 'sector']);
 Route::get('/getdocuments', [PageController::class, 'getDocuments']);
+
+Route::get('/export/off-days', [PageController::class, 'offDaysWorkExport'])
+    ->name('export.off-days');
+
+Route::get('/reports/top-writers/export', [PageController::class, 'exportTopReportWriters']);
