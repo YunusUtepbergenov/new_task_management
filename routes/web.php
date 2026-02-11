@@ -9,11 +9,8 @@ use App\Http\Controllers\ResearchController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Livewire\TestTasks;
-
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/test-tasks', TestTasks::class);
     Route::get('/', [PageController::class, 'dashboard'])->name('home');
     Route::get('ordered', [PageController::class, 'ordered'])->name('ordered');
     Route::get('finished', [PageController::class, 'finished_tasks'])->name('finished');

@@ -1,19 +1,25 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
-/*
-|--------------------------------------------------------------------------
-| Console Routes
-|--------------------------------------------------------------------------
-|
-| This file is where you may define all of your Closure based console
-| commands. Each Closure is bound to a command instance allowing a
-| simple approach to interacting with each command's IO methods.
-|
-*/
+$days = [
+    1 => 'Monday',
+    2 => 'Tuesday',
+    3 => 'Wednesday',
+    4 => 'Thursday',
+    5 => 'Friday',
+    6 => 'Saturday',
+    7 => 'Sunday'
+];
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+Schedule::command('tasks:generate-repeats')->dailyAt('01:00');
+
+Schedule::call(function() {
+    DB::table('tasks')
+        ->whereRaw('COALESCE(extended_deadline, deadline) <= ?', [Carbon::yesterday()])
+        ->whereIn('status', ['Не прочитано' ,'Выполняется', 'Просроченный'])
+        ->where('overdue', 0)
+        ->update(['overdue' => 1]);
+})->dailyAt('00:01');

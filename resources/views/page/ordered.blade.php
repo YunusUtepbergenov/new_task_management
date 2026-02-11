@@ -101,5 +101,4 @@
             });
         });
     </script>
-    @stack('scripts')
 @endsection

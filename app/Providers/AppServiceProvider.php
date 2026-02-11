@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\DB;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,13 +34,18 @@ class AppServiceProvider extends ServiceProvider
         $birthdays = cache()->remember('birthdays', 60*60*24, function () {
             $date = now();
 
-            return \App\Models\User::select("id", "name", "avatar", "birth_date", "leave", DB::raw('DATE_FORMAT(birth_date, "%m") as months'), DB::raw('DATE_FORMAT(birth_date, "%d") as dates'))->
-            whereMonth('birth_date', '>', $date->month)
-            ->orWhere(function ($query) use ($date) {
-                $query->whereMonth('birth_date', '=', $date->month)
-                    ->whereDay('birth_date', '>=', $date->day);
-            })->orderBy("months",'ASC')->orderBy("dates", 'ASC')
-            ->get();
+            return \App\Models\User::query()
+                ->select('id', 'name', 'avatar', 'birth_date', 'leave')
+                ->where(function ($q) use ($date) {
+                    $q->whereMonth('birth_date', '>', $date->month)
+                    ->orWhere(function ($q) use ($date) {
+                        $q->whereMonth('birth_date', $date->month)
+                            ->whereDay('birth_date', '>=', $date->day);
+                    });
+                })
+                ->orderByRaw('MONTH(birth_date) asc')
+                ->orderByRaw('DAY(birth_date) asc')
+                ->get();
         });
 
         view()->share('birthdays', $birthdays);

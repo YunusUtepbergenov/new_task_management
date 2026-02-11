@@ -3,13 +3,13 @@
         <div class="loading">Loading&#8230;</div>
     </div>
 
-    <form wire:submit.prevent="taskStore">
+    <form wire:submit="taskStore">
         <div class="task-group border p-3 mb-2 bg-light rounded">
             <div class="row">
                 <!-- Task row group -->
-                <div class="form-group col-lg-2">
+                <div class="form-group col-lg-2" wire:ignore>
                     <label>Категория</label>
-                    <select class="form-control select2" id="task_score" wire:model.defer="task_score">
+                    <select class="form-control select2" id="task_score">
                         <option value="def" disabled selected>Выберите</option>
                         @foreach ($scoresGrouped as $group => $items)
                             <optgroup label="{{ $group }}">
@@ -26,7 +26,7 @@
 
                 <div class="form-group col-lg-4">
                     <label>Название</label>
-                    <textarea type="text" class="form-control" rows="1" wire:model.defer="task_name" required></textarea>
+                    <textarea type="text" class="form-control" rows="1" wire:model="task_name" required></textarea>
                     @error('task_name')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror                    
@@ -35,7 +35,7 @@
                     <label>Срок</label>
                         <input
                             type="date"
-                            wire:model.defer="deadline"
+                            wire:model="deadline"
                             class="form-control"
                             @if($is_repeating) value="" disabled @endif
                              placeholder="{{ $is_repeating ? 'Определяется автоматически' : '' }}"
@@ -45,9 +45,9 @@
                             <div class="text-danger">{{ $message }}</div>
                         @enderror                           
                 </div>
-                <div class="form-group col-lg-2">
+                <div class="form-group col-lg-2" wire:ignore>
                     <label>Ответственный</label>
-                    <select wire:model.defer="task_employee" id="task_employee" class="form-control select2" multiple>
+                    <select id="task_employee" class="form-control select2" multiple>
                         @if (Auth::user()->isDirector() || Auth::user()->isMailer())
                             @foreach ($sectors as $sector)
                                 <optgroup label="{{ $sector->name }}">
@@ -278,22 +278,17 @@
             }
         }
 
-        document.addEventListener('livewire:load', function () {
+        document.addEventListener('livewire:init', function () {
             initSelect2Bindings();
             initDateTimePicker();
 
-            Livewire.hook('message.processed', () => {
-                initSelect2Bindings();
-                initDateTimePicker();
+            Livewire.on('toastr:success', (data) => {
+                toastr.options = {
+                    "closeButton" : true,
+                    "progressBar" : true
+                };
+                toastr.success(data.message);
             });
-        });
-
-        window.addEventListener('toastr:success', event => {
-            toastr.options = {
-                "closeButton" : true,
-                "progressBar" : true
-            };
-            toastr.success(event.detail.message);
         });
     </script>
 @endpush
