@@ -4,7 +4,7 @@
     </div>
 
     <form wire:submit="taskStore">
-        <div class="task-group border p-3 mb-2 bg-light rounded">
+        <div class="task-group mb-3">
             <div class="row">
                 <!-- Task row group -->
                 <div class="form-group col-lg-2" wire:ignore>
@@ -52,7 +52,7 @@
                             @foreach ($sectors as $sector)
                                 <optgroup label="{{ $sector->name }}">
                                     @foreach ($sector->users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->employee_name() }}</option>
+                                        <option value="{{ $user->id }}">{{ $user->short_name }}</option>
                                     @endforeach
                                 </optgroup>
                             @endforeach
@@ -62,7 +62,7 @@
                                 <optgroup label="{{ $sector->name }}">
                                     @foreach ($sector->users as $user)
                                         @if (!$user->isDirector() && (! $user->isDeputy() || $user->id == Auth::id()))
-                                            <option value="{{ $user->id }}">{{ $user->employee_name() }}</option>                                                        
+                                            <option value="{{ $user->id }}">{{ $user->short_name }}</option>                                                        
                                         @endif
                                     @endforeach
                                 </optgroup>
@@ -73,7 +73,7 @@
                                 <optgroup label="{{ $sector->name }}">
                                     @foreach ($sector->users as $user)
                                         @if (!$user->isDirector() && (! $user->isDeputy()))
-                                            <option value="{{ $user->id }}">{{ $user->employee_name() }}</option>                                                        
+                                            <option value="{{ $user->id }}">{{ $user->short_name }}</option>                                                        
                                         @endif
                                     @endforeach
                                 </optgroup>
@@ -86,7 +86,7 @@
                 </div>
 
                                 
-                <div class="form-group col-lg-2">
+                {{-- <div class="form-group col-lg-2">
                     <label><br>
                         <input type="checkbox" wire:model.live="is_repeating">
                         Повторяется?
@@ -133,10 +133,10 @@
 
                 @error('repeat_day')
                     <div class="text-danger">{{ $message }}</div>
-                @enderror   
+                @enderror    --}}
 
-                <div class="form-group col-lg-12 text-right mt-1">
-                    <button class="btn btn-primary create-task-btn">Создать Задачу</button>
+                <div class="form-group col-lg-2 d-flex align-items-end">
+                    <button class="btn btn-primary create-task-btn w-100">Создать Задачу</button>
                 </div>
 
             </div>

@@ -15,7 +15,7 @@
         <div id="sidebar-menu" class="sidebar-menu">
             <ul>
                 <li>
-                    <a href="{{ route('home') }}"><i class="la la-rocket"></i> <span>Проекты и задачи</span></a>
+                    <a href="{{ route('home') }}"><i class="la la-stream"></i> <span>Проекты и задачи</span></a>
                 </li>
 
                 <li class="submenu">
@@ -47,7 +47,7 @@
                 @endif
 
                 <li class="submenu">
-                    <a href="#"><i class="fa fa-database" aria-hidden="true"></i><span>Анализ данных</span><span class="menu-arrow"></span></a>
+                    <a href="#"><i class="fa fa-server" aria-hidden="true"></i><span>Анализ данных</span><span class="menu-arrow"></span></a>
                     <ul style="display: none;">
                         <li><a href="{{ route('scraping') }}"><span>Дата скрапинг</span></a></li>
                         <li><a href="{{ route('surveys') }}"><span>Опросники</span></a></li>
@@ -55,7 +55,7 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('employees') }}"><i class="la la-user"></i> <span>Сотрудники</span></a>
+                    <a href="{{ route('employees') }}"><i class="la la-users"></i> <span>Сотрудники</span></a>
                 </li>
 
                 <li>

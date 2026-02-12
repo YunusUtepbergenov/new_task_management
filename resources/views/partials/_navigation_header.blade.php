@@ -11,7 +11,7 @@
                     </li>
                 @endif
                 <li class="nav-item">
-                    <a class="nav-link {{ (Route::current()->uri == '/finished') ? 'active' : '' }}" href="{{ route('finished') }}">Завершённые задачи</a>
+                    <a class="nav-link {{ (Route::current()->uri == 'finished') ? 'active' : '' }}" href="{{ route('finished') }}">Завершённые задачи</a>
                 </li>
 
             </ul>
