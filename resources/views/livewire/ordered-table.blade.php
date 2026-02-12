@@ -88,7 +88,7 @@
                                 
                 <div class="form-group col-lg-2">
                     <label><br>
-                        <input type="checkbox" wire:model="is_repeating">
+                        <input type="checkbox" wire:model.live="is_repeating">
                         Повторяется?
                     </label>
                 </div>
@@ -96,7 +96,7 @@
                 @if($is_repeating)
                     <div class="form-group col-lg-2">
                         <label>Частота</label>
-                        <select wire:model="repeat_type" class="form-control">
+                        <select wire:model.live="repeat_type" class="form-control">
                             <option value="null" disabled selected>Выберите</option>
                             <option value="weekly">Еженедельно</option>
                             <option value="monthly">Ежемесячно</option>
@@ -239,56 +239,62 @@
                 $('#unplannedTasksChevron').removeClass('fa-chevron-down').addClass('fa-chevron-right');
             });
         });
-        function initSelect2Bindings() {
-            const $taskScore = $('#task_score');
-            if ($taskScore.length && !$taskScore.hasClass('select2-initialized')) {
-                $taskScore.select2().addClass('select2-initialized');
-                $taskScore.on('change', function () {
-                    @this.set('task_score', $(this).val());
-                });
-            }
-
-            const $taskEmployee = $('#task_employee');
-            if ($taskEmployee.length && !$taskEmployee.hasClass('select2-initialized')) {
-                $taskEmployee.select2().addClass('select2-initialized');
-                $taskEmployee.on('change', function () {
-                    @this.set('task_employee', $(this).val());
-                });
-            }
-        }
-
-        function initDateTimePicker() {
-            const $deadline = $('.datetimepicker');
-            if ($deadline.length && !$deadline.hasClass('datetimepicker-initialized')) {
-                $deadline.addClass('datetimepicker-initialized');
-                $deadline.datetimepicker({
-                    format: 'YYYY-MM-DD',
-                    useCurrent: false,
-                    icons: {
-                        up: "fa fa-angle-up",
-                        down: "fa fa-angle-down",
-                        next: 'fa fa-angle-right',
-                        previous: 'fa fa-angle-left'
-                    }
-                });
-
-                $deadline.on('dp.change', function (e) {
-                    @this.set('deadline', e.date ? e.date.format('YYYY-MM-DD') : null);
-                });
-            }
-        }
 
         document.addEventListener('livewire:init', function () {
-            initSelect2Bindings();
-            initDateTimePicker();
-
-            Livewire.on('toastr:success', (data) => {
+            Livewire.on('toastr:success', (params) => {
                 toastr.options = {
                     "closeButton" : true,
                     "progressBar" : true
                 };
-                toastr.success(data.message);
+                toastr.success(params.message);
             });
         });
     </script>
 @endpush
+
+@script
+    <script>
+        const $taskScore = $('#task_score');
+        if ($taskScore.length) {
+            $taskScore.select2();
+            $taskScore.on('change', function () {
+                $wire.$set('task_score', $(this).val());
+            });
+        }
+
+        const $taskEmployee = $('#task_employee');
+        if ($taskEmployee.length) {
+            $taskEmployee.select2();
+            $taskEmployee.on('change', function () {
+                $wire.$set('task_employee', $(this).val());
+            });
+        }
+
+        const $deadline = $('.datetimepicker');
+        if ($deadline.length) {
+            $deadline.datetimepicker({
+                format: 'YYYY-MM-DD',
+                useCurrent: false,
+                icons: {
+                    up: "fa fa-angle-up",
+                    down: "fa fa-angle-down",
+                    next: 'fa fa-angle-right',
+                    previous: 'fa fa-angle-left'
+                }
+            });
+
+            $deadline.on('dp.change', function (e) {
+                $wire.$set('deadline', e.date ? e.date.format('YYYY-MM-DD') : null);
+            });
+        }
+
+        $wire.on('form-reset', () => {
+            if ($taskScore.length) {
+                $taskScore.val(null).trigger('change.select2');
+            }
+            if ($taskEmployee.length) {
+                $taskEmployee.val(null).trigger('change.select2');
+            }
+        });
+    </script>
+@endscript

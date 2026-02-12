@@ -25,7 +25,13 @@
                                             <img alt="" src="{{ asset('assets/img/avatar.jpg') }}">
                                         </span>
                                         <div class="media-body">
-                                            <p class="noti-details"><span class="noti-title">{{ $notification->data["creator_name"] }}</span> добавил Не прочитано задание <a href="#" wire:click.prevent="view({{ $notification->data["task_id"] }})" id="noti-link">{{ $notification->data['name'] }}</a></p>
+                                            <p class="noti-details">
+                                                <span class="noti-title">{{ $notification->data["creator_name"] }}</span> 
+                                                добавил Не прочитано задание 
+                                                <a href="#" wire:click.prevent="openModal({{ $notification->data["task_id"] }})" id="noti-link">
+                                                    {{ $notification->data['name'] }}
+                                                </a>
+                                            </p>
                                             <p class="noti-time"><span class="notification-time">{{ time_elapsed_string($notification->created_at) }}</span></p>
                                         </div>
                                     </div>

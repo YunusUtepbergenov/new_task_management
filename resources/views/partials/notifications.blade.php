@@ -45,7 +45,7 @@
                                 </span>
                                 <div class="media-body">
                                     <p class="noti-details"><span class="noti-title">{{ $notification->data["user_name"] }}</span> выполнил задание <a href="#" onclick="openModal({{ $notification->data['task_id'] }})" id="noti-link">{{ $notification->data["name"] }}</a>. Пожалуйста, проверьте это задание.</p>
-                                    <p class="noti-time"><span class="notification-time">{{ \App\Helpers\AppHelper::time_elapsed_string($notification->created_at) }}</span></p>
+                                    <p class="noti-time"><span class="notification-time">{{ time_elapsed_string($notification->created_at) }}</span></p>
                                 </div>
                             </div>
                         </li>

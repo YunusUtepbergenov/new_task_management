@@ -63,7 +63,7 @@ class DigestWords extends Component
             'username' => auth()->user()->email
         ]);
         if($response->status() == 204){
-            $this->dispatchBrowserEvent('existing-word');
+            $this->dispatch('existing-word');
         }else{
             $this->words = Http::get('http://192.168.1.161:8888/all')['data'];
             $this->color = 'blue';
@@ -78,7 +78,7 @@ class DigestWords extends Component
             'username' => auth()->user()->email
         ]);
         if($response->status() == 204){
-            $this->dispatchBrowserEvent('existing-word');
+            $this->dispatch('existing-word');
         }else{
             $this->words = Http::get('http://192.168.1.161:8888/all')['data'];
             $this->color = 'blue';
@@ -93,7 +93,7 @@ class DigestWords extends Component
             'username' => auth()->user()->email
         ]);
         if($response->status() == 204){
-            $this->dispatchBrowserEvent('existing-word');
+            $this->dispatch('existing-word');
         }else{
             $this->words = Http::get('http://192.168.1.161:8888/all')['data'];
             $this->color = 'blue';
@@ -109,7 +109,7 @@ class DigestWords extends Component
             'username' => auth()->user()->email
         ]);
         if($response->status() == 204){
-            $this->dispatchBrowserEvent('existing-word');
+            $this->dispatch('existing-word');
         }else{
             $this->words = Http::get('http://192.168.1.161:8888/all')['data'];
             $this->color = 'blue';

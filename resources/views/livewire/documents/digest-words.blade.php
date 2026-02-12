@@ -7,7 +7,7 @@
                         <tr>
                             <th><span>&#8470;</span></th>
                             <th>
-                             <form wire:submit.prevent="saveBlue">
+                             <form wire:submit="saveBlue">
                                 <div class="form-row">
                                     <div class="col-sm-1">
                                         <span class="btn-colorselector" style="background-color: rgb(0, 32, 96);"></span>
@@ -19,7 +19,7 @@
                               </form>
                             </th>
                             <th>
-                                <form wire:submit.prevent="saveRed">
+                                <form wire:submit="saveRed">
                                     <div class="form-row">
                                         <div class="col-sm-1">
                                             <span class="btn-colorselector" style="background-color: rgb(192, 0, 0);"></span>
@@ -31,7 +31,7 @@
                                 </form>
                             </th>
                             <th>
-                                <form wire:submit.prevent="saveGreen">
+                                <form wire:submit="saveGreen">
                                     <div class="form-row">
                                         <div class="col-sm-1">
                                             <span class="btn-colorselector" style="background-color: rgb(155, 187, 89);"></span>
@@ -43,7 +43,7 @@
                                 </form>
                             </th>
                             <th>
-                                <form wire:submit.prevent="saveViolet">
+                                <form wire:submit="saveViolet">
                                     <div class="form-row">
                                         <div class="col-sm-1">
                                             <span class="btn-colorselector" style="background-color: rgb(112, 48, 160);"></span>

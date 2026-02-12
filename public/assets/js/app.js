@@ -300,7 +300,7 @@ $(document).ready(function() {
     }
 
     openModal = function(id){
-        window.livewire.dispatch('taskClicked', id);
+        Livewire.dispatch('taskClicked', { id: id });
     }
 
 	$(document).on('click', '#file_sidebar_toggle', function() {

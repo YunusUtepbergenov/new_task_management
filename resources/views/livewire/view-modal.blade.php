@@ -45,12 +45,12 @@
                                                 <h4 class="card-title mb-0">Завершить задачу</h4>
                                             </div>
                                             <div class="card-body">
-                                                <form wire:submit.prevent="storeResponse" method="POST" enctype="multipart/form-data">
+                                                <form wire:submit="storeResponse" method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     <div class="form-group row">
                                                         <label class="col-sm-1 col-form-label">Текст</label>
                                                         <div class="col-sm-11">
-                                                            <textarea rows="3" cols="5" class="form-control" wire:model.lazy="description" name="description" placeholder="Введите текст"></textarea>
+                                                            <textarea rows="3" cols="5" class="form-control" wire:model.blur="description" name="description" placeholder="Введите текст"></textarea>
                                                         </div>
                                                         @error('description')
                                                             <div class="col-sm-12 m-t-10">
@@ -115,10 +115,10 @@
                                                         <div class="card">
                                                             <div class="card-body">
                                                                 <div class="form-group">
-                                                                    <form wire:submit.prevent="storeComment({{ $task->id }})" method="POST">
+                                                                    <form wire:submit="storeComment({{ $task->id }})" method="POST">
                                                                         @csrf
                                                                         <div class="form-group">
-                                                                            <textarea class="form-control" wire:model.defer="comment" rows="2" name="comment" id="comment_textarea" placeholder="Введите комментарий" required></textarea>
+                                                                            <textarea class="form-control" wire:model="comment" rows="2" name="comment" id="comment_textarea" placeholder="Введите комментарий" required></textarea>
                                                                         </div>
                                                                         <button class="btn btn-primary" wire:click="$refresh" style="float: right;">Отправить</button>
                                                                     </form>
@@ -234,7 +234,7 @@
                                                                                         <label>{{ $t->user->name }}</label>
                                                                                         <input type="number"
                                                                                             class="form-control"
-                                                                                            wire:model.defer="groupScores.{{ $t->id }}"
+                                                                                            wire:model="groupScores.{{ $t->id }}"
                                                                                             placeholder="Оценка"
                                                                                             min="{{ $t->score->min_score }}"
                                                                                             max="{{ $t->score->max_score }}"
@@ -371,7 +371,7 @@
                             </div>
                         </div>
                         @if ($profile->id == Auth::user()->id)
-                            <form wire:submit.prevent="changeUserInfo" method="POST">
+                            <form wire:submit="changeUserInfo" method="POST">
                                 @csrf
                                 <div class="card">
                                     <div class="card-header">
@@ -421,7 +421,7 @@
                                 </div>
                             </form>
 
-                            <form wire:submit.prevent="updatePassword" method="POST">
+                            <form wire:submit="updatePassword" method="POST">
                                 @csrf
                                 <div class="card">
                                     <div class="card-header">

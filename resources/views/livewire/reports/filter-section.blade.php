@@ -85,14 +85,14 @@
     </div>
 </div>
 
+@script
 <script>
-    document.addEventListener('livewire:load', function () {
-        $('#startDate').on('dp.change', function (e) {
-            @this.set('startDate', e.target.value);
-        });
+    $('#startDate').on('dp.change', function (e) {
+        $wire.$set('startDate', e.target.value);
+    });
 
-        $('#endDate').on('dp.change', function (e) {
-            @this.set('endDate', e.target.value);
-        });
+    $('#endDate').on('dp.change', function (e) {
+        $wire.$set('endDate', e.target.value);
     });
 </script>
+@endscript

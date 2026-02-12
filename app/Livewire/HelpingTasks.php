@@ -66,8 +66,9 @@ class HelpingTasks extends Component
     //     }
     // }
 
-    public function view($task_id){
-        $this->dispatch('taskClicked', $task_id);
+    public function view($task_id): void
+    {
+        $this->dispatch('taskClicked', id: $task_id);
     }
 
     public function render()

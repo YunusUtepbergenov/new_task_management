@@ -3,27 +3,30 @@
 namespace App\Livewire\Reports;
 
 use App\Models\Sector;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class UserSection extends Component
 {
     public $users, $userId;
 
-    protected $listeners = ['updateUsersList'];
-
-    public function mount(){
+    public function mount(): void
+    {
         $this->users = Sector::first()->users->where('leave', 0);
     }
 
-    public function updateUsersList($id){
+    #[On('updateUsersList')]
+    public function updateUsersList($id): void
+    {
         $sector = Sector::with('users')->where('id', $id)->first();
         $this->users = $sector->users->where('leave', 0);
         $this->userId = Null;
-        $this->dispatch('updateSectorTasks', $sector->id);
+        $this->dispatch('updateSectorTasks', id: $sector->id);
     }
 
-    public function updatedUserId(){
-        $this->dispatch('updateUserId', $this->userId);
+    public function updatedUserId(): void
+    {
+        $this->dispatch('updateUserId', id: $this->userId);
     }
 
     public function render()

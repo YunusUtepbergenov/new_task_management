@@ -16,16 +16,11 @@ use Illuminate\Support\Str;
 
 class OrderedTable extends Component
 {
-    public $weeklyTasks, $all_tasks, $username;
-    public $scoresGrouped = [];
-    public $sectors = [];
-
     public $task_score = null, $task_name, $deadline, $task_employee = [], $task_plan = 1;
 
     public $is_repeating = false;
-    public $repeat_type = "null"; 
+    public $repeat_type = "null";
     public $repeat_day = null;
-
 
     public function taskStore()
     {
@@ -100,16 +95,18 @@ class OrderedTable extends Component
             'repeat_type', 'repeat_day',
         ]);
 
-        $this->dispatch('toastr:success', ['message' => 'Задача успешно создана']);
+        $this->dispatch('form-reset');
+        $this->dispatch('toastr:success', message: 'Задача успешно создана');
     }
 
-    public function view($task_id){
-        $this->dispatch('taskClicked', $task_id);
-    }
-
-    public function updatedTaskPlan($value)
+    public function view($task_id): void
     {
-        $this->dispatch('task_plan_updated', $value);
+        $this->dispatch('taskClicked', id: $task_id);
+    }
+
+    public function updatedTaskPlan($value): void
+    {
+        $this->dispatch('task_plan_updated', value: $value);
     }
 
     public function updatePlanType($taskId, $newType)
@@ -123,16 +120,12 @@ class OrderedTable extends Component
             $task->save();
         }
 
-        $this->dispatch('toastr:success', ['message' => 'Тип задачи обновлен.']);
+        $this->dispatch('toastr:success', message: 'Тип задачи обновлен.');
     }
 
     public function render()
     {
-        $this->username = Auth::user()->name;
-
-        $this->sectors = Sector::with('users')->get();
-
-        $this->weeklyTasks = Task::with('user:id,name,sector_id,role_id')
+        $weeklyTasks = Task::with('user:id,name,sector_id,role_id')
             ->where('creator_id', Auth::id())
             ->where('status', '<>', 'Выполнено')
             ->where(function ($query) {
@@ -146,22 +139,27 @@ class OrderedTable extends Component
             ->get()
             ->groupBy(function ($task) {
                 return $task->group_id ?: $task->id;
-            })->toArray();
+            })
+            ->map->toArray();
 
-        $this->all_tasks = Task::with('user:id,name,sector_id,role_id')
-                        ->where('creator_id', Auth::id())
-                        ->where('status', '<>', 'Выполнено')
-                        ->whereNull('project_id')
-                        ->orderByRaw('COALESCE(extended_deadline, deadline)')
-                        ->get()
-                        ->groupBy(function ($task) {
-                            return $task->group_id ?: $task->id;
-                        })
-                        ->toArray();
+        $all_tasks = Task::with('user:id,name,sector_id,role_id')
+            ->where('creator_id', Auth::id())
+            ->where('status', '<>', 'Выполнено')
+            ->whereNull('project_id')
+            ->orderByRaw('COALESCE(extended_deadline, deadline)')
+            ->get()
+            ->groupBy(function ($task) {
+                return $task->group_id ?: $task->id;
+            })
+            ->map->toArray();
 
-        $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
-
-        return view('livewire.ordered-table');
+        return view('livewire.ordered-table', [
+            'username' => Auth::user()->name,
+            'sectors' => Sector::with('users')->get(),
+            'scoresGrouped' => ['Категории' => (new TaskService())->scoresList()],
+            'weeklyTasks' => $weeklyTasks,
+            'all_tasks' => $all_tasks,
+        ]);
     }
 
     private function calculateInitialRepeatDeadline(string $type, int $day): ?\Carbon\Carbon

@@ -10,7 +10,6 @@
         <title>CERR Task Management</title>
 		<!-- Favicon -->
         <link rel="shortcut icon" type="image/x-icon" href="https://cer.uz/themes/cer/icon/favicon.ico">
-        {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
 		<!-- Bootstrap CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
 		<!-- Fontawesome CSS -->
@@ -21,6 +20,7 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('css/bootstrap-colorselector.min.css') }}">
         <link rel="stylesheet" href="{{ asset('css/docs.css') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 		<!-- Select2 CSS -->
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/css/bootstrap-multiselect.css" integrity="sha512-Lif7u83tKvHWTPxL0amT2QbJoyvma0s9ubOlHpcodxRxpZo4iIGFw/lDWbPwSjNlnas2PsTrVTTcOoaVfb4kwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -127,6 +127,9 @@
 				<!-- /Page Content -->
             </div>
 			<!-- /Page Wrapper -->
+
+			@livewire('view-modal')
+
 			<!-- Right Sidebar -->
 			<div class="sidebar_right" id="sidebar">
                 <div class="accordion" id="accordionExample">
@@ -253,6 +256,7 @@
 		<!-- Custom JS -->
 		<script src="{{ asset('assets/js/app.js') }}"></script>
         @yield('scripts')
+        @stack('scripts')
         <script src="{{ asset('js/app.js') }}"></script>
 		<script type="text/javascript">
 			$(document).ready(function() {
@@ -397,7 +401,6 @@
                 $('.select2').select2({ width: '100%' });
             });
 
-
             $('#search_field').keyup(function(){
                 $('.result_search').html('');
                 var searchField = $('#search_field').val();
@@ -419,7 +422,6 @@
                         $('.result_search').html('');
                         $('.result_search').show();
                         $.each(JSON.parse(res), function(key, value){
-                            // console.log(va);
                             if(value.model == "Task"){
                                 $('.result_search').append("<li class='list-group-item search_dropdown'><a href='#' onclick='searchResult(" + value.id + ")'>" + value.name + "</a></li>");
 
@@ -461,24 +463,31 @@
             $("#deadline").addClass("d-none");
             $("#file").addClass("d-none");
 
-            searchResult = function(id){
-                window.livewire.emit('taskClicked', id);
-            }
+            document.addEventListener('livewire:init', function () {
+                // Define functions after Livewire is initialized
+                window.searchResult = function(id){
+                    Livewire.dispatch('taskClicked', { id: id });
+                }
 
-            profileModal = function(id){
-                window.livewire.emit('profileClicked', id);
-            }
+                window.profileModal = function(id){
+                    Livewire.dispatch('profileClicked', { id: id });
+                }
 
-            window.addEventListener('show-modal', event => {
-                $('#view_task').modal('show');
-            });
+                Livewire.on('show-modal', () => {
+                    $('#view_task').modal('show');
+                });
 
-            window.addEventListener('profile-show-modal', event => {
-                $('#profile_modal').modal('show');
-            });
+                Livewire.on('profile-show-modal', () => {
+                    $('#profile_modal').modal('show');
+                });
 
-            window.addEventListener('success', event => {
-                toastr.success(event.detail.msg);
+                Livewire.on('success', (params) => {
+                    toastr.options = {
+                        "closeButton" : true,
+                        "progressBar" : true
+                    };
+                    toastr.success(params.msg);
+                });
             });
 
             $('#flexCheckDefault').click(function() {

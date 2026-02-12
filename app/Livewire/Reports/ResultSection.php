@@ -2,15 +2,16 @@
 
 namespace App\Livewire\Reports;
 
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ResultSection extends Component
 {
     public $sectors, $users, $param;
 
-    protected $listeners = ["updateFilters"];
-
-    public function updateFilters($param){
+    #[On('updateFilters')]
+    public function updateFilters($param): void
+    {
         $this->param = $param;
         // $tasks = Task::whereBetween('created_at', [$param['start'], $param['end']])->get();
         $this->users = User::with(['task', function($query){

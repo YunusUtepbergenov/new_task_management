@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -25,8 +26,6 @@ class ViewModal extends Component
     public $oldPassword, $newPassword, $confirmPassword;
     public $errorMsg, $taskScore, $coTasks;
     public $groupScores = [];
-    
-    protected $listeners = ['taskClicked', 'profileClicked'];
 
     public function mount(){
         $this->errorMsg = Null;
@@ -34,7 +33,9 @@ class ViewModal extends Component
         $this->internal = auth()->user()->internal;
     }
 
-    public function taskClicked($id){
+    #[On('taskClicked')]
+    public function taskClicked($id): void
+    {
         $this->dispatch('show-modal');
         $this->task = Task::with(['user','comments', 'files'])->where('id', $id)->first();
 
@@ -56,7 +57,9 @@ class ViewModal extends Component
         }
     }
 
-    public function profileClicked($id){
+    #[On('profileClicked')]
+    public function profileClicked($id): void
+    {
         $this->profile = User::where('id', $id)->first();
         $this->dispatch('profile-show-modal');
     }
@@ -93,7 +96,7 @@ class ViewModal extends Component
         }
 
         $response->save();
-        $this->dispatch('success', ['msg' => "Задача выполнена. Пожалуйста, дождитесь подтверждения."]);
+        $this->dispatch('success', msg: "Задача выполнена. Пожалуйста, дождитесь подтверждения.");
 
         event(new TaskSubmittedEvent($response->task));
 
@@ -108,7 +111,7 @@ class ViewModal extends Component
             'user_id' => Auth::user()->id,
             'comment' => $this->comment
         ]);
-        $this->dispatch('success', ['msg' => "Комментарий успешно отправлен"]);
+        $this->dispatch('success', msg: "Комментарий успешно отправлен");
         $this->comments = Comment::with('user')->where('task_id', $id)->latest()->get();
 
         $this->comment = '';
@@ -235,7 +238,7 @@ class ViewModal extends Component
         $user->internal = $this->internal;
         $user->save();
 
-        $this->dispatch('success', ['msg' => "Информация профиля успешно изменена."]);
+        $this->dispatch('success', msg: "Информация профиля успешно изменена.");
     }
 
     public function updatePassword(){
@@ -249,9 +252,9 @@ class ViewModal extends Component
             auth()->user()->update([
                 'password' => bcrypt($this->newPassword)
             ]);
-            $this->dispatch('success', ['msg' => "Пароль успешно изменен"]);
+            $this->dispatch('success', msg: "Пароль успешно изменен");
         }else{
-            $this->dispatch('danger', ['msg' => "Неправильный пароль"]);
+            $this->dispatch('danger', msg: "Неправильный пароль");
         }
     }
 

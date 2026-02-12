@@ -6,13 +6,12 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use App\Services\ProjectService;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class TasksSection extends Component
 {
     public $tasks, $user, $filter = "Null", $projects;
-
-    protected $listeners = ['updateUserId', 'updateSectorTasks'];
 
     public function mount()
     {
@@ -20,11 +19,14 @@ class TasksSection extends Component
         $this->user = Null;
     }
 
-    public function view($task_id){
-        $this->dispatch('taskClicked', $task_id);
+    public function view($task_id): void
+    {
+        $this->dispatch('taskClicked', id: $task_id);
     }
 
-    public function updateUserId($id){
+    #[On('updateUserId')]
+    public function updateUserId($id): void
+    {
         if($id == Null){
             $this->tasks = Null;
             $this->user = Null;
@@ -70,7 +72,9 @@ class TasksSection extends Component
         }
     }
 
-    public function updateSectorTasks($id){
+    #[On('updateSectorTasks')]
+    public function updateSectorTasks($id): void
+    {
         $this->user = Null;
         $this->projects = Null;
         $this->tasks = Task::where('sector_id', $id)->get();
