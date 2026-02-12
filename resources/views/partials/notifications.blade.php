@@ -17,7 +17,7 @@
                                 <form method="POST" action="{{ route('notification.read', $notification->id) }}">
                                     <input type="hidden" name="_method" value="PUT">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="action-icon"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                    <button class="action-icon"><i class="fa fa-times" aria-hidden="true"></i></button>
                                 </form>
                             </div>
                             <div class="media">
@@ -36,7 +36,7 @@
                                 <form method="POST" action="{{ route('notification.read', $notification->id) }}">
                                     <input type="hidden" name="_method" value="PUT">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="action-icon"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                    <button class="action-icon"><i class="fa fa-times" aria-hidden="true"></i></button>
                                 </form>
                             </div>
                             <div class="media">
@@ -55,7 +55,7 @@
                                 <form method="POST" action="{{ route('notification.read', $notification->id) }}">
                                     <input type="hidden" name="_method" value="PUT">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="action-icon"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                    <button class="action-icon"><i class="fa fa-times" aria-hidden="true"></i></button>
                                 </form>
                             </div>
                             <div class="media">
@@ -74,7 +74,7 @@
                                 <form method="POST" action="{{ route('notification.read', $notification->id) }}">
                                     <input type="hidden" name="_method" value="PUT">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="action-icon"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                    <button class="action-icon"><i class="fa fa-times" aria-hidden="true"></i></button>
                                 </form>
                             </div>
                             <div class="media">
@@ -93,7 +93,7 @@
                                 <form method="POST" action="{{ route('notification.read', $notification->id) }}">
                                     <input type="hidden" name="_method" value="PUT">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="action-icon"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                    <button class="action-icon"><i class="fa fa-times" aria-hidden="true"></i></button>
                                 </form>
                             </div>
                             <div class="media">

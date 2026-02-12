@@ -168,6 +168,7 @@
         <!-- Dark Mode Toggle -->
         <button class="dark-mode-toggle" title="Темная тема">
             <i class="fa fa-moon-o"></i>
+            <i class="fa fa-sun-o"></i>
         </button>
 
 		<!-- jQuery -->
@@ -234,6 +235,21 @@
                 // Restore sidebar state from localStorage
                 if (localStorage.getItem('sidebar-collapsed') === 'true') {
                     $('body').addClass('sidebar-collapsed');
+                }
+
+                // Dark mode toggle
+                $('.dark-mode-toggle').on('click', function() {
+                    $('body').toggleClass('dark-mode');
+                    if ($('body').hasClass('dark-mode')) {
+                        localStorage.setItem('dark-mode', 'true');
+                    } else {
+                        localStorage.removeItem('dark-mode');
+                    }
+                });
+
+                // Restore dark mode state from localStorage
+                if (localStorage.getItem('dark-mode') === 'true') {
+                    $('body').addClass('dark-mode');
                 }
 			});
 
