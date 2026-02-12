@@ -9,7 +9,7 @@
                 <div class="col-sm-10">
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" wire:model="filter" name="filter" id="inlineRadio0" value="Null">
-                        <label class="form-check-label" for="inlineRadio0" style="color: #34444c; font-weight:bold">Все ({{ ($user) ? $user->tasks()->count() : '0' }})</label>
+                        <label class="form-check-label" for="inlineRadio0" style="color: rgb(15 23 42 / var(--tw-text-opacity, 1)); font-weight:bold">Все ({{ ($user) ? $user->tasks()->count() : '0' }})</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" wire:model="filter" name="filter" id="inlineRadio1" value="Не прочитано">

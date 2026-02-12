@@ -1,6 +1,6 @@
 @php
     $main_task = $task[0];
-    $responsibles = collect($task)->pluck('user.name')->filter()->join(', ');
+    $responsibles = collect($task)->pluck('user.short_name')->filter()->join(', ');
 @endphp
 
 <tr>

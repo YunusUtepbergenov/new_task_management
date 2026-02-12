@@ -20,7 +20,7 @@
 
     @foreach ($groupedTasks as $sector => $groups)
         <div class="card mb-4">
-            <div class="card-header" style="background: #34444c;color:#fff; text-align:center"><strong>{{ $sector }}</strong></div>
+            <div class="card-header" style="background: rgb(15 23 42 / var(--tw-text-opacity, 1));color:#fff; text-align:center"><strong>{{ $sector }}</strong></div>
             <div class="card-body table-responsive">
                 <table class="table table-nowrap mb-0">
                     <thead>

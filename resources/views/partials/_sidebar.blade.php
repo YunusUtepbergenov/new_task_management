@@ -1,10 +1,21 @@
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-    <div class="sidebar-inner slimscroll">
+    <!-- Collapse Toggle Button (desktop only) -->
+    <button class="sidebar-collapse-btn" id="sidebar_collapse_btn" title="Свернуть">
+        <i class="fa fa-chevron-left"></i>
+    </button>
+    <div class="sidebar-inner">
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <a href="{{ route('home') }}">
+                <img src="{{ asset('assets/img/logo.svg') }}" width="80" height="40" alt="CERR">
+            </a>
+        </div>
+
         <div id="sidebar-menu" class="sidebar-menu">
             <ul>
                 <li>
-                    <a href="{{ route('home') }}"><i class="la la-rocket"></i> <span> Проекты и задачи </span></a>
+                    <a href="{{ route('home') }}"><i class="la la-rocket"></i> <span>Проекты и задачи</span></a>
                 </li>
 
                 <li class="submenu">
@@ -44,11 +55,11 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('employees') }}"><i class="la la-user"></i> <span> Сотрудники </span></a>
+                    <a href="{{ route('employees') }}"><i class="la la-user"></i> <span>Сотрудники</span></a>
                 </li>
 
                 <li>
-                    <a href="{{ route('vacations') }}"><i class="la la-calendar"></i> <span>График Отпусков </span></a>
+                    <a href="{{ route('vacations') }}"><i class="la la-calendar"></i> <span>График Отпусков</span></a>
                 </li>
 
                 @if (Auth::user()->isDirector() || Auth::user()->isDeputy() || Auth::user()->isHR())
@@ -58,16 +69,35 @@
                 @endif
             </ul>
 
-            <ul style="position: absolute; bottom: 0px; margin-bottom: 50px;">
+            <div class="sidebar-section-title">СИСТЕМА</div>
+
+            <ul>
                 <li>
                     <a href="#"><i class="fa fa-book" aria-hidden="true"></i><span>Справочники</span></a>
                 </li>
-
                 <li>
                     <a href="{{ route('settings') }}"><i class="fa fa-cog"></i><span>Настройки</span></a>
                 </li>
+                <li>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="sidebar-logout-btn"><i class="fa fa-sign-out"></i><span>Выйти</span></button>
+                    </form>
+                </li>
             </ul>
+        </div>
+
+        <!-- User Profile -->
+        <div class="sidebar-user-profile dropdown">
+            <a href="#" class="d-flex align-items-center" data-toggle="dropdown" style="text-decoration: none;">
+                <img src="{{ (Auth::user()->avatar) ? asset('user_image/'.Auth::user()->avatar) : asset('user_image/avatar.jpg') }}" class="user-avatar" alt="">
+                <div class="user-info">
+                    <span class="user-name">{{ Auth::user()->short_name }}</span>
+                </div>
+            </a>
         </div>
     </div>
 </div>
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay"></div>
 <!-- /Sidebar -->

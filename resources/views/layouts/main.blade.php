@@ -9,13 +9,14 @@
         <meta name="robots" content="noindex, nofollow">
         <title>CERR Task Management</title>
 		<!-- Favicon -->
-        <link rel="shortcut icon" type="image/x-icon" href="https://cer.uz/themes/cer/icon/favicon.ico">
+        <link rel="shortcut icon" type="image/x-icon" href="https://cerr.uz/themes/cer/icon/favicon.ico">
 		<!-- Bootstrap CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
 		<!-- Fontawesome CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/font-awesome.min.css') }}">
 		<!-- Lineawesome CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/line-awesome.min.css') }}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/material-icons@1.13.14/iconfont/material-icons.min.css">
 		<!-- Datatable CSS -->
 		<link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap4.min.css') }}">
         <link rel="stylesheet" href="{{ asset('css/bootstrap-colorselector.min.css') }}">
@@ -30,19 +31,20 @@
         @yield('styles')
 		<!-- Main CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+        <!-- Layout Override CSS -->
+        <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
     </head>
     <body>
 		<!-- Main Wrapper -->
         <div class="main-wrapper">
 			<!-- Header -->
             <div class="header">
-				<!-- Logo -->
+				<!-- Logo (hidden by CSS, kept for compatibility) -->
                 <div class="header-left">
                     <a href="{{ route('home') }}" class="logo">
 						<img src="{{ asset('assets/img/logo.svg') }}" width="80" height="40" alt="">
 					</a>
                 </div>
-				<!-- /Logo -->
 				<a id="toggle_btn" href="javascript:void(0);">
 					<span class="bar-icon">
 						<span></span>
@@ -60,8 +62,11 @@
 						   </a>
 							<form action="{{ route('task.search') }}" id="searchForm" method="POST">
                                 @csrf
-								<input class="form-control" type="text" name="term" id="search_field" placeholder="Поиск" autocomplete="off">
-								<button class="btn" type="submit" disabled><i class="fa fa-search"></i></button>
+								<input class="form-control" type="text" name="term" id="search_field" placeholder="Поиск задач, документов..." autocomplete="off">
+								<i class="fa fa-search search-icon-right"></i>
+								<button type="button" class="search-clear-btn" id="search_clear">
+									<i class="fa fa-times"></i>
+								</button>
                                 <ul class="list-group search_group result_search">
                                 </ul>
 							</form>
@@ -69,51 +74,29 @@
 					</li>
                 </ul>
 				<ul class="nav user-menu">
-					<li class="nav-item dropdown flag-nav">
-                        @if (auth()->user()->tasks()->count())
-    						<a class="nav-link dropdown-toggle">KPI (норма): {{ auth()->user()->kpiCalculate() }} баллов </a>
-                        @else
-    						<a class="nav-link dropdown-toggle">KPI: 0 баллов</a>
-                        @endif
+					<li class="nav-item flag-nav">
+                        <div class="kpi-item">
+                            <span class="kpi-label">KPI (норма)</span>
+                            @if (auth()->user()->tasks()->count())
+                                <span class="kpi-value">{{ auth()->user()->kpiCalculate() }} баллов</span>
+                            @else
+                                <span class="kpi-value">0 баллов</span>
+                            @endif
+                        </div>
 					</li>
-                    <li class="nav-item dropdown flag-nav">
-                        @if (auth()->user()->tasks()->count())
-    						<a class="nav-link dropdown-toggle">KPI (итого): {{ auth()->user()->ovrKpiCalculate() }} баллов </a>
-                        @else
-    						<a class="nav-link dropdown-toggle">KPI (итого): 0 баллов</a>
-                        @endif
+                    <li class="nav-item flag-nav">
+                        <div class="kpi-item">
+                            <span class="kpi-label">KPI (итого)</span>
+                            @if (auth()->user()->tasks()->count())
+                                <span class="kpi-value">{{ auth()->user()->ovrKpiCalculate() }} баллов</span>
+                            @else
+                                <span class="kpi-value">0 баллов</span>
+                            @endif
+                        </div>
 					</li>
                     @include('partials.notifications')
-					<li class="nav-item dropdown has-arrow main-drop">
-						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-							<span class="user-img"><img src="{{ (Auth::user()->avatar) ? asset('user_image/'.Auth::user()->avatar) : asset('user_image/avatar.jpg') }}" class="user_image" alt="">
-							<span class="status online"></span></span>
-							<span>{{ Auth::user()->name }}</span>
-						</a>
-						<div class="dropdown-menu">
-							{{-- <a class="dropdown-item" href="profile.html">My Profile</a> --}}
-							<a class="dropdown-item" href="{{ route('settings') }}">Настройки</a>
-							<form action="{{ route('logout') }}" method="POST">
-								@csrf
-								<button class="dropdown-item">Выйти</button>
-							</form>
-						</div>
-					</li>
 				</ul>
 				<!-- /Header Menu -->
-				<!-- Mobile Menu -->
-				<div class="dropdown mobile-user-menu">
-					<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
-					<div class="dropdown-menu dropdown-menu-right">
-						{{-- <a class="dropdown-item" href="profile.html">My Profile</a> --}}
-						<a class="dropdown-item" href="settings.html">Настройки</a>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button class="dropdown-item">Выйти</button>
-                        </form>
-					</div>
-				</div>
-				<!-- /Mobile Menu -->
             </div>
 			<!-- /Header -->
             @include('partials._sidebar')
@@ -121,123 +104,72 @@
             <div class="page-wrapper">
 				<!-- Page Content -->
                 <div class="content container-fluid">
-                    @yield('main')
-                </div>
-            </div>
-				<!-- /Page Content -->
-            </div>
-			<!-- /Page Wrapper -->
-
-			@livewire('view-modal')
-
-			<!-- Right Sidebar -->
-			<div class="sidebar_right" id="sidebar">
-                <div class="accordion" id="accordionExample">
-                    <div class="card" style="border: 0">
-                        <div class="card-header sidebar_right_header" id="headingOne">
-                          <h6 class="sidebar_right_header_title m-b-5">
-                            <button class="btn btn-block text-left collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="width: 100%; text-align:left">
-                                Ссылки <span class="menu-arrow"></span>
-                            </button>
-                          </h6>
+                    <div class="content-flex-wrapper">
+                        <div class="content-main">
+                            @yield('main')
                         </div>
-
-                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                          <div class="card-body" style="background: #34444c; color: #fff; padding-top: 0; padding-bottom:1px;">
-                            <ul class="list-box">
-                                <li>
-                                    <a href="https://link.springer.com/" data-toggle="tooltip" target="blank" style="color: white">
-                                        <div class="list-item">
-                                            <div class="list-body" style="padding: 0;">
-                                                <img class="links-websites" src="{{ asset('img/springer.svg') }}" alt="Springer">
-                                            </div>
-                                        </div>
+                        <div class="content-right-panel">
+                            <!-- Links Card -->
+                            <div class="right-panel-card">
+                                <div class="rpc-header">
+                                    <i class="fa fa-link rpc-icon"></i>
+                                    <h6 class="rpc-title">Ссылки</h6>
+                                </div>
+                                <div class="rpc-body">
+                                    <a href="https://link.springer.com/" target="_blank" class="link-item" data-toggle="tooltip" title="Springer Nature">
+                                        SPRINGER NATURE
                                     </a>
-                                </li>
-
-                                <li>
-                                    <a href="https://search.ebscohost.com" data-toggle="tooltip" data-html="true" data-placement="left" title="User ID: <b>ns123207</b> <br> Password: <b>Databases1!</b>" target="blank" style="color: white">
-                                        <div class="list-item">
-                                            <div class="list-body" style="padding: 0;">
-                                                <img class="links-websites" src="{{ asset('img/ebsco.png') }}" alt="Alisher Navoiy">
-                                            </div>
-                                        </div>
+                                    <a href="https://search.ebscohost.com" target="_blank" class="link-item" data-toggle="tooltip" data-html="true" data-placement="bottom" title="User ID: <b>ns123207</b> <br> Password: <b>Databases1!</b>">
+                                        EBSCO host
                                     </a>
-                                </li>
-
-                                <li>
-                                    <a href="https://cer.uz" target="blank" style="color: white">
-                                        <div class="list-item">
-                                            <div class="list-body" style="padding: 0;">
-                                                <img class="links-websites" src="{{ asset('assets/img/logo.svg') }}" alt="Alisher Navoiy">
-                                            </div>
-                                        </div>
+                                    <a href="https://cerr.uz" target="_blank" class="link-item">
+                                        CERR.UZ
                                     </a>
-                                </li>
-                                <li>
-                                    <a href="https://review.uz" target="blank" style="color: white">
-                                        <div class="list-item">
-                                            <div class="list-body" style="padding: 0;">
-                                                <h3>REVIEW.UZ</h3>
-                                            </div>
-                                        </div>
+                                    <a href="https://review.uz" target="_blank" class="link-item">
+                                        REVIEW.UZ
                                     </a>
-                                </li>
-                                <li>
-                                    <a href="https://mail.cerr.uz" target="blank" style="color: white">
-                                        <div class="list-item">
-                                            <div class="list-body" style="padding: 0;">
-                                                <h3>MAIL.CERR.UZ</h3>
-                                            </div>
-                                        </div>
+                                    <a href="https://mail.cerr.uz" target="_blank" class="link-item">
+                                        MAIL.CERR.UZ
                                     </a>
-                                </li>
-                            </ul>
-                          </div>
-                        </div>
-                    </div>
+                                </div>
+                            </div>
 
-                    <div class="card" style="border: 0">
-                        <div class="card-header sidebar_right_header" id="headingOne">
-                            <h6 class="sidebar_right_header_title m-b-5">
-                              <button class="btn btn btn-block text-left" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" style="width: 100%; text-align:left">
-                                Ближайшие дни рождения <span class="menu-arrow"></span>
-                              </button>
-                            </h6>
-                        </div>
-
-                        <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
-                            <div class="card-body" style="background: #34444c; color: #fff; padding-top: 0; padding-bottom:5px;">
-                                <ul class="list-box">
-                                    @php
-                                        $counter = 0;
-                                    @endphp
-
-                                    @foreach ($birthdays->where('leave', 0)->take(3) as $birthday)
-                                        <li>
-                                            <a href="#" onclick='profileModal("{{ $birthday->id }}")'>
-                                                <div class="list-item">
-                                                    <div class="list-left">
-                                                        <span class="avatar"><img alt="" src="{{ ($birthday->avatar) ? asset('user_image/'.$birthday->avatar) : asset('user_image/avatar.jpg') }}"></span>
-                                                    </div>
-                                                    <div class="list-body">
-                                                        <span class="birthday-author">{{ $birthday->name }}</span>
-                                                        <div class="clearfix"></div>
-                                                        <span class="birth-date">{{ $birthday->birth_date->format('d-m-Y') }}</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </li>
+                            <!-- Birthdays Card -->
+                            <div class="right-panel-card">
+                                <div class="rpc-header">
+                                    <i class="fa fa-birthday-cake rpc-icon"></i>
+                                    <h6 class="rpc-title">Ближайшие дни рождения</h6>
+                                </div>
+                                <div class="rpc-body">
+                                    @foreach ($birthdays->where('leave', 0)->take(5) as $birthday)
+                                        <a href="#" onclick='profileModal("{{ $birthday->id }}")' class="birthday-item">
+                                            <img src="{{ ($birthday->avatar) ? asset('user_image/'.$birthday->avatar) : asset('user_image/avatar.jpg') }}" alt="" class="bi-avatar">
+                                            <div class="bi-info">
+                                                <span class="bi-name">{{ $birthday->short_name }}</span>
+                                                <span class="bi-date">{{ $birthday->birth_date->format('d-m-Y') }}</span>
+                                            </div>
+                                        </a>
                                     @endforeach
-                                </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-			<!-- End Right Sidebar -->
+			<!-- /Page Wrapper -->
+
+			@livewire('view-modal')
+
+            <!-- Old right sidebar (hidden by CSS) -->
+            <div class="sidebar_right"></div>
         </div>
 		<!-- /Main Wrapper -->
+
+        <!-- Dark Mode Toggle -->
+        <button class="dark-mode-toggle" title="Темная тема">
+            <i class="fa fa-moon-o"></i>
+        </button>
+
 		<!-- jQuery -->
         <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
 		<!-- Bootstrap Core JS -->
@@ -262,6 +194,47 @@
 			$(document).ready(function() {
 				$('#example-getting-started').multiselect();
                 $('#colorselector_1').colorselector();
+
+                // Mobile hamburger menu toggle
+                $(document).on('click', '#mobile_btn', function(e) {
+                    e.preventDefault();
+                    $('html').addClass('menu-opened');
+                    $('.main-wrapper').addClass('slide-nav');
+                    $('.sidebar-overlay').addClass('opened');
+                });
+
+                // Close sidebar on overlay click
+                $(document).on('click', '.sidebar-overlay.opened', function() {
+                    $('html').removeClass('menu-opened');
+                    $('.main-wrapper').removeClass('slide-nav');
+                    $('.sidebar-overlay').removeClass('opened');
+                });
+
+                // Desktop sidebar collapse toggle
+                $('#sidebar_collapse_btn').on('click', function() {
+                    $('body').toggleClass('sidebar-collapsed');
+                    // When collapsing, close all open submenus
+                    if ($('body').hasClass('sidebar-collapsed')) {
+                        localStorage.setItem('sidebar-collapsed', 'true');
+                        $('#sidebar-menu .submenu ul').slideUp(0);
+                        $('#sidebar-menu .submenu a').removeClass('subdrop');
+                    } else {
+                        localStorage.removeItem('sidebar-collapsed');
+                    }
+                });
+
+                // Expand sidebar when submenu is clicked in collapsed state
+                $(document).on('click', '#sidebar-menu .submenu > a', function() {
+                    if ($('body').hasClass('sidebar-collapsed')) {
+                        $('body').removeClass('sidebar-collapsed');
+                        localStorage.removeItem('sidebar-collapsed');
+                    }
+                });
+
+                // Restore sidebar state from localStorage
+                if (localStorage.getItem('sidebar-collapsed') === 'true') {
+                    $('body').addClass('sidebar-collapsed');
+                }
 			});
 
 
@@ -269,7 +242,7 @@
                 event.preventDefault();
                 var formData2 = $("#wordForm");
                 console.log(formData2);
-                
+
                 $.ajax({
                     url: 'http://192.168.1.60:8888/add',
                     type: "POST",
@@ -354,7 +327,7 @@
             });
 
 
-            
+
             let taskIndex = 1;
 
             $('#add-task').on('click', function () {
@@ -399,6 +372,27 @@
 
             $(document).ready(function () {
                 $('.select2').select2({ width: '100%' });
+            });
+
+            // Search clear button
+            $('#search_clear').on('click', function(){
+                $('#search_field').val('').focus();
+                $('.result_search').hide().html('');
+                toggleSearchIcons('');
+            });
+
+            function toggleSearchIcons(val) {
+                if (val.length > 0) {
+                    $('.search-icon-right').hide();
+                    $('#search_clear').show();
+                } else {
+                    $('.search-icon-right').show();
+                    $('#search_clear').hide();
+                }
+            }
+
+            $('#search_field').on('input', function(){
+                toggleSearchIcons($(this).val());
             });
 
             $('#search_field').keyup(function(){
@@ -473,6 +467,10 @@
                     Livewire.dispatch('profileClicked', { id: id });
                 }
 
+                window.openModal = function(id){
+                    Livewire.dispatch('taskClicked', { id: id });
+                }
+
                 Livewire.on('show-modal', () => {
                     $('#view_task').modal('show');
                 });
@@ -487,6 +485,14 @@
                         "progressBar" : true
                     };
                     toastr.success(params.msg);
+                });
+
+                Livewire.on('toastr:success', (params) => {
+                    toastr.options = {
+                        "closeButton" : true,
+                        "progressBar" : true
+                    };
+                    toastr.success(params.message);
                 });
             });
 

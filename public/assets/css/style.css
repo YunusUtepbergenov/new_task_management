@@ -418,7 +418,7 @@ table.dataTable thead > tr > td.sorting {
 }
 .bg-progress,
 .badge-progress {
-    background-color: #34444c !important;
+    background-color: rgb(15 23 42 / var(--tw-text-opacity, 1)) !important;
 }
 .bg-warning,
 .badge-warning {
@@ -676,7 +676,7 @@ table.dataTable thead > tr > td.sorting {
     box-shadow: unset;
 }
 .page-item.active .page-link {
-    background-color: #34444c;
+    background-color: rgb(15 23 42 / var(--tw-text-opacity, 1));
     border-color: black;
 }
 .dropdown-menu {
@@ -1063,7 +1063,7 @@ table.dataTable thead > tr > td.sorting {
 -----------------------*/
 
 .header {
-    background: #34444c;
+    background: rgb(15 23 42 / var(--tw-text-opacity, 1));
     border-bottom: 1px solid transparent;
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
     height: 60px;
@@ -1231,7 +1231,7 @@ table.dataTable thead > tr > td.sorting {
 -----------------------*/
 
 .sidebar {
-    background-color: #34444c;
+    background-color: rgb(15 23 42 / var(--tw-text-opacity, 1));
     border-right: 1px solid transparent;
     bottom: 0;
     left: 0;
@@ -1244,7 +1244,7 @@ table.dataTable thead > tr > td.sorting {
 }
 
 .sidebar_right {
-    background-color: #34444c;
+    background-color: rgb(15 23 42 / var(--tw-text-opacity, 1));
     border-right: 1px solid transparent;
     bottom: 0;
     right: 0;
@@ -1258,11 +1258,11 @@ table.dataTable thead > tr > td.sorting {
 
 .sidebar_right_header {
     padding: 0;
-    background-color: #34444c !important;
+    background-color: rgb(15 23 42 / var(--tw-text-opacity, 1)) !important;
 }
 
 .sidebar_right_header_title {
-    background-color: #34444c;
+    background-color: rgb(15 23 42 / var(--tw-text-opacity, 1));
 }
 .sidebar_right_header_title button {
     color: #fff;
@@ -1518,7 +1518,7 @@ table.dataTable thead > tr > td.sorting {
 }
 .add-btn {
     background-color: #256c6c;
-    border: 1px solid #34444c;
+    border: 1px solid rgb(15 23 42 / var(--tw-text-opacity, 1));
     margin-right: 10px;
     color: #fff;
     float: right;
@@ -6491,7 +6491,7 @@ ul.comment-list li ul.children {
     .nav-tabs.nav-tabs-bottom > li > a.active:focus {
         border-bottom-width: 2px;
         border-color: transparent;
-        border-bottom-color: #34444c;
+        border-bottom-color: rgb(15 23 42 / var(--tw-text-opacity, 1));
         background-color: transparent;
         transition: none 0s ease 0s;
         -moz-transition: none 0s ease 0s;
@@ -7275,7 +7275,7 @@ td a {
 .search_dropdown {
     background-color: #49575e;
     border-radius: 5px;
-    border: 1px solid #34444c;
+    border: 1px solid rgb(15 23 42 / var(--tw-text-opacity, 1));
 }
 
 .search_dropdown a {
