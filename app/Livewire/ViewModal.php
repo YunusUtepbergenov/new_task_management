@@ -46,7 +46,7 @@ class ViewModal extends Component
                 $this->task->update(['status' => "Выполняется"]);
             }
         }
-        $this->comments = $this->task->comments()->latest()->get();
+        $this->comments = $this->task->comments()->with('user')->oldest()->get();
     }
 
     public function getCoTasks($task){
@@ -112,7 +112,7 @@ class ViewModal extends Component
             'comment' => $this->comment
         ]);
         $this->dispatch('success', msg: "Комментарий успешно отправлен");
-        $this->comments = Comment::with('user')->where('task_id', $id)->latest()->get();
+        $this->comments = Comment::with('user')->where('task_id', $id)->oldest()->get();
 
         $this->comment = '';
         if(Auth::user()->id == $comment->task->creator_id){
@@ -211,7 +211,7 @@ class ViewModal extends Component
         $comment = Comment::where('id', $id)->first();
         $comment->delete();
 
-        $this->comments = Comment::with('user')->where('task_id', $this->task->id)->latest()->get();
+        $this->comments = Comment::with('user')->where('task_id', $this->task->id)->oldest()->get();
     }
 
     public function reSubmit($id){
