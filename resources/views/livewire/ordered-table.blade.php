@@ -191,11 +191,9 @@
         <div class="col-lg-12 mt-4">
             <div class="card">
                 <div class="card-header">
-                    <a data-toggle="collapse" href="#unplannedTasksCollapse" role="button" aria-expanded="false" aria-controls="unplannedTasksCollapse" class="d-block w-100 text-decoration-none text-dark">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong>Все задачи</strong>
-                            <i class="fa fa-chevron-down ml-2 transition" id="unplannedTasksChevron"></i>
-                        </div>
+                    <a data-toggle="collapse" href="#unplannedTasksCollapse" role="button" aria-expanded="false" aria-controls="unplannedTasksCollapse" class="collapse-toggle">
+                        <strong>Все задачи</strong>
+                        <i class="fa fa-chevron-down" id="unplannedTasksChevron"></i>
                     </a>
                 </div>
                 <div id="unplannedTasksCollapse" class="collapse">

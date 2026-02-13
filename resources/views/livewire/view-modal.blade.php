@@ -12,32 +12,6 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-lg-8 col-xl-9">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4 class="card-title mb-0">Прикрепленный файлы</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            @forelse ($task->files as $file)
-                                            <div class="col-md-3 col-sm-4 col-lg-4 col-xl-3">
-                                                    <div class="uploaded-box">
-                                                        <div class="files-cont">
-                                                            <div class="file-type">
-                                                                <span class="files-icon"><i class="fa fa-file-pdf-o"></i></span>
-                                                            </div>
-                                                            <div class="files-info">
-                                                                <span class="file-name text-ellipsis"><a href="{{ route('file.download', $file->id)}}">{{ $file->name }}</a></span>
-                                                                <span class="file-date">{{ $file->created_at->format('Y-m-d') }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @empty
-                                                <p style="margin-left: 15px">Файлов нет</p>
-                                            @endforelse
-                                        </div>
-                                    </div>
-                                </div>
 
                                 @if (!$task->response && $task->user_id == Auth::user()->id)
                                         <div class="card">
@@ -188,7 +162,8 @@
 
                                                 <tr>
                                                     <td>Постановщик:</td>
-                                                    <td class="text-right"><a href="#" id="task_creator">{{ $task->username($task->creator_id) }}</a></td>
+                                                    {{-- <td class="text-right"><a href="#" id="task_creator">{{ $task->username($task->creator_id) }}</a></td> --}}
+                                                    <td class="text-right"><a href="#" id="task_creator">{{ $task->creator->short_name }}</a></td>
                                                 </tr>
 
                                                 <tr>
@@ -309,7 +284,7 @@
                                                                 <span class="avatar"><img alt="" src="{{ ($task->user->avatar) ? asset('user_image/'.$task->user->avatar) : asset('user_image/avatar.jpg') }}"></span>
                                                             </div>
                                                             <div class="list-body">
-                                                                <span class="message-author">{{ $task->username($task->user_id) }} ( {{ $task->total }}/{{ $task->score->max_score }} )</span>
+                                                                <span class="message-author">{{ $task->user->short_name }} ( {{ $task->total }}/{{ $task->score->max_score }} )</span>
                                                                 <div class="clearfix"></div>
                                                                 <span class="message-content">{{ $task->user->role->name }}</span>
                                                             </div>
