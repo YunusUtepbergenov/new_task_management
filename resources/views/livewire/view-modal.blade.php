@@ -97,30 +97,33 @@
                                     <i class="fa fa-pencil-square-o"></i>
                                     <span class="vm-section-title">Завершить задачу</span>
                                 </div>
-                                <div class="d-flex" style="gap: 12px; align-items: stretch;">
-                                    <div style="flex: 1.4;">
-                                        <input type="text" class="form-control vm-response-input" wire:model.blur="description" placeholder="Опишите выполненную работу...">
+                                <div class="vm-response-row">
+                                    <div class="vm-response-col">
+                                        <textarea class="form-control vm-response-input" wire:model.blur="description" placeholder="Опишите выполненную работу..."></textarea>
                                         @error('description')
                                             <div class="text-danger mt-1" style="font-size: 13px;">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div style="flex: 1;"
+                                    <div class="vm-response-col"
                                          x-data="{ dragging: false }"
                                          x-on:dragover.prevent="dragging = true"
                                          x-on:dragleave.prevent="dragging = false"
                                          x-on:drop.prevent="dragging = false; $refs.fileInput.files = $event.dataTransfer.files; $refs.fileInput.dispatchEvent(new Event('change'));">
-                                        <div class="vm-dropzone" :class="{ 'vm-dropzone--active': dragging }">
+                                        <div class="vm-dropzone" :class="{ 'vm-dropzone--active': dragging }" x-on:click="$refs.fileInput.click()">
                                             <input type="file" wire:model="upload" class="vm-dropzone-input" x-ref="fileInput">
                                             <div class="vm-dropzone-content" wire:loading.remove wire:target="upload">
                                                 @if ($upload)
                                                     <div class="vm-uploaded-file">
-                                                        <i class="fa fa-check-circle" style="color: #22c55e; font-size: 24px;"></i>
-                                                        <span>{{ $upload->getClientOriginalName() }}</span>
+                                                        <i class="fa fa-check-circle" style="color: #22c55e; font-size: 18px; flex-shrink: 0;"></i>
+                                                        <span>{{ Str::limit($upload->getClientOriginalName(), 15) }}</span>
+                                                        <button type="button" class="vm-upload-remove" wire:click.stop="$set('upload', null)" title="Удалить файл">
+                                                            <i class="fa fa-times"></i>
+                                                        </button>
                                                     </div>
                                                 @else
                                                     <i class="fa fa-cloud-upload vm-dropzone-icon"></i>
                                                     <span class="vm-dropzone-text">Нажмите или перетащите файл</span>
-                                                    <span class="vm-dropzone-hint">PDF, DOC, XLS, JPG до 5 МБ</span>
+                                                    <span class="vm-dropzone-hint">PDF, DOC, XLS, JPG до 500 МБ</span>
                                                 @endif
                                             </div>
                                             <div wire:loading wire:target="upload" style="width: 100%;">
@@ -184,12 +187,17 @@
                                         @endif
                                         @can('evaluate', $task)
                                             @if ($task->status == 'Ждет подтверждения' && $task->group_id && isset($ct->score))
-                                                <input type="number"
-                                                    class="vm-score-input"
-                                                    wire:model="groupScores.{{ $ct->id }}"
-                                                    placeholder="0"
-                                                    min="{{ $ct->score->min_score }}"
-                                                    max="{{ $ct->score->max_score }}">
+                                                <div class="vm-score-wrap" x-data="{ scoreErr: '' }">
+                                                    <label style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Оценка (Макс: {{ $ct->score->max_score }})</label>
+                                                    <input type="number"
+                                                        class="vm-score-input"
+                                                        wire:model="groupScores.{{ $ct->id }}"
+                                                        placeholder="0"
+                                                        min="{{ $ct->score->min_score }}"
+                                                        max="{{ $ct->score->max_score }}"
+                                                        x-on:input="scoreErr = (parseFloat($event.target.value) > {{ $ct->score->max_score }} || parseFloat($event.target.value) < {{ $ct->score->min_score }}) ? 'от {{ $ct->score->min_score }} до {{ $ct->score->max_score }}' : ''">
+                                                    <span class="vm-score-error" x-show="scoreErr" x-text="scoreErr" x-cloak></span>
+                                                </div>
                                             @endif
                                         @endcan
                                     </div>
@@ -200,23 +208,24 @@
                                             <span class="vm-user-name">{{ $task->user->short_name }}</span>
                                             <span class="vm-user-role">{{ $task->user->role->name }}</span>
                                         </div>
+                                        {{-- Single task score input --}}
+                                        @can('evaluate', $task)
+                                            @if ($task->status == 'Ждет подтверждения' && !$task->group_id && isset($task->score))
+                                                <div class="vm-score-wrap" x-data="{ scoreErr: '' }" style="margin-left: auto;">
+                                                    <label style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Оценка (Макс: {{ $task->score->max_score }})</label>
+                                                    <input type="number" class="vm-score-input"
+                                                        wire:model="taskScore"
+                                                        placeholder="0"
+                                                        min="{{ $task->score->min_score }}"
+                                                        max="{{ $task->score->max_score }}"
+                                                        x-on:input="scoreErr = (parseFloat($event.target.value) > {{ $task->score->max_score }} || parseFloat($event.target.value) < {{ $task->score->min_score }}) ? 'от {{ $task->score->min_score }} до {{ $task->score->max_score }}' : ''">
+                                                    <span class="vm-score-error" x-show="scoreErr" x-text="scoreErr" x-cloak></span>
+                                                </div>
+                                            @endif
+                                        @endcan
                                     </div>
                                 @endforelse
                             </div>
-
-                            {{-- Single task score input --}}
-                            @can('evaluate', $task)
-                                @if ($task->status == 'Ждет подтверждения' && !$task->group_id && isset($task->score))
-                                    <div style="margin-top: 12px;">
-                                        <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">Оценка (Макс: {{ $task->score->max_score }})</label>
-                                        <input type="number" class="form-control vm-score-input" style="width: 120px;"
-                                            wire:model="taskScore"
-                                            placeholder="0"
-                                            min="{{ $task->score->min_score }}"
-                                            max="{{ $task->score->max_score }}">
-                                    </div>
-                                @endif
-                            @endcan
 
                             @isset($errorMsg)
                                 <div class="text-danger mt-2" style="font-size: 13px;">{{ $errorMsg }}</div>
@@ -232,17 +241,20 @@
                             </div>
 
                             {{-- Comment Form --}}
-                            <form wire:submit.prevent="storeComment({{ $task->id }})" class="vm-comment-form">
+                            <div class="vm-comment-form" x-data>
                                 <div class="vm-comment-input-wrap">
-                                    <textarea class="form-control vm-comment-input" wire:model="comment" rows="2" placeholder="Напишите комментарий..." required></textarea>
-                                    <button type="submit" class="vm-comment-send-btn">
+                                    <textarea class="form-control vm-comment-input" wire:model="comment" rows="2" placeholder="Напишите комментарий..."
+                                        x-ref="commentInput"
+                                        x-on:keydown.enter.prevent="if (!$event.shiftKey) { $wire.storeComment({{ $task->id }}) }"
+                                        x-on:comment-added.window="$el.value = ''"></textarea>
+                                    <button type="button" class="vm-comment-send-btn" wire:click="storeComment({{ $task->id }})">
                                         <i class="fa fa-paper-plane"></i>
                                     </button>
                                 </div>
-                            </form>
+                            </div>
 
                             {{-- Chat Messages --}}
-                            <div class="vm-chat">
+                            <div class="vm-chat" id="vm-chat-container">
                                 @foreach ($comments as $cmt)
                                     @if ($cmt->user->id == auth()->user()->id)
                                         {{-- Current user: right-aligned blue --}}
@@ -295,7 +307,7 @@
                         @endif
                     @endcan
 
-                    @if ($task->deadline >= date('Y-m-d') && $task->user_id == auth()->user()->id && $task->status == 'Ждет подтверждения')
+                    @if ($task->user_id == auth()->user()->id && $task->status == 'Ждет подтверждения')
                         <div class="vm-footer">
                             <button class="btn btn-outline-secondary w-100" style="border-radius: 8px;" wire:click="reSubmit({{ $task->id }})">Отменить отправку</button>
                         </div>
@@ -466,3 +478,23 @@
         </div>
     @endif
 </div>
+
+@script
+    <script>
+        $wire.on('comment-added', () => {
+            // Clear the textarea DOM value
+            const textarea = document.querySelector('.vm-comment-input');
+            if (textarea) {
+                textarea.value = '';
+            }
+
+            setTimeout(() => {
+                const chat = document.getElementById('vm-chat-container');
+                if (chat && chat.lastElementChild) {
+                    chat.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    chat.lastElementChild.style.animation = 'vm-fade-in 0.4s ease';
+                }
+            }, 100);
+        });
+    </script>
+@endscript

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Reports;
 
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\WeeklyTasksExport;
@@ -14,6 +15,12 @@ class WeeklyTasksOverview extends Component
     public $sectors;
     public $selectedWeek;
     public $weeks = [];
+
+    #[On('task-updated')]
+    public function refreshTasks(): void
+    {
+        // Re-render triggers fresh data from render()
+    }
 
     public function mount(){
         $this->generateWeekOptions();

@@ -36,6 +36,7 @@ class ViewModal extends Component
     #[On('taskClicked')]
     public function taskClicked($id): void
     {
+        $this->reset(['errorMsg', 'taskScore', 'groupScores', 'upload', 'description', 'comment']);
         $this->dispatch('show-modal');
         $this->task = Task::with(['user','comments', 'files'])->where('id', $id)->first();
 
@@ -51,7 +52,7 @@ class ViewModal extends Component
 
     public function getCoTasks($task){
         if(isset($task->group_id)){
-            return Task::with('user')->where('group_id', $task->group_id)->get();
+            return Task::with(['user', 'score'])->where('group_id', $task->group_id)->get();
         }else{
             return [];
         }
@@ -111,10 +112,10 @@ class ViewModal extends Component
             'user_id' => Auth::user()->id,
             'comment' => $this->comment
         ]);
-        $this->dispatch('success', msg: "Комментарий успешно отправлен");
         $this->comments = Comment::with('user')->where('task_id', $id)->oldest()->get();
 
         $this->comment = '';
+        $this->dispatch('comment-added');
         if(Auth::user()->id == $comment->task->creator_id){
             event(new CommentStoredEvent($comment, $comment->task->user_id));
         }else{
@@ -192,7 +193,8 @@ class ViewModal extends Component
         }
 
         // Refresh modal task data
-        $this->task = Task::with(['comments', 'files'])->find($id);
+        $this->task = Task::with(['user', 'comments', 'files', 'score'])->find($id);
+        $this->coTasks = $this->getCoTasks($this->task);
     }
 
     public function taskRejected($id){

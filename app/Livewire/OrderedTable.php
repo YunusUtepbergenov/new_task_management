@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Services\TaskService;
 use Carbon\Carbon;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use App\Models\Repeat;
@@ -21,6 +22,12 @@ class OrderedTable extends Component
     public $is_repeating = false;
     public $repeat_type = "null";
     public $repeat_day = null;
+
+    #[On('task-updated')]
+    public function refreshTasks(): void
+    {
+        // Re-render triggers fresh data from render()
+    }
 
     public function taskStore()
     {

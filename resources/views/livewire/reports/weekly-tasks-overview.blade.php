@@ -52,7 +52,7 @@
                                                 <i class="material-icons">more_vert</i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $main['id'] }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
+                                                <a class="dropdown-item" href="javascript:void(0)" wire:click="$dispatch('editTaskClicked', { id: {{ $main['id'] }} })"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
                                                 <form action="{{ route('task.destroy', $main['id']) }}" method="POST">
                                                     @method('DELETE')
                                                     @csrf

@@ -13,7 +13,7 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     @if ($main_task['status'] != "Выполнено" && $main_task['status'] != "Ждет подтверждения")
-                        <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $main_task['id'] }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
+                        <a class="dropdown-item" href="javascript:void(0)" wire:click="$dispatch('editTaskClicked', { id: {{ $main_task['id'] }} })"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
                     @endif
                     @if ($main_task['repeat_id'])
                         <form action="{{ route('task.destroy', $main_task['id']) }}" method="POST">

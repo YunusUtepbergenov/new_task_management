@@ -1448,21 +1448,22 @@ body.dark-mode .page-header .nav-tabs-bottom .nav-link:hover {
     border-radius: 6px !important;
     color: var(--sidebar-active-bg) !important;
     font-size: 13px;
-    padding: 3px 8px 3px 4px !important;
-    display: flex !important;
-    flex-direction: row-reverse !important;
+    padding: 2px 6px !important;
+    display: inline-flex !important;
     align-items: center;
     gap: 4px;
+    max-width: 100%;
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
     color: var(--sidebar-active-bg) !important;
     font-size: 14px;
     margin: 0 !important;
-    padding: 3px 7px !important;
+    padding: 0 !important;
     float: none !important;
-    order: -1;
-    border-right: 1px solid #3b82f6;
+    border: none !important;
+    cursor: pointer;
+    line-height: 1;
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
@@ -1922,6 +1923,30 @@ body.dark-mode .card-header .italic {
    View Modal Redesign (vm-)
    ============================================ */
 
+/* Custom scrollbar */
+#view_task .modal-body {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+#view_task .modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+#view_task .modal-body::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 4px 0;
+}
+
+#view_task .modal-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+#view_task .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
 /* Header */
 .vm-header {
     background: var(--card-bg) !important;
@@ -1934,10 +1959,18 @@ body.dark-mode .card-header .italic {
 
 .vm-header-left {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
     min-width: 0;
     flex: 1;
+}
+
+.vm-header-title {
+    font-size: 16px !important;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+    margin: 0 !important;
 }
 
 .vm-header-icon {
@@ -2163,6 +2196,7 @@ body.dark-mode .card-header .italic {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .vm-dropzone:hover {
@@ -2247,23 +2281,59 @@ body.dark-mode .card-header .italic {
     100% { transform: translateX(100%); }
 }
 
+@keyframes vm-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* Uploaded file indicator */
 .vm-uploaded-file {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 14px;
+    padding: 8px 12px;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
     border-radius: 8px;
-    margin-top: 8px;
     font-size: 13px;
     color: var(--sidebar-active-bg);
     font-weight: 500;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.vm-uploaded-file span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
 }
 
 .vm-uploaded-file i {
     font-size: 16px;
+}
+
+.vm-upload-remove {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: auto;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.vm-upload-remove:hover {
+    background: #fecaca;
+    color: #dc2626;
 }
 
 /* Responsible users */
@@ -2320,20 +2390,72 @@ body.dark-mode .card-header .italic {
 .vm-score-input {
     margin-left: auto;
     flex-shrink: 0;
-}
-
-.vm-score-input .form-control {
-    width: 100px !important;
+    width: 80px !important;
     text-align: center;
     font-size: 13px !important;
-    padding: 6px 8px !important;
+    padding: 6px 10px !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    background: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    outline: none;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
 }
 
-/* Response input (text field matching dropzone height) */
+.vm-score-input::-webkit-outer-spin-button,
+.vm-score-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.vm-score-input:focus {
+    border-color: var(--sidebar-active-bg) !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.vm-score-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.vm-score-error {
+    font-size: 11px;
+    color: #ef4444;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Response form row */
+.vm-response-row {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.vm-response-row .vm-response-col:first-child {
+    flex: 1.4;
+    display: flex;
+    flex-direction: column;
+}
+
+.vm-response-row .vm-response-col:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+}
+
 .vm-response-input {
-    height: 100% !important;
+    flex: 1 !important;
+    resize: none !important;
     min-height: 0 !important;
-    box-sizing: border-box;
+    border-radius: 10px !important;
 }
 
 /* Comments section */
@@ -2529,6 +2651,33 @@ body.dark-mode .vm-header .close {
 body.dark-mode .vm-header .close:hover {
     background: #334155;
     color: #e2e8f0;
+}
+
+body.dark-mode #view_task .modal-body {
+    scrollbar-color: #475569 transparent;
+}
+
+body.dark-mode #view_task .modal-body::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+body.dark-mode #view_task .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+body.dark-mode .vm-upload-remove:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+body.dark-mode .vm-score-input {
+    background: #1e293b !important;
+    border-color: #475569 !important;
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .vm-score-input:focus {
+    border-color: var(--sidebar-active-bg) !important;
 }
 
 body.dark-mode .vm-meta-field {

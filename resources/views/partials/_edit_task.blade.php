@@ -39,18 +39,6 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-sm-1"></div>
-                        <div class="col-sm-10">
-                            <div class="form-group file-upload">
-                                <label for="file-input1"><img src="assets/img/attachment.png"> ( Макс: 5 MB )</label>
-                                <input id="file-input1" type="file" name="file[]" multiple onchange="javascript:updateList1()">
-                                <div id="fileList1"></div>
-                            </div>
-                            {{-- <div class="alert alert-danger" id="file"></div> --}}
-                        </div>
-                    </div>
-
                     @if (Auth::user()->isDirector())
                         <div class="form-group row">
                             <div class="col-sm-1"></div>
