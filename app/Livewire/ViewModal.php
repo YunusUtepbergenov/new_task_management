@@ -33,6 +33,13 @@ class ViewModal extends Component
         $this->internal = auth()->user()->internal;
     }
 
+    #[On('task-updated')]
+    public function onTaskUpdated(): void
+    {
+        $this->task = null;
+        $this->coTasks = [];
+    }
+
     #[On('taskClicked')]
     public function taskClicked($id): void
     {

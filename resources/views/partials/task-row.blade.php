@@ -3,7 +3,7 @@
     $responsibles = collect($task)->pluck('user.short_name')->filter()->join(', ');
 @endphp
 
-<tr>
+<tr wire:key="task-row-{{ $main_task['id'] }}">
     <td>{{ $key }}</td>
     <td>
         @if ($main_task['creator_id'] == Auth::user()->id)

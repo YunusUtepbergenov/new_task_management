@@ -43,7 +43,7 @@
                                 $main = $taskGroup[0];
                                 $users = collect($taskGroup)->pluck('user.name')->unique()->join(', ');
                             @endphp
-                            <tr>
+                            <tr wire:key="weekly-row-{{ $main['id'] }}">
                                 <td>{{ $index + 1 }}</td>
                                 <td>
                                     @if (Auth::user()->isDeputy())
