@@ -13,11 +13,11 @@ class ProfileModal extends Component
     #[On('profileClicked')]
     public function profileClicked($id): void
     {
-        $this->profile = User::where('id', $id)->first();
+        $this->profile = User::find($id);
         $this->dispatch('profile-show-modal');
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.profile-modal');
     }

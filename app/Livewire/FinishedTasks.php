@@ -10,30 +10,30 @@ use Illuminate\Support\Facades\Auth;
 class FinishedTasks extends Component
 {
     use WithPagination;
-    protected $paginationTheme = 'bootstrap';
 
+    protected $paginationTheme = 'bootstrap';
 
     public $search = '';
     public $worker_id = null;
     public $workers = [];
 
-     public function mount()
+    public function mount(): void
     {
         $user = Auth::user();
 
         if ($user->isHead()) {
-            $this->workers = User::where('sector_id', $user->sector_id)->get();
+            $this->workers = User::where('sector_id', $user->sector_id)->where('leave', 0)->get();
         } elseif ($user->isDeputy()) {
-            $this->workers = User::all();
+            $this->workers = User::where('leave', 0)->get();
         }
     }
 
-    public function updatedSearch()
+    public function updatedSearch(): void
     {
         $this->resetPage();
     }
 
-    public function updatedWorkerId()
+    public function updatedWorkerId(): void
     {
         $this->resetPage();
     }
@@ -43,7 +43,7 @@ class FinishedTasks extends Component
         $this->dispatch('taskClicked', id: $task_id);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         $user = Auth::user();
 

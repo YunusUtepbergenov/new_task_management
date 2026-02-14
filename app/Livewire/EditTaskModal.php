@@ -17,6 +17,52 @@ class EditTaskModal extends Component
     public $taskId, $name, $deadline, $scoreId, $creatorId;
     public $userIds = [];
     public $errorMsg;
+    public $filteredSectors, $creators, $scoresGrouped;
+
+    public function mount(): void
+    {
+        $user = Auth::user();
+        $sectors = Sector::with(['users' => function ($query) {
+            $query->where('leave', 0);
+        }])->get();
+
+        $this->filteredSectors = collect();
+        foreach ($sectors as $sector) {
+            $sectorUsers = $sector->users->filter(function ($u) use ($user) {
+                if ($user->isDirector() || $user->isMailer()) {
+                    return true;
+                }
+                if ($user->isDeputy()) {
+                    return !$u->isDirector() && (!$u->isDeputy() || $u->id == $user->id);
+                }
+                if ($user->isHead()) {
+                    return !$u->isDirector() && !$u->isDeputy();
+                }
+                return false;
+            });
+
+            if ($sectorUsers->isNotEmpty()) {
+                $this->filteredSectors->push((object) [
+                    'name' => $sector->name,
+                    'users' => $sectorUsers,
+                ]);
+            }
+        }
+
+        $this->creators = collect();
+        if ($user->isDirector() || $user->isMailer() || $user->isHead()) {
+            $this->creators->push($user);
+        } elseif ($user->isDeputy()) {
+            foreach ($sectors as $sector) {
+                foreach ($sector->users->whereIn('role_id', [2, 14, 19]) as $u) {
+                    $this->creators->push($u);
+                }
+            }
+        }
+        $this->creators = $this->creators->unique('id');
+
+        $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
+    }
 
     #[On('editTaskClicked')]
     public function loadTask(int $id): void
@@ -126,49 +172,6 @@ class EditTaskModal extends Component
 
     public function render(): \Illuminate\Contracts\View\View
     {
-        $user = Auth::user();
-        $sectors = Sector::with(['users' => function ($query) {
-            $query->where('leave', 0);
-        }])->get();
-
-        $filteredUsers = collect();
-        foreach ($sectors as $sector) {
-            $sectorUsers = $sector->users->filter(function ($u) use ($user) {
-                if ($user->isDirector() || $user->isMailer()) {
-                    return true;
-                }
-                if ($user->isDeputy()) {
-                    return !$u->isDirector() && (!$u->isDeputy() || $u->id == $user->id);
-                }
-                if ($user->isHead()) {
-                    return !$u->isDirector() && !$u->isDeputy();
-                }
-                return false;
-            });
-
-            if ($sectorUsers->isNotEmpty()) {
-                $filteredUsers->push((object) [
-                    'name' => $sector->name,
-                    'users' => $sectorUsers,
-                ]);
-            }
-        }
-
-        $creators = collect();
-        if ($user->isDirector() || $user->isMailer() || $user->isHead()) {
-            $creators->push($user);
-        } elseif ($user->isDeputy()) {
-            foreach ($sectors as $sector) {
-                foreach ($sector->users->whereIn('role_id', [2, 14, 19]) as $u) {
-                    $creators->push($u);
-                }
-            }
-        }
-
-        return view('livewire.edit-task-modal', [
-            'filteredSectors' => $filteredUsers,
-            'creators' => $creators->unique('id'),
-            'scoresGrouped' => ['Категории' => (new TaskService())->scoresList()],
-        ]);
+        return view('livewire.edit-task-modal');
     }
 }

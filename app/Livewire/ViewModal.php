@@ -20,6 +20,7 @@ use Livewire\WithFileUploads;
 class ViewModal extends Component
 {
     use WithFileUploads;
+
     public $task, $comment, $comments, $profile;
     public $description, $upload;
     public $phone, $internal;
@@ -27,8 +28,11 @@ class ViewModal extends Component
     public $errorMsg, $taskScore, $coTasks;
     public $groupScores = [];
 
-    public function mount(){
-        $this->errorMsg = Null;
+    private const TASK_EAGER_LOAD = ['user', 'comments', 'files', 'score'];
+
+    public function mount(): void
+    {
+        $this->errorMsg = null;
         $this->phone = auth()->user()->phone;
         $this->internal = auth()->user()->internal;
     }
@@ -45,105 +49,104 @@ class ViewModal extends Component
     {
         $this->reset(['errorMsg', 'taskScore', 'groupScores', 'upload', 'description', 'comment']);
         $this->dispatch('show-modal');
-        $this->task = Task::with(['user','comments', 'files'])->where('id', $id)->first();
+        $this->task = Task::with(self::TASK_EAGER_LOAD)->find($id);
 
         $this->coTasks = $this->getCoTasks($this->task);
 
-        if ($this->task->status == "Не прочитано") {
-            if (Auth::user()->id == $this->task->user_id) {
-                $this->task->update(['status' => "Выполняется"]);
-            }
+        if ($this->task->status === 'Не прочитано' && Auth::id() === $this->task->user_id) {
+            $this->task->update(['status' => 'Выполняется']);
         }
+
         $this->comments = $this->task->comments()->with('user')->oldest()->get();
     }
 
-    public function getCoTasks($task){
-        if(isset($task->group_id)){
+    public function getCoTasks($task): array|\Illuminate\Database\Eloquent\Collection
+    {
+        if ($task?->group_id) {
             return Task::with(['user', 'score'])->where('group_id', $task->group_id)->get();
-        }else{
-            return [];
         }
+
+        return [];
     }
 
     #[On('profileClicked')]
     public function profileClicked($id): void
     {
-        $this->profile = User::where('id', $id)->first();
+        $this->profile = User::find($id);
         $this->dispatch('profile-show-modal');
     }
 
-    public function updatedUpload(){
+    public function updatedUpload(): void
+    {
         $this->validate([
-            'upload' => 'nullable|file|max:500000'
+            'upload' => 'nullable|file|max:500000',
         ]);
     }
 
-    public function storeResponse(){
+    public function storeResponse(): void
+    {
         $this->validate([
             'description' => 'required|min:3',
-            'upload' => 'nullable|file|max:500000'
+            'upload' => 'nullable|file|max:500000',
         ]);
 
-        $response = new Response;
-        $response->task_id = $this->task->id;
-        $response->user_id = Auth::user()->id;
-        $response->description = $this->description;
+        $responseData = [
+            'task_id' => $this->task->id,
+            'user_id' => Auth::id(),
+            'description' => $this->description,
+        ];
 
-        if($this->upload){
-            $uploadedFile = $this->upload;
-            $chars = array("+", " ", "?", "[", "]", "/", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}", "%");
-            $filename = time().$uploadedFile->getClientOriginalName();
-            $filename = str_replace($chars, "_", $filename);
+        if ($this->upload) {
+            $chars = ['+', ' ', '?', '[', ']', '/', '=', '<', '>', ':', ';', ',', "'", '"', '&', '$', '#', '*', '(', ')', '|', '~', '`', '!', '{', '}', '%'];
+            $filename = time() . $this->upload->getClientOriginalName();
+            $filename = str_replace($chars, '_', $filename);
 
-            Storage::disk('local')->putFileAs(
-                'files/responses/',
-                $uploadedFile,
-                $filename
-            );
-            $response->filename = $filename;
+            Storage::disk('local')->putFileAs('files/responses/', $this->upload, $filename);
+            $responseData['filename'] = $filename;
         }
 
-        $response->save();
-        $this->dispatch('success', msg: "Задача выполнена. Пожалуйста, дождитесь подтверждения.");
+        $response = Response::create($responseData);
+        $this->dispatch('success', msg: 'Задача выполнена. Пожалуйста, дождитесь подтверждения.');
 
         event(new TaskSubmittedEvent($response->task));
 
-        $this->task->update(['status' => "Ждет подтверждения"]);
-        $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
-        $this->description  = '';
+        $this->task->update(['status' => 'Ждет подтверждения']);
+        $this->refreshTask();
+        $this->description = '';
     }
 
-    public function storeComment($id){
+    public function storeComment($id): void
+    {
         $comment = Comment::create([
             'task_id' => $id,
-            'user_id' => Auth::user()->id,
-            'comment' => $this->comment
+            'user_id' => Auth::id(),
+            'comment' => $this->comment,
         ]);
-        $this->comments = Comment::with('user')->where('task_id', $id)->oldest()->get();
 
+        $this->comments = Comment::with('user')->where('task_id', $id)->oldest()->get();
         $this->comment = '';
         $this->dispatch('comment-added');
-        if(Auth::user()->id == $comment->task->creator_id){
-            event(new CommentStoredEvent($comment, $comment->task->user_id));
-        }else{
-            event(new CommentStoredEvent($comment, $comment->task->creator_id));
-        }
+
+        $comment->load('task');
+        $recipientId = Auth::id() === $comment->task->creator_id
+            ? $comment->task->user_id
+            : $comment->task->creator_id;
+
+        event(new CommentStoredEvent($comment, $recipientId));
     }
 
-    public function taskConfirmed($id)
+    public function taskConfirmed($id): void
     {
         $this->errorMsg = null;
         $task = Task::with('score')->findOrFail($id);
 
-        // Check if this is a grouped task
         if ($task->group_id) {
             $groupTasks = Task::where('group_id', $task->group_id)
-                            ->with(['score', 'user'])
-                            ->get();
+                ->with(['score', 'user'])
+                ->get();
 
             $totalGroupScore = 0;
 
-            // Validate each user's score
             foreach ($groupTasks as $groupTask) {
                 $scoreValue = $this->groupScores[$groupTask->id] ?? null;
 
@@ -155,7 +158,7 @@ class ViewModal extends Component
                 if ($groupTask->score) {
                     if ($scoreValue < $groupTask->score->min_score || $scoreValue > $groupTask->score->max_score) {
                         $this->errorMsg = 'Оценка для ' . $groupTask->user->name . ' должна быть между ' .
-                                        $groupTask->score->min_score . ' и ' . $groupTask->score->max_score;
+                            $groupTask->score->min_score . ' и ' . $groupTask->score->max_score;
                         return;
                     }
                 }
@@ -163,30 +166,25 @@ class ViewModal extends Component
                 $totalGroupScore += floatval($scoreValue);
             }
 
-            // Check if total exceeds the overall max_score
             if ($task->score && $totalGroupScore > $task->score->max_score) {
                 $this->errorMsg = 'Сумма всех оценок (' . $totalGroupScore . ') превышает максимально допустимое значение (' . $task->score->max_score . ').';
                 return;
             }
 
-            // All good: Update all grouped tasks
             foreach ($groupTasks as $groupTask) {
                 $groupTask->update([
                     'status' => 'Выполнено',
-                    'total' => floatval($this->groupScores[$groupTask->id])
+                    'total' => floatval($this->groupScores[$groupTask->id]),
                 ]);
-
                 event(new TaskConfirmedEvent($groupTask));
             }
-
         } else {
-            // Single task logic
             if ($task->score) {
                 if (!isset($this->taskScore) ||
                     floatval($this->taskScore) < $task->score->min_score ||
                     floatval($this->taskScore) > $task->score->max_score) {
                     $this->errorMsg = 'Оценка должна быть между ' .
-                                    $task->score->min_score . ' и ' . $task->score->max_score;
+                        $task->score->min_score . ' и ' . $task->score->max_score;
                     return;
                 }
             }
@@ -195,51 +193,51 @@ class ViewModal extends Component
                 'status' => 'Выполнено',
                 'total' => $task->score ? floatval($this->taskScore) : null,
             ]);
-
             event(new TaskConfirmedEvent($task));
         }
 
-        // Refresh modal task data
-        $this->task = Task::with(['user', 'comments', 'files', 'score'])->find($id);
+        $this->task = Task::with(self::TASK_EAGER_LOAD)->find($id);
         $this->coTasks = $this->getCoTasks($this->task);
     }
 
-    public function taskRejected($id){
-        $task = Task::where('id', $id)->first();
+    public function taskRejected($id): void
+    {
+        $task = Task::with('response')->findOrFail($id);
 
-        if($task->response->filename)
-            Storage::delete('files/responses/'.$task->response->filename);
+        if ($task->response->filename) {
+            Storage::delete('files/responses/' . $task->response->filename);
+        }
 
         $task->response->delete();
-        $task->update(['status' => "Дорабатывается"]);
-        $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
+        $task->update(['status' => 'Дорабатывается']);
+        $this->refreshTask();
         event(new TaskRejectedEvent($task));
     }
 
-    public function deleteComment($id){
-        $comment = Comment::where('id', $id)->first();
-        $comment->delete();
-
+    public function deleteComment($id): void
+    {
+        Comment::findOrFail($id)->delete();
         $this->comments = Comment::with('user')->where('task_id', $this->task->id)->oldest()->get();
     }
 
-    public function reSubmit($id){
-        $task = Task::where('id', $id)->first();
+    public function reSubmit($id): void
+    {
+        $task = Task::with('response')->findOrFail($id);
 
-        if($task->response->filename)
-            Storage::delete('files/responses/'.$task->response->filename);
+        if ($task->response->filename) {
+            Storage::delete('files/responses/' . $task->response->filename);
+        }
 
         $task->response->delete();
-        $task->update(['status' => "Выполняется"]);
-        $this->task = Task::with(['comments', 'files'])->where('id', $this->task->id)->first();
+        $task->update(['status' => 'Выполняется']);
+        $this->refreshTask();
     }
 
-    //Profile Information Modal
-
-    public function changeUserInfo(){
+    public function changeUserInfo(): void
+    {
         $this->validate([
             'phone' => 'required|min:9',
-            'internal' => 'nullable|max:3'
+            'internal' => 'nullable|max:3',
         ]);
 
         $user = Auth::user();
@@ -247,27 +245,32 @@ class ViewModal extends Component
         $user->internal = $this->internal;
         $user->save();
 
-        $this->dispatch('success', msg: "Информация профиля успешно изменена.");
+        $this->dispatch('success', msg: 'Информация профиля успешно изменена.');
     }
 
-    public function updatePassword(){
+    public function updatePassword(): void
+    {
         $this->validate([
             'oldPassword' => 'required|min:6|max:20',
             'newPassword' => 'required|min:6|max:20',
-            'confirmPassword' => 'required|same:newPassword'
+            'confirmPassword' => 'required|same:newPassword',
         ]);
 
-        if(Hash::check($this->oldPassword, auth()->user()->password)){
-            auth()->user()->update([
-                'password' => bcrypt($this->newPassword)
-            ]);
-            $this->dispatch('success', msg: "Пароль успешно изменен");
-        }else{
-            $this->dispatch('danger', msg: "Неправильный пароль");
+        if (Hash::check($this->oldPassword, auth()->user()->password)) {
+            auth()->user()->update(['password' => bcrypt($this->newPassword)]);
+            $this->dispatch('success', msg: 'Пароль успешно изменен');
+        } else {
+            $this->dispatch('danger', msg: 'Неправильный пароль');
         }
     }
 
-    public function render(){
+    public function render(): \Illuminate\Contracts\View\View
+    {
         return view('livewire.view-modal');
+    }
+
+    private function refreshTask(): void
+    {
+        $this->task = Task::with(self::TASK_EAGER_LOAD)->find($this->task->id);
     }
 }

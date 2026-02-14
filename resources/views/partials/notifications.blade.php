@@ -11,12 +11,27 @@
         <div class="noti-content">
             <ul class="notification-list">
                 @foreach (auth()->user()->unreadNotifications as $notification)
-                    @if ($notification->type == "App\Notifications\NewTaskNotification")
+                    @php
+                        $data = $notification->data;
+                        $message = match($notification->type) {
+                            'App\Notifications\NewTaskNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> добавил Не прочитано задание',
+                            'App\Notifications\TaskSubmittedNotification' => '<span class="noti-title">' . e($data['user_name']) . '</span> выполнил задание',
+                            'App\Notifications\CommentStoredNotification' => '<span class="noti-title">' . e($data['user_name']) . '</span> написал комментарий к заданию',
+                            'App\Notifications\TaskConfirmedNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> принял ваше задание',
+                            'App\Notifications\TaskRejectedNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> отклонил вашего задания',
+                            default => null,
+                        };
+                        $suffix = $notification->type === 'App\Notifications\TaskSubmittedNotification'
+                            ? '. Пожалуйста, проверьте это задание.'
+                            : '';
+                    @endphp
+
+                    @if ($message)
                         <li class="notification-message">
                             <div class="notification-action">
                                 <form method="POST" action="{{ route('notification.read', $notification->id) }}">
-                                    <input type="hidden" name="_method" value="PUT">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    @method('PUT')
+                                    @csrf
                                     <button class="action-icon"><i class="fa fa-times" aria-hidden="true"></i></button>
                                 </form>
                             </div>
@@ -25,83 +40,7 @@
                                     <img alt="" src="{{ asset('assets/img/avatar.jpg') }}">
                                 </span>
                                 <div class="media-body">
-                                    <p class="noti-details"><span class="noti-title">{{ $notification->data["creator_name"] }}</span> добавил Не прочитано задание <a href="#" onclick="openModal({{ $notification->data['task_id'] }})" id="noti-link">{{ $notification->data["name"] }}</a></p>
-                                    <p class="noti-time"><span class="notification-time">{{ time_elapsed_string($notification->created_at) }}</span></p>
-                                </div>
-                            </div>
-                        </li>
-                    @elseif ($notification->type == "App\Notifications\TaskSubmittedNotification")
-                        <li class="notification-message">
-                            <div class="notification-action">
-                                <form method="POST" action="{{ route('notification.read', $notification->id) }}">
-                                    <input type="hidden" name="_method" value="PUT">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="action-icon"><i class="fa fa-times" aria-hidden="true"></i></button>
-                                </form>
-                            </div>
-                            <div class="media">
-                                <span class="avatar">
-                                    <img alt="" src="{{ asset('assets/img/avatar.jpg') }}">
-                                </span>
-                                <div class="media-body">
-                                    <p class="noti-details"><span class="noti-title">{{ $notification->data["user_name"] }}</span> выполнил задание <a href="#" onclick="openModal({{ $notification->data['task_id'] }})" id="noti-link">{{ $notification->data["name"] }}</a>. Пожалуйста, проверьте это задание.</p>
-                                    <p class="noti-time"><span class="notification-time">{{ time_elapsed_string($notification->created_at) }}</span></p>
-                                </div>
-                            </div>
-                        </li>
-                    @elseif ($notification->type == "App\Notifications\CommentStoredNotification")
-                        <li class="notification-message">
-                            <div class="notification-action">
-                                <form method="POST" action="{{ route('notification.read', $notification->id) }}">
-                                    <input type="hidden" name="_method" value="PUT">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="action-icon"><i class="fa fa-times" aria-hidden="true"></i></button>
-                                </form>
-                            </div>
-                            <div class="media">
-                                <span class="avatar">
-                                    <img alt="" src="{{ asset('assets/img/avatar.jpg') }}">
-                                </span>
-                                <div class="media-body">
-                                    <p class="noti-details"><span class="noti-title">{{ $notification->data["user_name"] }}</span> написал комментарий к заданию <a href="#" onclick="openModal({{ $notification->data['task_id'] }})" id="noti-link">{{ $notification->data["name"] }}</a></p>
-                                    <p class="noti-time"><span class="notification-time">{{ time_elapsed_string($notification->created_at) }}</span></p>
-                                </div>
-                            </div>
-                        </li>
-                    @elseif ($notification->type == "App\Notifications\TaskConfirmedNotification")
-                        <li class="notification-message">
-                            <div class="notification-action">
-                                <form method="POST" action="{{ route('notification.read', $notification->id) }}">
-                                    <input type="hidden" name="_method" value="PUT">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="action-icon"><i class="fa fa-times" aria-hidden="true"></i></button>
-                                </form>
-                            </div>
-                            <div class="media">
-                                <span class="avatar">
-                                    <img alt="" src="{{ asset('assets/img/avatar.jpg') }}">
-                                </span>
-                                <div class="media-body">
-                                    <p class="noti-details"><span class="noti-title">{{ $notification->data["creator_name"] }}</span> принял ваше задание <a href="#" onclick="openModal({{ $notification->data['task_id'] }})" id="noti-link">{{ $notification->data["name"] }}</a></p>
-                                    <p class="noti-time"><span class="notification-time">{{ time_elapsed_string($notification->created_at) }}</span></p>
-                                </div>
-                            </div>
-                        </li>
-                    @elseif ($notification->type == "App\Notifications\TaskRejectedNotification")
-                        <li class="notification-message">
-                            <div class="notification-action">
-                                <form method="POST" action="{{ route('notification.read', $notification->id) }}">
-                                    <input type="hidden" name="_method" value="PUT">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button class="action-icon"><i class="fa fa-times" aria-hidden="true"></i></button>
-                                </form>
-                            </div>
-                            <div class="media">
-                                <span class="avatar">
-                                    <img alt="" src="{{ asset('assets/img/avatar.jpg') }}">
-                                </span>
-                                <div class="media-body">
-                                    <p class="noti-details"><span class="noti-title">{{ $notification->data["creator_name"] }}</span> отклонил вашего задания <a href="#" onclick="openModal({{ $notification->data['task_id'] }})" id="noti-link">{{ $notification->data["name"] }}</a></p>
+                                    <p class="noti-details">{!! $message !!} <a href="#" onclick="openModal({{ $data['task_id'] }})" id="noti-link">{{ $data['name'] }}</a>{{ $suffix }}</p>
                                     <p class="noti-time"><span class="notification-time">{{ time_elapsed_string($notification->created_at) }}</span></p>
                                 </div>
                             </div>

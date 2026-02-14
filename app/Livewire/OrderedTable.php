@@ -18,10 +18,17 @@ use Illuminate\Support\Str;
 class OrderedTable extends Component
 {
     public $task_score = null, $task_name, $deadline, $task_employee = [], $task_plan = 1;
+    public $sectors, $scoresGrouped;
 
     public $is_repeating = false;
-    public $repeat_type = "null";
+    public $repeat_type = null;
     public $repeat_day = null;
+
+    public function mount(): void
+    {
+        $this->sectors = Sector::with('users')->get();
+        $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
+    }
 
     #[On('task-updated')]
     public function refreshTasks(): void
@@ -130,11 +137,14 @@ class OrderedTable extends Component
         $this->dispatch('toastr:success', message: 'Тип задачи обновлен.');
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
-        $weeklyTasks = Task::with('user:id,name,sector_id,role_id')
+        $baseQuery = Task::with('user:id,name,sector_id,role_id')
             ->where('creator_id', Auth::id())
             ->where('status', '<>', 'Выполнено')
+            ->orderByRaw('COALESCE(extended_deadline, deadline)');
+
+        $weeklyTasks = (clone $baseQuery)
             ->where(function ($query) {
                 $query->where(function ($q) {
                     $q->whereNull('extended_deadline')->where('deadline', '<=', Carbon::now()->endOfWeek());
@@ -142,28 +152,18 @@ class OrderedTable extends Component
                     $q->whereNotNull('extended_deadline')->where('extended_deadline', '<=', Carbon::now()->endOfWeek());
                 });
             })
-            ->orderByRaw('COALESCE(extended_deadline, deadline)')
             ->get()
-            ->groupBy(function ($task) {
-                return $task->group_id ?: $task->id;
-            })
+            ->groupBy(fn ($task) => $task->group_id ?: $task->id)
             ->map->toArray();
 
-        $all_tasks = Task::with('user:id,name,sector_id,role_id')
-            ->where('creator_id', Auth::id())
-            ->where('status', '<>', 'Выполнено')
+        $all_tasks = (clone $baseQuery)
             ->whereNull('project_id')
-            ->orderByRaw('COALESCE(extended_deadline, deadline)')
             ->get()
-            ->groupBy(function ($task) {
-                return $task->group_id ?: $task->id;
-            })
+            ->groupBy(fn ($task) => $task->group_id ?: $task->id)
             ->map->toArray();
 
         return view('livewire.ordered-table', [
             'username' => Auth::user()->name,
-            'sectors' => Sector::with('users')->get(),
-            'scoresGrouped' => ['Категории' => (new TaskService())->scoresList()],
             'weeklyTasks' => $weeklyTasks,
             'all_tasks' => $all_tasks,
         ]);
@@ -205,6 +205,4 @@ class OrderedTable extends Component
 
         return null;
     }
-
-
 }

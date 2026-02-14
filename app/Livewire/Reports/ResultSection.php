@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Reports;
 
+use App\Models\User;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -13,14 +14,12 @@ class ResultSection extends Component
     public function updateFilters($param): void
     {
         $this->param = $param;
-        // $tasks = Task::whereBetween('created_at', [$param['start'], $param['end']])->get();
-        $this->users = User::with(['task', function($query){
+        $this->users = User::with(['tasks' => function ($query) {
             $query->whereBetween('created_at', [$this->param['start'], $this->param['end']]);
         }])->get();
-        dd($this->users);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.reports.result-section');
     }

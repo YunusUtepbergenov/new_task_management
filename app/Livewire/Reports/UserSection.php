@@ -18,9 +18,9 @@ class UserSection extends Component
     #[On('updateUsersList')]
     public function updateUsersList($id): void
     {
-        $sector = Sector::with('users')->where('id', $id)->first();
+        $sector = Sector::with('users')->find($id);
         $this->users = $sector->users->where('leave', 0);
-        $this->userId = Null;
+        $this->userId = null;
         $this->dispatch('updateSectorTasks', id: $sector->id);
     }
 
@@ -29,7 +29,7 @@ class UserSection extends Component
         $this->dispatch('updateUserId', id: $this->userId);
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.reports.user-section');
     }

@@ -86,55 +86,6 @@
                 </div>
 
                                 
-                {{-- <div class="form-group col-lg-2">
-                    <label><br>
-                        <input type="checkbox" wire:model.live="is_repeating">
-                        Повторяется?
-                    </label>
-                </div>
-
-                @if($is_repeating)
-                    <div class="form-group col-lg-2">
-                        <label>Частота</label>
-                        <select wire:model.live="repeat_type" class="form-control">
-                            <option value="null" disabled selected>Выберите</option>
-                            <option value="weekly">Еженедельно</option>
-                            <option value="monthly">Ежемесячно</option>
-                            <option value="quarterly">Ежеквартально</option>
-                        </select>
-                    </div>
-
-                    @if($repeat_type === 'weekly')
-                        <div class="form-group col-lg-2">
-                            <label>День недели</label>
-                            <select wire:model="repeat_day" class="form-control">
-                                <option value="" disabled selected>Выберите</option>
-                                <option value="1">Понедельник</option>
-                                <option value="2">Вторник</option>
-                                <option value="3">Среда</option>
-                                <option value="4">Четверг</option>
-                                <option value="5">Пятница</option>
-                                <option value="6">Суббота</option>
-                                <option value="7">Воскресенье</option>
-                            </select>
-                        </div>
-                    @elseif($repeat_type === 'monthly')
-                        <div class="form-group col-lg-2">
-                            <label>День месяца</label>
-                            <input type="number" min="1" max="31" wire:model="repeat_day" class="form-control">
-                        </div>
-                    @elseif($repeat_type === 'quarterly')
-                        <div class="form-group col-lg-2">
-                            <label>Дней после конца квартала</label>
-                            <input type="number" min="1" max="30" wire:model="repeat_day" class="form-control">
-                        </div>
-                    @endif
-                @endif
-
-                @error('repeat_day')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror    --}}
-
                 <div class="form-group col-lg-2 d-flex align-items-end">
                     <button class="btn btn-primary create-task-btn w-100">Создать Задачу</button>
                 </div>
@@ -143,20 +94,13 @@
         </div>
     </form>
 
-    @php
-        use Carbon\Carbon;
-
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
-    @endphp
-
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header"><strong>Задачи на неделю </strong>
                     <span class="italic">
-                        ({{ \Carbon\Carbon::parse($startOfWeek)->format('d M Y') }} -
-                        {{ \Carbon\Carbon::parse($endOfWeek)->endOfWeek()->format('d M Y') }})    
+                        ({{ \Carbon\Carbon::now()->startOfWeek()->format('d M Y') }} -
+                        {{ \Carbon\Carbon::now()->endOfWeek()->format('d M Y') }})
                     </span>
                 </div>
                 <div class="card-body">
@@ -229,31 +173,20 @@
     </div>
 </div>
 
-@push('scripts')
-    <script>
-        $(document).ready(function () {
-            $('#unplannedTasksCollapse').on('show.bs.collapse', function () {
-                $('#unplannedTasksChevron').removeClass('fa-chevron-right').addClass('fa-chevron-down');
-            });
-            $('#unplannedTasksCollapse').on('hide.bs.collapse', function () {
-                $('#unplannedTasksChevron').removeClass('fa-chevron-down').addClass('fa-chevron-right');
-            });
-        });
-
-        document.addEventListener('livewire:init', function () {
-            Livewire.on('toastr:success', (params) => {
-                toastr.options = {
-                    "closeButton" : true,
-                    "progressBar" : true
-                };
-                toastr.success(params.message);
-            });
-        });
-    </script>
-@endpush
-
 @script
     <script>
+        $('#unplannedTasksCollapse').on('show.bs.collapse', function () {
+            $('#unplannedTasksChevron').removeClass('fa-chevron-right').addClass('fa-chevron-down');
+        });
+        $('#unplannedTasksCollapse').on('hide.bs.collapse', function () {
+            $('#unplannedTasksChevron').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+        });
+
+        Livewire.on('toastr:success', (params) => {
+            toastr.options = { "closeButton": true, "progressBar": true };
+            toastr.success(params.message);
+        });
+
         const $taskScore = $('#task_score');
         if ($taskScore.length) {
             $taskScore.select2();

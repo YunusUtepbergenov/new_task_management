@@ -13,7 +13,7 @@
         <div class="col-sm-4 col-md-2">
             <label>До</label>
             <div class="form-group cal-icon">
-                <input class="form-control datetimepicker" id="endDate" name="endDate" name="endDate" wire:model="endDate">
+                <input class="form-control datetimepicker" id="endDate" name="endDate" wire:model="endDate">
             </div>
         </div>
         <div class="col-sm-4 col-md-5">
@@ -66,7 +66,6 @@
                                             <a href="{{ route('user.report', [$employee->id, $startDate, $endDate]) }}">{{ $employee->name }}</a>
                                         </h2>
                                     </td>
-                                    {{-- <td class="text-wrap">{{ $employee->sector->name }}</td> --}}
                                     <td style="text-align: center">{{ $employee->efficiency }}%</td>
                                     <td style="text-align: center">{{$employee->tasks_cnt}}</td>
                                     <td style="text-align: center">{{$employee->done_cnt}}</td>

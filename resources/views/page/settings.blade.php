@@ -8,26 +8,6 @@
 	<!-- Page Content -->
 	<div class="content container-fluid">
         <div class="row">
-            {{-- <div class="offset-lg-1 col-md-3 settings_page">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title mb-0">Настройки</h4>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="account-settings">
-                            <div class="user-profile">
-                                <div class="user-avatar">
-                                    <img src="{{ (Auth::user()->avatar) ? asset('user_image/'.Auth::user()->avatar) : asset('user_image/avatar.jpg') }}" class="user_image">
-                                </div>
-                                <input type="file" name="avatar_img" id="avatar_img" style="opacity: 0; height:1px; display:none">
-                                <a href="javascript:void(0)" class="btn btn-primary" id="change_picture_btn">Cменить картинку</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
-
             <div class="offset-md-1 col-md-10 settings_page">
                 <div class="card">
                     <div class="card-header">
@@ -107,10 +87,6 @@
           buttonsColor:['#30bf7d','#ee5155', -15],
           processUrl:'{{ route("profile.change") }}',
           withCSRF:['_token','{{ csrf_token() }}'],
-          onSuccess:function(message, element, status){
-            console.log(message);
-            //  alert(message);
-          },
           onError:function(message, element, status){
             alert(message);
           }

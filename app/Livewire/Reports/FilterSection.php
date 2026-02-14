@@ -10,87 +10,57 @@ class FilterSection extends Component
     public $startDate, $endDate, $sectors;
     public $sortColumnName = "tasks_cnt", $sortDirection = "desc";
 
-    public function mount(){
+    public function mount(): void
+    {
         $this->startDate = date('Y-m-01');
         $this->endDate = date('Y-m-t');
     }
 
-    public function sortBy($columnName){
-        if($this->sortColumnName === $columnName){
-            $this->sortDirection = $this->swapSortDirection();
-        }else{
+    public function sortBy($columnName): void
+    {
+        if ($this->sortColumnName === $columnName) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
             $this->sortDirection = 'desc';
         }
         $this->sortColumnName = $columnName;
     }
 
-    public function swapSortDirection(){
-        return $this->sortDirection === 'asc' ? 'desc' : 'asc';
-    }
-
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
-
-        // $this->users = User::with('tasks')->where('leave', 0)->get();
-        $this->sectors = Sector::with(['users' => function($query){
-            $query->orderBy('role_id');
+        $this->sectors = Sector::with(['users' => function ($query) {
+            $query->where('leave', 0)->orderBy('role_id');
+        }, 'users.tasks' => function ($query) {
+            $query->whereBetween('deadline', [$this->startDate, $this->endDate]);
         }])->get();
 
-        foreach($this->sectors as $sector){
-            foreach($sector->users as $employee){
-            $employee->tasks_cnt =  $employee->filterTasks($this->startDate, $this->endDate)->count();
-            if($employee->tasks_cnt != 0){
-                $employee->efficiency = round( ((1 - ( $employee->overdueFilter($this->startDate, $this->endDate)->count()
-                + (0.5 * $employee->newFilter($this->startDate, $this->endDate)->count()) ) / $employee->filterTasks($this->startDate, $this->endDate)->count() )) * 100, 1);
-            $employee->done_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Выполнено')->where('overdue', 0)->count();
-            $employee->new_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Не прочитано')->where('overdue', 0)->count();
-            $employee->doing_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Выполняется')->where('overdue', 0)->count();            
-            $employee->overdue_cnt = $employee->overdueFilter($this->startDate, $this->endDate)->count();
-            $employee->confirm_cnt = $employee->confirmFilter($this->startDate, $this->endDate)->count();
-            }else{
-                $employee->efficiency = 0;
-                $employee->done_cnt = 0;
-                $employee->new_cnt = 0;
-                $employee->doing_cnt = 0;
-                $employee->overdue_cnt = 0;
-                $employee->confirm_cnt = 0;
+        foreach ($this->sectors as $sector) {
+            foreach ($sector->users as $employee) {
+                $tasks = $employee->tasks;
+                $employee->tasks_cnt = $tasks->count();
+
+                if ($employee->tasks_cnt > 0) {
+                    $overdueCnt = $tasks->where('overdue', 1)->count();
+                    $newCnt = $tasks->where('status', 'Не прочитано')->where('overdue', 0)->count();
+
+                    $employee->efficiency = round(((1 - ($overdueCnt + (0.5 * $newCnt)) / $employee->tasks_cnt)) * 100, 1);
+                    $employee->done_cnt = $tasks->where('status', 'Выполнено')->where('overdue', 0)->count();
+                    $employee->new_cnt = $newCnt;
+                    $employee->doing_cnt = $tasks->where('status', 'Выполняется')->where('overdue', 0)->count();
+                    $employee->overdue_cnt = $overdueCnt;
+                    $employee->confirm_cnt = $tasks->where('status', 'Ждет подтверждения')->count();
+                } else {
+                    $employee->efficiency = 0;
+                    $employee->done_cnt = 0;
+                    $employee->new_cnt = 0;
+                    $employee->doing_cnt = 0;
+                    $employee->overdue_cnt = 0;
+                    $employee->confirm_cnt = 0;
+                }
+
+                $employee->sector_name = $sector->name;
             }
-            $employee->sector_name = $employee->sector->name; 
         }
-        }
-
-        // $this->sectors->users = $this->sectors->users->sortBy([[$this->sortColumnName, $this->sortDirection]]);
-
-
-
-
-
-
-
-
-        // $this->users = User::with('tasks')->where('leave', 0)->get();
-        // foreach($this->users as $employee){
-        //     $employee->tasks_cnt =  $employee->filterTasks($this->startDate, $this->endDate)->count();
-        //     if($employee->tasks_cnt != 0){
-        //         $employee->efficiency = round( ((1 - ( $employee->overdueFilter($this->startDate, $this->endDate)->count()
-        //         + (0.5 * $employee->newFilter($this->startDate, $this->endDate)->count()) ) / $employee->filterTasks($this->startDate, $this->endDate)->count() )) * 100, 1);
-        //     $employee->done_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Выполнено')->where('overdue', 0)->count();
-        //     $employee->new_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Не прочитано')->where('overdue', 0)->count();
-        //     $employee->doing_cnt = $employee->tasks->whereBetween('deadline', [$this->startDate, $this->endDate])->where('status', 'Выполняется')->where('overdue', 0)->count();            
-        //     $employee->overdue_cnt = $employee->overdueFilter($this->startDate, $this->endDate)->count();
-        //     $employee->confirm_cnt = $employee->confirmFilter($this->startDate, $this->endDate)->count();
-        //     }else{
-        //         $employee->efficiency = 0;
-        //         $employee->done_cnt = 0;
-        //         $employee->new_cnt = 0;
-        //         $employee->doing_cnt = 0;
-        //         $employee->overdue_cnt = 0;
-        //         $employee->confirm_cnt = 0;
-        //     }
-        //     $employee->sector_name = $employee->sector->name; 
-        // }
-
-        // $this->users = $this->users->sortBy([[$this->sortColumnName, $this->sortDirection]]);
 
         return view('livewire.reports.filter-section');
     }

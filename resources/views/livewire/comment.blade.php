@@ -38,9 +38,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    Livewire.on('commentStored', message => {
-        alert('A post was added with the id of: ' + message);
-    });
-</script>
