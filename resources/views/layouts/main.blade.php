@@ -174,29 +174,29 @@
         </button>
 
 		<!-- jQuery -->
-        <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}" data-navigate-once></script>
 		<!-- Bootstrap Core JS -->
-        <script src="{{ asset('assets/js/popper.min.js') }}"></script>
-        <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('assets/js/popper.min.js') }}" data-navigate-once></script>
+        <script src="{{ asset('assets/js/bootstrap.min.js') }}" data-navigate-once></script>
 		<!-- Slimscroll JS -->
-		<script src="{{ asset('assets/js/jquery.slimscroll.min.js') }}"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/js/bootstrap-multiselect.min.js" integrity="sha512-fp+kGodOXYBIPyIXInWgdH2vTMiOfbLC9YqwEHslkUxc8JLI7eBL2UQ8/HbB5YehvynU3gA3klc84rAQcTQvXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="{{ asset('assets/js/jquery.slimscroll.min.js') }}" data-navigate-once></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/js/bootstrap-multiselect.min.js" integrity="sha512-fp+kGodOXYBIPyIXInWgdH2vTMiOfbLC9YqwEHslkUxc8JLI7eBL2UQ8/HbB5YehvynU3gA3klc84rAQcTQvXA==" crossorigin="anonymous" referrerpolicy="no-referrer" data-navigate-once></script>
 		<!-- Select2 JS -->
-		<script src="{{ asset('assets/js/select2.min.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="{{ asset('assets/js/select2.min.js') }}" data-navigate-once></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer" data-navigate-once></script>
 		<!-- Datetimepicker JS -->
-		<script src="{{ asset('assets/js/moment.min.js') }}"></script>
-        <script src="{{ asset('js/bootstrap-colorselector.min.js') }}"></script>
-		<script src="{{ asset('assets/js/bootstrap-datetimepicker.min.js') }}"></script>
+		<script src="{{ asset('assets/js/moment.min.js') }}" data-navigate-once></script>
+        <script src="{{ asset('js/bootstrap-colorselector.min.js') }}" data-navigate-once></script>
+		<script src="{{ asset('assets/js/bootstrap-datetimepicker.min.js') }}" data-navigate-once></script>
 		<!-- DataTables JS -->
-		<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
-		<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}"></script>
-		<script src="{{ asset('assets/js/ddtf.js') }}"></script>
+		<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}" data-navigate-once></script>
+		<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}" data-navigate-once></script>
+		<script src="{{ asset('assets/js/ddtf.js') }}" data-navigate-once></script>
 		<!-- Custom JS -->
 		<script src="{{ asset('assets/js/app.js') }}"></script>
         @yield('scripts')
         @stack('scripts')
-        <script src="{{ asset('js/app.js') }}"></script>
+        <script src="{{ asset('js/app.js') }}" data-navigate-once></script>
 		<script type="text/javascript">
             if (!window._layoutInitialized) {
                 window._layoutInitialized = true;
