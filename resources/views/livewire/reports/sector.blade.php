@@ -11,7 +11,7 @@
                 @foreach ($sectors as $sector)
                     <div class="col-lg-7" style="margin-top: 10px;">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sectorId" wire:model="sect"  value="{{ $sector->id }}" id="flexRadioDefault{{ $sector->id }}">
+                            <input class="form-check-input" type="radio" name="sectorId" wire:model.live="sect"  value="{{ $sector->id }}" id="flexRadioDefault{{ $sector->id }}">
 
                             <label class="form-check-label" for="flexRadioDefault{{ $sector->id }}">
                                 {{ $sector->name }}

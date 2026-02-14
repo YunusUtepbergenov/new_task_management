@@ -1,343 +1,318 @@
 <div>
     @if ($task)
         <div id="view_task" class="modal custom-modal fade" role="dialog" wire:ignore.self>
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document" style="max-width: 820px;">
                 <div class="modal-content">
-                    <div class="modal-header" id="left_header">
-                        <h5 class="modal-title" id="task_title">{{ $task->name }}</h5>
+
+                    {{-- Header --}}
+                    <div class="vm-header">
+                        <div class="vm-header-left">
+                            <span class="vm-header-icon"><i class="fa fa-file-text-o"></i></span>
+                            <h5 class="vm-header-title">{{ $task->name }}</h5>
+                        </div>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-lg-8 col-xl-9">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4 class="card-title mb-0">Прикрепленный файлы</h4>
+
+                    <div class="modal-body" style="padding: 0;">
+
+                        {{-- Meta Row 1: Dates --}}
+                        <div class="vm-meta-row">
+                            <div class="vm-meta-field">
+                                <span class="vm-meta-label">НАЧАЛО</span>
+                                <span class="vm-meta-value">{{ $task->created_at->format('d.m.Y') }}</span>
+                            </div>
+                            <div class="vm-meta-field">
+                                <span class="vm-meta-label">СРОК</span>
+                                <span class="vm-meta-value">{{ \Carbon\Carbon::parse($task->deadline)->format('d.m.Y') }}</span>
+                            </div>
+                            <div class="vm-meta-field">
+                                <span class="vm-meta-label">ВРЕМЯ ВЫПОЛНЕНИЯ</span>
+                                <span class="vm-meta-value">
+                                    @if ($task->response)
+                                        {{ $task->response->created_at->format('d.m.Y') }}
+                                    @else
+                                        —
+                                    @endif
+                                </span>
+                            </div>
+                            @isset($task->extended_deadline)
+                                <div class="vm-meta-field">
+                                    <span class="vm-meta-label">ПРОДЛЕНИЕ</span>
+                                    <span class="vm-meta-value">{{ \Carbon\Carbon::parse($task->extended_deadline)->format('d.m.Y') }}</span>
+                                </div>
+                            @endisset
+                        </div>
+
+                        {{-- Meta Row 2: Creator / Status / Category --}}
+                        <div class="vm-meta-row vm-meta-row--bordered">
+                            <div class="vm-meta-field">
+                                <span class="vm-meta-label">ПОСТАНОВЩИК</span>
+                                <span class="vm-meta-value">{{ $task->creator->short_name }}</span>
+                            </div>
+                            <div class="vm-meta-field">
+                                <span class="vm-meta-label">СОСТОЯНИЕ</span>
+                                <span class="vm-meta-value">
+                                    @if ($task->overdue)
+                                        <span class="badge bg-inverse-warning">Просроченный</span>
+                                    @else
+                                        <span class="badge bg-inverse-{{ ($task->status == 'Не прочитано') ? 'success' : (($task->status == 'Выполняется') ? 'primary' : (($task->status == 'Ждет подтверждения') ? 'danger' : (($task->status == 'Выполнено') ? 'purple' : 'warning'))) }}">{{ $task->status }}</span>
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="vm-meta-field">
+                                <span class="vm-meta-label">КАТЕГОРИЯ</span>
+                                <span class="vm-meta-value">{{ ($task->score) ? $task->score->name : '—' }}</span>
+                            </div>
+                            @if ($task->status == 'Выполнено' && isset($task->score))
+                                <div class="vm-meta-field">
+                                    <span class="vm-meta-label">БАЛЛ</span>
+                                    <span class="vm-meta-value">{{ $task->total }}/{{ $task->score->max_score }}</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Task Files --}}
+                        @if ($task->files->count())
+                            <div class="vm-section">
+                                <div class="vm-section-header">
+                                    <i class="fa fa-paperclip"></i>
+                                    <span class="vm-section-title">Прикрепленные файлы</span>
+                                </div>
+                                <div class="d-flex flex-wrap" style="gap: 8px;">
+                                    @foreach ($task->files as $file)
+                                        <a href="{{ route('file.download', $file->id) }}" class="vm-file-chip">
+                                            <i class="fa fa-file-o"></i> {{ $file->name }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Response Form (no response yet & current user is assignee) --}}
+                        @if (!$task->response && $task->user_id == Auth::user()->id)
+                            <div class="vm-section">
+                                <div class="vm-section-header">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                    <span class="vm-section-title">Завершить задачу</span>
+                                </div>
+                                <div class="vm-response-row">
+                                    <div class="vm-response-col">
+                                        <textarea class="form-control vm-response-input" wire:model.live.blur="description" placeholder="Опишите выполненную работу..."></textarea>
+                                        @error('description')
+                                            <div class="text-danger mt-1" style="font-size: 13px;">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            @forelse ($task->files as $file)
-                                            <div class="col-md-3 col-sm-4 col-lg-4 col-xl-3">
-                                                    <div class="uploaded-box">
-                                                        <div class="files-cont">
-                                                            <div class="file-type">
-                                                                <span class="files-icon"><i class="fa fa-file-pdf-o"></i></span>
-                                                            </div>
-                                                            <div class="files-info">
-                                                                <span class="file-name text-ellipsis"><a href="{{ route('file.download', $file->id)}}">{{ $file->name }}</a></span>
-                                                                <span class="file-date">{{ $file->created_at->format('Y-m-d') }}</span>
-                                                            </div>
-                                                        </div>
+                                    <div class="vm-response-col"
+                                         x-data="{ dragging: false }"
+                                         x-on:dragover.prevent="dragging = true"
+                                         x-on:dragleave.prevent="dragging = false"
+                                         x-on:drop.prevent="dragging = false; $refs.fileInput.files = $event.dataTransfer.files; $refs.fileInput.dispatchEvent(new Event('change'));">
+                                        <div class="vm-dropzone" :class="{ 'vm-dropzone--active': dragging }" x-on:click="$refs.fileInput.click()">
+                                            <input type="file" wire:model="upload" class="vm-dropzone-input" x-ref="fileInput">
+                                            <div class="vm-dropzone-content" wire:loading.remove wire:target="upload">
+                                                @if ($upload)
+                                                    <div class="vm-uploaded-file">
+                                                        <i class="fa fa-check-circle" style="color: #22c55e; font-size: 18px; flex-shrink: 0;"></i>
+                                                        <span>{{ Str::limit($upload->getClientOriginalName(), 15) }}</span>
+                                                        <button type="button" class="vm-upload-remove" wire:click.stop="$set('upload', null)" title="Удалить файл">
+                                                            <i class="fa fa-times"></i>
+                                                        </button>
                                                     </div>
+                                                @else
+                                                    <i class="fa fa-cloud-upload vm-dropzone-icon"></i>
+                                                    <span class="vm-dropzone-text">Нажмите или перетащите файл</span>
+                                                    <span class="vm-dropzone-hint">PDF, DOC, XLS, JPG до 500 МБ</span>
+                                                @endif
+                                            </div>
+                                            <div wire:loading wire:target="upload" style="width: 100%;">
+                                                <div class="vm-upload-progress">
+                                                    <div class="vm-progress-bar">
+                                                        <div class="vm-progress-bar-fill"></div>
+                                                    </div>
+                                                    <span style="font-size: 12px; color: var(--text-secondary);">Загрузка файла...</span>
                                                 </div>
-                                            @empty
-                                                <p style="margin-left: 15px">Файлов нет</p>
-                                            @endforelse
+                                            </div>
                                         </div>
+                                        @error('upload')
+                                            <div class="text-danger mt-1" style="font-size: 13px;">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
+                            </div>
+                        @endif
 
-                                @if (!$task->response && $task->user_id == Auth::user()->id)
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4 class="card-title mb-0">Завершить задачу</h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <form wire:submit.prevent="storeResponse" method="POST" enctype="multipart/form-data">
-                                                    @csrf
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-1 col-form-label">Текст</label>
-                                                        <div class="col-sm-11">
-                                                            <textarea rows="3" cols="5" class="form-control" wire:model.lazy="description" name="description" placeholder="Введите текст"></textarea>
-                                                        </div>
-                                                        @error('description')
-                                                            <div class="col-sm-12 m-t-10">
-                                                                <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
-                                                            </div>
-                                                        @enderror
-                                                    </div>
-                                                    <input type="hidden" name="task_id" value="{{ $task->id }}">
-                                                    <div class="form-group row">
-                                                        <label class="col-lg-1 col-form-label">Файл</label>
-                                                        <div class="col-lg-11">
-                                                            @error('upload')
-                                                                <div class="alert alert-danger" style="margin-bottom: 10px">{{ $message }}</div>
-                                                            @enderror
-                                                            <input class="form-control" wire:model="upload" type="file">
-                                                            <div wire:loading wire:target="upload">
-                                                                <div class="loading">Loading&#8230;</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="text-right">
-                                                        <button type="submit" class="btn btn-primary">Завершить</button>
-                                                    </div>
-                                                </form>
+                        {{-- Completed Response --}}
+                        @if ($task->response)
+                            <div class="vm-section">
+                                <div class="vm-section-header">
+                                    <i class="fa fa-check-circle" style="color: #22c55e;"></i>
+                                    <span class="vm-section-title">Завершенная задача</span>
+                                </div>
+                                <p class="vm-response-text">{{ $task->response->description }}</p>
+                                @if($task->response->filename)
+                                    <div class="vm-file-card">
+                                        <div class="vm-file-card-left">
+                                            <div class="vm-file-card-icon"><i class="fa fa-file-pdf-o"></i></div>
+                                            <div>
+                                                <div class="vm-file-card-name">{{ $task->response->filename }}</div>
+                                                <div class="vm-file-card-meta">{{ $task->response->created_at->format('d.m.Y H:i') }}</div>
                                             </div>
                                         </div>
-                                @elseif ($task->response)
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h4 class="card-title mb-0">Завершенная задача</h4>
-                                        </div>
-                                        <div class="card-body">
-                                            <p>{{ $task->response->description }}</p>
-                                            @if($task->response->filename)
-                                                <ul class="files-list">
-                                                    <li>
-                                                        <div class="files-cont">
-                                                            <div class="file-type">
-                                                                <span class="files-icon"><i class="fa fa-file-pdf-o"></i></span>
-                                                            </div>
-                                                            <div class="files-info">
-                                                                <span class="file-name text-ellipsis"><a href="{{ route('response.download', $task->response->filename) }}">{{ $task->response->filename }}</a></span>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            @endif
-
-                                        </div>
+                                        <a href="{{ route('response.download', $task->response->filename) }}" class="vm-file-card-download">
+                                            <i class="fa fa-download"></i>
+                                        </a>
                                     </div>
                                 @endif
-                                <div class="project-task">
-                                    <ul class="nav nav-tabs nav-tabs-top nav-justified mb-0">
-                                        <li class="nav-item"><a class="nav-link active" href="#comments" data-toggle="tab" aria-expanded="true">Комментарии</a></li>
-                                    </ul>
-                                    <div class="tab-content">
-                                        <div class="tab-pane show active" id="comments">
-                                            <div class="task-wrapper">
-                                                <div class="task-list-container">
-                                                    <div class="task-list-body">
-                                                        <div class="card">
-                                                            <div class="card-body">
-                                                                <div class="form-group">
-                                                                    <form wire:submit.prevent="storeComment({{ $task->id }})" method="POST">
-                                                                        @csrf
-                                                                        <div class="form-group">
-                                                                            <textarea class="form-control" wire:model.defer="comment" rows="2" name="comment" id="comment_textarea" placeholder="Введите комментарий" required></textarea>
-                                                                        </div>
-                                                                        <button class="btn btn-primary" wire:click="$refresh" style="float: right;">Отправить</button>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-12" id="comment-section">
-                                                                @foreach ($comments as $cmt)
-                                                                    <div class="card withoutBorder">
-                                                                        <div class="d-flex justify-content-between align-items-center">
-                                                                            <div class="user d-flex flex-row align-items-center">
-                                                                                <img src="{{ ($cmt->user->avatar) ? asset('user_image/'.$cmt->user->avatar) : asset('user_image/avatar.jpg') }}" width="30" class="user-img rounded-circle mr-2">
-                                                                                <span>
-                                                                                    <small class="font-weight-bold text-secondary" style="font-size: 14px">{{ $cmt->user->name }}</small>
-                                                                                    <small class="font-weight-bold" style="font-size: 13px; margin-left: 8px;">{{ $cmt->comment }}</small>
-                                                                                </span>
-                                                                            </div>
-                                                                            <small style="margin-right: 10px;">{{ $cmt->created_at }}</small>
-                                                                        </div>
-                                                                        @if ($cmt->user->id == auth()->user()->id)
-                                                                            <div class="user d-flex flex-row align-items-center" style="margin-left: 50px">
-                                                                                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                                                                                    <div class="btn-group" role="group" aria-label="Second group">
-                                                                                        <form action="#" method="post">
-                                                                                            <input type="hidden" name="_method" value="DELETE">
-                                                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                                                            <button type="button" wire:click.prevent="deleteComment({{ $cmt->id }})" class="btn btn-primary search_btn btn-sm" style="line-height: 1">Удалить</button>
-                                                                                        </form>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        @endif
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                            </div>
+                        @endif
+
+                        {{-- Responsible Users --}}
+                        <div class="vm-section">
+                            <div class="vm-section-header">
+                                <i class="fa fa-users"></i>
+                                <span class="vm-section-title">Ответственные</span>
+                            </div>
+                            <div class="vm-users-row">
+                                @forelse ($coTasks as $ct)
+                                    <div class="vm-user-card">
+                                        <img class="vm-user-avatar" src="{{ ($ct->user->avatar) ? asset('user_image/'.$ct->user->avatar) : asset('user_image/avatar.jpg') }}" alt="">
+                                        <div class="vm-user-info">
+                                            <span class="vm-user-name">{{ $ct->user->short_name }}</span>
+                                            <span class="vm-user-role">{{ $ct->user->role->name }}</span>
+                                        </div>
+                                        @if ($task->status == 'Выполнено' && isset($ct->score))
+                                            <span class="vm-user-role" style="margin-left: auto; font-weight: 600;">{{ $ct->total }}/{{ $ct->score->max_score }}</span>
+                                        @endif
+                                        @can('evaluate', $task)
+                                            @if ($task->status == 'Ждет подтверждения' && $task->group_id && isset($ct->score))
+                                                <div class="vm-score-wrap" x-data="{ scoreErr: '' }">
+                                                    <label style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Оценка (Макс: {{ $ct->score->max_score }})</label>
+                                                    <input type="number"
+                                                        class="vm-score-input"
+                                                        wire:model="groupScores.{{ $ct->id }}"
+                                                        placeholder="0"
+                                                        min="{{ $ct->score->min_score }}"
+                                                        max="{{ $ct->score->max_score }}"
+                                                        x-on:input="scoreErr = (parseFloat($event.target.value) > {{ $ct->score->max_score }} || parseFloat($event.target.value) < {{ $ct->score->min_score }}) ? 'от {{ $ct->score->min_score }} до {{ $ct->score->max_score }}' : ''">
+                                                    <span class="vm-score-error" x-show="scoreErr" x-text="scoreErr" x-cloak></span>
+                                                </div>
+                                            @endif
+                                        @endcan
+                                    </div>
+                                @empty
+                                    <div class="vm-user-card">
+                                        <img class="vm-user-avatar" src="{{ ($task->user->avatar) ? asset('user_image/'.$task->user->avatar) : asset('user_image/avatar.jpg') }}" alt="">
+                                        <div class="vm-user-info">
+                                            <span class="vm-user-name">{{ $task->user->short_name }}</span>
+                                            <span class="vm-user-role">{{ $task->user->role->name }}</span>
+                                        </div>
+                                        {{-- Single task score input --}}
+                                        @can('evaluate', $task)
+                                            @if ($task->status == 'Ждет подтверждения' && !$task->group_id && isset($task->score))
+                                                <div class="vm-score-wrap" x-data="{ scoreErr: '' }" style="margin-left: auto;">
+                                                    <label style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Оценка (Макс: {{ $task->score->max_score }})</label>
+                                                    <input type="number" class="vm-score-input"
+                                                        wire:model="taskScore"
+                                                        placeholder="0"
+                                                        min="{{ $task->score->min_score }}"
+                                                        max="{{ $task->score->max_score }}"
+                                                        x-on:input="scoreErr = (parseFloat($event.target.value) > {{ $task->score->max_score }} || parseFloat($event.target.value) < {{ $task->score->min_score }}) ? 'от {{ $task->score->min_score }} до {{ $task->score->max_score }}' : ''">
+                                                    <span class="vm-score-error" x-show="scoreErr" x-text="scoreErr" x-cloak></span>
+                                                </div>
+                                            @endif
+                                        @endcan
+                                    </div>
+                                @endforelse
+                            </div>
+
+                            @isset($errorMsg)
+                                <div class="text-danger mt-2" style="font-size: 13px;">{{ $errorMsg }}</div>
+                            @endisset
+                        </div>
+
+                        {{-- Comments --}}
+                        <div class="vm-comments-section vm-section">
+                            <div class="vm-section-header">
+                                <i class="fa fa-comments-o"></i>
+                                <span class="vm-section-title">Комментарии</span>
+                                <span class="vm-comment-count">{{ $comments->count() }}</span>
+                            </div>
+
+                            {{-- Comment Form --}}
+                            <div class="vm-comment-form" x-data>
+                                <div class="vm-comment-input-wrap">
+                                    <textarea class="form-control vm-comment-input" wire:model="comment" rows="2" placeholder="Напишите комментарий..."
+                                        x-ref="commentInput"
+                                        x-on:keydown.enter.prevent="if (!$event.shiftKey) { $wire.storeComment({{ $task->id }}) }"
+                                        x-on:comment-added.window="$el.value = ''"></textarea>
+                                    <button type="button" class="vm-comment-send-btn" wire:click="storeComment({{ $task->id }})">
+                                        <i class="fa fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- Chat Messages --}}
+                            <div class="vm-chat" id="vm-chat-container">
+                                @foreach ($comments as $cmt)
+                                    @if ($cmt->user->id == auth()->user()->id)
+                                        {{-- Current user: right-aligned blue --}}
+                                        <div class="vm-chat-msg vm-chat-msg--mine">
+                                            <div>
+                                                <div class="vm-chat-meta vm-chat-meta--right">
+                                                    <span class="vm-chat-time">{{ $cmt->created_at->format('d.m.Y H:i') }}</span>
+                                                    <span class="vm-chat-name">{{ $cmt->user->short_name }}</span>
+                                                </div>
+                                                <div class="vm-chat-bubble vm-chat-bubble--blue">
+                                                    {{ $cmt->comment }}
+                                                    <button type="button" wire:click.prevent="deleteComment({{ $cmt->id }})" class="vm-chat-delete" title="Удалить">
+                                                        <i class="fa fa-times"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-xl-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h6 class="card-title m-b-15">Сведения о задаче</h6>
-                                        <table class="table table-striped table-border">
-                                            <tbody>
-                                                <tr>
-                                                    <td>Начало:</td>
-                                                    <td class="text-right" id="task_created">{{ $task->created_at->format('Y-m-d') }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Срок:</td>
-                                                    <td class="text-right" id="task_deadline">{{ $task->deadline }}</td>
-                                                </tr>
-                                                @isset($task->extended_deadline)
-                                                    <tr>
-                                                        <td>Продление:</td>
-                                                        <td class="text-right" id="task_extended_deadline">{{ $task->extended_deadline }}</td>
-                                                    </tr>
-                                                @endisset
-                                                <tr>
-                                                    <td>Категория:</td>
-                                                    <td class="text-right" id="task_type">{{ ($task->score) ? $task->score->name : '' }}</td>
-                                                </tr>
-
-                                                <tr>
-                                                    <td>Постановщик:</td>
-                                                    <td class="text-right"><a href="#" id="task_creator">{{ $task->username($task->creator_id) }}</a></td>
-                                                </tr>
-
-                                                <tr>
-                                                    <td>Состояние:</td>
-                                                    <td>
-                                                        @if ($task->overdue)
-                                                            <span class="badge bg-inverse-warning" style="float: right">Просроченный</span>
-                                                        @else
-                                                            <span class="badge bg-inverse-{{ ($task->status == "Не прочитано") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}" style="float:right" >{{ $task->status }}</span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                                
-                                                @if ($task->status == "Выполнено")
-                                                    <tr>
-                                                        <td>Балл:</td>
-                                                        @isset($task->score)
-                                                            <td class="text-right">{{$task->total}}/{{$task->score->max_score}}</td>                                                        
-                                                        @endisset
-                                                    </tr>                                                    
-                                                @endif
-                                                
-                                                @if ($task->response)
-                                                    <tr>
-                                                        <td>Время выполнения:</td>
-                                                        <td class="text-right" id="task_deadline">{{ $task->response->created_at->format('Y-m-d') }}</td>
-                                                    </tr>
-                                                @endif
-
-                                                @can('evaluate', $task)
-                                                    @if ($task->status == "Ждет подтверждения")
-                                                        <tr>
-                                                            <td>Действия: (Макс: {{ $task->score->max_score }})</td>
-                                                            <td class="nowrap">
-                                                                <div class="row">
-                                                                    @isset($task->score)
-                                                                        <div class="form-group">
-                                                                            {{-- <input type="number" class="form-control" wire:model="taskScore" id="taskScore" placeholder="Макс: {{$task->score->max_score}}" onkeydown="return event.key !== ',' && event.key !== 'e' && event.key !== 'E'" oninput="this.value = this.value.replace(/[^0-9-]/g, '')"> --}}
-
-                                                                            @if ($task->group_id)
-                                                                                @foreach ($coTasks as $t)
-                                                                                    <div class="form-group">
-                                                                                        <label>{{ $t->user->name }}</label>
-                                                                                        <input type="number"
-                                                                                            class="form-control"
-                                                                                            wire:model.defer="groupScores.{{ $t->id }}"
-                                                                                            placeholder="Оценка"
-                                                                                            min="{{ $t->score->min_score }}"
-                                                                                            max="{{ $t->score->max_score }}"
-                                                                                            onkeydown="return event.key !== ',' && event.key !== 'e' && event.key !== 'E'"
-                                                                                            oninput="this.value = this.value.replace(/[^0-9-]/g, '')">
-                                                                                    </div>
-                                                                                @endforeach
-                                                                            @else
-                                                                                <div class="form-group">
-                                                                                    <input type="number" class="form-control" wire:model="taskScore"
-                                                                                        placeholder="Макс: {{$task->score->max_score}}"
-                                                                                        onkeydown="return event.key !== ',' && event.key !== 'e' && event.key !== 'E'"
-                                                                                        oninput="this.value = this.value.replace(/[^0-9-]/g, '')">
-                                                                                </div>
-                                                                            @endif
-
-                                                                            @isset($errorMsg)
-                                                                                <div class="invalid-feedback" style="display: block;">
-                                                                                    {{ $errorMsg }}
-                                                                                </div>
-                                                                            @endisset
-                                                                        </div>                                                                      
-                                                                    @endisset
-                                                                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" style="flex-wrap:initial">
-                                                                        <div class="btn-group mr-2" role="group" aria-label="First group">
-                                                                            <button class="btn btn-primary btn-sm" wire:click="taskConfirmed({{ $task->id }})">Подтвердить</button>
-                                                                        </div>
-                                                                        <div class="btn-group mr-2" role="group" aria-label="Second group">
-                                                                            <form action="#" method="post">
-                                                                                <input type="hidden" name="_method" value="DELETE">
-                                                                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                                                <button class="btn btn-secondary btn-sm" wire:click.prevent="taskRejected({{ $task->id }})">Отменить</button>
-                                                                            </form>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endif
-                                                @endcan
-                                                @if ($task->deadline >= date('Y-m-d') && $task->user_id == auth()->user()->id && $task->status == "Ждет подтверждения")
-                                                    <tr>
-                                                        <td>Действия:</td>
-                                                        <td class="nowrap">
-                                                            <div class="row">
-                                                                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                                                                    <div class="btn-group mr-2" role="group" aria-label="Second group">
-                                                                        <form action="#" method="post">
-                                                                            <input type="hidden" name="_method" value="DELETE">
-                                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                                            <button class="btn btn-secondary btn-sm" wire:click.prevent="reSubmit({{ $task->id }})">Отменить</button>
-                                                                        </form>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="card project-user">
-                                    <div class="card-body">
-                                        <h6 class="card-title m-b-20">Ответственный</h6>
-                                        <ul class="list-box">
-                                            @forelse ($coTasks as $task)
-                                                <li>
-                                                    <a href="#">
-                                                        <div class="list-item">
-                                                            <div class="list-left">
-                                                                <span class="avatar"><img alt="" src="{{ ($task->user->avatar) ? asset('user_image/'.$task->user->avatar) : asset('user_image/avatar.jpg') }}"></span>
-                                                            </div>
-                                                            <div class="list-body">
-                                                                <span class="message-author">{{ $task->username($task->user_id) }} ( {{ $task->total }}/{{ $task->score->max_score }} )</span>
-                                                                <div class="clearfix"></div>
-                                                                <span class="message-content">{{ $task->user->role->name }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                </li>                                                
-                                            @empty
-                                                <li>
-                                                    <a href="#">
-                                                        <div class="list-item">
-                                                            <div class="list-left">
-                                                                <span class="avatar"><img alt="" src="{{ ($task->user->avatar) ? asset('user_image/'.$task->user->avatar) : asset('user_image/avatar.jpg') }}"></span>
-                                                            </div>
-                                                            <div class="list-body">
-                                                                <span class="message-author">{{ $task->username($task->user_id) }}</span>
-                                                                <div class="clearfix"></div>
-                                                                <span class="message-content">{{ $task->user->role->name }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                </li>                                                
-                                            @endforelse
-                                        </ul>
-                                    </div>
-                                </div>
+                                    @else
+                                        {{-- Other user: left-aligned gray --}}
+                                        <div class="vm-chat-msg vm-chat-msg--other">
+                                            <img class="vm-chat-avatar" src="{{ ($cmt->user->avatar) ? asset('user_image/'.$cmt->user->avatar) : asset('user_image/avatar.jpg') }}" alt="">
+                                            <div>
+                                                <div class="vm-chat-meta">
+                                                    <span class="vm-chat-name">{{ $cmt->user->name }}</span>
+                                                    <span class="vm-chat-time">{{ $cmt->created_at->format('d.m.Y H:i') }}</span>
+                                                </div>
+                                                <div class="vm-chat-bubble vm-chat-bubble--gray">{{ $cmt->comment }}</div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
+
                     </div>
+
+                    {{-- Footer --}}
+                    @if (!$task->response && $task->user_id == Auth::user()->id)
+                        <div class="vm-footer">
+                            <button class="btn vm-btn-submit" wire:click="storeResponse">Завершить задачу</button>
+                        </div>
+                    @endif
+
+                    @can('evaluate', $task)
+                        @if ($task->status == 'Ждет подтверждения')
+                            <div class="vm-footer" style="justify-content: flex-end; gap: 10px;">
+                                <button class="btn btn-outline-secondary" style="border-radius: 8px;" wire:click="taskRejected({{ $task->id }})">Отменить</button>
+                                <button class="btn vm-btn-submit" wire:click="taskConfirmed({{ $task->id }})">Подтвердить</button>
+                            </div>
+                        @endif
+                    @endcan
+
+                    @if ($task->user_id == auth()->user()->id && $task->status == 'Ждет подтверждения')
+                        <div class="vm-footer">
+                            <button class="btn btn-outline-secondary w-100" style="border-radius: 8px;" wire:click="reSubmit({{ $task->id }})">Отменить отправку</button>
+                        </div>
+                    @endif
+
                 </div>
             </div>
         </div>
@@ -371,7 +346,7 @@
                             </div>
                         </div>
                         @if ($profile->id == Auth::user()->id)
-                            <form wire:submit.prevent="changeUserInfo" method="POST">
+                            <form wire:submit="changeUserInfo" method="POST">
                                 @csrf
                                 <div class="card">
                                     <div class="card-header">
@@ -421,7 +396,7 @@
                                 </div>
                             </form>
 
-                            <form wire:submit.prevent="updatePassword" method="POST">
+                            <form wire:submit="updatePassword" method="POST">
                                 @csrf
                                 <div class="card">
                                     <div class="card-header">
@@ -503,3 +478,23 @@
         </div>
     @endif
 </div>
+
+@script
+    <script>
+        $wire.on('comment-added', () => {
+            // Clear the textarea DOM value
+            const textarea = document.querySelector('.vm-comment-input');
+            if (textarea) {
+                textarea.value = '';
+            }
+
+            setTimeout(() => {
+                const chat = document.getElementById('vm-chat-container');
+                if (chat && chat.lastElementChild) {
+                    chat.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    chat.lastElementChild.style.animation = 'vm-fade-in 0.4s ease';
+                }
+            }, 100);
+        });
+    </script>
+@endscript

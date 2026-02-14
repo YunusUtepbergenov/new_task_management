@@ -12,9 +12,9 @@
                     @if (!$user->isDirector())
                         <div class="col-lg-5 user_name">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="user" wire:model="userId" value="{{ $user->id }}" id="flexCheckDefault{{ $key }}">
+                                <input class="form-check-input" type="radio" name="user" wire:model.live="userId" value="{{ $user->id }}" id="flexCheckDefault{{ $key }}">
                                 <label class="form-check-label" for="flexCheckDefault{{ $key }}">
-                                    {{ $user->name }}
+                                    {{ $user->short_name }}
                                 </label>
                             </div>
                         </div>

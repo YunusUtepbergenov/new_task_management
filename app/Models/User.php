@@ -54,6 +54,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'birth_date' => 'date',
     ];
 
     /**
@@ -63,6 +64,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'profile_photo_url',
+        'short_name'
     ];
 
     protected $dates = ['birth_date'];
@@ -252,5 +254,24 @@ class User extends Authenticatable
 
     public function taskOwners(){
         return $this->whereIn('role_id', [1, 2, 14]);
+    }
+
+    public function getShortNameAttribute(): string
+    {
+        if (!$this->name) {
+            return '';
+        }
+
+        // Split by spaces
+        $parts = preg_split('/\s+/', trim($this->name));
+
+        $lastName = $parts[0] ?? '';
+        $firstName = $parts[1] ?? '';
+
+        $initial = $firstName
+            ? mb_substr($firstName, 0, 1, 'UTF-8') . '.'
+            : '';
+
+        return trim($lastName . ' ' . $initial);
     }
 }

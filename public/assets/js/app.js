@@ -33,9 +33,6 @@ $(document).ready(function() {
 	// Sidebar Initiate
 	init();
 
-	// Mobile menu sidebar overlay
-
-
 	$(".sidebar-overlay").on("click", function () {
 		$('html').removeClass('menu-opened');
 		$(this).removeClass('opened');
@@ -44,10 +41,7 @@ $(document).ready(function() {
 		$('#task_window').removeClass('opened');
 	});
 
-	// Select 2
-
-	if($('.select').length > 0) {
-		
+	if($('.select').length > 0) {	
 		$('.select').select2({
 			width: '100%'
 		});
@@ -78,8 +72,6 @@ $(document).ready(function() {
 		});
 	}
 
-
-	// Modal Popup hide show
 
 	if($('.modal').length > 0 ){
 		var modalUniqueClass = ".modal";
@@ -218,42 +210,6 @@ $(document).ready(function() {
         });
     });
 
-    // jQuery("#createProject").on("submit", function (e) {
-    //     e.preventDefault();
-    //     var formData = new FormData($("#createProject")[0]);
-    //     var url = $(this).attr("action");
-
-    //     $.ajax({
-    //         url: url,
-    //         method: "POST",
-    //         data: formData,
-    //         processData: false,
-    //         contentType: false,
-    //         success: function (res) {
-    //             location.reload();
-	// 			toastr.options =
-    //             {
-    //                 "closeButton" : true,
-    //                 "progressBar" : true
-    //             }
-    //             toastr.success("Проект успешно создан");
-    //         },
-    //         error: function (data) {
-    //             $("#project_name").addClass("d-none");
-    //             var errors = data.responseJSON;
-    //             if ($.isEmptyObject(errors) == false) {
-    //                 $.each(errors.errors, function (key, value) {
-    //                     var ErrorId = "#" + key;
-    //                     $(ErrorId).removeClass("d-none");
-    //                     $(ErrorId).text(value);
-    //                 });
-    //             }
-    //             toastr.error(errors.message);
-    //         },
-    //     });
-    // });
-	// Multiselect
-
 	if($('#customleave_select').length > 0) {
 		$('#customleave_select').multiselect();
 	}
@@ -344,7 +300,7 @@ $(document).ready(function() {
     }
 
     openModal = function(id){
-        window.livewire.emit('taskClicked', id);
+        Livewire.dispatch('taskClicked', { id: id });
     }
 
 	$(document).on('click', '#file_sidebar_toggle', function() {

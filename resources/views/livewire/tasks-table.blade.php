@@ -23,9 +23,11 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header"><strong>Задачи на неделю 
-                    ({{ \Carbon\Carbon::parse($startOfWeek)->format('d M Y') }} -
-                    {{ \Carbon\Carbon::parse($endOfWeek)->endOfWeek()->format('d M Y') }})</strong>
+                <div class="card-header"><strong>Задачи на неделю </strong>
+                    <span class="italic">
+                        ({{ \Carbon\Carbon::parse($startOfWeek)->format('d M Y') }} -
+                        {{ \Carbon\Carbon::parse($endOfWeek)->endOfWeek()->format('d M Y') }})    
+                    </span>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

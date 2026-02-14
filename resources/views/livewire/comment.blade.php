@@ -6,10 +6,10 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="form-group">
-                                <form wire:submit.prevent="storeComment({{ $task->id }})" method="POST">
+                                <form wire:submit="storeComment({{ $task->id }})" method="POST">
                                     @csrf
                                     <div class="form-group">
-                                        <textarea class="form-control" wire:model.defer="comment" rows="2" name="comment" id="comment" required></textarea>
+                                        <textarea class="form-control" wire:model="comment" rows="2" name="comment" id="comment" required></textarea>
                                     </div>
 
                                     <button class="btn btn-primary" wire:click="$refresh" style="float: right;">Submit</button>
@@ -38,9 +38,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    Livewire.on('commentStored', message => {
-        alert('A post was added with the id of: ' + message);
-    });
-</script>

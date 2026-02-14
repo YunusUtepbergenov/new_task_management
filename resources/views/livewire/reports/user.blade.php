@@ -52,7 +52,7 @@
                                         @if(auth()->user()->isDeputy() && isset($task->total))
                                                 <div class="d-flex align-items-center">
                                                     <input type="number"
-                                                        wire:model.defer="editedScores.{{ $task->id }}"
+                                                        wire:model="editedScores.{{ $task->id }}"
                                                         min="0"
                                                         max="{{ $task->score->max_score }}"
                                                         placeholder="{{ (isset($task->total)) ? $task->total.'/'.$task->score->max_score : '' }}"

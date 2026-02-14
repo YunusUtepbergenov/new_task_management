@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Http\Livewire\OrderedTable;
-use App\Http\Livewire\TasksTable;
-use App\Http\Livewire\ViewModal;
+use App\Livewire\OrderedTable;
+use App\Livewire\TasksTable;
+use App\Livewire\ViewModal;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -16,7 +15,7 @@ class TasksTest extends TestCase
 {
     use RefreshDatabase;
     
-    public function test_tasks_page_is_working(){
+    public function test_tasks_page_is_working(): void{
         $this->seed();
 
         $response = $this->post('/login', [
@@ -28,9 +27,10 @@ class TasksTest extends TestCase
 
         $response = $this->get('/');
         $response->assertStatus(200);
+        $response->assertSee('css/app.css');
     }
 
-    public function test_creator_has_task_create_button(){
+    public function test_creator_has_task_create_button(): void{
         $this->seed();
 
         $this->actingAs($user = User::first());
@@ -40,7 +40,7 @@ class TasksTest extends TestCase
         $response->assertSee(' Добавить Проект');
     }
 
-    public function test_ordinary_user_does_not_have_task_create_button(){
+    public function test_ordinary_user_does_not_have_task_create_button(): void{
         $this->seed();
 
         $this->actingAs($user = User::where('role_id', 5)->first());
@@ -50,7 +50,7 @@ class TasksTest extends TestCase
         $response->assertDontSee(' Добавить Проект');
     }
 
-    public function test_ordered_page_is_working_for_heads(){
+    public function test_ordered_page_is_working_for_heads(): void{
         $this->seed();
 
         $response = $this->post('/login', [
@@ -62,9 +62,10 @@ class TasksTest extends TestCase
 
         $response = $this->get('/ordered');
         $response->assertStatus(200);
+        $response->assertSee('css/app.css');
     }
 
-    public function test_ordered_page_is_not_working_for_ordinary_users(){
+    public function test_ordered_page_is_not_working_for_ordinary_users(): void{
         $this->seed();
 
         $response = $this->post('/login', [
@@ -79,7 +80,7 @@ class TasksTest extends TestCase
         $response->assertStatus(500);
     }
 
-    public function test_task_creation_is_working(){
+    public function test_task_creation_is_working(): void{
         $this->seed();
         
         $this->actingAs($user = User::first());
@@ -105,7 +106,7 @@ class TasksTest extends TestCase
         });
     }
 
-    public function test_created_task_is_visible_for_user(){
+    public function test_created_task_is_visible_for_user(): void{
         $this->seed();
         
         $this->actingAs($user = User::first());
@@ -131,7 +132,7 @@ class TasksTest extends TestCase
         });
     }
 
-    public function test_view_task_modal_is_working(){
+    public function test_view_task_modal_is_working(): void{
         $this->seed();
         
         $this->actingAs($user = User::first());

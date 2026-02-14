@@ -20,7 +20,7 @@
 
     @foreach ($groupedTasks as $sector => $groups)
         <div class="card mb-4">
-            <div class="card-header" style="background: #34444c;color:#fff; text-align:center"><strong>{{ $sector }}</strong></div>
+            <div class="card-header" style="background: rgb(15 23 42 / var(--tw-text-opacity, 1));color:#fff; text-align:center"><strong>{{ $sector }}</strong></div>
             <div class="card-body table-responsive">
                 <table class="table table-nowrap mb-0">
                     <thead>
@@ -43,7 +43,7 @@
                                 $main = $taskGroup[0];
                                 $users = collect($taskGroup)->pluck('user.name')->unique()->join(', ');
                             @endphp
-                            <tr>
+                            <tr wire:key="weekly-row-{{ $main['id'] }}">
                                 <td>{{ $index + 1 }}</td>
                                 <td>
                                     @if (Auth::user()->isDeputy())
@@ -52,7 +52,7 @@
                                                 <i class="material-icons">more_vert</i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right">
-                                                <a class="dropdown-item" href="javascript:void(0)" onclick="editTask({{ $main['id'] }})" data-toggle="modal" data-target="#edit_task"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
+                                                <a class="dropdown-item" href="javascript:void(0)" wire:click="$dispatch('editTaskClicked', { id: {{ $main['id'] }} })"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
                                                 <form action="{{ route('task.destroy', $main['id']) }}" method="POST">
                                                     @method('DELETE')
                                                     @csrf

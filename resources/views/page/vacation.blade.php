@@ -8,7 +8,6 @@
 
 	<!-- Datetimepicker CSS -->
 	<link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}">
-    @livewireStyles()
 @endsection
 
 @section('main')
@@ -43,7 +42,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="table-responsive" id="employeeTable">
-                    <table class="table custom-table mb-0 datatable">
+                    <table class="table custom-table mb-0">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -83,14 +82,11 @@
 			</div>
 		</div>
 
-        @livewire('view-modal')
 	</div>
 	<!-- /Page Content -->
 @endsection
 
 @section('scripts')
-    @livewireScripts()
-
     <script>
         $(document).ready(function() {
 

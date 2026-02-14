@@ -13,7 +13,7 @@
         <div class="col-sm-4 col-md-2">
             <label>До</label>
             <div class="form-group cal-icon">
-                <input class="form-control datetimepicker" id="endDate" name="endDate" name="endDate" wire:model="endDate">
+                <input class="form-control datetimepicker" id="endDate" name="endDate" wire:model="endDate">
             </div>
         </div>
         <div class="col-sm-4 col-md-5">
@@ -66,7 +66,6 @@
                                             <a href="{{ route('user.report', [$employee->id, $startDate, $endDate]) }}">{{ $employee->name }}</a>
                                         </h2>
                                     </td>
-                                    {{-- <td class="text-wrap">{{ $employee->sector->name }}</td> --}}
                                     <td style="text-align: center">{{ $employee->efficiency }}%</td>
                                     <td style="text-align: center">{{$employee->tasks_cnt}}</td>
                                     <td style="text-align: center">{{$employee->done_cnt}}</td>
@@ -85,14 +84,26 @@
     </div>
 </div>
 
+@script
 <script>
-    document.addEventListener('livewire:load', function () {
-        $('#startDate').on('dp.change', function (e) {
-            @this.set('startDate', e.target.value);
+    if ($('.datetimepicker').length) {
+        $('.datetimepicker').datetimepicker({
+            format: 'YYYY-MM-DD',
+            icons: {
+                up: "fa fa-angle-up",
+                down: "fa fa-angle-down",
+                next: 'fa fa-angle-right',
+                previous: 'fa fa-angle-left'
+            }
         });
+    }
 
-        $('#endDate').on('dp.change', function (e) {
-            @this.set('endDate', e.target.value);
-        });
+    $('#startDate').on('dp.change', function (e) {
+        $wire.$set('startDate', e.target.value);
+    });
+
+    $('#endDate').on('dp.change', function (e) {
+        $wire.$set('endDate', e.target.value);
     });
 </script>
+@endscript

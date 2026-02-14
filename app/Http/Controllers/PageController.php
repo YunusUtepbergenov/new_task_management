@@ -179,12 +179,7 @@ class PageController extends Controller
     }
 
     public function employees(){
-        $sectors = Sector::with(['users' => function($query){
-            $query->with('role')->where('leave', 0)->orderBy('role_id', 'ASC');
-        }])->get();
-        $roles = Role::all();
-
-        return view('page.employees', ['sectors' => $sectors, 'roles' => $roles]);
+        return view('page.employees');
     }
 
      public function offDaysWorkExport(){

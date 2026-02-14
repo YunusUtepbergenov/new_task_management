@@ -19,3 +19,12 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+/.agents
+/.claude
+/.codex
+AGENTS.md
+CLAUDE.md
+opencode.json
+.mcp.json
+boost.json
+nul

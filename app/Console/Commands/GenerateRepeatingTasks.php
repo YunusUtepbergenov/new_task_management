@@ -3,33 +3,13 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\{Repeat, Task, User};
+use App\Models\{Repeat, Task};
 
 class GenerateRepeatingTasks extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'tasks:generate-repeats';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Create tasks based on repeat rules';
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     public function handle()
     {
@@ -66,7 +46,6 @@ class GenerateRepeatingTasks extends Command
                 $deadline = $lastQuarterEnd->addDays($repeatDay);
             }
 
-            // Skip if not time to generate or already generated
             if (!$deadline || $this->alreadyGenerated($repeat->id, $template->user_id, $deadline)) {
                 continue;
             }

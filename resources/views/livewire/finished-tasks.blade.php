@@ -1,11 +1,11 @@
 <div>
     <div class="row mb-3">
         <div class="col-md-4">
-            <input type="text" wire:model.debounce.500ms="search" class="form-control" placeholder="Поиск задачи...">
+            <input type="text" wire:model.live="search" class="form-control" placeholder="Поиск задачи...">
         </div>
         @if (!Auth::user()->isResearcher())
             <div class="col-md-2">
-                <select wire:model="worker_id" class="form-control">
+                <select wire:model.live="worker_id" class="form-control">
                     <option value="">Все сотрудники</option>
                     @foreach($workers as $worker)
                         <option value="{{ $worker->id }}">{{ $worker->name }}</option>
