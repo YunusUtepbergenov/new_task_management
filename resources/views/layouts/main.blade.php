@@ -33,6 +33,7 @@
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
         <!-- Layout Override CSS -->
         <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
+        @vite('resources/js/app.js')
     </head>
     <body>
 		<!-- Main Wrapper -->
@@ -193,10 +194,9 @@
 		<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}" data-navigate-once></script>
 		<script src="{{ asset('assets/js/ddtf.js') }}" data-navigate-once></script>
 		<!-- Custom JS -->
-		<script src="{{ asset('assets/js/app.js') }}"></script>
+        <script src="{{ asset('assets/js/app.js') }}"></script>
         @yield('scripts')
         @stack('scripts')
-        <script src="{{ asset('js/app.js') }}" data-navigate-once></script>
 		<script type="text/javascript">
             if (!window._layoutInitialized) {
                 window._layoutInitialized = true;
