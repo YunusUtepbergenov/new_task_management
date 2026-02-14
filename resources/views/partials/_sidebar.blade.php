@@ -7,7 +7,7 @@
     <div class="sidebar-inner">
         <!-- Logo -->
         <div class="sidebar-logo">
-            <a href="{{ route('home') }}">
+            <a href="{{ route('home') }}" wire:navigate>
                 <img src="{{ asset('assets/img/logo.svg') }}" width="80" height="40" alt="CERR">
             </a>
         </div>
@@ -15,20 +15,20 @@
         <div id="sidebar-menu" class="sidebar-menu">
             <ul>
                 <li>
-                    <a href="{{ route('home') }}"><i class="la la-stream"></i> <span>Проекты и задачи</span></a>
+                    <a href="{{ route('home') }}" wire:navigate.hover><i class="la la-stream"></i> <span>Проекты и задачи</span></a>
                 </li>
 
                 <li class="submenu">
                     <a href="#"><i class="fa fa-file-text la"></i> <span>Документы</span><span class="menu-arrow"></span></a>
                     <ul style="display: none;" id="journals_menu">
-                        <li><a href="{{ route('digests.index') }}">Дайджесты</a></li>
-                        <li><a href="{{ route('articles.index') }}">Статьи</a></li>
-                        <li><a href="{{ route('notes.index') }}">Аналитические записки</a></li>
+                        <li><a href="{{ route('digests.index') }}" wire:navigate>Дайджесты</a></li>
+                        <li><a href="{{ route('articles.index') }}" wire:navigate>Статьи</a></li>
+                        <li><a href="{{ route('notes.index') }}" wire:navigate>Аналитические записки</a></li>
                         <li class="submenu">
                             <a href="#"><span>Журналы</span><span class="menu-arrow"></span></a>
                             <ul style="display: none;">
-                                <li><a href="{{ route('journal.ru', date('Y')) }}">Экономическое Обозрение</a></li>
-                                <li><a href="{{ route('journal.uz', date('Y')) }}">Иқтисодий Шарҳ</a></li>
+                                <li><a href="{{ route('journal.ru', date('Y')) }}" wire:navigate>Экономическое Обозрение</a></li>
+                                <li><a href="{{ route('journal.uz', date('Y')) }}" wire:navigate>Иқтисодий Шарҳ</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -38,10 +38,10 @@
                     <li class="submenu">
                         <a href="#"><i class="la la-pie-chart"></i><span>Отчеты</span><span class="menu-arrow"></span></a>
                         <ul style="display: none;" id="reports_menu">
-                            <li><a href="{{ route('reports') }}"><span>Отчеты</span></a></li>
-                            <li><a href="{{ route('table.report') }}"><span>Ежемесячный Отчет</span></a></li>
-                            <li><a href="{{ route('weekly.tasks') }}"><span>Недельные задачи по секторам</span></a></li>
-                            <li><a href="{{ route('kpi') }}"><span>KPI</span></a></li>
+                            <li><a href="{{ route('reports') }}" wire:navigate><span>Отчеты</span></a></li>
+                            <li><a href="{{ route('table.report') }}" wire:navigate><span>Ежемесячный Отчет</span></a></li>
+                            <li><a href="{{ route('weekly.tasks') }}" wire:navigate><span>Недельные задачи по секторам</span></a></li>
+                            <li><a href="{{ route('kpi') }}" wire:navigate><span>KPI</span></a></li>
                         </ul>
                     </li>
                 @endif
@@ -49,22 +49,22 @@
                 <li class="submenu">
                     <a href="#"><i class="fa fa-server" aria-hidden="true"></i><span>Анализ данных</span><span class="menu-arrow"></span></a>
                     <ul style="display: none;">
-                        <li><a href="{{ route('scraping') }}"><span>Дата скрапинг</span></a></li>
-                        <li><a href="{{ route('surveys') }}"><span>Опросники</span></a></li>
+                        <li><a href="{{ route('scraping') }}" wire:navigate><span>Дата скрапинг</span></a></li>
+                        <li><a href="{{ route('surveys') }}" wire:navigate><span>Опросники</span></a></li>
                     </ul>
                 </li>
 
                 <li>
-                    <a href="{{ route('employees') }}"><i class="la la-users"></i> <span>Сотрудники</span></a>
+                    <a href="{{ route('employees') }}" wire:navigate><i class="la la-users"></i> <span>Сотрудники</span></a>
                 </li>
 
                 <li>
-                    <a href="{{ route('vacations') }}"><i class="la la-calendar"></i> <span>График Отпусков</span></a>
+                    <a href="{{ route('vacations') }}" wire:navigate><i class="la la-calendar"></i> <span>График Отпусков</span></a>
                 </li>
 
                 @if (Auth::user()->isDirector() || Auth::user()->isDeputy() || Auth::user()->isHR())
                     <li>
-                        <a href="{{ route('attendance') }}"><i class="la la-calendar"></i> <span>Турникет</span></a>
+                        <a href="{{ route('attendance') }}" wire:navigate><i class="la la-calendar"></i> <span>Турникет</span></a>
                     </li>
                 @endif
             </ul>
@@ -76,7 +76,7 @@
                     <a href="#"><i class="fa fa-book" aria-hidden="true"></i><span>Справочники</span></a>
                 </li>
                 <li>
-                    <a href="{{ route('settings') }}"><i class="fa fa-cog"></i><span>Настройки</span></a>
+                    <a href="{{ route('settings') }}" wire:navigate><i class="fa fa-cog"></i><span>Настройки</span></a>
                 </li>
                 <li>
                     <form action="{{ route('logout') }}" method="POST">

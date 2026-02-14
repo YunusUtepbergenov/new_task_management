@@ -9,11 +9,18 @@ use App\Models\User;
 use App\Services\TaskService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
+#[Lazy]
 class EditTaskModal extends Component
 {
+    public function placeholder(): string
+    {
+        return '<div id="edit_task" class="modal custom-modal fade" role="dialog"></div>';
+    }
+
     public $taskId, $name, $deadline, $scoreId, $creatorId;
     public $userIds = [];
     public $errorMsg;

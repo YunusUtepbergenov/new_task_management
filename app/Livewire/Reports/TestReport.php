@@ -3,10 +3,17 @@
 namespace App\Livewire\Reports;
 
 use App\Models\User;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
+#[Lazy]
 class TestReport extends Component
 {
+    public function placeholder(): \Illuminate\Contracts\View\View
+    {
+        return view('livewire.placeholders.loading');
+    }
+
     public $users;
     public $startDate, $endDate;
     public function mount(){

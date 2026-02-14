@@ -3,10 +3,17 @@
 namespace App\Livewire\Reports;
 
 use App\Models\Sector;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
+#[Lazy]
 class FilterSection extends Component
 {
+    public function placeholder(): \Illuminate\Contracts\View\View
+    {
+        return view('livewire.placeholders.loading');
+    }
+
     public $startDate, $endDate, $sectors;
     public $sortColumnName = "tasks_cnt", $sortDirection = "desc";
 

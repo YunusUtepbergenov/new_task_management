@@ -1,7 +1,4 @@
 @extends('layouts.main')
-@section('styles')
-    @livewireStyles
-@endsection
 @section('main')
 	<!-- Page Content -->
 	<div class="content container-fluid">
@@ -15,7 +12,6 @@
 @endsection
 
 @section('scripts')
-@livewireScripts
     {{-- <script src="{{ asset('assets/js/ddtf.js') }}"></script> --}}
     <script>
 

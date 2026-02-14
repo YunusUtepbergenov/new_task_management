@@ -2,13 +2,20 @@
 
 namespace App\Livewire;
 
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use App\Models\User;
 use App\Models\TurnstileLog;
 use Illuminate\Support\Carbon;
 
+#[Lazy]
 class Attendance extends Component
 {
+    public function placeholder(): \Illuminate\Contracts\View\View
+    {
+        return view('livewire.placeholders.loading');
+    }
+
     public $dates = [];
     public $dataBySector = [];
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Reports;
 
+use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
@@ -9,8 +10,13 @@ use App\Exports\WeeklyTasksExport;
 use App\Models\Task;
 use Carbon\{Carbon, CarbonPeriod};
 
+#[Lazy]
 class WeeklyTasksOverview extends Component
 {
+    public function placeholder(): \Illuminate\Contracts\View\View
+    {
+        return view('livewire.placeholders.loading');
+    }
 
     public $sectors;
     public $selectedWeek;

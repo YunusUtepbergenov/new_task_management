@@ -3,10 +3,17 @@
 namespace App\Livewire\Reports;
 
 use App\Models\User;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
+#[Lazy]
 class Kpi extends Component
 {
+    public function placeholder(): \Illuminate\Contracts\View\View
+    {
+        return view('livewire.placeholders.loading');
+    }
+
     public $startDate, $endDate, $users;
 
     public function mount(): void

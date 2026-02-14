@@ -953,6 +953,12 @@ body.dark-mode .notifications .notification-action .action-icon {
     background: rgba(239, 68, 68, 0.15);
 }
 
+/* Livewire SPA navigation progress bar */
+.livewire-progress-bar {
+    background-color: #ff9b44 !important;
+    height: 3px !important;
+}
+
 body.dark-mode .page-wrapper .card {
     background: var(--card-bg);
     border-color: var(--border-color);

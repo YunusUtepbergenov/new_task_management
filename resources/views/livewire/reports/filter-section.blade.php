@@ -86,6 +86,18 @@
 
 @script
 <script>
+    if ($('.datetimepicker').length) {
+        $('.datetimepicker').datetimepicker({
+            format: 'YYYY-MM-DD',
+            icons: {
+                up: "fa fa-angle-up",
+                down: "fa fa-angle-down",
+                next: 'fa fa-angle-right',
+                previous: 'fa fa-angle-left'
+            }
+        });
+    }
+
     $('#startDate').on('dp.change', function (e) {
         $wire.$set('startDate', e.target.value);
     });

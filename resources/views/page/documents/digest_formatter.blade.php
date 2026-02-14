@@ -1,7 +1,4 @@
 @extends('layouts.main')
-@section('styles')
-    @livewireStyles()
-@endsection
 @section('main')
 	<!-- Page Content -->
 	<div class="content container-fluid">
@@ -47,8 +44,6 @@
 @endsection
 
 @section('scripts')
-    @livewireScripts()
-
     <script>
         window.addEventListener('existing-word', event => {
             alert('Это слово уже добавлено');
