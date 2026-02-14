@@ -99,7 +99,7 @@
                                 </div>
                                 <div class="vm-response-row">
                                     <div class="vm-response-col">
-                                        <textarea class="form-control vm-response-input" wire:model.blur="description" placeholder="Опишите выполненную работу..."></textarea>
+                                        <textarea class="form-control vm-response-input" wire:model.live.blur="description" placeholder="Опишите выполненную работу..."></textarea>
                                         @error('description')
                                             <div class="text-danger mt-1" style="font-size: 13px;">{{ $message }}</div>
                                         @enderror
