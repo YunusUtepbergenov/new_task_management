@@ -94,7 +94,7 @@
                             @endif
                         </div>
 					</li>
-                    @include('partials.notifications')
+                    @livewire('notifications')
 				</ul>
 				<!-- /Header Menu -->
             </div>

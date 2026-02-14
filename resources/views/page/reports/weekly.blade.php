@@ -1,19 +1,6 @@
 @extends('layouts.main')
 
-@section('styles')
-    @livewireStyles
-@endsection
-
 @section('main')
-	<div class="content container-fluid">
-        <!-- Page Content -->
-		<div class="content container-fluid">
-
-        @livewire('reports.weekly-tasks-overview')
-
-        @livewire('edit-task-modal')
-@endsection
-
-@section('scripts')
-    @livewireScripts
+    @livewire('reports.weekly-tasks-overview')
+    @livewire('edit-task-modal')
 @endsection
