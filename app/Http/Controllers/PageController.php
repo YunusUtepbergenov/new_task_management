@@ -208,8 +208,10 @@ class PageController extends Controller
     }
 
     public function workload(){
-        $sectors = Sector::with(['users.tasks' => function($query) {
-            $query->where('status', '<>', 'Выполнено');
+        $sectors = Sector::with(['users' => function($query) {
+            $query->where('leave', 0)->with(['tasks' => function($q) {
+                $q->select('id', 'user_id', 'name', 'deadline', 'status')->where('status', '<>', 'Выполнено');
+            }]);
         }])->whereIn('id', [2,3,4,5,6,7,8,9,10,12,13,14,15,16])->get();
 
         return view('page.reports.workload', compact('sectors'));
@@ -263,7 +265,7 @@ class PageController extends Controller
     }
     
     public function getDocuments(){
-        $tasks = Task::where('score_id', 5)->where('deadline', '>', '2025-01-01')->where('status', 'Выполнено')->get();
+        $tasks = Task::with('response')->where('score_id', 5)->where('deadline', '>', '2025-01-01')->where('status', 'Выполнено')->get();
 
         // Create a ZIP file to download all files at once
         $zipFileName = 'files_2025.zip';

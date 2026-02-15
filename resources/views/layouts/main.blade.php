@@ -74,25 +74,18 @@
 						</div>
 					</li>
                 </ul>
+				@php $kpi = auth()->user()->kpiBoth(); @endphp
 				<ul class="nav user-menu">
 					<li class="nav-item flag-nav">
                         <div class="kpi-item">
                             <span class="kpi-label">KPI (норма)</span>
-                            @if (auth()->user()->tasks()->count())
-                                <span class="kpi-value">{{ auth()->user()->kpiCalculate() }} баллов</span>
-                            @else
-                                <span class="kpi-value">0 баллов</span>
-                            @endif
+                            <span class="kpi-value">{{ $kpi['kpi'] }} баллов</span>
                         </div>
 					</li>
                     <li class="nav-item flag-nav">
                         <div class="kpi-item">
                             <span class="kpi-label">KPI (итого)</span>
-                            @if (auth()->user()->tasks()->count())
-                                <span class="kpi-value">{{ auth()->user()->ovrKpiCalculate() }} баллов</span>
-                            @else
-                                <span class="kpi-value">0 баллов</span>
-                            @endif
+                            <span class="kpi-value">{{ $kpi['ovr_kpi'] }} баллов</span>
                         </div>
 					</li>
                     @livewire('notifications')

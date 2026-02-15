@@ -69,6 +69,8 @@ class User extends Authenticatable
 
     protected $dates = ['birth_date'];
 
+    protected $with = ['role'];
+
     public function role(){
         return $this->belongsTo(Role::class);
     }
@@ -153,38 +155,40 @@ class User extends Authenticatable
         return $this->tasks()->whereBetween('deadline', [$start, $end])->where('score_id', $category_id)->where('status', 'Выполнено')->sum('total');
     }
 
-    public function kpiCalculate(){
-        $score = 0;
+    public function kpiBoth(): array
+    {
         $startDate = date('Y-m-01');
         $endDate = date('Y-m-t');
 
-        $categories = Scores::with(['tasks' => function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('deadline', [$startDate, $endDate])->where('user_id', $this->id)->where('status', 'Выполнено');
-        }])->get();
+        $results = Task::where('user_id', $this->id)
+            ->where('status', 'Выполнено')
+            ->whereBetween('deadline', [$startDate, $endDate])
+            ->whereNotNull('score_id')
+            ->selectRaw('score_id, SUM(total) as cat_score')
+            ->groupBy('score_id')
+            ->pluck('cat_score', 'score_id');
 
-        foreach($categories as $category){
-            $cat_score = $category->tasks->sum('total');
-            if(isset($category->limit) && $cat_score > $category->limit)
-                $score += $category->limit;
-            else
-                $score += $cat_score;
+        $limits = Scores::pluck('limit', 'id');
+
+        $capped = 0;
+        $uncapped = 0;
+        foreach ($results as $scoreId => $catScore) {
+            $uncapped += $catScore;
+            $limit = $limits[$scoreId] ?? null;
+            $capped += ($limit && $catScore > $limit) ? $limit : $catScore;
         }
-        return $score;
+
+        return ['kpi' => $capped, 'ovr_kpi' => $uncapped];
     }
 
-    public function ovrKpiCalculate(){
-        $score = 0;
-        $startDate = date('Y-m-01');
-        $endDate = date('Y-m-t');
+    public function kpiCalculate()
+    {
+        return $this->kpiBoth()['kpi'];
+    }
 
-        $categories = Scores::with(['tasks' => function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('deadline', [$startDate, $endDate])->where('user_id', $this->id)->where('status', 'Выполнено');
-        }])->get();
-
-        foreach($categories as $category){
-            $score += $category->tasks->sum('total');
-        }
-        return $score;
+    public function ovrKpiCalculate()
+    {
+        return $this->kpiBoth()['ovr_kpi'];
     }
 
     public function overdueTasks(){

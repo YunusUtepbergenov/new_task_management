@@ -10,7 +10,7 @@ use Livewire\Component;
 
 class TasksSection extends Component
 {
-    public $tasks, $user, $filter = null, $projects;
+    public $tasks, $user, $filter = null, $projects, $taskCounts = [];
 
     public function mount(): void
     {
@@ -33,6 +33,7 @@ class TasksSection extends Component
         }
 
         $this->user = User::find($id);
+        $this->computeTaskCounts($id);
         $this->fetchTasks($id);
     }
 
@@ -57,6 +58,19 @@ class TasksSection extends Component
     public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.reports.tasks-section');
+    }
+
+    private function computeTaskCounts(int $userId): void
+    {
+        $this->taskCounts = Task::where('user_id', $userId)
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw("SUM(CASE WHEN status = 'Не прочитано' AND overdue = 0 THEN 1 ELSE 0 END) as new_cnt")
+            ->selectRaw("SUM(CASE WHEN status = 'Выполняется' AND overdue = 0 THEN 1 ELSE 0 END) as doing_cnt")
+            ->selectRaw("SUM(CASE WHEN status = 'Ждет подтверждения' THEN 1 ELSE 0 END) as confirm_cnt")
+            ->selectRaw("SUM(CASE WHEN status = 'Выполнено' AND overdue = 0 THEN 1 ELSE 0 END) as finished_cnt")
+            ->selectRaw("SUM(CASE WHEN overdue = 1 THEN 1 ELSE 0 END) as overdue_cnt")
+            ->first()
+            ->toArray();
     }
 
     private function fetchTasks(int $userId): void
