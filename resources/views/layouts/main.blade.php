@@ -238,8 +238,8 @@
                         $('body').addClass('sidebar-collapsed');
                     }
 
-                    // Dark mode toggle
-                    $('.dark-mode-toggle').on('click', function() {
+                    // Dark mode toggle (delegated to survive wire:navigate morphing)
+                    $(document).on('click', '.dark-mode-toggle', function() {
                         $('body').toggleClass('dark-mode');
                         if ($('body').hasClass('dark-mode')) {
                             localStorage.setItem('dark-mode', 'true');
@@ -538,11 +538,30 @@
                         document.body.classList.add('sidebar-collapsed');
                     }
 
-                    // Update active sidebar submenu
+                    // Update active sidebar link and submenu
                     var path = window.location.pathname;
-                    $('#journals_menu, #reports_menu').hide();
-                    $('#journals_menu, #reports_menu').prev('a').removeClass('subdrop');
 
+                    // Remove all active classes from sidebar links
+                    $('#sidebar-menu a').removeClass('active');
+                    $('#sidebar-menu li').removeClass('active');
+                    $('#journals_menu, #reports_menu').hide();
+                    $('#sidebar-menu .submenu > a').removeClass('subdrop');
+
+                    // Find and highlight the matching sidebar link
+                    $('#sidebar-menu a[href]').each(function() {
+                        var href = $(this).attr('href');
+                        if (href && href !== '#' && href !== 'javascript:void(0)') {
+                            try {
+                                var linkPath = new URL(href, window.location.origin).pathname;
+                                if (linkPath === path || (path.indexOf(linkPath) === 0 && linkPath !== '/')) {
+                                    $(this).addClass('active');
+                                    $(this).closest('li').addClass('active');
+                                }
+                            } catch(e) {}
+                        }
+                    });
+
+                    // Open the correct submenu
                     if (path == "/articles" || path.indexOf('/journal') >= 0 || path == "/digests" || path == "/notes") {
                         $('#journals_menu').show();
                         $('#journals_menu').prev().addClass('subdrop');
@@ -583,9 +602,25 @@
                 toastr.error("{{ session('error') }}");
             @endif
 
-            // Initial page submenu highlighting (runs on first load)
+            // Initial page highlighting (runs on first load)
             (function() {
                 var path = window.location.pathname;
+
+                // Highlight matching sidebar link
+                $('#sidebar-menu a[href]').each(function() {
+                    var href = $(this).attr('href');
+                    if (href && href !== '#' && href !== 'javascript:void(0)') {
+                        try {
+                            var linkPath = new URL(href, window.location.origin).pathname;
+                            if (linkPath === path || (path.indexOf(linkPath) === 0 && linkPath !== '/')) {
+                                $(this).addClass('active');
+                                $(this).closest('li').addClass('active');
+                            }
+                        } catch(e) {}
+                    }
+                });
+
+                // Open correct submenu
                 if(path == "/articles" || path.indexOf('/journal') >= 0 || path == "/digests" || path == "/notes"){
                     $('#journals_menu').show();
                     $('#journals_menu').prev().addClass('subdrop');

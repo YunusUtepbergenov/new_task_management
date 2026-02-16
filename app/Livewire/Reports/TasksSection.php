@@ -10,7 +10,7 @@ use Livewire\Component;
 
 class TasksSection extends Component
 {
-    public $tasks, $user, $filter = null, $projects, $taskCounts = [];
+    public $tasks, $user, $filter = null, $taskCounts = [];
 
     public function mount(): void
     {
@@ -51,7 +51,6 @@ class TasksSection extends Component
     public function updateSectorTasks($id): void
     {
         $this->user = null;
-        $this->projects = null;
         $this->tasks = Task::with(['user', 'creator'])->where('sector_id', $id)->get();
     }
 
@@ -76,18 +75,8 @@ class TasksSection extends Component
     private function fetchTasks(int $userId): void
     {
         if (!$this->filter) {
-            $projectIds = Task::where('user_id', $userId)
-                ->whereNotNull('project_id')
-                ->distinct()
-                ->pluck('project_id');
-
-            $this->projects = Project::with(['tasks' => function ($query) use ($userId) {
-                $query->with(['user:id,name', 'creator:id,name'])->where('user_id', $userId);
-            }])->whereIn('id', $projectIds)->get();
-
             $this->tasks = Task::with('creator:id,name,sector_id,role_id')
                 ->where('user_id', $userId)
-                ->whereNull('project_id')
                 ->latest()
                 ->get();
         } elseif ($this->filter === 'Просроченный') {
@@ -96,7 +85,6 @@ class TasksSection extends Component
                 ->where('overdue', 1)
                 ->latest()
                 ->get();
-            $this->projects = null;
         } else {
             $this->tasks = Task::with(['user:id,name', 'creator:id,name'])
                 ->where('user_id', $userId)
@@ -104,7 +92,11 @@ class TasksSection extends Component
                 ->where('status', $this->filter)
                 ->latest()
                 ->get();
-            $this->projects = null;
         }
+    }
+
+     public function placeholder()
+    {
+        return view('livewire.placeholders.loading');
     }
 }

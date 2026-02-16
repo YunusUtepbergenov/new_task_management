@@ -188,7 +188,7 @@ body {
 }
 
 .sidebar-menu ul ul a.active {
-    color: var(--sidebar-active-bg) !important;
+    color: #fff !important;
     text-decoration: none !important;
 }
 

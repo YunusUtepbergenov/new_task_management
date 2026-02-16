@@ -9,22 +9,17 @@ use App\Models\User;
 use App\Services\TaskService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-#[Lazy]
 class EditTaskModal extends Component
 {
-    public function placeholder(): string
-    {
-        return '<div id="edit_task" class="modal custom-modal fade" role="dialog"></div>';
-    }
-
     public $taskId, $name, $deadline, $scoreId, $creatorId;
     public $userIds = [];
     public $errorMsg;
-    public $filteredSectors, $creators, $scoresGrouped;
+    public $filteredSectors = [];
+    public $creators = [];
+    public $scoresGrouped = [];
 
     public function mount(): void
     {
@@ -33,7 +28,7 @@ class EditTaskModal extends Component
             $query->where('leave', 0);
         }])->get();
 
-        $this->filteredSectors = collect();
+        $this->filteredSectors = [];
         foreach ($sectors as $sector) {
             $sectorUsers = $sector->users->filter(function ($u) use ($user) {
                 if ($user->isDirector() || $user->isMailer()) {
@@ -49,26 +44,33 @@ class EditTaskModal extends Component
             });
 
             if ($sectorUsers->isNotEmpty()) {
-                $this->filteredSectors->push((object) [
+                $this->filteredSectors[] = [
                     'name' => $sector->name,
-                    'users' => $sectorUsers,
-                ]);
+                    'users' => $sectorUsers->map(fn ($u) => ['id' => $u->id, 'name' => $u->name])->values()->toArray(),
+                ];
             }
         }
 
-        $this->creators = collect();
+        $creatorsList = collect();
         if ($user->isDirector() || $user->isMailer() || $user->isHead()) {
-            $this->creators->push($user);
+            $creatorsList->push($user);
         } elseif ($user->isDeputy()) {
             foreach ($sectors as $sector) {
                 foreach ($sector->users->whereIn('role_id', [2, 14, 19]) as $u) {
-                    $this->creators->push($u);
+                    $creatorsList->push($u);
                 }
             }
         }
-        $this->creators = $this->creators->unique('id');
 
-        $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
+        $this->creators = $creatorsList->unique('id')->map(fn ($u) => ['id' => $u->id, 'name' => $u->name])->values()->toArray();
+
+        $this->scoresGrouped = [
+            'Категории' => (new TaskService())->scoresList()->map(fn ($s) => [
+                'id' => $s->id,
+                'name' => $s->name,
+                'max_score' => $s->max_score,
+            ])->toArray(),
+        ];
     }
 
     #[On('editTaskClicked')]

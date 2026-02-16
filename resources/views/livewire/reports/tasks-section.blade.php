@@ -77,47 +77,6 @@
                             @endforelse
                         @endif
                     </tbody>
-                    @if ($projects)
-                        @foreach ($projects as $prj)
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>{{ $prj->name }}</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php $cnt = 1; @endphp
-                                @foreach ($prj->tasks as $task)
-                                    <tr>
-                                        <td>{{ $cnt++ }}</td>
-                                        <td>
-                                            @if ($task->status == "Выполнено")
-                                                <a href="#" wire:click.prevent="view({{ $task->id }})"><del>{{ $task->name }}</del></a>
-                                            @else
-                                                <a href="#" wire:click.prevent="view({{ $task->id }})">{{ $task->name }}</a>
-                                            @endif
-                                        </td>
-                                        <td>{{ $task->created_at->format('Y-m-d') }}</td>
-                                        <td><span class="badge bg-inverse-warning">{{ $task->deadline }}</span></td>
-                                        <td>{{ $task->creator->name }}</td>
-                                        <td>{{ $task->user->name ?? '' }}</td>
-                                        <td>
-                                            @if ($task->overdue)
-                                                <span class="badge bg-inverse-warning">Просроченный</span>
-                                            @else
-                                                <span class="badge bg-inverse-{{ ($task->status == "Не прочитано") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        @endforeach
-                    @endif
                 </table>
             </div>
         </div>

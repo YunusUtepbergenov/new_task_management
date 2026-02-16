@@ -123,7 +123,7 @@
                                                 @else
                                                     <i class="fa fa-cloud-upload vm-dropzone-icon"></i>
                                                     <span class="vm-dropzone-text">Нажмите или перетащите файл</span>
-                                                    <span class="vm-dropzone-hint">PDF, DOC, XLS, JPG до 500 МБ</span>
+                                                    <span class="vm-dropzone-hint">PDF, DOC, XLS, JPG до 5 МБ</span>
                                                 @endif
                                             </div>
                                             <div wire:loading wire:target="upload" style="width: 100%;">

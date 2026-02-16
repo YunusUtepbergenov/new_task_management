@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between mb-3">
         <div>
             <label>Выберите неделю:</label>
-            <select wire:model="selectedWeek" class="form-control">
+            <select wire:model.live="selectedWeek" class="form-control">
                 @foreach ($weeks as $weekStart)
                     <option value="{{ $weekStart }}">
                         {{ \Carbon\Carbon::parse($weekStart)->format('d M Y') }} -
@@ -18,9 +18,9 @@
         </div>
     </div>
 
-    @foreach ($groupedTasks as $sector => $groups)
+    @forelse ($groupedTasks as $sector => $groups)
         <div class="card mb-4">
-            <div class="card-header" style="background: rgb(15 23 42 / var(--tw-text-opacity, 1));color:#fff; text-align:center"><strong>{{ $sector }}</strong></div>
+            <div class="card-header" style="background: rgb(15 23 42 / var(--tw-text-opacity, 1));color:#000; text-align:center"><strong>{{ $sector }}</strong></div>
             <div class="card-body table-responsive">
                 <table class="table table-nowrap mb-0">
                     <thead>
@@ -41,7 +41,7 @@
                         @foreach ($groups as $index => $taskGroup)
                             @php
                                 $main = $taskGroup[0];
-                                $users = collect($taskGroup)->pluck('user.name')->unique()->join(', ');
+                                $users = collect($taskGroup)->pluck('user.short_name')->unique()->join(', ');
                             @endphp
                             <tr wire:key="weekly-row-{{ $main['id'] }}">
                                 <td>{{ $index + 1 }}</td>
@@ -93,5 +93,12 @@
                 </table>
             </div>
         </div>
-    @endforeach
+    @empty
+        <div class="card mb-4">
+            <div class="card-body text-center text-muted py-5">
+                <i class="fa fa-calendar-o fa-3x mb-3"></i>
+                <p class="mb-0">Нет задач на выбранную неделю.</p>
+            </div>
+        </div>
+    @endforelse
 </div>

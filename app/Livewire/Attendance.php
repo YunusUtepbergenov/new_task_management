@@ -72,7 +72,7 @@ public function mount()
                 }
 
                 $userData[] = [
-                    'name' => $user->name,
+                    'name' => $user->short_name,
                     'days' => $dayData,
                 ];
             }

@@ -13,13 +13,14 @@
 
 	<div class="row">
 		<div class="col-md-7">
-			@livewire('reports.sector')
+			<livewire:reports.sector lazy />			
 		</div>
 		<div class="col-md-5">
-			@livewire('reports.user-section')
+			<livewire:reports.user-section lazy />
+
 		</div>
 		<div class="col-md-12">
-			@livewire('reports.tasks-section')
+			<livewire:reports.tasks-section lazy />
 		</div>
 	</div>
 @endsection

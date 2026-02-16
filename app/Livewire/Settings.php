@@ -13,6 +13,7 @@ class Settings extends Component
 
     public $avatar;
     public $avatarPreview;
+    public $avatarDataUrl;
     public $oldPassword, $newPassword, $confirmPassword;
 
     public function mount(): void
@@ -27,6 +28,8 @@ class Settings extends Component
         $this->validate([
             'avatar' => 'image|max:5120|mimes:jpg,jpeg,png',
         ]);
+
+        $this->avatarDataUrl = 'data:' . $this->avatar->getMimeType() . ';base64,' . base64_encode(file_get_contents($this->avatar->getRealPath()));
     }
 
     public function saveAvatar(): void
@@ -45,14 +48,17 @@ class Settings extends Component
         }
 
         $filename = 'UIMG' . date('Ymd') . uniqid() . '.jpg';
-        $this->avatar->move(public_path('user_image'), $filename);
+        $destination = public_path('user_image' . DIRECTORY_SEPARATOR . $filename);
+        copy($this->avatar->getRealPath(), $destination);
 
         $user->update(['avatar' => $filename]);
 
         $this->avatarPreview = asset('user_image/' . $filename) . '?v=' . time();
+        $this->avatarDataUrl = null;
         $this->avatar = null;
 
         $this->dispatch('success', msg: 'Фото профиля успешно изменено.');
+        $this->dispatch('avatar-updated', url: $this->avatarPreview);
     }
 
     public function removeAvatar(): void
@@ -68,9 +74,11 @@ class Settings extends Component
         }
 
         $this->avatarPreview = asset('user_image/avatar.jpg');
+        $this->avatarDataUrl = null;
         $this->avatar = null;
 
         $this->dispatch('success', msg: 'Фото профиля удалено.');
+        $this->dispatch('avatar-updated', url: $this->avatarPreview);
     }
 
     public function updatePassword(): void

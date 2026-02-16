@@ -18,7 +18,6 @@ class WeeklyTasksOverview extends Component
         return view('livewire.placeholders.loading');
     }
 
-    public $sectors;
     public $selectedWeek;
     public $weeks = [];
 
@@ -28,15 +27,16 @@ class WeeklyTasksOverview extends Component
         // Re-render triggers fresh data from render()
     }
 
-    public function mount(){
+    public function mount(): void
+    {
         $this->generateWeekOptions();
         $this->selectedWeek = now()->startOfWeek()->toDateString();
     }
 
-    public function generateWeekOptions()
+    public function generateWeekOptions(): void
     {
         $start = now()->subWeeks(12)->startOfWeek();
-        $end = now()->startOfWeek();
+        $end = now()->addWeek()->startOfWeek();
         $period = CarbonPeriod::create($start, '1 week', $end);
 
         foreach ($period as $weekStart) {
@@ -46,22 +46,16 @@ class WeeklyTasksOverview extends Component
         $this->weeks = array_reverse($this->weeks);
     }
 
-    public function toggleProtocol($taskId)
+    public function toggleProtocol($taskId): void
     {
         $task = Task::findOrFail($taskId);
-
-        // Determine the group key (group_id or its own id if not grouped)
-        $groupId = $task->group_id ?? $task->id;
-
-        // Determine new value (toggle based on current value)
         $newValue = !$task->for_protocol;
 
-        // Update all tasks in the group
-        Task::where(function ($query) use ($groupId) {
-                $query->where('group_id', $groupId)
-                    ->orWhere('id', $groupId); // Include single tasks as well
-            })
-            ->update(['for_protocol' => $newValue]);
+        if ($task->group_id) {
+            Task::where('group_id', $task->group_id)->update(['for_protocol' => $newValue]);
+        } else {
+            $task->update(['for_protocol' => $newValue]);
+        }
     }
 
     public function getWeekRange()

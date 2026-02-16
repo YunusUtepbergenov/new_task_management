@@ -139,18 +139,6 @@ class PageController extends Controller
 
     }
 
-    public function testReport(){
-        $user = Auth::user();
-        if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer() || $user->isHR()){
-            $sectors = Sector::all();
-            return view('page.reports.test_report', [
-                'sectors' => $sectors
-            ]);
-        }
-
-        abort(404);
-    }
-
     public function kpiReport(){
         $user = Auth::user();
         if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer() || $user->isHR()){
