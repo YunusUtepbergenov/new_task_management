@@ -3,6 +3,21 @@
         <div class="loading">Loading&#8230;</div>
     </div>
 
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label class="font-weight-bold">Выберите месяц:</label>
+            <input type="month" class="form-control"
+                   wire:model.live="selectedMonth"
+                   min="2024-01"
+                   max="{{ date('Y-m') }}">
+        </div>
+        <div class="col-md-4 align-self-end">
+            <button wire:click="export" class="vm-btn-submit">
+                <i class="fa fa-download"></i> Экспорт в Excel
+            </button>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-12">
             <div id="employeeTable1">
