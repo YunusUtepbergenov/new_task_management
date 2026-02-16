@@ -13,7 +13,7 @@ $(document).ready(function() {
 
 	function init() {
 		var $this = Sidemenu;
-		$('#sidebar-menu a').on('click', function(e) {
+		$('#sidebar-menu').off('click.sidemenu', 'a').on('click.sidemenu', 'a', function(e) {
 			if($(this).parent().hasClass('submenu')) {
 				e.preventDefault();
 			}

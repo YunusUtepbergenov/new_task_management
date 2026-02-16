@@ -16,7 +16,7 @@ class ResultSection extends Component
         $this->param = $param;
         $this->users = User::with(['tasks' => function ($query) {
             $query->whereBetween('created_at', [$this->param['start'], $this->param['end']]);
-        }])->get();
+        }])->where('leave', 0)->get();
     }
 
     public function render(): \Illuminate\Contracts\View\View

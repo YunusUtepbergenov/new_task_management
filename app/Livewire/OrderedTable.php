@@ -113,6 +113,61 @@ class OrderedTable extends Component
         $this->dispatch('toastr:success', message: 'Задача успешно создана');
     }
 
+    public function deleteTask(int $taskId): void
+    {
+        $task = Task::where('id', $taskId)
+            ->where('creator_id', Auth::id())
+            ->first();
+
+        if (!$task) {
+            return;
+        }
+
+        $tasksToDelete = $task->group_id
+            ? Task::where('group_id', $task->group_id)->get()
+            : collect([$task]);
+
+        foreach ($tasksToDelete as $t) {
+
+            if ($t->response) {
+                if ($t->response->filename) {
+                    \Illuminate\Support\Facades\Storage::delete('files/responses/' . $t->response->filename);
+                }
+                $t->response->delete();
+            }
+
+            if ($t->files) {
+                foreach ($t->files as $file) {
+                    \Illuminate\Support\Facades\Storage::delete('files/' . $file->name);
+                    $file->delete();
+                }
+            }
+
+            if ($t->repeat) {
+                $t->repeat->delete();
+            }
+
+            $t->delete();
+        }
+
+        $this->dispatch('toastr:success', message: 'Задача удалена.');
+    }
+
+    public function deleteRepeat(int $repeatId): void
+    {
+        $repeat = Repeat::where('id', $repeatId)->first();
+
+        if ($repeat) {
+            $task = Task::where('repeat_id', $repeat->id)->where('creator_id', Auth::id())->first();
+            if ($task) {
+                $task->update(['repeat_id' => null]);
+            }
+            $repeat->delete();
+        }
+
+        $this->dispatch('toastr:success', message: 'Повторяющаяся задача остановлена.');
+    }
+
     public function view($task_id): void
     {
         $this->dispatch('taskClicked', id: $task_id);

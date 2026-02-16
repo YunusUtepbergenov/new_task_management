@@ -17,8 +17,8 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="position-relative" style="width: 120px; height: 120px; flex-shrink: 0;">
-                            @if ($avatar)
-                                <img src="{{ $avatar->temporaryUrl() }}" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #e9ecef;">
+                            @if ($avatarDataUrl)
+                                <img src="{{ $avatarDataUrl }}" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #e9ecef;">
                             @else
                                 <img src="{{ $avatarPreview }}" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #e9ecef;">
                             @endif
@@ -99,3 +99,15 @@
         </div>
     </div>
 </div>
+
+@script
+    <script>
+        $wire.on('avatar-updated', (params) => {
+            const url = params.url;
+            const $sidebarAvatar = $('.sidebar-user-profile .user-avatar');
+            if ($sidebarAvatar.length) {
+                $sidebarAvatar.attr('src', url);
+            }
+        });
+    </script>
+@endscript

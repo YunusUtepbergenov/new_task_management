@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Reports;
 
-use App\Models\User;
+use App\Models\{Scores, Task, User};
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
@@ -44,9 +44,28 @@ class Kpi extends Component
             ->where('leave', 0)
             ->get();
 
+        $limits = Scores::pluck('limit', 'id');
+
+        $stats = Task::whereIn('user_id', $this->users->pluck('id'))
+            ->where('status', 'Выполнено')
+            ->whereBetween('deadline', [$this->startDate, $this->endDate])
+            ->whereNotNull('score_id')
+            ->selectRaw('user_id, score_id, SUM(total) as cat_score')
+            ->groupBy('user_id', 'score_id')
+            ->get()
+            ->groupBy('user_id');
+
         foreach ($this->users as $user) {
-            $user->kpi_score = $user->kpiCalculate();
-            $user->ovr_kpi = $user->ovrKpiCalculate();
+            $userScores = $stats->get($user->id, collect());
+            $capped = 0;
+            $uncapped = 0;
+            foreach ($userScores as $row) {
+                $uncapped += $row->cat_score;
+                $limit = $limits[$row->score_id] ?? null;
+                $capped += ($limit && $row->cat_score > $limit) ? $limit : $row->cat_score;
+            }
+            $user->kpi_score = $capped;
+            $user->ovr_kpi = $uncapped;
         }
 
         $this->users = $this->users->sortByDesc('kpi_score');

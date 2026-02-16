@@ -16,22 +16,10 @@
                         <a class="dropdown-item" href="javascript:void(0)" wire:click="$dispatch('editTaskClicked', { id: {{ $main_task['id'] }} })"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
                     @endif
                     @if ($main_task['repeat_id'])
-                        <form action="{{ route('task.destroy', $main_task['id']) }}" method="POST">
-                            @method('DELETE')
-                            @csrf
-                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить текущую задачу</button>
-                        </form>
-                        <form action="{{ route('repeat.delete', $main_task['repeat_id']) }}" method="POST">
-                            @method('DELETE')
-                            @csrf
-                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Остановить цикл</button>
-                        </form>
+                        <a href="javascript:void(0)" class="dropdown-item" wire:click="deleteTask({{ $main_task['id'] }})" wire:confirm="Удалить текущую задачу?"><i class="fa fa-trash-o m-r-5"></i>Удалить текущую задачу</a>
+                        <a href="javascript:void(0)" class="dropdown-item" wire:click="deleteRepeat({{ $main_task['repeat_id'] }})" wire:confirm="Остановить повторяющуюся задачу?"><i class="fa fa-trash-o m-r-5"></i>Остановить цикл</a>
                     @else
-                        <form action="{{ route('task.destroy', $main_task['id']) }}" method="POST">
-                            @method('DELETE')
-                            @csrf
-                            <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
-                        </form>
+                        <a href="javascript:void(0)" class="dropdown-item" wire:click="deleteTask({{ $main_task['id'] }})" wire:confirm="Удалить задачу?"><i class="fa fa-trash-o m-r-5"></i>Удалить</a>
                     @endif
                 </div>
             </div>

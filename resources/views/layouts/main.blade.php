@@ -33,6 +33,7 @@
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
         <!-- Layout Override CSS -->
         <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
+        @vite('resources/js/app.js')
     </head>
     <body>
 		<!-- Main Wrapper -->
@@ -73,25 +74,18 @@
 						</div>
 					</li>
                 </ul>
+				@php $kpi = auth()->user()->kpiBoth(); @endphp
 				<ul class="nav user-menu">
 					<li class="nav-item flag-nav">
                         <div class="kpi-item">
                             <span class="kpi-label">KPI (норма)</span>
-                            @if (auth()->user()->tasks()->count())
-                                <span class="kpi-value">{{ auth()->user()->kpiCalculate() }} баллов</span>
-                            @else
-                                <span class="kpi-value">0 баллов</span>
-                            @endif
+                            <span class="kpi-value">{{ $kpi['kpi'] }} баллов</span>
                         </div>
 					</li>
                     <li class="nav-item flag-nav">
                         <div class="kpi-item">
                             <span class="kpi-label">KPI (итого)</span>
-                            @if (auth()->user()->tasks()->count())
-                                <span class="kpi-value">{{ auth()->user()->ovrKpiCalculate() }} баллов</span>
-                            @else
-                                <span class="kpi-value">0 баллов</span>
-                            @endif
+                            <span class="kpi-value">{{ $kpi['ovr_kpi'] }} баллов</span>
                         </div>
 					</li>
                     @livewire('notifications')
@@ -174,29 +168,28 @@
         </button>
 
 		<!-- jQuery -->
-        <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}" data-navigate-once></script>
 		<!-- Bootstrap Core JS -->
-        <script src="{{ asset('assets/js/popper.min.js') }}"></script>
-        <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('assets/js/popper.min.js') }}" data-navigate-once></script>
+        <script src="{{ asset('assets/js/bootstrap.min.js') }}" data-navigate-once></script>
 		<!-- Slimscroll JS -->
-		<script src="{{ asset('assets/js/jquery.slimscroll.min.js') }}"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/js/bootstrap-multiselect.min.js" integrity="sha512-fp+kGodOXYBIPyIXInWgdH2vTMiOfbLC9YqwEHslkUxc8JLI7eBL2UQ8/HbB5YehvynU3gA3klc84rAQcTQvXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="{{ asset('assets/js/jquery.slimscroll.min.js') }}" data-navigate-once></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/1.1.1/js/bootstrap-multiselect.min.js" integrity="sha512-fp+kGodOXYBIPyIXInWgdH2vTMiOfbLC9YqwEHslkUxc8JLI7eBL2UQ8/HbB5YehvynU3gA3klc84rAQcTQvXA==" crossorigin="anonymous" referrerpolicy="no-referrer" data-navigate-once></script>
 		<!-- Select2 JS -->
-		<script src="{{ asset('assets/js/select2.min.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="{{ asset('assets/js/select2.min.js') }}" data-navigate-once></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js" integrity="sha512-lbwH47l/tPXJYG9AcFNoJaTMhGvYWhVM9YI43CT+uteTRRaiLCui8snIgyAN8XWgNjNhCqlAUdzZptso6OCoFQ==" crossorigin="anonymous" referrerpolicy="no-referrer" data-navigate-once></script>
 		<!-- Datetimepicker JS -->
-		<script src="{{ asset('assets/js/moment.min.js') }}"></script>
-        <script src="{{ asset('js/bootstrap-colorselector.min.js') }}"></script>
-		<script src="{{ asset('assets/js/bootstrap-datetimepicker.min.js') }}"></script>
+		<script src="{{ asset('assets/js/moment.min.js') }}" data-navigate-once></script>
+        <script src="{{ asset('js/bootstrap-colorselector.min.js') }}" data-navigate-once></script>
+		<script src="{{ asset('assets/js/bootstrap-datetimepicker.min.js') }}" data-navigate-once></script>
 		<!-- DataTables JS -->
-		<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
-		<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}"></script>
-		<script src="{{ asset('assets/js/ddtf.js') }}"></script>
+		<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}" data-navigate-once></script>
+		<script src="{{ asset('assets/js/dataTables.bootstrap4.min.js') }}" data-navigate-once></script>
+		<script src="{{ asset('assets/js/ddtf.js') }}" data-navigate-once></script>
 		<!-- Custom JS -->
-		<script src="{{ asset('assets/js/app.js') }}"></script>
+        <script src="{{ asset('assets/js/app.js') }}"></script>
         @yield('scripts')
         @stack('scripts')
-        <script src="{{ asset('js/app.js') }}"></script>
 		<script type="text/javascript">
             if (!window._layoutInitialized) {
                 window._layoutInitialized = true;
@@ -245,8 +238,8 @@
                         $('body').addClass('sidebar-collapsed');
                     }
 
-                    // Dark mode toggle
-                    $('.dark-mode-toggle').on('click', function() {
+                    // Dark mode toggle (delegated to survive wire:navigate morphing)
+                    $(document).on('click', '.dark-mode-toggle', function() {
                         $('body').toggleClass('dark-mode');
                         if ($('body').hasClass('dark-mode')) {
                             localStorage.setItem('dark-mode', 'true');
@@ -545,11 +538,30 @@
                         document.body.classList.add('sidebar-collapsed');
                     }
 
-                    // Update active sidebar submenu
+                    // Update active sidebar link and submenu
                     var path = window.location.pathname;
-                    $('#journals_menu, #reports_menu').hide();
-                    $('#journals_menu, #reports_menu').prev('a').removeClass('subdrop');
 
+                    // Remove all active classes from sidebar links
+                    $('#sidebar-menu a').removeClass('active');
+                    $('#sidebar-menu li').removeClass('active');
+                    $('#journals_menu, #reports_menu').hide();
+                    $('#sidebar-menu .submenu > a').removeClass('subdrop');
+
+                    // Find and highlight the matching sidebar link
+                    $('#sidebar-menu a[href]').each(function() {
+                        var href = $(this).attr('href');
+                        if (href && href !== '#' && href !== 'javascript:void(0)') {
+                            try {
+                                var linkPath = new URL(href, window.location.origin).pathname;
+                                if (linkPath === path || (path.indexOf(linkPath) === 0 && linkPath !== '/')) {
+                                    $(this).addClass('active');
+                                    $(this).closest('li').addClass('active');
+                                }
+                            } catch(e) {}
+                        }
+                    });
+
+                    // Open the correct submenu
                     if (path == "/articles" || path.indexOf('/journal') >= 0 || path == "/digests" || path == "/notes") {
                         $('#journals_menu').show();
                         $('#journals_menu').prev().addClass('subdrop');
@@ -590,9 +602,25 @@
                 toastr.error("{{ session('error') }}");
             @endif
 
-            // Initial page submenu highlighting (runs on first load)
+            // Initial page highlighting (runs on first load)
             (function() {
                 var path = window.location.pathname;
+
+                // Highlight matching sidebar link
+                $('#sidebar-menu a[href]').each(function() {
+                    var href = $(this).attr('href');
+                    if (href && href !== '#' && href !== 'javascript:void(0)') {
+                        try {
+                            var linkPath = new URL(href, window.location.origin).pathname;
+                            if (linkPath === path || (path.indexOf(linkPath) === 0 && linkPath !== '/')) {
+                                $(this).addClass('active');
+                                $(this).closest('li').addClass('active');
+                            }
+                        } catch(e) {}
+                    }
+                });
+
+                // Open correct submenu
                 if(path == "/articles" || path.indexOf('/journal') >= 0 || path == "/digests" || path == "/notes"){
                     $('#journals_menu').show();
                     $('#journals_menu').prev().addClass('subdrop');
