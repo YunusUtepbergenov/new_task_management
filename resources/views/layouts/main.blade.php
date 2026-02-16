@@ -88,6 +88,64 @@
                             <span class="kpi-value">{{ $kpi['ovr_kpi'] }} баллов</span>
                         </div>
 					</li>
+                    <!-- Links Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                            <i class="fa fa-link"></i>
+                        </a>
+                        <div class="dropdown-menu notifications">
+                            <div class="topnav-dropdown-header">
+                                <span class="notification-title">Ссылки</span>
+                            </div>
+                            <div class="noti-content">
+                                <ul class="notification-list">
+                                    <li class="notification-message">
+                                        <a href="https://link.springer.com/" target="_blank" style="padding: 10px 15px; display: block; font-size: 14px;">SPRINGER NATURE</a>
+                                    </li>
+                                    <li class="notification-message">
+                                        <a href="https://search.ebscohost.com" target="_blank" style="padding: 10px 15px; display: block; font-size: 14px;" data-toggle="tooltip" data-html="true" data-placement="left" title="User ID: <b>ns123207</b> <br> Password: <b>Databases1!</b>">EBSCO host</a>
+                                    </li>
+                                    <li class="notification-message">
+                                        <a href="https://cerr.uz" target="_blank" style="padding: 10px 15px; display: block; font-size: 14px;">CERR.UZ</a>
+                                    </li>
+                                    <li class="notification-message">
+                                        <a href="https://review.uz" target="_blank" style="padding: 10px 15px; display: block; font-size: 14px;">REVIEW.UZ</a>
+                                    </li>
+                                    <li class="notification-message">
+                                        <a href="https://mail.cerr.uz" target="_blank" style="padding: 10px 15px; display: block; font-size: 14px;">MAIL.CERR.UZ</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- /Links Dropdown -->
+                    <!-- Birthdays Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                            <i class="fa fa-birthday-cake"></i>
+                        </a>
+                        <div class="dropdown-menu notifications">
+                            <div class="topnav-dropdown-header">
+                                <span class="notification-title">Ближайшие дни рождения</span>
+                            </div>
+                            <div class="noti-content">
+                                <ul class="notification-list">
+                                    @foreach ($birthdays->where('leave', 0)->take(5) as $birthday)
+                                        <li class="notification-message">
+                                            <a href="#" onclick='profileModal("{{ $birthday->id }}")' style="display: flex; align-items: center; padding: 10px 15px; gap: 10px;">
+                                                <img alt="" src="{{ $birthday->avatar ? asset('user_image/'.$birthday->avatar) : asset('user_image/avatar.jpg') }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
+                                                <div>
+                                                    <div style="font-size: 14px; font-weight: 500;">{{ $birthday->short_name }}</div>
+                                                    <div style="font-size: 13px; color: #888;">{{ $birthday->birth_date->format('d-m-Y') }}</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- /Birthdays Dropdown -->
                     @livewire('notifications')
 				</ul>
 				<!-- /Header Menu -->
@@ -103,51 +161,6 @@
                     <div class="content-flex-wrapper">
                         <div class="content-main">
                             @yield('main')
-                        </div>
-                        <div class="content-right-panel">
-                            <!-- Links Card -->
-                            <div class="right-panel-card">
-                                <div class="rpc-header">
-                                    <i class="fa fa-link rpc-icon"></i>
-                                    <h6 class="rpc-title">Ссылки</h6>
-                                </div>
-                                <div class="rpc-body">
-                                    <a href="https://link.springer.com/" target="_blank" class="link-item" data-toggle="tooltip" title="Springer Nature">
-                                        SPRINGER NATURE
-                                    </a>
-                                    <a href="https://search.ebscohost.com" target="_blank" class="link-item" data-toggle="tooltip" data-html="true" data-placement="bottom" title="User ID: <b>ns123207</b> <br> Password: <b>Databases1!</b>">
-                                        EBSCO host
-                                    </a>
-                                    <a href="https://cerr.uz" target="_blank" class="link-item">
-                                        CERR.UZ
-                                    </a>
-                                    <a href="https://review.uz" target="_blank" class="link-item">
-                                        REVIEW.UZ
-                                    </a>
-                                    <a href="https://mail.cerr.uz" target="_blank" class="link-item">
-                                        MAIL.CERR.UZ
-                                    </a>
-                                </div>
-                            </div>
-
-                            <!-- Birthdays Card -->
-                            <div class="right-panel-card">
-                                <div class="rpc-header">
-                                    <i class="fa fa-birthday-cake rpc-icon"></i>
-                                    <h6 class="rpc-title">Ближайшие дни рождения</h6>
-                                </div>
-                                <div class="rpc-body">
-                                    @foreach ($birthdays->where('leave', 0)->take(5) as $birthday)
-                                        <a href="#" onclick='profileModal("{{ $birthday->id }}")' class="birthday-item">
-                                            <img src="{{ ($birthday->avatar) ? asset('user_image/'.$birthday->avatar) : asset('user_image/avatar.jpg') }}" alt="" class="bi-avatar">
-                                            <div class="bi-info">
-                                                <span class="bi-name">{{ $birthday->short_name }}</span>
-                                                <span class="bi-date">{{ $birthday->birth_date->format('d-m-Y') }}</span>
-                                            </div>
-                                        </a>
-                                    @endforeach
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
