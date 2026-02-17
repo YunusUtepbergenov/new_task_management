@@ -32,11 +32,12 @@ class WeeklyTasksExport implements FromView
         foreach ($rawTasks as $group) {
             $main = $group->first();
             $scoreName = $main->score->name ?? 'Без категории';
-            $responsibles = $group->pluck('user')->filter()->map(fn ($u) => $u->employee_name())->unique()->join(', ');
+            $responsibles = $group->pluck('user')->filter()->map(fn ($u) => $u->short_name)->unique()->join(', ');
 
             $main->merged_responsibles = $responsibles;
 
             $grouped[$scoreName][] = $main;
+
         }
 
         return view('exports.weekly_tasks', [

@@ -155,10 +155,10 @@ class User extends Authenticatable
         return $this->tasks()->whereBetween('deadline', [$start, $end])->where('score_id', $category_id)->where('status', 'Выполнено')->sum('total');
     }
 
-    public function kpiBoth(): array
+    public function kpiBoth(?string $startDate = null, ?string $endDate = null): array
     {
-        $startDate = date('Y-m-01');
-        $endDate = date('Y-m-t');
+        $startDate = $startDate ?: date('Y-m-01');
+        $endDate = $endDate ?: date('Y-m-t');
 
         $results = Task::where('user_id', $this->id)
             ->where('status', 'Выполнено')
@@ -181,14 +181,14 @@ class User extends Authenticatable
         return ['kpi' => $capped, 'ovr_kpi' => $uncapped];
     }
 
-    public function kpiCalculate()
+    public function kpiCalculate(?string $startDate = null, ?string $endDate = null)
     {
-        return $this->kpiBoth()['kpi'];
+        return $this->kpiBoth($startDate, $endDate)['kpi'];
     }
 
-    public function ovrKpiCalculate()
+    public function ovrKpiCalculate(?string $startDate = null, ?string $endDate = null)
     {
-        return $this->kpiBoth()['ovr_kpi'];
+        return $this->kpiBoth($startDate, $endDate)['ovr_kpi'];
     }
 
     public function overdueTasks(){

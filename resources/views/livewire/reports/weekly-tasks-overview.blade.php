@@ -32,7 +32,7 @@
                             <th>Ответственный</th>
                             <th>Категория</th>
                             <th>Статус</th>
-                            @if (Auth::user()->isDeputy())
+                            @if (Auth::user()->isDeputy() || Auth::user()->isHR())
                                 <th>Для протокола</th>
                             @endif
                         </tr>
@@ -80,7 +80,7 @@
                                 <td>{{ $main['score']['name'] ?? '' }}</td>
                                 <td>{{ $main['status'] }}</td>
 
-                                @if (Auth::user()->isDeputy())
+                                @if (Auth::user()->isDeputy() || Auth::user()->isHR())
                                     <td>
                                         <input type="checkbox" wire:click="toggleProtocol({{ $main['id'] }})"
                                             @if($main['for_protocol']) checked @endif />

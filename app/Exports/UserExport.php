@@ -8,15 +8,18 @@ use Maatwebsite\Excel\Concerns\FromView;
 
 class UserExport implements FromView
 {
-    // /**
-    // * @return \Illuminate\Support\Collection
-    // */
-    // public function collection()
-    // {
-    //     return User::all();
-    // }
-    public $startDate, $endDate;
-    public $users;
+    public function __construct(
+        public string $startDate = '',
+        public string $endDate = '',
+    ) {
+        if (!$this->startDate) {
+            $this->startDate = date('Y-m-01');
+        }
+        if (!$this->endDate) {
+            $this->endDate = date('Y-m-t');
+        }
+    }
+
     public function view(): View
     {
         $norms = [
@@ -36,22 +39,21 @@ class UserExport implements FromView
             '15' => 80,
             '16' => 80,
             '17' => 80,
-            '18' => 80           
+            '18' => 80
         ];
 
-        $this->startDate = date('Y-m-01');
-        $this->endDate = date('Y-m-t');
-
-        $this->users = User::with('tasks')->where('leave', 0)->get();
-        foreach($this->users as $user){
-            $user->kpi_score = $user->kpiCalculate();
-            $user->ovr_kpi = $user->ovrKpiCalculate();
+        $users = User::with('tasks')->where('leave', 0)->get();
+        foreach ($users as $user) {
+            $user->kpi_score = $user->kpiCalculate($this->startDate, $this->endDate);
+            $user->ovr_kpi = $user->ovrKpiCalculate($this->startDate, $this->endDate);
         }
 
-        $this->users = $this->users->sortByDesc('kpi_score');
+        $users = $users->sortByDesc('kpi_score');
         return view('exports.users', [
-            'users' => $this->users,
+            'users' => $users,
             'norms' => $norms,
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
         ]);
     }
 }

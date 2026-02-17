@@ -5,7 +5,7 @@
             {{-- @dd($norms) --}}
             <tr>
                 <td colspan="5" height="40" style="vertical-align:middle;text-align: center; font-weight:bold; font-family:Cambria;font-size:14px;border:1px solid #000">
-                    {{date('01:m:Y')}} - {{date('t:m:Y')}} оралиғида Марказ ходимлари томонидан бажарилган топшириқлари тўғрисида маълумот<br>
+                    {{ \Carbon\Carbon::parse($startDate)->format('d:m:Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d:m:Y') }} оралиғида Марказ ходимлари томонидан бажарилган топшириқлари тўғрисида маълумот<br>
                     (ijro.cerr.uz портали маълумотлари асосида)
                 </td>
             </tr>
@@ -25,9 +25,9 @@
             @foreach($users as $user)
                 @if (!$user->isDirector() && !$user->isDeputy() && !$user->isEditor() && $user->role_id <= 4)
                     <tr>
-                        <td colspan="5" style="font-family:Cambria;text-align:center;font-weight:bold; border:1px solid #000">{{(++$count).'. '.$user->name}} ({{ $user->kpiCalculate() }} балл / {{$norms[$user->role_id]}})</td>
+                        <td colspan="5" style="font-family:Cambria;text-align:center;font-weight:bold; border:1px solid #000">{{(++$count).'. '.$user->name}} ({{ $user->kpiCalculate($startDate, $endDate) }} балл / {{$norms[$user->role_id]}})</td>
                     </tr>
-                    @foreach ($user->tasks()->whereBetween('deadline', [date('Y-m-01'), date('Y-m-t')])->get() as $key=>$task)
+                    @foreach ($user->tasks()->whereBetween('deadline', [$startDate, $endDate])->get() as $key=>$task)
                         <tr>
                             <td width="5" style="font-family:Cambria; border:1px solid #000">{{$key + 1}}</td>
                             <td width="100" style="border:1px solid #000; font-family:Cambria">{{$task->name}}</td>
