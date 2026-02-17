@@ -42,9 +42,10 @@ class TaskRejectedNotification extends Notification implements ShouldQueue
     {
         $creator = User::find($this->task->creator_id);
 
-        return "<b>Задание отклонено</b>\n\n"
-            . "{$this->task->name}\n"
-            . "Руководитель {$creator->short_name} отклонил ваше задание.";
+        return "❌ <b>Задание отклонено</b>\n\n"
+            . "📌 <b>{$this->task->name}</b>\n"
+            . "👤 Руководитель {$creator->short_name} отклонил ваше задание.\n\n"
+            . "🔄 Пожалуйста, проверьте комментарии.";
     }
 
     public function toArray($notifiable)

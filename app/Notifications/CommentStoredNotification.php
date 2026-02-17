@@ -43,9 +43,9 @@ class CommentStoredNotification extends Notification implements ShouldQueue
     {
         $user = User::find($this->comment->user_id);
 
-        return "<b>Новый комментарий</b>\n\n"
-            . "К заданию: {$this->comment->task->name}\n"
-            . "От: {$user->short_name}";
+        return "💬 <b>Новый комментарий!</b>\n\n"
+            . "📌 К заданию: <b>{$this->comment->task->name}</b>\n"
+            . "👤 От: {$user->short_name}";
     }
 
     public function toArray($notifiable)

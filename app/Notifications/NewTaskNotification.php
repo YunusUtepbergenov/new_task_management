@@ -40,10 +40,10 @@ class NewTaskNotification extends Notification implements ShouldQueue
         $creator = User::find($this->task->creator_id);
         $deadline = Carbon::parse($this->task->extended_deadline ?? $this->task->deadline)->format('d.m.Y');
 
-        return "<b>Новое задание</b>\n\n"
-            . "{$this->task->name}\n"
-            . "От: {$creator->short_name}\n"
-            . "Срок: {$deadline}";
+        return "🆕 <b>Новое задание!</b>\n\n"
+            . "📌 <b>{$this->task->name}</b>\n"
+            . "👤 От: {$creator->short_name}\n"
+            . "📅 Срок: {$deadline}";
     }
 
     public function toArray($notifiable)

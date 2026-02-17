@@ -42,9 +42,10 @@ class TaskConfirmedNotification extends Notification implements ShouldQueue
     {
         $creator = User::find($this->task->creator_id);
 
-        return "<b>Задание принято</b>\n\n"
-            . "{$this->task->name}\n"
-            . "Руководитель {$creator->short_name} принял ваше задание.";
+        return "✅ <b>Задание принято!</b>\n\n"
+            . "📌 <b>{$this->task->name}</b>\n"
+            . "👤 Руководитель {$creator->short_name} принял ваше задание.\n\n"
+            . "🎉 Отличная работа!";
     }
 
     public function toArray($notifiable)

@@ -37,12 +37,14 @@ class SendDeadlineReminders extends Command
                 continue;
             }
 
-            $lines = ["<b>Напоминание: задачи на сегодня ({$today})</b>\n"];
+            $lines = ["⏰ <b>Напоминание: задачи на сегодня!</b>\n📅 {$today}\n"];
 
             foreach ($tasks as $i => $task) {
-                $status = $task->status === 'Не прочитано' ? 'Новая' : 'Выполняется';
-                $lines[] = ($i + 1) . ". {$task->name} ({$status})";
+                $statusEmoji = $task->status === 'Не прочитано' ? '🆕' : '🔵';
+                $lines[] = "{$statusEmoji} " . ($i + 1) . ". <b>{$task->name}</b>\n     Статус: {$task->status}";
             }
+
+            $lines[] = "\n💪 Удачного рабочего дня!";
 
             $telegram->sendMessage($user->telegram_chat_id, implode("\n", $lines));
             $count++;

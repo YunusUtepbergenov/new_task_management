@@ -43,10 +43,10 @@ class TaskSubmittedNotification extends Notification implements ShouldQueue
     {
         $user = User::find($this->task->user_id);
 
-        return "<b>Задание выполнено</b>\n\n"
-            . "{$this->task->name}\n"
-            . "Исполнитель: {$user->short_name}\n"
-            . "Пожалуйста, проверьте задание.";
+        return "📬 <b>Задание выполнено!</b>\n\n"
+            . "📌 <b>{$this->task->name}</b>\n"
+            . "👤 Исполнитель: {$user->short_name}\n\n"
+            . "✏️ Пожалуйста, проверьте задание.";
     }
 
     public function toArray($notifiable)
