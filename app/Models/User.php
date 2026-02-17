@@ -33,6 +33,9 @@ class User extends Authenticatable
         'avatar',
         'leave',
         'password',
+        'telegram_token',
+        'telegram_chat_id',
+        'telegram_token_expires_at',
     ];
 
     /**
@@ -55,6 +58,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'birth_date' => 'date',
+        'telegram_token_expires_at' => 'datetime',
     ];
 
     /**
@@ -217,6 +221,11 @@ class User extends Authenticatable
 
     public function sector(){
         return $this->belongsTo(Sector::class);
+    }
+
+    public function routeNotificationForTelegram(): ?int
+    {
+        return $this->telegram_chat_id;
     }
 
     public function isDirector(){

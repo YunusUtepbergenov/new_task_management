@@ -3,9 +3,9 @@
 namespace App\Notifications;
 
 use App\Models\User;
+use App\Notifications\Channels\TelegramChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class CommentStoredNotification extends Notification implements ShouldQueue
@@ -30,9 +30,22 @@ class CommentStoredNotification extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
-        return ['database'];
+        $channels = ['database'];
+        if ($notifiable->telegram_chat_id) {
+            $channels[] = TelegramChannel::class;
+        }
+        return $channels;
+    }
+
+    public function toTelegram($notifiable): string
+    {
+        $user = User::find($this->comment->user_id);
+
+        return "<b>Новый комментарий</b>\n\n"
+            . "К заданию: {$this->comment->task->name}\n"
+            . "От: {$user->short_name}";
     }
 
     public function toArray($notifiable)

@@ -15,6 +15,7 @@ $days = [
 ];
 
 Schedule::command('tasks:generate-repeats')->dailyAt('01:00');
+Schedule::command('telegram:deadline-reminders')->dailyAt('08:00');
 
 Schedule::call(function() {
     DB::table('tasks')

@@ -3,9 +3,10 @@
 namespace App\Notifications;
 
 use App\Models\User;
+use App\Notifications\Channels\TelegramChannel;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class NewTaskNotification extends Notification implements ShouldQueue
@@ -25,11 +26,25 @@ class NewTaskNotification extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
-        return ['database'];
+        $channels = ['database'];
+        if ($notifiable->telegram_chat_id) {
+            $channels[] = TelegramChannel::class;
+        }
+        return $channels;
     }
 
+    public function toTelegram($notifiable): string
+    {
+        $creator = User::find($this->task->creator_id);
+        $deadline = Carbon::parse($this->task->extended_deadline ?? $this->task->deadline)->format('d.m.Y');
+
+        return "<b>Новое задание</b>\n\n"
+            . "{$this->task->name}\n"
+            . "От: {$creator->short_name}\n"
+            . "Срок: {$deadline}";
+    }
 
     public function toArray($notifiable)
     {
