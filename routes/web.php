@@ -94,13 +94,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/weekly-tasks', [TaskController::class, 'exportWeeklyTasks'])->name('tasks.weekly_report');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
-
-Route::get('/forgot-password', function () {
-    return view('auth.forgot-password');
-})->middleware('guest')->name('password.request');
 
 Route::get('check-telegram-login', [UserController::class, 'checkUserLogin']);
 Route::get('users/export', [UserController::class, 'export']);
