@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\View\Composers\BirthdayComposer;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 
@@ -31,23 +33,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Paginator::useBootstrap();
-        $birthdays = cache()->remember('birthdays', 60*60*24, function () {
-            $date = now();
 
-            return \App\Models\User::query()
-                ->select('id', 'name', 'avatar', 'birth_date', 'leave')
-                ->where(function ($q) use ($date) {
-                    $q->whereMonth('birth_date', '>', $date->month)
-                    ->orWhere(function ($q) use ($date) {
-                        $q->whereMonth('birth_date', $date->month)
-                            ->whereDay('birth_date', '>=', $date->day);
-                    });
-                })
-                ->orderByRaw('MONTH(birth_date) asc')
-                ->orderByRaw('DAY(birth_date) asc')
-                ->get();
-        });
-
-        view()->share('birthdays', $birthdays);
+        View::composer('layouts.main', BirthdayComposer::class);
     }
 }

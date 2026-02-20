@@ -140,12 +140,7 @@ class PageController extends Controller
     }
 
     public function kpiReport(){
-        $user = Auth::user();
-        if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer() || $user->isHR()){
-            return view('page.reports.kpi');
-        }
-
-        abort(404);
+        return view('page.reports.kpi');
     }
 
     public function userReport($id, $start, $end){
