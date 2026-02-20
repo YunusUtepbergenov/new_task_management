@@ -149,6 +149,8 @@
 
 @script
     <script>
+        let orderedUserIds = [];
+
         function initCreateSelect2() {
             const $modal = $('#create_task');
             const $score = $('#create_score');
@@ -170,8 +172,17 @@
                     $users.select2('destroy');
                 }
                 $users.select2({ dropdownParent: $modal, width: '100%' });
-                $users.off('change.createUsers').on('change.createUsers', function () {
-                    $wire.$set('userIds', $(this).val());
+                $users.off('select2:select.createUsers').on('select2:select.createUsers', function (e) {
+                    orderedUserIds.push(e.params.data.id);
+                    $wire.$set('userIds', [...orderedUserIds]);
+                    var $el = $(e.params.data.element);
+                    $el.detach();
+                    $(this).append($el);
+                    $(this).trigger('change.select2');
+                });
+                $users.off('select2:unselect.createUsers').on('select2:unselect.createUsers', function (e) {
+                    orderedUserIds = orderedUserIds.filter(id => id !== e.params.data.id);
+                    $wire.$set('userIds', [...orderedUserIds]);
                 });
             }
 
@@ -188,6 +199,7 @@
             function openAndInit() {
                 $modal.modal('show');
                 $modal.one('shown.bs.modal', function () {
+                    orderedUserIds = [];
                     initCreateSelect2();
                     $('#create_score').val(null).trigger('change.select2');
                     $('#create_users').val(null).trigger('change.select2');
@@ -204,6 +216,7 @@
 
         $wire.on('close-create-modal', () => {
             $('#create_task').modal('hide');
+            orderedUserIds = [];
         });
     </script>
 @endscript

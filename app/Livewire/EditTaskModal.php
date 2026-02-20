@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\TaskService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -140,13 +141,15 @@ class EditTaskModal extends Component
                 $task->delete();
             }
 
-            $newGroupId = $groupId ?? now()->timestamp;
+            $isMultiple = count($newUserIds) > 1;
+            $newGroupId = $groupId ?? ($isMultiple ? Str::uuid()->toString() : null);
+            $creatorId = $isMultiple ? Auth::id() : $this->creatorId;
 
             foreach ($newUserIds as $userId) {
                 $user = User::findOrFail($userId);
                 Task::create([
                     'group_id' => $newGroupId,
-                    'creator_id' => $this->creatorId,
+                    'creator_id' => $creatorId,
                     'user_id' => $userId,
                     'sector_id' => $user->sector_id,
                     'score_id' => $this->scoreId,

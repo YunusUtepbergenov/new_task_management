@@ -53,10 +53,12 @@ class OrderedTable extends Component
 
         foreach ($this->task_employee as $userId) {
             $user = User::find($userId);
-            
-            if($user->role_id == 2){
+
+            if ($isMultiple) {
+                $creator = Auth::id();
+            } elseif ($user->role_id == 2) {
                 $creator = 2;
-            }else{
+            } else {
                 $creator = Auth::id();
             }
 

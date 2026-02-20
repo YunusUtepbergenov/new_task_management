@@ -195,11 +195,21 @@
             });
         }
 
+        let orderedEmployeeIds = [];
         const $taskEmployee = $('#task_employee');
         if ($taskEmployee.length) {
             $taskEmployee.select2();
-            $taskEmployee.on('change', function () {
-                $wire.$set('task_employee', $(this).val());
+            $taskEmployee.on('select2:select', function (e) {
+                orderedEmployeeIds.push(e.params.data.id);
+                $wire.$set('task_employee', [...orderedEmployeeIds]);
+                var $el = $(e.params.data.element);
+                $el.detach();
+                $(this).append($el);
+                $(this).trigger('change.select2');
+            });
+            $taskEmployee.on('select2:unselect', function (e) {
+                orderedEmployeeIds = orderedEmployeeIds.filter(id => id !== e.params.data.id);
+                $wire.$set('task_employee', [...orderedEmployeeIds]);
             });
         }
 
@@ -222,6 +232,7 @@
         }
 
         $wire.on('form-reset', () => {
+            orderedEmployeeIds = [];
             if ($taskScore.length) {
                 $taskScore.val(null).trigger('change.select2');
             }

@@ -109,6 +109,7 @@
 @script
     <script>
         let pendingFormData = null;
+        let orderedEditUserIds = [];
 
         function initEditSelect2() {
             const $modal = $('#edit_task');
@@ -116,17 +117,32 @@
             const $users = $('#edit_users');
             const $creator = $('#edit_creator');
 
-            if ($score.length && !$score.hasClass('select2-hidden-accessible')) {
-                $score.select2({ dropdownParent: $modal });
-                $score.on('change', function () {
+            if ($score.length) {
+                if ($score.hasClass('select2-hidden-accessible')) {
+                    $score.select2('destroy');
+                }
+                $score.select2({ dropdownParent: $modal, width: '100%' });
+                $score.off('change.editScore').on('change.editScore', function () {
                     $wire.$set('scoreId', $(this).val());
                 });
             }
 
-            if ($users.length && !$users.hasClass('select2-hidden-accessible')) {
-                $users.select2({ dropdownParent: $modal });
-                $users.on('change', function () {
-                    $wire.$set('userIds', $(this).val());
+            if ($users.length) {
+                if ($users.hasClass('select2-hidden-accessible')) {
+                    $users.select2('destroy');
+                }
+                $users.select2({ dropdownParent: $modal, width: '100%' });
+                $users.off('select2:select.editUsers').on('select2:select.editUsers', function (e) {
+                    orderedEditUserIds.push(e.params.data.id);
+                    $wire.$set('userIds', [...orderedEditUserIds]);
+                    var $el = $(e.params.data.element);
+                    $el.detach();
+                    $(this).append($el);
+                    $(this).trigger('change.select2');
+                });
+                $users.off('select2:unselect.editUsers').on('select2:unselect.editUsers', function (e) {
+                    orderedEditUserIds = orderedEditUserIds.filter(id => id !== e.params.data.id);
+                    $wire.$set('userIds', [...orderedEditUserIds]);
                 });
             }
 
@@ -151,7 +167,8 @@
                 $score.val(data.scoreId).trigger('change.select2');
             }
             if ($users.length && data.userIds) {
-                $users.val(data.userIds.map(String)).trigger('change.select2');
+                orderedEditUserIds = data.userIds.map(String);
+                $users.val(orderedEditUserIds).trigger('change.select2');
             }
             if ($creator.length && data.creatorId) {
                 $creator.val(data.creatorId);
@@ -178,6 +195,7 @@
 
         $wire.on('close-edit-modal', () => {
             $('#edit_task').modal('hide');
+            orderedEditUserIds = [];
         });
 
         $wire.on('edit-form-loaded', (params) => {
