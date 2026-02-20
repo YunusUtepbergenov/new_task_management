@@ -15,7 +15,7 @@
     <div class="row filter-row">
         <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
             @if(Auth::user()->isResearcher())
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_task"> Добавить Задачу</a>
+                <a href="#" class="btn add-btn" wire:click.prevent="$dispatch('openCreateTaskModal')"> Добавить Задачу</a>
             @endif
         </div>
     </div>

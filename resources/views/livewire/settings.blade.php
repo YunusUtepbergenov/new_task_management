@@ -96,6 +96,46 @@
                     </form>
                 </div>
             </div>
+            <!-- Telegram Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0"><i class="fa fa-paper-plane mr-2"></i>Telegram</h4>
+                </div>
+                <div class="card-body">
+                    @if ($telegramLinked)
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="badge badge-success" style="font-size: 14px; padding: 6px 12px;">
+                                    <i class="fa fa-check-circle mr-1"></i> Telegram привязан
+                                </span>
+                            </div>
+                            <button class="btn btn-outline-danger btn-sm" wire:click="unlinkTelegram" wire:confirm="Отвязать Telegram от аккаунта?">
+                                <i class="fa fa-unlink mr-1"></i> Отвязать
+                            </button>
+                        </div>
+                    @else
+                        <p class="text-muted mb-3">Привяжите Telegram для получения уведомлений о задачах, сроках и KPI.</p>
+
+                        @if ($telegramToken)
+                            <div class="alert alert-info">
+                                <p class="mb-2"><strong>Ваш токен:</strong></p>
+                                <code style="font-size: 16px; user-select: all;">{{ $telegramToken }}</code>
+                                <p class="mt-2 mb-0 text-muted" style="font-size: 13px;">
+                                    Откройте Telegram бот и отправьте: <code>/start {{ $telegramToken }}</code><br>
+                                    Токен действителен 10 минут.
+                                </p>
+                            </div>
+                        @endif
+
+                        <button class="btn btn-primary btn-sm" wire:click="generateTelegramToken" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="generateTelegramToken">
+                                <i class="fa fa-key mr-1"></i> Сгенерировать токен
+                            </span>
+                            <span wire:loading wire:target="generateTelegramToken">Генерация...</span>
+                        </button>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </div>

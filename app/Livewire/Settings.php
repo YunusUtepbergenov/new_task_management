@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -15,12 +16,16 @@ class Settings extends Component
     public $avatarPreview;
     public $avatarDataUrl;
     public $oldPassword, $newPassword, $confirmPassword;
+    public $telegramToken = null;
+    public $telegramLinked = false;
 
     public function mount(): void
     {
         $this->avatarPreview = Auth::user()->avatar
             ? asset('user_image/' . Auth::user()->avatar)
             : asset('user_image/avatar.jpg');
+
+        $this->telegramLinked = (bool) Auth::user()->telegram_chat_id;
     }
 
     public function updatedAvatar(): void
@@ -96,6 +101,32 @@ class Settings extends Component
         } else {
             $this->addError('oldPassword', 'Неправильный пароль.');
         }
+    }
+
+    public function generateTelegramToken(): void
+    {
+        $plainToken = Str::random(32);
+
+        Auth::user()->update([
+            'telegram_token' => hash('sha256', $plainToken),
+            'telegram_token_expires_at' => now()->addMinutes(10),
+        ]);
+
+        $this->telegramToken = $plainToken;
+        $this->dispatch('success', msg: 'Токен сгенерирован. Действителен 10 минут.');
+    }
+
+    public function unlinkTelegram(): void
+    {
+        Auth::user()->update([
+            'telegram_chat_id' => null,
+            'telegram_token' => null,
+            'telegram_token_expires_at' => null,
+        ]);
+
+        $this->telegramLinked = false;
+        $this->telegramToken = null;
+        $this->dispatch('success', msg: 'Telegram аккаунт отвязан.');
     }
 
     public function render(): \Illuminate\Contracts\View\View

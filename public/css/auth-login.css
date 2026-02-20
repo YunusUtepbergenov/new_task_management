@@ -160,6 +160,18 @@ body {
     font-weight: 600;
 }
 
+.auth-status {
+    margin-bottom: 12px;
+    border: 1px solid #a7f3d0;
+    border-radius: 10px;
+    background: #ecfdf5;
+    padding: 10px 14px;
+    color: #065f46;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
 .auth-alert {
     margin-bottom: 12px;
     border: 1px solid var(--danger-border);
@@ -360,6 +372,12 @@ body.dark-mode .auth-remember {
 
 body.dark-mode .auth-forgot {
     color: #7eb6e1;
+}
+
+body.dark-mode .auth-status {
+    background: #064e3b;
+    border-color: #065f46;
+    color: #a7f3d0;
 }
 
 body.dark-mode .auth-submit {

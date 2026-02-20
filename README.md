@@ -1,66 +1,211 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# CERR Task Management System
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Enterprise task management platform, built with Laravel 12. Manages task assignment, employee KPI scoring, document workflows, and Telegram-based notifications.
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Backend:** PHP 8.2, Laravel 12, Laravel Jetstream, Sanctum
+- **Frontend:** Livewire 4, Alpine.js 3, Tailwind CSS 3
+- **Build Tool:** Vite 6
+- **Database:** MySQL
+- **Exports:** Maatwebsite Excel
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP >= 8.2
+- Composer
+- Node.js & npm
+- MySQL 8.0+
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. **Clone the repository**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone <repository-url>
+cd new_task_management
+```
 
-## Laravel Sponsors
+2. **Install PHP dependencies**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```bash
+composer install
+```
 
-### Premium Partners
+3. **Install frontend dependencies**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[CMS Max](https://www.cmsmax.com/)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-- **[Romega Software](https://romegasoftware.com)**
+```bash
+npm install
+```
 
-## Contributing
+4. **Environment setup**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Code of Conduct
+5. **Configure `.env`**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Set the following variables:
 
-## Security Vulnerabilities
+```dotenv
+# Application
+APP_NAME="Name of Application"
+APP_URL=http://localhost
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=database
+DB_USERNAME=username
+DB_PASSWORD=password
 
-## License
+# Mail (for password reset, notifications)
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=your-email@gmail.com
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Telegram Bot (optional)
+TELEGRAM_BOT_TOKEN=your-bot-token
+TELEGRAM_WEBHOOK_SECRET=your-webhook-secret
+```
+
+6. **Run migrations and seed the database**
+
+```bash
+php artisan migrate
+```
+
+7. **Build frontend assets**
+
+```bash
+npm run build
+```
+
+8. **Start the application**
+
+```bash
+php artisan serve
+```
+
+For development with hot-reload:
+
+```bash
+npm run dev        # in one terminal
+php artisan serve  # in another terminal
+```
+
+## Artisan Commands
+
+### Custom Commands
+
+| Command | Description |
+|---------|-------------|
+| `php artisan tasks:generate-repeats` | Generate recurring tasks (weekly, monthly, quarterly) |
+| `php artisan telegram:set-webhook {url?}` | Register Telegram bot webhook URL |
+| `php artisan telegram:deadline-reminders` | Send Telegram reminders for tasks due today |
+
+### Scheduled Tasks
+
+These commands run automatically via Laravel's scheduler (`php artisan schedule:work`):
+
+| Schedule | Command | Description |
+|----------|---------|-------------|
+| Daily 00:01 | Overdue check | Marks overdue tasks |
+| Daily 01:00 | `tasks:generate-repeats` | Generates recurring tasks |
+| Daily 08:00 | `telegram:deadline-reminders` | Sends deadline reminders via Telegram |
+
+To run the scheduler locally:
+
+```bash
+php artisan schedule:work
+```
+
+### Common Laravel Commands
+
+```bash
+php artisan migrate              # Run database migrations
+php artisan migrate:fresh --seed # Reset database and seed
+php artisan db:seed              # Seed the database
+php artisan test --compact       # Run tests
+php artisan config:clear         # Clear config cache
+php artisan cache:clear          # Clear application cache
+php artisan route:list           # List all routes
+```
+
+## NPM Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Vite dev server with hot-reload |
+| `npm run build` | Build production assets |
+| `npm run preview` | Preview production build |
+
+## Features
+
+### Task Management
+- Create, edit, and track tasks with deadlines
+- Assign tasks to multiple users (group tasks)
+- Recurring tasks (weekly, monthly, quarterly)
+- File attachments and response submissions
+- Task scoring and KPI evaluation
+
+### Role-Based Access
+- **Director** -- Full access, task evaluation
+- **Deputy Director** -- Task creation and evaluation
+- **Sector Head** -- Manages sector tasks and employees
+- **Researcher** -- Views and completes assigned tasks
+
+### Reports & Analytics
+- Weekly task reports with Excel export
+- KPI scoring and performance reports
+- Employee workload tracking
+
+### Document Management
+- Articles, digests, notes, and research journals
+- File upload/download support
+- Multilingual journals (Russian/Uzbek)
+
+### Telegram Integration
+- Bot notifications for new tasks
+- Daily deadline reminders
+- Task status updates
+
+### Employee Management
+- Attendance tracking
+- Vacation management
+- Profile settings
+
+## API Endpoints
+
+Protected by Sanctum authentication:
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/user` | Get authenticated user |
+| `POST` | `/api/telegram/verify-token` | Verify Telegram auth token |
+| `POST` | `/api/telegram/get-user-tasks` | Get user tasks via Telegram |
+| `POST` | `/api/telegram/webhook` | Telegram webhook handler |
+
+## Testing
+
+```bash
+# Run all tests
+php artisan test --compact
+
+# Run specific test file
+php artisan test --compact tests/Feature/PasswordResetTest.php
+
+# Run specific test by name
+php artisan test --compact --filter=testName
+```
+
+## Timezone
+
+The application is configured for `Asia/Tashkent` (UTC+5).

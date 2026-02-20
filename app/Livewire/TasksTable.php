@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use App\Models\{Task, Sector};
 use App\Services\TaskService;
@@ -58,6 +59,12 @@ class TasksTable extends Component
             'weeklyTasks' => $weeklyTasks,
             'all_tasks' => $all_tasks,
         ]);
+    }
+
+    #[On('task-created')]
+    public function refreshTasks(): void
+    {
+        // Re-render triggers fresh data from render()
     }
 
     public function view($task_id): void
