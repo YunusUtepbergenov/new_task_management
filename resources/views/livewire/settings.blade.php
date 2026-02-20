@@ -121,7 +121,7 @@
                                 <p class="mb-2"><strong>Ваш токен:</strong></p>
                                 <code style="font-size: 16px; user-select: all;">{{ $telegramToken }}</code>
                                 <p class="mt-2 mb-0 text-muted" style="font-size: 13px;">
-                                    Откройте Telegram бот и отправьте: <code>/start {{ $telegramToken }}</code><br>
+                                    Откройте <a href="https://telegram.com/ijro_cerr_uz_bot" style="font-weight: bold">Telegram бот</a> и отправьте: <code>/start {{ $telegramToken }}</code><br>
                                     Токен действителен 10 минут.
                                 </p>
                             </div>
