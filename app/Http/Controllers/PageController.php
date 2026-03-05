@@ -93,6 +93,14 @@ class PageController extends Controller
         return view('page.finished_tasks');
     }
 
+    public function archive(){
+        if (!Auth::user()->isDeputy() && !Auth::user()->isHead()) {
+            return redirect()->route('home');
+        }
+
+        return view('page.archive');
+    }
+
     public function reports(){
         return view('page.reports');
     }
@@ -181,7 +189,9 @@ class PageController extends Controller
                             ->groupBy('month')
                             ->get()
                             ->map(function ($vacation) {
-                                $vacation->users = Vacation::where('month', $vacation->month)
+                                $vacation->users = Vacation::
+                                where('year', date('Y'))
+                                ->where('month', $vacation->month)
                                     ->with('user')
                                     ->get()
                                     ->pluck('user');

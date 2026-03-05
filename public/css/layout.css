@@ -2946,3 +2946,59 @@ body.dark-mode .profile_modal .card {
     padding: 0;
     margin: 0;
 }
+
+/* ============================================
+   Pagination
+   ============================================ */
+.pagination {
+    gap: 4px;
+    margin: 0;
+}
+
+.pagination .page-item .page-link {
+    border-radius: 8px !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    background: var(--card-bg) !important;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    min-width: 36px;
+    text-align: center;
+}
+
+.pagination .page-item .page-link:hover {
+    background: #f1f5f9 !important;
+    color: var(--text-primary) !important;
+    border-color: #cbd5e1 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--sidebar-active-bg) !important;
+    border-color: var(--sidebar-active-bg) !important;
+    color: #fff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+body.dark-mode .pagination .page-item .page-link {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #94a3b8 !important;
+}
+
+body.dark-mode .pagination .page-item .page-link:hover {
+    background: #273548 !important;
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .pagination .page-item.active .page-link {
+    background: var(--sidebar-active-bg) !important;
+    border-color: var(--sidebar-active-bg) !important;
+    color: #fff !important;
+}

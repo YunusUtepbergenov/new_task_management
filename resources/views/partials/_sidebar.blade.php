@@ -40,6 +40,12 @@
                     </li>
                 @endif
 
+                @if(Auth::user()->isDeputy() || Auth::user()->isHead())
+                    <li>
+                        <a href="{{ route('archive') }}" wire:navigate.hover><i class="las la-archive"></i><span>Архив задач</span></a>
+                    </li>
+                @endif
+
                 <li><a href="{{ route('kpi') }}" wire:navigate.hover><i class="las la-poll"></i><span>KPI</span></a></li>
 
                 <li class="submenu">

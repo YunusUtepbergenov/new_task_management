@@ -14,6 +14,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [PageController::class, 'dashboard'])->name('home');
     Route::get('ordered', [PageController::class, 'ordered'])->name('ordered');
     Route::get('finished', [PageController::class, 'finished_tasks'])->name('finished');
+    Route::get('archive', [PageController::class, 'archive'])->name('archive');
     Route::get('reports', [PageController::class, 'reports'])->name('reports');
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
     Route::get('vacations', [PageController::class, 'vacations'])->name('vacations');
