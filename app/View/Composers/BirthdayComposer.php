@@ -3,6 +3,7 @@
 namespace App\View\Composers;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class BirthdayComposer
@@ -24,8 +25,12 @@ class BirthdayComposer
                                 ->whereDay('birth_date', '>=', $date->day);
                         });
                 })
-                ->orderByRaw('MONTH(birth_date) asc')
-                ->orderByRaw('DAY(birth_date) asc')
+                ->orderByRaw(DB::connection()->getDriverName() === 'sqlite'
+                    ? "strftime('%m', birth_date) asc"
+                    : 'MONTH(birth_date) asc')
+                ->orderByRaw(DB::connection()->getDriverName() === 'sqlite'
+                    ? "strftime('%d', birth_date) asc"
+                    : 'DAY(birth_date) asc')
                 ->get();
         });
 

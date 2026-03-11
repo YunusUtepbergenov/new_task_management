@@ -18,7 +18,7 @@
                     <a href="{{ route('home') }}" wire:navigate.hover><i class="la la-stream"></i> <span>Проекты и задачи</span></a>
                 </li>
 
-                <li class="submenu">
+                {{-- <li class="submenu">
                     <a href="#"><i class="fa fa-file-text la"></i><span>Документы</span><span class="menu-arrow"></span></a>
                     <ul style="display: none;" id="journals_menu">
                         <li><a href="{{ route('digests.index') }}" wire:navigate>Дайджесты</a></li>
@@ -32,11 +32,17 @@
                             </ul>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
 
                 @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() || Auth::user()->isHR() || Auth::user()->isAccountant())
                     <li>
                         <a href="{{ route('weekly.tasks') }}" wire:navigate.hover><i class="las la-tasks"></i><span>Недельные задачи</span></a>
+                    </li>
+                @endif
+
+                @if(Auth::user()->isDeputy() || Auth::user()->isHead())
+                    <li>
+                        <a href="{{ route('archive') }}" wire:navigate.hover><i class="las la-archive"></i><span>Архив задач</span></a>
                     </li>
                 @endif
 

@@ -1,9 +1,55 @@
 <div>
-    <div wire:loading wire:target="view">
-        <div class="loading">Loading&#8230;</div>
+    {{-- Task loading overlay --}}
+    <div
+        wire:loading.flex
+        wire:target="view"
+        style="position:fixed;inset:0;z-index:1060;align-items:center;justify-content:center;background:rgba(15,23,42,0.45);backdrop-filter:blur(2px);"
+    >
+        <div style="background:var(--card-bg);border-radius:16px;padding:36px 48px;display:flex;flex-direction:column;align-items:center;gap:16px;box-shadow:0 20px 60px rgba(0,0,0,0.18);border:1px solid var(--border-color);">
+            <div style="width:44px;height:44px;border-radius:50%;border:3px solid var(--border-color);border-top-color:var(--sidebar-active-bg);animation:vm-spin 0.7s linear infinite;"></div>
+            <span style="font-size:14px;font-weight:500;color:var(--text-secondary);letter-spacing:0.01em;">Загрузка задачи...</span>
+        </div>
     </div>
 
-    <form wire:submit="taskStore">
+    <form wire:submit="taskStore"
+        x-data="{
+            empIds: [],
+            init() {
+                this.$nextTick(() => {
+                    if (!window.jQuery || !jQuery.fn.select2) return;
+
+                    const $score = jQuery('#task_score');
+                    if ($score.length) {
+                        $score.select2({ width: '100%' });
+                        $score.on('change', () => this.$wire.set('task_score', $score.val()));
+                    }
+
+                    const $emp = jQuery('#task_employee');
+                    if ($emp.length) {
+                        $emp.select2({ width: '100%', closeOnSelect: false });
+                        $emp.on('select2:select', (e) => {
+                            this.empIds.push(e.params.data.id);
+                            this.$wire.set('task_employee', [...this.empIds]);
+                            const $el = jQuery(e.params.data.element);
+                            $el.detach();
+                            $emp.append($el);
+                            $emp.trigger('change.select2');
+                        });
+                        $emp.on('select2:unselect', (e) => {
+                            this.empIds = this.empIds.filter(id => id !== e.params.data.id);
+                            this.$wire.set('task_employee', [...this.empIds]);
+                        });
+                    }
+
+                    this.$wire.on('form-reset', () => {
+                        this.empIds = [];
+                        if ($score.length) $score.val(null).trigger('change.select2');
+                        if ($emp.length) $emp.val(null).trigger('change.select2');
+                    });
+                });
+            }
+        }"
+>
         <div class="task-group mb-3">
             <div class="row">
                 <!-- Task row group -->
@@ -182,63 +228,5 @@
             $('#unplannedTasksChevron').removeClass('fa-chevron-down').addClass('fa-chevron-right');
         });
 
-        Livewire.on('toastr:success', (params) => {
-            toastr.options = { "closeButton": true, "progressBar": true };
-            toastr.success(params.message);
-        });
-
-        const $taskScore = $('#task_score');
-        if ($taskScore.length) {
-            $taskScore.select2();
-            $taskScore.on('change', function () {
-                $wire.$set('task_score', $(this).val());
-            });
-        }
-
-        let orderedEmployeeIds = [];
-        const $taskEmployee = $('#task_employee');
-        if ($taskEmployee.length) {
-            $taskEmployee.select2();
-            $taskEmployee.on('select2:select', function (e) {
-                orderedEmployeeIds.push(e.params.data.id);
-                $wire.$set('task_employee', [...orderedEmployeeIds]);
-                var $el = $(e.params.data.element);
-                $el.detach();
-                $(this).append($el);
-                $(this).trigger('change.select2');
-            });
-            $taskEmployee.on('select2:unselect', function (e) {
-                orderedEmployeeIds = orderedEmployeeIds.filter(id => id !== e.params.data.id);
-                $wire.$set('task_employee', [...orderedEmployeeIds]);
-            });
-        }
-
-        const $deadline = $('.datetimepicker');
-        if ($deadline.length) {
-            $deadline.datetimepicker({
-                format: 'YYYY-MM-DD',
-                useCurrent: false,
-                icons: {
-                    up: "fa fa-angle-up",
-                    down: "fa fa-angle-down",
-                    next: 'fa fa-angle-right',
-                    previous: 'fa fa-angle-left'
-                }
-            });
-
-            $deadline.on('dp.change', function (e) {
-                $wire.$set('deadline', e.date ? e.date.format('YYYY-MM-DD') : null);
-            });
-        }
-
-        $wire.on('form-reset', () => {
-            orderedEmployeeIds = [];
-            if ($taskScore.length) {
-                $taskScore.val(null).trigger('change.select2');
-            }
-            if ($taskEmployee.length) {
-                $taskEmployee.val(null).trigger('change.select2');
-            }
-        });
     </script>
 @endscript

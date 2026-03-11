@@ -241,7 +241,7 @@ class User extends Authenticatable
     }
 
     public function isHR(){
-        return $this->role->name === "Спецалист по работе с персоналом";
+        return $this->role->name === "Специалист по работе с персоналом";
     }
 
     public function isDeputy(){

@@ -266,7 +266,9 @@
                         $('body').addClass('dark-mode');
                     }
 
-                    $('.select2').select2({ width: '100%' });
+                    $('.select2').each(function () {
+                        $(this).select2({ width: '100%', closeOnSelect: !$(this).is('[multiple]') });
+                    });
                 });
 
                 $('#wordForm').submit(function(event){
@@ -365,7 +367,9 @@
                     });
 
                     $('#task-entries').append($newTask);
-                    $newTask.find('.select2').select2({ width: '100%' });
+                    $newTask.find('.select2').each(function () {
+                        $(this).select2({ width: '100%', closeOnSelect: !$(this).is('[multiple]') });
+                    });
 
                     if($('.datetimepicker').length > 0) {
                         $('.datetimepicker').datetimepicker({
@@ -585,7 +589,9 @@
 
                     // Re-init jQuery plugins on navigated-to pages
                     if ($('.select2').length) {
-                        $('.select2').select2({ width: '100%' });
+                        $('.select2').each(function () {
+                            $(this).select2({ width: '100%', closeOnSelect: !$(this).is('[multiple]') });
+                        });
                     }
                     $('[data-toggle="tooltip"]').tooltip();
 

@@ -177,31 +177,37 @@ class TaskController extends Controller
     public function destroy($id)
     {
         $task = Task::where('id', $id)->first();
-        $executers = TaskUser::where('task_id', $task->id)->get();
 
-        if($executers){
+        $tasksToDelete = $task->group_id
+            ? Task::where('group_id', $task->group_id)->get()
+            : collect([$task]);
+
+        foreach ($tasksToDelete as $t) {
+            $executers = TaskUser::where('task_id', $t->id)->get();
             foreach ($executers as $executer) {
                 $executer->delete();
             }
-        }
-        if($task->response){
-            if($task->response->filename){
-                Storage::delete('files/responses/'.$task->response->filename);
-            }
-            $task->response->delete();
-        }
 
-        if($task->files){
-            foreach($task->files as $file){
-                Storage::delete('files/'.$file->name);
-                $file->delete();
+            if ($t->response) {
+                if ($t->response->filename) {
+                    Storage::delete('files/responses/' . $t->response->filename);
+                }
+                $t->response->delete();
             }
-        }
-        if($task->repeat){
-            $task->repeat->delete();
-        }
 
-        $task->delete();
+            if ($t->files) {
+                foreach ($t->files as $file) {
+                    Storage::delete('files/' . $file->name);
+                    $file->delete();
+                }
+            }
+
+            if ($t->repeat) {
+                $t->repeat->delete();
+            }
+
+            $t->delete();
+        }
 
         return back();
     }

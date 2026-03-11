@@ -2,15 +2,20 @@
     @php
         use Carbon\Carbon;
 
-        Carbon::setLocale('ru');
-        $startDate = Carbon::parse($start)->translatedFormat('d');
-        $endDate = Carbon::parse($end)->translatedFormat('d F');
+        $months = [
+            1 => 'январь', 2 => 'февраль', 3 => 'март', 4 => 'апрель',
+            5 => 'май', 6 => 'июнь', 7 => 'июль', 8 => 'август',
+            9 => 'сентябрь', 10 => 'октябрь', 11 => 'ноябрь', 12 => 'декабрь',
+        ];
+
+        $endCarbon  = Carbon::parse($end);
+        $startDate  = Carbon::parse($start)->format('j');
+        $endDate    = $endCarbon->format('j') . ' ' . $months[(int) $endCarbon->format('n')];
     @endphp
     <thead>
         <tr>
             <th colspan="4" align="center" height="50" style="font-family: Cambria; color: #0070C0; font-weight:bold; font-size: 14px">
-                <span style="font-weight:bold; text-transform:uppercase;">СПИСОК</span><br>
-                поручений, запланированных к выполнению в период с {{ $startDate }} по {{ $endDate }} текущего года.
+                Иқтисодий тадқиқотлар ва ислоҳотлар маркази томонидан жорий йилнинг {{ $startDate }}-{{ $endDate }} кунлари тайёрланадиган таҳлилий материаллар РЎЙХАТИ
             </th>
         </tr>
         <tr>
@@ -27,8 +32,8 @@
                 <tr>
                     <td width="5" style="font-family:Calibri; border:1px solid #000;font-size: 12px;">{{ $i++ }}</td>
                     <td width="100" style="border:1px solid #000; font-family:Cambria;font-size: 12px;">{{ $task->name }}</td>
-                    <td width="40" style="font-family:Cambria;border:1px solid #000;font-size: 12px;">{{ $task->score->name }}</td>
-                    <td width="40" style="font-family:Cambria;border:1px solid #000;font-size: 12px;">{{ $task->merged_responsibles }}</td>
+                    <td width="50" style="font-family:Cambria;border:1px solid #000;font-size: 12px;">{{ $task->score->name }}</td>
+                    <td width="50" style="font-family:Cambria;border:1px solid #000;font-size: 12px;">{{ $task->merged_responsibles }}</td>
                 </tr>
             @endforeach
         @endforeach

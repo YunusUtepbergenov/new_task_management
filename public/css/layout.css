@@ -1492,6 +1492,26 @@ body.dark-mode .page-header .nav-tabs-bottom .nav-link:hover {
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
+.export-btn {
+    background: var(--sidebar-active-bg) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 9px 20px !important;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.export-btn:hover {
+    background: #2563eb !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    color: #fff !important;
+}
+
 .task-group .text-danger {
     font-size: 12px;
     margin-top: 4px;
@@ -2292,6 +2312,10 @@ body.dark-mode .card-header .italic {
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes vm-spin {
+    to { transform: rotate(360deg); }
+}
+
 /* Uploaded file indicator */
 .vm-uploaded-file {
     display: flex;
@@ -2945,4 +2969,147 @@ body.dark-mode .profile_modal .card {
     list-style: none;
     padding: 0;
     margin: 0;
+}
+
+/* ============================================
+   Pagination
+   ============================================ */
+.pagination {
+    gap: 4px;
+    margin: 0;
+}
+
+.pagination .page-item .page-link {
+    border-radius: 8px !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    background: var(--card-bg) !important;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    min-width: 36px;
+    text-align: center;
+}
+
+.pagination .page-item .page-link:hover {
+    background: #f1f5f9 !important;
+    color: var(--text-primary) !important;
+    border-color: #cbd5e1 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--sidebar-active-bg) !important;
+    border-color: var(--sidebar-active-bg) !important;
+    color: #fff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+body.dark-mode .pagination .page-item .page-link {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #94a3b8 !important;
+}
+
+body.dark-mode .pagination .page-item .page-link:hover {
+    background: #273548 !important;
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .pagination .page-item.active .page-link {
+    background: var(--sidebar-active-bg) !important;
+    border-color: var(--sidebar-active-bg) !important;
+    color: #fff !important;
+}
+
+/* ============================================
+   Weekly Tasks Overview (wto-*)
+   ============================================ */
+
+.wto-page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.wto-page-header-icon {
+    width: 42px;
+    height: 42px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--sidebar-active-bg);
+    flex-shrink: 0;
+}
+.wto-page-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.wto-page-subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.wto-week-bar {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-radius);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--card-shadow);
+}
+.wto-week-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.wto-week-select {
+    min-width: 220px;
+    border-radius: 8px !important;
+}
+
+.wto-sector-header {
+    background: var(--sidebar-bg) !important;
+    color: #fff !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 20px !important;
+}
+.wto-sector-name {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.wto-task-count {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+}
+
+/* Dark mode overrides for wto-* */
+body.dark-mode .wto-page-title {
+    color: var(--text-primary);
+}
+body.dark-mode .wto-week-bar {
+    background: var(--card-bg);
+    border-color: var(--border-color);
 }
