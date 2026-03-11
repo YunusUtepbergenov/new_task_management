@@ -3786,3 +3786,473 @@ body.dark-mode .settings-telegram-code {
 body.dark-mode .settings-avatar-loading {
     background: rgba(15, 23, 42, 0.85);
 }
+
+/* ============================================
+   Attendance Page
+   ============================================ */
+
+/* Page Header */
+.att-page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.att-page-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.att-page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.att-page-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 2px 0 0;
+    text-transform: capitalize;
+}
+
+/* Card */
+.att-card {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.att-table-wrap {
+    overflow-x: auto;
+}
+
+/* Table */
+.att-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 12px;
+}
+
+.att-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--card-bg);
+    border-bottom: 2px solid var(--border-color);
+    padding: 10px 6px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.att-th-sticky {
+    position: sticky !important;
+    left: 0;
+    z-index: 3 !important;
+    background: var(--card-bg) !important;
+    min-width: 140px;
+    text-align: left !important;
+    padding-left: 16px !important;
+    color: var(--text-primary) !important;
+    font-size: 13px !important;
+}
+
+.att-th-date {
+    min-width: 62px;
+}
+
+.att-date-day {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.att-date-month {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-secondary);
+}
+
+.att-th-weekend .att-date-day,
+.att-th-weekend .att-date-month {
+    color: #ef4444;
+}
+
+.att-th-today {
+    background: rgba(59, 130, 246, 0.06) !important;
+}
+
+.att-th-today .att-date-day {
+    color: var(--sidebar-active-bg);
+}
+
+/* Sector Row */
+.att-sector-row {
+    background: none !important;
+}
+
+.att-sector-cell {
+    background: rgba(59, 130, 246, 0.05);
+    padding: 8px 16px !important;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sidebar-active-bg);
+    letter-spacing: 0.01em;
+    border-bottom: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.att-sector-cell i {
+    margin-right: 6px;
+    font-size: 12px;
+}
+
+/* User Row */
+.att-user-row {
+    transition: background 0.15s ease;
+}
+
+.att-user-row:hover {
+    background: rgba(59, 130, 246, 0.03);
+}
+
+.att-td-name {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--card-bg);
+    padding: 8px 12px 8px 16px !important;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 12.5px;
+}
+
+.att-user-row:hover .att-td-name {
+    background: rgba(59, 130, 246, 0.03);
+}
+
+.att-td-day {
+    padding: 6px 4px !important;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    border-left: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.att-td-weekend {
+    background: rgba(239, 68, 68, 0.03);
+}
+
+.att-td-today {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+/* Time display */
+.att-time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+
+.att-time i {
+    font-size: 10px;
+}
+
+.att-time span {
+    font-size: 11px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+.att-time--in {
+    color: #16a34a;
+}
+
+.att-time--out {
+    color: #dc2626;
+}
+
+.att-empty {
+    color: var(--text-secondary);
+    opacity: 0.4;
+    font-size: 11px;
+}
+
+/* Dark mode */
+body.dark-mode .att-card {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .att-table thead th {
+    background: var(--card-bg);
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .att-th-sticky,
+body.dark-mode .att-td-name {
+    background: var(--card-bg);
+}
+
+body.dark-mode .att-user-row:hover .att-td-name,
+body.dark-mode .att-user-row:hover {
+    background: rgba(59, 130, 246, 0.06);
+}
+
+body.dark-mode .att-sector-cell {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+body.dark-mode .att-td-day {
+    border-left-color: rgba(255, 255, 255, 0.04);
+}
+
+body.dark-mode .att-td-weekend {
+    background: rgba(239, 68, 68, 0.06);
+}
+
+body.dark-mode .att-td-today {
+    background: rgba(59, 130, 246, 0.08);
+}
+
+body.dark-mode .att-th-today {
+    background: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* ============================================
+   Vacations Page
+   ============================================ */
+
+/* Page Header */
+.vac-page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.vac-page-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #22c55e, #10b981);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.vac-page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.vac-page-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 2px 0 0;
+}
+
+/* Grid */
+.vac-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 992px) {
+    .vac-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Card */
+.vac-card {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.vac-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.vac-card--current {
+    border-color: var(--sidebar-active-bg);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25), 0 8px 24px rgba(59, 130, 246, 0.12);
+    background: linear-gradient(180deg, rgba(59, 130, 246, 0.04) 0%, var(--card-bg) 100%);
+}
+
+.vac-card--past {
+    opacity: 0.65;
+}
+
+.vac-card--past:hover {
+    opacity: 1;
+}
+
+/* Card Header */
+.vac-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.vac-month-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(100, 116, 139, 0.08);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.vac-month-icon--current {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--sidebar-active-bg);
+}
+
+.vac-month-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.vac-badge-current {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--sidebar-active-bg);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.vac-user-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Card Body */
+.vac-card-body {
+    padding: 10px 18px 14px;
+}
+
+/* Person Row */
+.vac-person {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.vac-person:last-child {
+    border-bottom: none;
+}
+
+.vac-person-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.vac-person-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.vac-person-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vac-person-role {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.vac-person-period {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Dark mode */
+body.dark-mode .vac-card {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .vac-card--current {
+    border-color: var(--sidebar-active-bg);
+}
+
+body.dark-mode .vac-card-header {
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .vac-person {
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .vac-month-icon {
+    background: rgba(100, 116, 139, 0.15);
+}

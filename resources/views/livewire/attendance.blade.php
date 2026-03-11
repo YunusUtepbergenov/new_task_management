@@ -1,49 +1,65 @@
 <div>
-    <div class="page-header">
-        <div class="row align-items-center">
-            <div class="col">
-                <h3 class="page-title"> Учёт прихода/ухода сотрудников</h3>
-            </div>
+    <div class="att-page-header">
+        <div class="att-page-icon">
+            <i class="fa fa-clock-o"></i>
+        </div>
+        <div>
+            <h3 class="att-page-title">Учёт прихода/ухода</h3>
+            <p class="att-page-subtitle">{{ \Carbon\Carbon::now()->translatedFormat('F Y') }} &middot; Сотрудники центра</p>
         </div>
     </div>
 
-    <div class="table-responsive" id="employeeTable">
-        <table class="table table-bordered table-sm">
-            <thead class="thead-light">
-                <tr>
-                    <th>Сотрудник</th>
-                    @foreach ($dates as $date)
-                        <th class="{{ in_array($date->dayOfWeek, [6, 0]) ? 'text-danger' : '' }}">{{ $date->format('d M') }}</th>
-                    @endforeach
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($dataBySector as $sector => $users)
+    <div class="att-card">
+        <div class="att-table-wrap">
+            <table class="att-table">
+                <thead>
                     <tr>
-                        <th class="sector_name thead-light" colspan="{{ count($dates) + 1 }}">
-                            {{ $sector }}
-                        </th>
+                        <th class="att-th-sticky">Сотрудник</th>
+                        @foreach ($dates as $date)
+                            <th class="att-th-date {{ in_array($date->dayOfWeek, [6, 0]) ? 'att-th-weekend' : '' }} {{ $date->isToday() ? 'att-th-today' : '' }}">
+                                <span class="att-date-day">{{ $date->format('d') }}</span>
+                                <span class="att-date-month">{{ $date->translatedFormat('D') }}</span>
+                            </th>
+                        @endforeach
                     </tr>
-                    @foreach ($users as $user)
-                        <tr>
-                            <td>{{ $user['name'] }}</td>
-                            @foreach ($dates as $date)
-                                @php
-                                    $day = $user['days'][$date->format('Y-m-d')];
-                                @endphp
-                                <td class="{{ in_array($date->dayOfWeek, [6, 0]) ? 'bg-holiday' : '' }}">
-                                    @if ($day['come'] || $day['leave'])
-                                        <div><small><i class="las la-door-open bg-success" style="color: green; font-size:16px"></i> {{ $day['come'] ?? '-' }}</small></div>
-                                        <div><small><i class="las la-door-closed bg-warning" style="color: green; font-size:16px"></i> {{ $day['leave'] ?? '-' }}</small></div>
-                                    @else
-                                        <small>-</small>
-                                    @endif
-                                </td>
-                            @endforeach
+                </thead>
+                <tbody>
+                    @foreach ($dataBySector as $sector => $users)
+                        <tr class="att-sector-row">
+                            <td colspan="{{ count($dates) + 1 }}" class="att-sector-cell">
+                                <i class="fa fa-building-o"></i> {{ $sector }}
+                            </td>
                         </tr>
+                        @foreach ($users as $user)
+                            <tr class="att-user-row">
+                                <td class="att-td-name">{{ $user['name'] }}</td>
+                                @foreach ($dates as $date)
+                                    @php
+                                        $day = $user['days'][$date->format('Y-m-d')];
+                                        $isWeekend = in_array($date->dayOfWeek, [6, 0]);
+                                        $isToday = $date->isToday();
+                                        $hasData = $day['come'] || $day['leave'];
+                                    @endphp
+                                    <td class="att-td-day {{ $isWeekend ? 'att-td-weekend' : '' }} {{ $isToday ? 'att-td-today' : '' }}">
+                                        @if ($hasData)
+                                            <div class="att-time att-time--in">
+                                                <i class="fa fa-sign-in"></i>
+                                                <span>{{ $day['come'] ? \Carbon\Carbon::parse($day['come'])->format('H:i') : '—' }}</span>
+                                            </div>
+                                            <div class="att-time att-time--out">
+                                                <i class="fa fa-sign-out"></i>
+                                                <span>{{ $day['leave'] ? \Carbon\Carbon::parse($day['leave'])->format('H:i') : '—' }}</span>
+                                            </div>
+                                        @else
+                                            <span class="att-empty">—</span>
+                                        @endif
+                                    </td>
+                                @endforeach
+                            </tr>
+                        @endforeach
                     @endforeach
-                @endforeach
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

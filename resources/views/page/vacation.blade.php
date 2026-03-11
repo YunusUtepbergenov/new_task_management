@@ -1,129 +1,71 @@
 @extends('layouts.main')
 
-@section('styles')
-	<!-- Select2 CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
-	<!-- Datatable CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap4.min.css') }}">
-
-	<!-- Datetimepicker CSS -->
-	<link rel="stylesheet" href="{{ asset('assets/css/bootstrap-datetimepicker.min.css') }}">
-@endsection
-
 @section('main')
     @php
-        $months = array(
-            1 => "Январь",
-            2 => "Февраль",
-            3 => "Март",
-            4 => "Апрель",
-            5 => "Май",
-            6 => "Июнь",
-            7 => "Июль",
-            8 => "Август",
-            9 => "Сентябрь",
-            10 => "Октябрь",
-            11 => "Ноябрь",
-            12 => "Декабрь"
-        );
+        $months = [
+            1 => "Январь", 2 => "Февраль", 3 => "Март", 4 => "Апрель",
+            5 => "Май", 6 => "Июнь", 7 => "Июль", 8 => "Август",
+            9 => "Сентябрь", 10 => "Октябрь", 11 => "Ноябрь", 12 => "Декабрь"
+        ];
+        $monthIcons = [
+            1 => 'fa-snowflake-o', 2 => 'fa-snowflake-o', 3 => 'fa-leaf',
+            4 => 'fa-leaf', 5 => 'fa-sun-o', 6 => 'fa-sun-o',
+            7 => 'fa-sun-o', 8 => 'fa-sun-o', 9 => 'fa-leaf',
+            10 => 'fa-leaf', 11 => 'fa-snowflake-o', 12 => 'fa-snowflake-o'
+        ];
     @endphp
-	<!-- Page Content -->
-	<div class="content container-fluid">
-		<!-- Page Header -->
-		<div class="page-header">
-			<div class="row align-items-center">
-				<div class="col">
-					<h3 class="page-title">График Отпусков</h3>
-				</div>
-			</div>
-		</div>
-		<!-- /Page Header -->
 
-		<div class="row">
-			<div class="col-md-12">
-				<div class="table-responsive" id="employeeTable">
-                    <table class="table custom-table mb-0">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Месяц</th>
-                                <th>Сотрудник</th>
-                                <th>Должность</th>
-                                <th>За период работы:</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($vacations as $vacation)
-                                <tr style="{{(now()->month == $vacation->month) ? 'background-color: #ebe9a8' : ''}}">
-                                    <td>{{ $vacation->month }}</td>
-                                    <td>{{ $months[$vacation->month] }}</td>
-                                    <td>
-                                        {!! $vacation->users->map(function ($user) {
-                                            return $user->name;
-                                        })->join('<br>') !!}
-                                    </td>
-                                    <td>
-                                        {!! $vacation->users->map(function ($user) {
-                                            return $user->role->name;
-                                        })->join('<br>') !!}
-                                    </td>
-                                    <td>
-                                        {!! $vacation->users->map(function ($user) {
-                                            $date = \Carbon\Carbon::parse($user->join_date);
-                                            return $date->year(now()->year - 1)->format('Y.m.d') . ' - ' . 
-                                                $date->year(now()->year)->format('Y.m.d');
-                                        })->join('<br>') !!}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-				</div>
-			</div>
-		</div>
+    <div class="content container-fluid">
+        <div class="vac-page-header">
+            <div class="vac-page-icon">
+                <i class="fa fa-calendar-check-o"></i>
+            </div>
+            <div>
+                <h3 class="vac-page-title">График отпусков</h3>
+                <p class="vac-page-subtitle">{{ date('Y') }} год &middot; {{ count($vacations) }} месяцев запланировано</p>
+            </div>
+        </div>
 
-	</div>
-	<!-- /Page Content -->
-@endsection
-
-@section('scripts')
-    <script>
-        $(document).ready(function() {
-
-            $("#user_name").addClass("d-none");
-            $("#email").addClass("d-none");
-
-            jQuery("#createUser").on("submit", function (e) {
-                e.preventDefault();
-                console.log("sheeeeeeesh");
-                var formData = new FormData($("#createUser")[0]);
-                var url = $(this).attr("action");
-
-                $.ajax({
-                    url: url,
-                    method: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (res) {
-                        location.reload();
-                    },
-                    error: function (data) {
-                        $("#user_name").addClass("d-none");
-                        $("#email").addClass("d-none");
-
-                        var errors = data.responseJSON;
-                        if ($.isEmptyObject(errors) == false) {
-                            $.each(errors.errors, function (key, value) {
-                                var ErrorId = "#" + key;
-                                $(ErrorId).removeClass("d-none");
-                                $(ErrorId).text(value);
-                            });
-                        }
-                        console.log(errors);
-                    },
-                });
-            });
-        });
-    </script>
+        <div class="vac-grid">
+            @foreach ($vacations as $vacation)
+                @php
+                    $isCurrent = now()->month == $vacation->month;
+                    $isPast = now()->month > $vacation->month;
+                @endphp
+                <div class="vac-card {{ $isCurrent ? 'vac-card--current' : '' }} {{ $isPast ? 'vac-card--past' : '' }}">
+                    <div class="vac-card-header">
+                        <div class="vac-month-icon {{ $isCurrent ? 'vac-month-icon--current' : '' }}">
+                            <i class="fa {{ $monthIcons[$vacation->month] }}"></i>
+                        </div>
+                        <div>
+                            <span class="vac-month-name">{{ $months[$vacation->month] }}</span>
+                            @if ($isCurrent)
+                                <span class="vac-badge-current">Текущий</span>
+                            @endif
+                        </div>
+                        <span class="vac-user-count">
+                            <i class="fa fa-users"></i> {{ $vacation->users->count() }}
+                        </span>
+                    </div>
+                    <div class="vac-card-body">
+                        @foreach ($vacation->users as $user)
+                            <div class="vac-person">
+                                <img class="vac-person-avatar" src="{{ $user->avatar ? asset('user_image/'.$user->avatar) : asset('user_image/avatar.jpg') }}" alt="">
+                                <div class="vac-person-info">
+                                    <span class="vac-person-name">{{ $user->short_name ?? $user->name }}</span>
+                                    <span class="vac-person-role">{{ $user->role->name }}</span>
+                                </div>
+                                <span class="vac-person-period">
+                                    @php
+                                        $date = \Carbon\Carbon::parse($user->join_date);
+                                    @endphp
+                                    {{ $date->year(now()->year - 1)->format('d.m.Y') }} — {{ $date->year(now()->year)->format('d.m.Y') }}
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
 @endsection
