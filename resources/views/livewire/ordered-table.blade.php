@@ -3,7 +3,45 @@
         <div class="loading">Loading&#8230;</div>
     </div>
 
-    <form wire:submit="taskStore">
+    <form wire:submit="taskStore"
+        x-data="{
+            empIds: [],
+            init() {
+                this.$nextTick(() => {
+                    if (!window.jQuery || !jQuery.fn.select2) return;
+
+                    const $score = jQuery('#task_score');
+                    if ($score.length) {
+                        $score.select2({ width: '100%' });
+                        $score.on('change', () => this.$wire.set('task_score', $score.val()));
+                    }
+
+                    const $emp = jQuery('#task_employee');
+                    if ($emp.length) {
+                        $emp.select2({ width: '100%', closeOnSelect: false });
+                        $emp.on('select2:select', (e) => {
+                            this.empIds.push(e.params.data.id);
+                            this.$wire.set('task_employee', [...this.empIds]);
+                            const $el = jQuery(e.params.data.element);
+                            $el.detach();
+                            $emp.append($el);
+                            $emp.trigger('change.select2');
+                        });
+                        $emp.on('select2:unselect', (e) => {
+                            this.empIds = this.empIds.filter(id => id !== e.params.data.id);
+                            this.$wire.set('task_employee', [...this.empIds]);
+                        });
+                    }
+
+                    this.$wire.on('form-reset', () => {
+                        this.empIds = [];
+                        if ($score.length) $score.val(null).trigger('change.select2');
+                        if ($emp.length) $emp.val(null).trigger('change.select2');
+                    });
+                });
+            }
+        }"
+>
         <div class="task-group mb-3">
             <div class="row">
                 <!-- Task row group -->
@@ -185,60 +223,6 @@
         Livewire.on('toastr:success', (params) => {
             toastr.options = { "closeButton": true, "progressBar": true };
             toastr.success(params.message);
-        });
-
-        const $taskScore = $('#task_score');
-        if ($taskScore.length) {
-            $taskScore.select2();
-            $taskScore.on('change', function () {
-                $wire.$set('task_score', $(this).val());
-            });
-        }
-
-        let orderedEmployeeIds = [];
-        const $taskEmployee = $('#task_employee');
-        if ($taskEmployee.length) {
-            $taskEmployee.select2({ closeOnSelect: false });
-            $taskEmployee.on('select2:select', function (e) {
-                orderedEmployeeIds.push(e.params.data.id);
-                $wire.$set('task_employee', [...orderedEmployeeIds]);
-                var $el = $(e.params.data.element);
-                $el.detach();
-                $(this).append($el);
-                $(this).trigger('change.select2');
-            });
-            $taskEmployee.on('select2:unselect', function (e) {
-                orderedEmployeeIds = orderedEmployeeIds.filter(id => id !== e.params.data.id);
-                $wire.$set('task_employee', [...orderedEmployeeIds]);
-            });
-        }
-
-        const $deadline = $('.datetimepicker');
-        if ($deadline.length) {
-            $deadline.datetimepicker({
-                format: 'YYYY-MM-DD',
-                useCurrent: false,
-                icons: {
-                    up: "fa fa-angle-up",
-                    down: "fa fa-angle-down",
-                    next: 'fa fa-angle-right',
-                    previous: 'fa fa-angle-left'
-                }
-            });
-
-            $deadline.on('dp.change', function (e) {
-                $wire.$set('deadline', e.date ? e.date.format('YYYY-MM-DD') : null);
-            });
-        }
-
-        $wire.on('form-reset', () => {
-            orderedEmployeeIds = [];
-            if ($taskScore.length) {
-                $taskScore.val(null).trigger('change.select2');
-            }
-            if ($taskEmployee.length) {
-                $taskEmployee.val(null).trigger('change.select2');
-            }
         });
     </script>
 @endscript

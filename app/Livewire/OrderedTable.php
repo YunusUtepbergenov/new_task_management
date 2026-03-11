@@ -26,7 +26,14 @@ class OrderedTable extends Component
 
     public function mount(): void
     {
-        $this->sectors = Sector::with('users')->get();
+        $sectors = Sector::with(['users' => fn ($q) => $q->orderBy('role_id')])->get();
+
+        if (Auth::user()->isHead()) {
+            $ownSectorId = Auth::user()->sector_id;
+            $sectors = $sectors->sortBy(fn ($s) => $s->id === $ownSectorId ? 0 : 1)->values();
+        }
+
+        $this->sectors = $sectors;
         $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
     }
 

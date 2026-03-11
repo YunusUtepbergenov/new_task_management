@@ -41,7 +41,7 @@
                     });
                 }
             }"
-            x-init="init()">
+>
             <div class="task-group">
                 <div class="row">
                     <div class="form-group col-lg-2" wire:ignore>

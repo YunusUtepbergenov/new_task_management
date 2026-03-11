@@ -50,7 +50,14 @@ class WeeklyTasksOverview extends Component
     {
         $this->generateWeekOptions();
         $this->selectedWeek = now()->startOfWeek()->toDateString();
-        $this->sectors = Sector::with('users')->get();
+        $sectors = Sector::with(['users' => fn ($q) => $q->orderBy('role_id')])->get();
+
+        if (Auth::user()->isHead()) {
+            $ownSectorId = Auth::user()->sector_id;
+            $sectors = $sectors->sortBy(fn ($s) => $s->id === $ownSectorId ? 0 : 1)->values();
+        }
+
+        $this->sectors = $sectors;
         $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
     }
 
@@ -219,18 +226,33 @@ class WeeklyTasksOverview extends Component
         $tasks = Task::with(['user', 'sector', 'score'])
             ->whereRaw('COALESCE(extended_deadline, deadline) BETWEEN ? AND ?', [$start, $end])
             ->whereIn('sector_id', $allowedSectors)
-            ->orderBy('sector_id')
+            ->orderBy('id')
             ->get()
             ->groupBy(function ($task) {
                 return $task->group_id ?? $task->id;
             });
 
         $groupedBySector = [];
+        $sectorOrder = [];
 
         foreach ($tasks as $group) {
             $main = $group->first();
             $sectorName = $main->sector->name ?? 'Без сектора';
-            $groupedBySector[$sectorName][] = $group->toArray(); // convert each group to array
+            $groupedBySector[$sectorName][] = $group->toArray();
+            if (!isset($sectorOrder[$sectorName])) {
+                $sectorOrder[$sectorName] = $main->sector_id;
+            }
+        }
+
+        uksort($groupedBySector, fn ($a, $b) => $sectorOrder[$a] <=> $sectorOrder[$b]);
+
+        $user = Auth::user();
+        if ($user->isHead() && $user->sector) {
+            $ownSector = $user->sector->name;
+            if (isset($groupedBySector[$ownSector])) {
+                $groupedBySector = [$ownSector => $groupedBySector[$ownSector]]
+                    + $groupedBySector;
+            }
         }
 
         return view('livewire.reports.weekly-tasks-overview', [
