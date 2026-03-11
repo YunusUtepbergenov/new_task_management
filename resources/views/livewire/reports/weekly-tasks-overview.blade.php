@@ -174,7 +174,7 @@
                             <tr wire:key="weekly-row-{{ $main['id'] }}">
                                 <td>{{ $index + 1 }}</td>
                                 <td>
-                                    @if (Auth::user()->isDeputy())
+                                    @if (Auth::user()->isDeputy() || (Auth::user()->isHead() && $main['creator_id'] == Auth::id()))
                                         <div class="dropdown dropdown-action profile-action">
                                             <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                                 <i class="material-icons">more_vert</i>
