@@ -52,6 +52,10 @@
             <span style="background:rgba(59,130,246,0.1);color:var(--sidebar-active-bg);border-radius:20px;padding:1px 7px;font-size:11px;font-weight:600;margin-left:4px;">
                 <i class="fa fa-users"></i> {{ $uniqueResponsibles->count() }}
             </span>
+        @elseif (!empty($main_task['group_id']))
+            <span style="background:rgba(59,130,246,0.1);color:var(--sidebar-active-bg);border-radius:20px;padding:1px 7px;font-size:11px;font-weight:600;margin-left:4px;">
+                <i class="fa fa-users"></i> {{ $main_task['group_member_count'] ?? '' }}
+            </span>
         @endif
     </td>
     <td>

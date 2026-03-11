@@ -31,6 +31,7 @@ class TasksTable extends Component
     public function render(): \Illuminate\Contracts\View\View
     {
         $baseQuery = Task::with('user:id,name,sector_id,role_id')
+            ->selectRaw('tasks.*, (SELECT COUNT(*) FROM tasks AS t2 WHERE t2.group_id = tasks.group_id AND tasks.group_id IS NOT NULL) as group_member_count')
             ->where('user_id', Auth::id())
             ->where('status', '<>', 'Выполнено')
             ->orderByRaw('COALESCE(extended_deadline, deadline)');

@@ -232,6 +232,43 @@
                             @endisset
                         </div>
 
+                        {{-- History / Logs --}}
+                        @if (count($logs))
+                            <div class="vm-section">
+                                <div class="vm-section-header">
+                                    <i class="fa fa-history"></i>
+                                    <span class="vm-section-title">История</span>
+                                    <span class="vm-comment-count">{{ count($logs) }}</span>
+                                </div>
+                                <div class="vm-log-timeline">
+                                    @foreach ($logs as $log)
+                                        <div class="vm-log-entry">
+                                            <div class="vm-log-icon vm-log-icon--{{ $log->action }}">
+                                                <i class="fa {{ match($log->action) {
+                                                    'created' => 'fa-plus-circle',
+                                                    'edited' => 'fa-pencil',
+                                                    'deadline_extended' => 'fa-calendar-plus-o',
+                                                    'submitted' => 'fa-paper-plane',
+                                                    'confirmed' => 'fa-check-circle',
+                                                    'rejected' => 'fa-times-circle',
+                                                    'resubmitted' => 'fa-undo',
+                                                    'users_changed' => 'fa-users',
+                                                    'status_changed' => 'fa-exchange',
+                                                    default => 'fa-circle',
+                                                } }}"></i>
+                                            </div>
+                                            <div class="vm-log-body">
+                                                <span class="vm-log-desc">{{ $log->description }}</span>
+                                                <span class="vm-log-meta">
+                                                    {{ $log->user->short_name ?? '—' }} &middot; {{ $log->created_at->format('d.m.Y H:i') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                         {{-- Comments --}}
                         <div class="vm-comments-section vm-section">
                             <div class="vm-section-header">

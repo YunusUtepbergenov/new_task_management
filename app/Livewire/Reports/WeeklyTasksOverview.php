@@ -17,6 +17,7 @@ use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\WeeklyTasksExport;
 use App\Models\Task;
+use App\Models\TaskLog;
 use Carbon\{Carbon, CarbonPeriod};
 
 #[Lazy]
@@ -147,6 +148,13 @@ class WeeklyTasksOverview extends Component
                 if ($this->is_repeating) {
                     $repeat->update(['task_id' => $task->id]);
                 }
+
+                TaskLog::create([
+                    'task_id' => $task->id,
+                    'user_id' => Auth::id(),
+                    'action' => 'created',
+                    'description' => 'Задача создана',
+                ]);
 
                 event(new TaskCreatedEvent($task));
             });

@@ -6,6 +6,7 @@ use App\Events\TaskCreatedEvent;
 use App\Models\File;
 use App\Models\Sector;
 use App\Models\Task;
+use App\Models\TaskLog;
 use App\Models\User;
 use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
@@ -100,6 +101,13 @@ class CreateTaskModal extends Component
                     ]);
                 }
             }
+
+            TaskLog::create([
+                'task_id' => $task->id,
+                'user_id' => Auth::id(),
+                'action' => 'created',
+                'description' => 'Задача создана',
+            ]);
 
             event(new TaskCreatedEvent($task));
         }

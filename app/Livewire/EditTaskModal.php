@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\File;
 use App\Models\Sector;
 use App\Models\Task;
+use App\Models\TaskLog;
 use App\Models\User;
 use App\Services\TaskService;
 use Carbon\Carbon;
@@ -147,7 +148,7 @@ class EditTaskModal extends Component
 
             foreach ($newUserIds as $userId) {
                 $user = User::findOrFail($userId);
-                Task::create([
+                $newTask = Task::create([
                     'group_id' => $newGroupId,
                     'creator_id' => $creatorId,
                     'user_id' => $userId,
@@ -159,8 +160,27 @@ class EditTaskModal extends Component
                     'status' => 'Не прочитано',
                     'overdue' => 0,
                 ]);
+
+                TaskLog::create([
+                    'task_id' => $newTask->id,
+                    'user_id' => Auth::id(),
+                    'action' => 'users_changed',
+                    'description' => 'Ответственные сотрудники изменены',
+                ]);
+
+                if ($isExtended) {
+                    TaskLog::create([
+                        'task_id' => $newTask->id,
+                        'user_id' => Auth::id(),
+                        'action' => 'deadline_extended',
+                        'description' => 'Срок продлён: ' . Carbon::parse($baseTask->deadline)->format('d.m.Y') . ' → ' . $newDeadline->format('d.m.Y'),
+                    ]);
+                }
             }
         } else {
+            $oldName = $baseTask->name;
+            $oldScoreId = $baseTask->score_id;
+
             foreach ($groupTasks as $task) {
                 $user = User::findOrFail($task->user_id);
                 $task->update([
@@ -174,6 +194,31 @@ class EditTaskModal extends Component
                         : 'Не прочитано',
                     'overdue' => 0,
                 ]);
+
+                if ($oldName !== $this->name || $oldScoreId != $this->scoreId) {
+                    $changes = [];
+                    if ($oldName !== $this->name) {
+                        $changes[] = 'название';
+                    }
+                    if ($oldScoreId != $this->scoreId) {
+                        $changes[] = 'категория';
+                    }
+                    TaskLog::create([
+                        'task_id' => $task->id,
+                        'user_id' => Auth::id(),
+                        'action' => 'edited',
+                        'description' => 'Задача изменена: ' . implode(', ', $changes),
+                    ]);
+                }
+
+                if ($isExtended) {
+                    TaskLog::create([
+                        'task_id' => $task->id,
+                        'user_id' => Auth::id(),
+                        'action' => 'deadline_extended',
+                        'description' => 'Срок продлён: ' . Carbon::parse($baseTask->deadline)->format('d.m.Y') . ' → ' . $newDeadline->format('d.m.Y'),
+                    ]);
+                }
             }
         }
 

@@ -7,6 +7,7 @@ use App\Exports\WeeklyTasksExport;
 use App\Models\File;
 use App\Models\Repeat;
 use App\Models\Task;
+use App\Models\TaskLog;
 use App\Models\TaskUser;
 use App\Models\TelegramDb;
 use App\Models\User;
@@ -77,6 +78,13 @@ class TaskController extends Controller
                     $fileModel->save();
                 }
             }
+            TaskLog::create([
+                'task_id' => $task->id,
+                'user_id' => $request->creator_id,
+                'action' => 'created',
+                'description' => 'Задача создана',
+            ]);
+
             event(new TaskCreatedEvent($task));
         }
 
@@ -129,6 +137,22 @@ class TaskController extends Controller
                     'overdue' => 0,
                 ]);
 
+                TaskLog::create([
+                    'task_id' => $newTask->id,
+                    'user_id' => auth()->id(),
+                    'action' => 'users_changed',
+                    'description' => 'Ответственные сотрудники изменены',
+                ]);
+
+                if ($isExtended) {
+                    TaskLog::create([
+                        'task_id' => $newTask->id,
+                        'user_id' => auth()->id(),
+                        'action' => 'deadline_extended',
+                        'description' => 'Срок продлён: ' . Carbon::parse($baseTask->deadline)->format('d.m.Y') . ' → ' . $newDeadline->format('d.m.Y'),
+                    ]);
+                }
+
                 // Save files for each recreated task
                 if ($request->hasFile('file')) {
                     foreach ($request->file as $file) {
@@ -155,6 +179,31 @@ class TaskController extends Controller
                     'status' => in_array($task->status, ['Ждет подтверждения', 'Выполнено']) ? $task->status : 'Не прочитано',
                     'overdue' => 0,
                 ]);
+
+                if ($task->name !== $request->name || $task->score_id != $request->score_id) {
+                    $changes = [];
+                    if ($task->name !== $request->name) {
+                        $changes[] = 'название';
+                    }
+                    if ($task->score_id != $request->score_id) {
+                        $changes[] = 'категория';
+                    }
+                    TaskLog::create([
+                        'task_id' => $task->id,
+                        'user_id' => auth()->id(),
+                        'action' => 'edited',
+                        'description' => 'Задача изменена: ' . implode(', ', $changes),
+                    ]);
+                }
+
+                if ($isExtended) {
+                    TaskLog::create([
+                        'task_id' => $task->id,
+                        'user_id' => auth()->id(),
+                        'action' => 'deadline_extended',
+                        'description' => 'Срок продлён: ' . Carbon::parse($baseTask->deadline)->format('d.m.Y') . ' → ' . $newDeadline->format('d.m.Y'),
+                    ]);
+                }
 
                 // Replace old files
                 File::where('task_id', $task->id)->delete();
@@ -233,9 +282,21 @@ class TaskController extends Controller
 
         if($request->status == "Started"){
             $task->update(['status' => "Выполняется"]);
+            TaskLog::create([
+                'task_id' => $task->id,
+                'user_id' => auth()->id(),
+                'action' => 'status_changed',
+                'description' => 'Статус изменён на: Выполняется',
+            ]);
         }
         else if($request->status == "Submitted"){
             $task->update(['status' => "Ждет подтверждения"]);
+            TaskLog::create([
+                'task_id' => $task->id,
+                'user_id' => auth()->id(),
+                'action' => 'status_changed',
+                'description' => 'Статус изменён на: Ждет подтверждения',
+            ]);
         }
         return redirect()->back();
     }

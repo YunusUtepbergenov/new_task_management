@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Events\TaskCreatedEvent;
 use App\Models\Sector;
 use App\Models\Task;
+use App\Models\TaskLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Services\TaskService;
@@ -19,6 +20,7 @@ class OrderedTable extends Component
 {
     public $task_score = null, $task_name, $deadline, $task_employee = [], $task_plan = 1;
     public $sectors, $scoresGrouped;
+    public string $weeklySearch = '';
 
     public $is_repeating = false;
     public $repeat_type = null;
@@ -107,6 +109,13 @@ class OrderedTable extends Component
                 if ($this->is_repeating) {
                     $repeat->update(['task_id' => $task->id]);
                 }
+
+                TaskLog::create([
+                    'task_id' => $task->id,
+                    'user_id' => Auth::id(),
+                    'action' => 'created',
+                    'description' => 'Задача создана',
+                ]);
 
                 event(new TaskCreatedEvent($task));
             });
@@ -208,14 +217,28 @@ class OrderedTable extends Component
             ->where('status', '<>', 'Выполнено')
             ->orderByRaw('COALESCE(extended_deadline, deadline)');
 
-        $weeklyTasks = (clone $baseQuery)
+        $weeklyQuery = (clone $baseQuery)
             ->where(function ($query) {
                 $query->where(function ($q) {
                     $q->whereNull('extended_deadline')->where('deadline', '<=', Carbon::now()->endOfWeek());
                 })->orWhere(function ($q) {
                     $q->whereNotNull('extended_deadline')->where('extended_deadline', '<=', Carbon::now()->endOfWeek());
                 });
-            })
+            });
+
+        if ($this->weeklySearch !== '') {
+            $search = $this->weeklySearch;
+            $weeklyQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('status', 'like', "%{$search}%")
+                  ->orWhere('deadline', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $weeklyTasks = $weeklyQuery
             ->get()
             ->groupBy(fn ($task) => $task->group_id ?: $task->id)
             ->map->toArray();

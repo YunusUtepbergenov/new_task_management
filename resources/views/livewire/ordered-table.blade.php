@@ -143,11 +143,24 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header"><strong>Задачи на неделю </strong>
-                    <span class="italic">
-                        ({{ \Carbon\Carbon::now()->startOfWeek()->format('d M Y') }} -
-                        {{ \Carbon\Carbon::now()->endOfWeek()->format('d M Y') }})
-                    </span>
+                <div class="card-header d-flex align-items-center justify-content-between flex-wrap" style="gap: 10px;">
+                    <div>
+                        <strong>Задачи на неделю </strong>
+                        <span class="italic">
+                            ({{ \Carbon\Carbon::now()->startOfWeek()->format('d M Y') }} -
+                            {{ \Carbon\Carbon::now()->endOfWeek()->format('d M Y') }})
+                        </span>
+                    </div>
+                    <div style="position: relative; min-width: 280px; max-width: 400px; flex: 1;">
+                        <i class="fa fa-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:13px;"></i>
+                        <input
+                            type="text"
+                            class="form-control form-control-sm"
+                            wire:model.live.debounce.300ms="weeklySearch"
+                            placeholder="Поиск..."
+                            style="padding-left:32px;border-radius:8px;"
+                        >
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

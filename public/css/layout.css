@@ -3113,3 +3113,88 @@ body.dark-mode .wto-week-bar {
     background: var(--card-bg);
     border-color: var(--border-color);
 }
+
+/* ============================================
+   Task Log Timeline (vm-log-*)
+   ============================================ */
+.vm-log-timeline {
+    position: relative;
+    padding-left: 20px;
+    margin-top: 12px;
+}
+
+.vm-log-timeline::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-color);
+    border-radius: 1px;
+}
+
+.vm-log-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+    position: relative;
+}
+
+.vm-log-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 11px;
+    color: #fff;
+    position: relative;
+    z-index: 1;
+}
+
+.vm-log-icon--created { background: #22c55e; }
+.vm-log-icon--edited { background: #3b82f6; }
+.vm-log-icon--deadline_extended { background: #f59e0b; }
+.vm-log-icon--submitted { background: #3b82f6; }
+.vm-log-icon--confirmed { background: #22c55e; }
+.vm-log-icon--rejected { background: #ef4444; }
+.vm-log-icon--resubmitted { background: #f59e0b; }
+.vm-log-icon--users_changed { background: #8b5cf6; }
+.vm-log-icon--status_changed { background: #94a3b8; }
+
+.vm-log-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.vm-log-desc {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.vm-log-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+}
+
+/* Dark mode */
+body.dark-mode .vm-log-timeline::before {
+    background: #334155;
+}
+
+body.dark-mode .vm-log-desc {
+    color: #e2e8f0;
+}
+
+body.dark-mode .vm-log-meta {
+    color: #94a3b8;
+}
