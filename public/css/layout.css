@@ -2292,6 +2292,10 @@ body.dark-mode .card-header .italic {
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes vm-spin {
+    to { transform: rotate(360deg); }
+}
+
 /* Uploaded file indicator */
 .vm-uploaded-file {
     display: flex;

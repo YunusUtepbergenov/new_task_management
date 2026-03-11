@@ -154,6 +154,11 @@ class WeeklyTasksOverview extends Component
         $this->dispatch('toastr:success', message: 'Задача успешно создана');
     }
 
+    public function view(int $taskId): void
+    {
+        $this->dispatch('taskClicked', id: $taskId);
+    }
+
     public function toggleProtocol($taskId): void
     {
         $task = Task::findOrFail($taskId);
