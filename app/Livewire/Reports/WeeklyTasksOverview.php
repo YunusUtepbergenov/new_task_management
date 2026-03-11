@@ -2,6 +2,14 @@
 
 namespace App\Livewire\Reports;
 
+use App\Events\TaskCreatedEvent;
+use App\Models\Repeat;
+use App\Models\Sector;
+use App\Models\User;
+use App\Services\TaskService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -21,6 +29,17 @@ class WeeklyTasksOverview extends Component
     public $selectedWeek;
     public $weeks = [];
 
+    public $task_score = null;
+    public $task_name;
+    public $deadline;
+    public $task_employee = [];
+    public $task_plan = 1;
+    public $sectors;
+    public $scoresGrouped;
+    public $is_repeating = false;
+    public $repeat_type = null;
+    public $repeat_day = null;
+
     #[On('task-updated')]
     public function refreshTasks(): void
     {
@@ -31,6 +50,8 @@ class WeeklyTasksOverview extends Component
     {
         $this->generateWeekOptions();
         $this->selectedWeek = now()->startOfWeek()->toDateString();
+        $this->sectors = Sector::with('users')->get();
+        $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
     }
 
     public function generateWeekOptions(): void
@@ -46,9 +67,97 @@ class WeeklyTasksOverview extends Component
         $this->weeks = array_reverse($this->weeks);
     }
 
+    public function taskStore(): void
+    {
+        $this->validate([
+            'task_name' => 'required|string|max:255',
+            'task_score' => 'required|integer',
+            'task_employee' => 'required|array|min:1',
+            'deadline' => $this->is_repeating ? 'nullable' : 'required|date',
+            'repeat_type' => $this->is_repeating ? 'required|in:weekly,monthly,quarterly' : 'nullable',
+            'repeat_day' => $this->is_repeating ? 'required|integer|min:1|max:31' : 'nullable',
+        ]);
+
+        $isMultiple = count($this->task_employee) > 1;
+        $groupId = $isMultiple ? Str::uuid() : null;
+
+        foreach ($this->task_employee as $userId) {
+            $user = User::find($userId);
+
+            if ($isMultiple) {
+                $creator = Auth::id();
+            } elseif ($user->role_id == 2) {
+                $creator = 2;
+            } else {
+                $creator = Auth::id();
+            }
+
+            if (!$user || $user->leave) {
+                continue;
+            }
+
+            DB::transaction(function () use ($user, $groupId, $creator) {
+                $repeatId = null;
+
+                $deadline = $this->is_repeating
+                    ? $this->calculateInitialRepeatDeadline($this->repeat_type, (int) $this->repeat_day)
+                    : $this->deadline;
+
+                if ($this->is_repeating) {
+                    $repeat = Repeat::create([
+                        'task_id' => null,
+                        'repeat' => $this->repeat_type,
+                        'day' => $this->repeat_day,
+                    ]);
+                    $repeatId = $repeat->id;
+                }
+
+                $task = Task::create([
+                    'creator_id' => $creator,
+                    'user_id' => $user->id,
+                    'sector_id' => $user->sector->id,
+                    'project_id' => null,
+                    'type_id' => 1,
+                    'priority_id' => 1,
+                    'score_id' => $this->task_score,
+                    'name' => $this->task_name,
+                    'description' => null,
+                    'deadline' => $deadline,
+                    'status' => 'Не прочитано',
+                    'planning_type' => $this->task_plan,
+                    'repeat_id' => $repeatId,
+                    'group_id' => $groupId,
+                ]);
+
+                if ($this->is_repeating) {
+                    $repeat->update(['task_id' => $task->id]);
+                }
+
+                event(new TaskCreatedEvent($task));
+            });
+        }
+
+        $this->reset([
+            'task_score', 'task_name', 'task_employee',
+            'deadline', 'task_plan', 'is_repeating',
+            'repeat_type', 'repeat_day',
+        ]);
+
+        $this->dispatch('form-reset');
+        $this->dispatch('toastr:success', message: 'Задача успешно создана');
+    }
+
     public function toggleProtocol($taskId): void
     {
         $task = Task::findOrFail($taskId);
+        $user = Auth::user();
+
+        if (!$user->isDeputy() && !$user->isHR()) {
+            if (!$user->isHead() || $user->sector_id !== $task->sector_id) {
+                return;
+            }
+        }
+
         $newValue = !$task->for_protocol;
 
         if ($task->group_id) {
@@ -56,6 +165,37 @@ class WeeklyTasksOverview extends Component
         } else {
             $task->update(['for_protocol' => $newValue]);
         }
+    }
+
+    private function calculateInitialRepeatDeadline(string $type, int $day): ?Carbon
+    {
+        $today = now();
+
+        if ($type === 'weekly') {
+            $daysUntil = $day - $today->dayOfWeekIso;
+            if ($daysUntil <= 0) {
+                $daysUntil += 7;
+            }
+            return $today->copy()->addDays($daysUntil)->startOfDay();
+        }
+
+        if ($type === 'monthly') {
+            $daysInMonth = $today->daysInMonth;
+            if ($day >= $today->day && $day <= $daysInMonth) {
+                return $today->copy()->startOfMonth()->addDays($day - 1)->startOfDay();
+            } else {
+                $next = $today->copy()->addMonth();
+                $safeDay = min($day, $next->daysInMonth);
+                return $next->startOfMonth()->addDays($safeDay - 1)->startOfDay();
+            }
+        }
+
+        if ($type === 'quarterly') {
+            $nextQuarterStart = $today->firstOfQuarter()->addMonths(3);
+            return $nextQuarterStart->copy()->addDays($day)->startOfDay();
+        }
+
+        return null;
     }
 
     public function getWeekRange()

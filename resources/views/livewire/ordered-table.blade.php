@@ -198,7 +198,7 @@
         let orderedEmployeeIds = [];
         const $taskEmployee = $('#task_employee');
         if ($taskEmployee.length) {
-            $taskEmployee.select2();
+            $taskEmployee.select2({ closeOnSelect: false });
             $taskEmployee.on('select2:select', function (e) {
                 orderedEmployeeIds.push(e.params.data.id);
                 $wire.$set('task_employee', [...orderedEmployeeIds]);

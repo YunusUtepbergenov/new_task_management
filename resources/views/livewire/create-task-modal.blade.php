@@ -171,7 +171,7 @@
                 if ($users.hasClass('select2-hidden-accessible')) {
                     $users.select2('destroy');
                 }
-                $users.select2({ dropdownParent: $modal, width: '100%' });
+                $users.select2({ dropdownParent: $modal, width: '100%', closeOnSelect: false });
                 $users.off('select2:select.createUsers').on('select2:select.createUsers', function (e) {
                     orderedUserIds.push(e.params.data.id);
                     $wire.$set('userIds', [...orderedUserIds]);
