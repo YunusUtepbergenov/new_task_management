@@ -228,9 +228,5 @@
             $('#unplannedTasksChevron').removeClass('fa-chevron-down').addClass('fa-chevron-right');
         });
 
-        Livewire.on('toastr:success', (params) => {
-            toastr.options = { "closeButton": true, "progressBar": true };
-            toastr.success(params.message);
-        });
     </script>
 @endscript

@@ -10,6 +10,7 @@ use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -34,11 +35,28 @@ class WeeklyTasksOverview extends Component
     public $deadline;
     public $task_employee = [];
     public $task_plan = 1;
-    public $sectors;
-    public $scoresGrouped;
     public $is_repeating = false;
     public $repeat_type = null;
     public $repeat_day = null;
+
+    #[Computed]
+    public function sectors(): \Illuminate\Database\Eloquent\Collection
+    {
+        $sectors = Sector::with(['users' => fn ($q) => $q->orderBy('role_id')])->get();
+
+        if (Auth::user()->isHead()) {
+            $ownSectorId = Auth::user()->sector_id;
+            $sectors = $sectors->sortBy(fn ($s) => $s->id === $ownSectorId ? 0 : 1)->values();
+        }
+
+        return $sectors;
+    }
+
+    #[Computed]
+    public function scoresGrouped(): array
+    {
+        return ['Категории' => (new TaskService())->scoresList()];
+    }
 
     #[On('task-updated')]
     public function refreshTasks(): void
@@ -50,15 +68,6 @@ class WeeklyTasksOverview extends Component
     {
         $this->generateWeekOptions();
         $this->selectedWeek = now()->startOfWeek()->toDateString();
-        $sectors = Sector::with(['users' => fn ($q) => $q->orderBy('role_id')])->get();
-
-        if (Auth::user()->isHead()) {
-            $ownSectorId = Auth::user()->sector_id;
-            $sectors = $sectors->sortBy(fn ($s) => $s->id === $ownSectorId ? 0 : 1)->values();
-        }
-
-        $this->sectors = $sectors;
-        $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
     }
 
     public function generateWeekOptions(): void
@@ -67,11 +76,14 @@ class WeeklyTasksOverview extends Component
         $end = now()->addWeek()->startOfWeek();
         $period = CarbonPeriod::create($start, '1 week', $end);
 
+        $weeks = [];
         foreach ($period as $weekStart) {
-            $this->weeks[] = $weekStart->toDateString();
+            $weeks[$weekStart->toDateString()] =
+                $weekStart->format('d M Y') . ' – ' .
+                $weekStart->copy()->endOfWeek()->format('d M Y');
         }
 
-        $this->weeks = array_reverse($this->weeks);
+        $this->weeks = array_reverse($weeks, true);
     }
 
     public function taskStore(): void
@@ -88,20 +100,16 @@ class WeeklyTasksOverview extends Component
         $isMultiple = count($this->task_employee) > 1;
         $groupId = $isMultiple ? Str::uuid() : null;
 
-        foreach ($this->task_employee as $userId) {
-            $user = User::find($userId);
+        $users = User::whereIn('id', $this->task_employee)->get()->keyBy('id');
 
-            if ($isMultiple) {
-                $creator = Auth::id();
-            } elseif ($user->role_id == 2) {
-                $creator = 2;
-            } else {
-                $creator = Auth::id();
-            }
+        foreach ($this->task_employee as $userId) {
+            $user = $users->get($userId);
 
             if (!$user || $user->leave) {
                 continue;
             }
+
+            $creator = ($isMultiple || $user->role_id != 2) ? Auth::id() : 2;
 
             DB::transaction(function () use ($user, $groupId, $creator) {
                 $repeatId = null;
@@ -122,7 +130,7 @@ class WeeklyTasksOverview extends Component
                 $task = Task::create([
                     'creator_id' => $creator,
                     'user_id' => $user->id,
-                    'sector_id' => $user->sector->id,
+                    'sector_id' => $user->sector_id,
                     'project_id' => null,
                     'type_id' => 1,
                     'priority_id' => 1,
@@ -157,6 +165,45 @@ class WeeklyTasksOverview extends Component
     public function view(int $taskId): void
     {
         $this->dispatch('taskClicked', id: $taskId);
+    }
+
+    public function deleteTask(int $taskId): void
+    {
+        $task = Task::where('id', $taskId)
+            ->where('creator_id', Auth::id())
+            ->first();
+
+        if (!$task) {
+            return;
+        }
+
+        $tasksToDelete = $task->group_id
+            ? Task::where('group_id', $task->group_id)->get()
+            : collect([$task]);
+
+        foreach ($tasksToDelete as $t) {
+            if ($t->response) {
+                if ($t->response->filename) {
+                    \Illuminate\Support\Facades\Storage::delete('files/responses/' . $t->response->filename);
+                }
+                $t->response->delete();
+            }
+
+            if ($t->files) {
+                foreach ($t->files as $file) {
+                    \Illuminate\Support\Facades\Storage::delete('files/' . $file->name);
+                    $file->delete();
+                }
+            }
+
+            if ($t->repeat) {
+                $t->repeat->delete();
+            }
+
+            $t->delete();
+        }
+
+        $this->dispatch('toastr:success', message: 'Задача удалена.');
     }
 
     public function toggleProtocol($taskId): void
@@ -223,26 +270,30 @@ class WeeklyTasksOverview extends Component
         return Excel::download(new WeeklyTasksExport($start, $end), 'weekly_tasks.xlsx');
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         [$start, $end] = $this->getWeekRange();
         $allowedSectors = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16];
-        
-        $tasks = Task::with(['user', 'sector', 'score'])
+
+        $sectorNames = Sector::whereIn('id', $allowedSectors)->pluck('name', 'id');
+
+        $tasks = Task::with([
+                'user:id,name',
+                'score:id,name',
+            ])
+            ->select(['id', 'name', 'status', 'deadline', 'extended_deadline', 'for_protocol', 'creator_id', 'sector_id', 'score_id', 'user_id', 'group_id', 'repeat_id'])
             ->whereRaw('COALESCE(extended_deadline, deadline) BETWEEN ? AND ?', [$start, $end])
             ->whereIn('sector_id', $allowedSectors)
             ->orderBy('id')
             ->get()
-            ->groupBy(function ($task) {
-                return $task->group_id ?? $task->id;
-            });
+            ->groupBy(fn ($task) => $task->group_id ?? $task->id);
 
         $groupedBySector = [];
         $sectorOrder = [];
 
         foreach ($tasks as $group) {
             $main = $group->first();
-            $sectorName = $main->sector->name ?? 'Без сектора';
+            $sectorName = $sectorNames[$main->sector_id] ?? 'Без сектора';
             $groupedBySector[$sectorName][] = $group->toArray();
             if (!isset($sectorOrder[$sectorName])) {
                 $sectorOrder[$sectorName] = $main->sector_id;
@@ -252,16 +303,17 @@ class WeeklyTasksOverview extends Component
         uksort($groupedBySector, fn ($a, $b) => $sectorOrder[$a] <=> $sectorOrder[$b]);
 
         $user = Auth::user();
-        if ($user->isHead() && $user->sector) {
-            $ownSector = $user->sector->name;
-            if (isset($groupedBySector[$ownSector])) {
-                $groupedBySector = [$ownSector => $groupedBySector[$ownSector]]
-                    + $groupedBySector;
+        if ($user->isHead() && $user->sector_id) {
+            $ownSector = $sectorNames[$user->sector_id] ?? null;
+            if ($ownSector && isset($groupedBySector[$ownSector])) {
+                $groupedBySector = [$ownSector => $groupedBySector[$ownSector]] + $groupedBySector;
             }
         }
 
         return view('livewire.reports.weekly-tasks-overview', [
             'groupedTasks' => $groupedBySector,
+            'sectors' => $this->sectors,
+            'scoresGrouped' => $this->scoresGrouped,
         ]);
     }
 }

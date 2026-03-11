@@ -153,11 +153,8 @@
         <div class="wto-week-left">
             <i class="fa fa-calendar" style="color: var(--sidebar-active-bg);"></i>
             <select wire:model.live="selectedWeek" class="form-control wto-week-select">
-                @foreach ($weeks as $weekStart)
-                    <option value="{{ $weekStart }}">
-                        {{ \Carbon\Carbon::parse($weekStart)->format('d M Y') }} -
-                        {{ \Carbon\Carbon::parse($weekStart)->endOfWeek()->format('d M Y') }}
-                    </option>
+                @foreach ($weeks as $value => $label)
+                    <option value="{{ $value }}">{{ $label }}</option>
                 @endforeach
             </select>
         </div>
@@ -207,11 +204,7 @@
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right">
                                                 <a class="dropdown-item" href="javascript:void(0)" wire:click="$dispatch('editTaskClicked', { id: {{ $main['id'] }} })"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
-                                                <form action="{{ route('task.destroy', $main['id']) }}" method="POST">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button class="dropdown-item"><i class="fa fa-trash-o m-r-5"></i>Удалить</button>
-                                                </form>
+                                                <a class="dropdown-item" href="javascript:void(0)" wire:click="deleteTask({{ $main['id'] }})" wire:confirm="Удалить задачу?"><i class="fa fa-trash-o m-r-5"></i> Удалить</a>
                                             </div>
                                         </div>
                                     @endif
@@ -228,7 +221,7 @@
                                         <span class="badge bg-inverse-warning">{{ \Carbon\Carbon::parse($main['deadline'])->format('Y-m-d') }}</span>
                                     @endif
 
-                                    @if (!empty($main['repeat']))
+                                    @if (!empty($main['repeat_id']))
                                         <i class="fa fa-refresh text-info" title="Повторяющаяся задача"></i>
                                     @endif
                                 </td>
@@ -284,11 +277,3 @@
     @endforelse
 </div>
 
-@script
-    <script>
-        Livewire.on('toastr:success', (params) => {
-            toastr.options = { "closeButton": true, "progressBar": true };
-            toastr.success(params.message);
-        });
-    </script>
-@endscript
