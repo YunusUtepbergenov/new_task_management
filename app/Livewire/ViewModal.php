@@ -99,7 +99,7 @@ class ViewModal extends Component
     public function getCoTasks($task): array|\Illuminate\Database\Eloquent\Collection
     {
         if ($task?->group_id) {
-            return Task::with(['user', 'score'])->where('group_id', $task->group_id)->get();
+            return Task::with(['user', 'score', 'response'])->where('group_id', $task->group_id)->get();
         }
 
         return [];
@@ -345,6 +345,7 @@ class ViewModal extends Component
 
         if ($task) {
             $this->logs = $task->logs()->with('user:id,name')->oldest()->get();
+            $this->coTasks = $this->getCoTasks($task);
         }
     }
 }
