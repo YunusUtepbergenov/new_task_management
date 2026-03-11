@@ -154,7 +154,9 @@
             </select>
         </div>
         <div class="align-self-end">
-            <button wire:click="export" class="btn btn-primary">Экспорт в Excel</button>
+            <button wire:click="export" class="btn export-btn">
+                <i class="fa fa-file-excel-o"></i> Экспорт в Excel
+            </button>
         </div>
     </div>
 

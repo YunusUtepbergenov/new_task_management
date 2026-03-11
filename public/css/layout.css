@@ -1492,6 +1492,26 @@ body.dark-mode .page-header .nav-tabs-bottom .nav-link:hover {
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
+.export-btn {
+    background: var(--sidebar-active-bg) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 9px 20px !important;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.export-btn:hover {
+    background: #2563eb !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    color: #fff !important;
+}
+
 .task-group .text-danger {
     font-size: 12px;
     margin-top: 4px;
