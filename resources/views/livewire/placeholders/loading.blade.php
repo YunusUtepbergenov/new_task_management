@@ -1,5 +1,10 @@
-<div class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
-    <div class="spinner-border text-primary" role="status">
-        <span class="sr-only">Загрузка...</span>
+<div class="page-loader">
+    <div class="page-loader-card">
+        <div class="page-loader-dots">
+            <span class="page-loader-dot"></span>
+            <span class="page-loader-dot"></span>
+            <span class="page-loader-dot"></span>
+        </div>
+        <span class="page-loader-text">Загрузка...</span>
     </div>
 </div>
