@@ -12,7 +12,15 @@
         </div>
     </div>
 
-    <h4 class="mb-4">Еженедельный план по секторам</h4>
+    <div class="wto-page-header mb-4">
+        <div class="wto-page-header-icon">
+            <i class="fa fa-calendar-check-o"></i>
+        </div>
+        <div>
+            <h4 class="wto-page-title">Еженедельный план по секторам</h4>
+            <p class="wto-page-subtitle">Задачи на неделю, сгруппированные по секторам</p>
+        </div>
+    </div>
 
     @if (Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy() || Auth::user()->isHead())
         <form wire:submit="taskStore" class="mb-4"
@@ -141,10 +149,10 @@
         </form>
     @endif
 
-    <div class="d-flex justify-content-between mb-3">
-        <div>
-            <label>Выберите неделю:</label>
-            <select wire:model.live="selectedWeek" class="form-control">
+    <div class="wto-week-bar mb-4">
+        <div class="wto-week-left">
+            <i class="fa fa-calendar" style="color: var(--sidebar-active-bg);"></i>
+            <select wire:model.live="selectedWeek" class="form-control wto-week-select">
                 @foreach ($weeks as $weekStart)
                     <option value="{{ $weekStart }}">
                         {{ \Carbon\Carbon::parse($weekStart)->format('d M Y') }} -
@@ -153,17 +161,20 @@
                 @endforeach
             </select>
         </div>
-        <div class="align-self-end">
-            <button wire:click="export" class="btn export-btn">
-                <i class="fa fa-file-excel-o"></i> Экспорт в Excel
-            </button>
-        </div>
+        <button wire:click="export" class="btn export-btn">
+            <i class="fa fa-file-excel-o"></i> Экспорт в Excel
+        </button>
     </div>
 
     @forelse ($groupedTasks as $sectorName => $groups)
         <div class="card mb-4">
-            <div class="card-header" style="background: rgb(15 23 42 / var(--tw-text-opacity, 1));color:#000; text-align:center"><strong>{{ $sectorName }}</strong></div>
-            <div class="card-body table-responsive">
+            <div class="card-header wto-sector-header">
+                <span class="wto-sector-name">
+                    <i class="fa fa-users"></i> {{ $sectorName }}
+                </span>
+                <span class="wto-task-count">{{ count($groups) }}</span>
+            </div>
+            <div class="table-responsive">
                 <table class="table table-nowrap mb-0">
                     <thead>
                         <tr>
@@ -183,7 +194,8 @@
                         @foreach ($groups as $index => $taskGroup)
                             @php
                                 $main = $taskGroup[0];
-                                $users = collect($taskGroup)->pluck('user.short_name')->unique()->join(', ');
+                                $uniqueUsers = collect($taskGroup)->pluck('user.short_name')->unique()->filter()->values();
+                                $users = $uniqueUsers->first();
                             @endphp
                             <tr wire:key="weekly-row-{{ $main['id'] }}">
                                 <td>{{ $index + 1 }}</td>
@@ -220,9 +232,27 @@
                                         <i class="fa fa-refresh text-info" title="Повторяющаяся задача"></i>
                                     @endif
                                 </td>
-                                <td>{{ $users }}</td>
+                                <td>
+                                    {{ $users }}
+                                    @if ($uniqueUsers->count() > 1)
+                                        <span style="background:rgba(59,130,246,0.1);color:var(--sidebar-active-bg);border-radius:20px;padding:1px 7px;font-size:11px;font-weight:600;margin-left:4px;">
+                                            <i class="fa fa-users"></i> {{ collect($taskGroup)->count() }}
+                                        </span>
+                                    @endif
+                                </td>
                                 <td>{{ $main['score']['name'] ?? '' }}</td>
-                                <td>{{ $main['status'] }}</td>
+                                <td>
+                                    @php
+                                        $statusClass = match($main['status']) {
+                                            'Не прочитано'       => 'success',
+                                            'Выполняется'        => 'primary',
+                                            'Ждет подтверждения' => 'danger',
+                                            'Выполнено'          => 'purple',
+                                            default              => 'warning',
+                                        };
+                                    @endphp
+                                    <span class="badge bg-inverse-{{ $statusClass }}">{{ $main['status'] }}</span>
+                                </td>
 
                                 @if (Auth::user()->isDeputy() || Auth::user()->isHR())
                                     <td>

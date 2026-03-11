@@ -1,6 +1,7 @@
 @php
     $main_task = $task[0];
-    $responsibles = collect($task)->pluck('user.short_name')->filter()->join(', ');
+    $uniqueResponsibles = collect($task)->pluck('user.short_name')->filter()->unique()->values();
+    $responsibles = $uniqueResponsibles->first();
 @endphp
 
 <tr wire:key="task-row-{{ $main_task['id'] }}">
@@ -45,7 +46,14 @@
             <i class="fa fa-refresh text-info" title="Повторяющаяся задача"></i>
         @endif
     </td>
-    <td>{{ $responsibles }}</td>
+    <td>
+        {{ $responsibles }}
+        @if ($uniqueResponsibles->count() > 1)
+            <span style="background:rgba(59,130,246,0.1);color:var(--sidebar-active-bg);border-radius:20px;padding:1px 7px;font-size:11px;font-weight:600;margin-left:4px;">
+                <i class="fa fa-users"></i> {{ $uniqueResponsibles->count() }}
+            </span>
+        @endif
+    </td>
     <td>
         @if ($main_task['overdue'] && $main_task['status'] != 'Ждет подтверждения')
             <span class="badge bg-inverse-warning">Просроченный</span>
