@@ -16,6 +16,7 @@ class Settings extends Component
     public $avatarPreview;
     public $avatarDataUrl;
     public $oldPassword, $newPassword, $confirmPassword;
+    public $phone, $internal;
     public $telegramToken = null;
     public $telegramLinked = false;
 
@@ -25,11 +26,18 @@ class Settings extends Component
             ? asset('user_image/' . Auth::user()->avatar)
             : asset('user_image/avatar.jpg');
 
+        $this->phone = Auth::user()->phone;
+        $this->internal = Auth::user()->internal;
         $this->telegramLinked = (bool) Auth::user()->telegram_chat_id;
     }
 
     public function updatedAvatar(): void
     {
+        if (!$this->avatar) {
+            $this->avatarDataUrl = null;
+            return;
+        }
+
         $this->validate([
             'avatar' => 'image|max:5120|mimes:jpg,jpeg,png',
         ]);
@@ -84,6 +92,21 @@ class Settings extends Component
 
         $this->dispatch('success', msg: 'Фото профиля удалено.');
         $this->dispatch('avatar-updated', url: $this->avatarPreview);
+    }
+
+    public function updateContactInfo(): void
+    {
+        $this->validate([
+            'phone' => 'required|min:9',
+            'internal' => 'nullable|max:3',
+        ]);
+
+        $user = Auth::user();
+        $user->phone = $this->phone;
+        $user->internal = $this->internal;
+        $user->save();
+
+        $this->dispatch('success', msg: 'Контактная информация обновлена.');
     }
 
     public function updatePassword(): void
