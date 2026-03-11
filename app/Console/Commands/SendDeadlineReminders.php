@@ -18,24 +18,22 @@ class SendDeadlineReminders extends Command
     {
         $today = Carbon::today()->toDateString();
 
-        $users = User::whereNotNull('telegram_chat_id')->get();
+        $tasksByUser = Task::with('user:id,telegram_chat_id')
+            ->whereHas('user', fn ($q) => $q->whereNotNull('telegram_chat_id'))
+            ->whereRaw('DATE(COALESCE(extended_deadline, deadline)) = ?', [$today])
+            ->whereIn('status', ['Не прочитано', 'Выполняется'])
+            ->get()
+            ->groupBy('user_id');
 
-        if ($users->isEmpty()) {
-            $this->info('No users with linked Telegram accounts.');
+        if ($tasksByUser->isEmpty()) {
+            $this->info('No deadline tasks for today.');
             return self::SUCCESS;
         }
 
         $count = 0;
 
-        foreach ($users as $user) {
-            $tasks = Task::where('user_id', $user->id)
-                ->whereRaw('DATE(COALESCE(extended_deadline, deadline)) = ?', [$today])
-                ->whereIn('status', ['Не прочитано', 'Выполняется'])
-                ->get();
-
-            if ($tasks->isEmpty()) {
-                continue;
-            }
+        foreach ($tasksByUser as $userId => $tasks) {
+            $chatId = $tasks->first()->user->telegram_chat_id;
 
             $lines = ["⏰ <b>Напоминание: задачи на сегодня!</b>\n📅 {$today}\n"];
 
@@ -46,7 +44,7 @@ class SendDeadlineReminders extends Command
 
             $lines[] = "\n💪 Удачного рабочего дня!";
 
-            $telegram->sendMessage($user->telegram_chat_id, implode("\n", $lines));
+            $telegram->sendMessage($chatId, implode("\n", $lines));
             $count++;
         }
 
