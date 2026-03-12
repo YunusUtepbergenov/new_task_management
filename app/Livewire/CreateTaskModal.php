@@ -139,9 +139,7 @@ class CreateTaskModal extends Component
 
     private function loadFilteredSectors($user): void
     {
-        $sectors = Sector::with(['users' => function ($query) {
-            $query->where('leave', 0);
-        }])->get();
+        $sectors = TaskService::cachedSectorsWithUsers();
 
         $this->filteredSectors = [];
         foreach ($sectors as $sector) {
@@ -211,9 +209,7 @@ class CreateTaskModal extends Component
         if ($user->isDirector() || $user->isMailer() || $user->isHead()) {
             $creatorsList->push($user);
         } elseif ($user->isDeputy()) {
-            $sectors = Sector::with(['users' => function ($query) {
-                $query->where('leave', 0);
-            }])->get();
+            $sectors = TaskService::cachedSectorsWithUsers();
 
             foreach ($sectors as $sector) {
                 foreach ($sector->users->whereIn('role_id', [2, 14, 19]) as $u) {

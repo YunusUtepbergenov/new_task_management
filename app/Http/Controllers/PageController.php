@@ -140,9 +140,8 @@ class PageController extends Controller
     }
 
     public function reportTable(){
-        $sectors = Sector::all();
         return view('page.reports.new_report', [
-            'sectors' => $sectors
+            'sectors' => TaskService::cachedSectors()
         ]);
 
     }
@@ -179,11 +178,8 @@ class PageController extends Controller
     }
     
     public function vacations(){
-        $sectors = Sector::with(['users' => function($query){
-            $query->with('role')->where('leave', 0)->orderBy('role_id', 'ASC');
-        }])->get();
-
-        $roles = Role::all();
+        $sectors = TaskService::cachedSectorsWithUsers();
+        $roles = TaskService::cachedRoles();
 
         $vacations = Vacation::with('user')->select('month')
                             ->groupBy('month')

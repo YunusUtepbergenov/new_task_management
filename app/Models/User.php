@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\TaskService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,6 +18,12 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     // use TwoFactorAuthenticatable;
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => TaskService::clearUsersCache());
+        static::deleted(fn () => TaskService::clearUsersCache());
+    }
 
     /**
      * The attributes that are mass assignable.

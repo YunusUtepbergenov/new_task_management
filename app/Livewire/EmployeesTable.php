@@ -4,9 +4,9 @@ namespace App\Livewire;
 
 use App\Models\Repeat;
 use App\Models\Role;
-use App\Models\Sector;
 use App\Models\Task;
 use App\Models\User;
+use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
@@ -19,9 +19,9 @@ class EmployeesTable extends Component
 
     public function mount(): void
     {
-        $this->roles = Role::all();
-        $this->sectorId = Sector::first()?->id;
-        $this->roleId = Role::first()?->id;
+        $this->roles = TaskService::cachedRoles();
+        $this->sectorId = TaskService::cachedSectors()->first()?->id;
+        $this->roleId = TaskService::cachedRoles()->first()?->id;
     }
 
     public function createEmployee(): void
@@ -46,8 +46,8 @@ class EmployeesTable extends Component
         ]);
 
         $this->reset(['userName', 'email', 'birthDate', 'phone']);
-        $this->sectorId = Sector::first()?->id;
-        $this->roleId = Role::first()?->id;
+        $this->sectorId = TaskService::cachedSectors()->first()?->id;
+        $this->roleId = TaskService::cachedRoles()->first()?->id;
 
         $this->dispatch('close-create-modal');
         $this->dispatch('success', msg: 'Сотрудник успешно добавлен.');
@@ -77,9 +77,7 @@ class EmployeesTable extends Component
 
     public function render(): \Illuminate\Contracts\View\View
     {
-        $this->sectors = Sector::with(['users' => function ($query) {
-            $query->with('role')->where('leave', 0)->orderBy('role_id', 'ASC');
-        }])->get();
+        $this->sectors = TaskService::cachedSectorsWithUsers();
 
         return view('livewire.employees-table');
     }

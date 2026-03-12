@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Events\TaskCreatedEvent;
-use App\Models\Sector;
 use App\Models\Task;
 use App\Models\TaskLog;
 use App\Models\User;
@@ -28,7 +27,7 @@ class OrderedTable extends Component
 
     public function mount(): void
     {
-        $sectors = Sector::with(['users' => fn ($q) => $q->orderBy('role_id')])->get();
+        $sectors = TaskService::cachedSectorsWithUsers();
 
         if (Auth::user()->isHead()) {
             $ownSectorId = Auth::user()->sector_id;

@@ -5,7 +5,7 @@ namespace App\Livewire;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use App\Models\{Task, Sector};
+use App\Models\Task;
 use App\Services\TaskService;
 use Carbon\Carbon;
 
@@ -24,7 +24,7 @@ class TasksTable extends Component
 
         // Static data that doesn't change between renders
         $this->username = Auth::user()->name;
-        $this->sectors = Sector::with('users')->get();
+        $this->sectors = TaskService::cachedSectorsWithUsers();
         $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
     }
 

@@ -26,9 +26,7 @@ class EditTaskModal extends Component
     public function mount(): void
     {
         $user = Auth::user();
-        $sectors = Sector::with(['users' => function ($query) {
-            $query->where('leave', 0);
-        }])->get();
+        $sectors = TaskService::cachedSectorsWithUsers();
 
         $this->filteredSectors = [];
         foreach ($sectors as $sector) {

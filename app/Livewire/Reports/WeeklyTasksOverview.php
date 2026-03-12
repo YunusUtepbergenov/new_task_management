@@ -43,7 +43,7 @@ class WeeklyTasksOverview extends Component
     #[Computed]
     public function sectors(): \Illuminate\Database\Eloquent\Collection
     {
-        $sectors = Sector::with(['users' => fn ($q) => $q->orderBy('role_id')])->get();
+        $sectors = TaskService::cachedSectorsWithUsers();
 
         if (Auth::user()->isHead()) {
             $ownSectorId = Auth::user()->sector_id;
