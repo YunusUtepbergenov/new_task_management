@@ -40,7 +40,7 @@ class TaskService
     {
         return Cache::remember('sectors:with_users', self::USER_TTL, function () {
             return Sector::with(['users' => function ($query) {
-                $query->select(['id', 'name', 'sector_id', 'role_id', 'leave', 'avatar'])
+                $query->select(['id', 'name', 'sector_id', 'role_id', 'leave', 'avatar', 'phone', 'birth_date', 'internal'])
                       ->where('leave', 0)
                       ->orderBy('role_id');
             }])->get();
