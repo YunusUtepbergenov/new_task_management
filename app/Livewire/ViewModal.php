@@ -9,10 +9,12 @@ use App\Events\TaskSubmittedEvent;
 use App\Models\Comment;
 use App\Models\Response;
 use App\Models\Task;
+use App\Models\TaskLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -28,14 +30,26 @@ class ViewModal extends Component
         return '<div id="view_task" class="modal custom-modal fade" role="dialog"></div>';
     }
 
-    public $task, $comment, $comments, $profile;
+    public ?int $taskId = null;
+    public $comment, $comments, $profile;
     public $description, $upload;
     public $phone, $internal;
     public $oldPassword, $newPassword, $confirmPassword;
     public $errorMsg, $taskScore, $coTasks;
     public $groupScores = [];
+    public $logs = [];
 
-    private const TASK_EAGER_LOAD = ['user', 'comments', 'files', 'score'];
+    private const TASK_EAGER_LOAD = ['user', 'comments', 'files', 'score', 'logs'];
+
+    #[Computed]
+    public function task(): ?Task
+    {
+        if (!$this->taskId) {
+            return null;
+        }
+
+        return Task::with(self::TASK_EAGER_LOAD)->find($this->taskId);
+    }
 
     public function mount(): void
     {
@@ -47,8 +61,9 @@ class ViewModal extends Component
     #[On('task-updated')]
     public function onTaskUpdated(): void
     {
-        $this->task = null;
+        $this->taskId = null;
         $this->coTasks = [];
+        $this->logs = [];
     }
 
     #[On('taskClicked')]
@@ -56,21 +71,35 @@ class ViewModal extends Component
     {
         $this->reset(['errorMsg', 'taskScore', 'groupScores', 'upload', 'description', 'comment']);
         $this->dispatch('show-modal');
-        $this->task = Task::with(self::TASK_EAGER_LOAD)->find($id);
+        $this->taskId = $id;
+        unset($this->task);
 
-        $this->coTasks = $this->getCoTasks($this->task);
+        $task = $this->task;
 
-        if ($this->task->status === 'Не прочитано' && Auth::id() === $this->task->user_id) {
-            $this->task->update(['status' => 'Выполняется']);
+        if (!$task) {
+            return;
         }
 
-        $this->comments = $this->task->comments()->with('user')->oldest()->get();
+        $this->coTasks = $this->getCoTasks($task);
+
+        if ($task->status === 'Не прочитано' && Auth::id() === $task->user_id) {
+            $task->update(['status' => 'Выполняется']);
+            TaskLog::create([
+                'task_id' => $task->id,
+                'user_id' => Auth::id(),
+                'action' => 'status_changed',
+                'description' => 'Статус изменён: Не прочитано → Выполняется',
+            ]);
+        }
+
+        $this->logs = $task->logs()->with('user:id,name')->oldest()->get();
+        $this->comments = $task->comments()->with('user')->oldest()->get();
     }
 
     public function getCoTasks($task): array|\Illuminate\Database\Eloquent\Collection
     {
         if ($task?->group_id) {
-            return Task::with(['user', 'score'])->where('group_id', $task->group_id)->get();
+            return Task::with(['user', 'score', 'response'])->where('group_id', $task->group_id)->get();
         }
 
         return [];
@@ -98,7 +127,7 @@ class ViewModal extends Component
         ]);
 
         $responseData = [
-            'task_id' => $this->task->id,
+            'task_id' => $this->taskId,
             'user_id' => Auth::id(),
             'description' => $this->description,
         ];
@@ -118,6 +147,12 @@ class ViewModal extends Component
         event(new TaskSubmittedEvent($response->task));
 
         $this->task->update(['status' => 'Ждет подтверждения']);
+        TaskLog::create([
+            'task_id' => $this->taskId,
+            'user_id' => Auth::id(),
+            'action' => 'submitted',
+            'description' => 'Задача отправлена на подтверждение',
+        ]);
         $this->refreshTask();
         $this->description = '';
     }
@@ -183,6 +218,12 @@ class ViewModal extends Component
                     'status' => 'Выполнено',
                     'total' => floatval($this->groupScores[$groupTask->id]),
                 ]);
+                TaskLog::create([
+                    'task_id' => $groupTask->id,
+                    'user_id' => Auth::id(),
+                    'action' => 'confirmed',
+                    'description' => 'Задача подтверждена. Оценка: ' . $this->groupScores[$groupTask->id],
+                ]);
                 event(new TaskConfirmedEvent($groupTask));
             }
         } else {
@@ -200,10 +241,17 @@ class ViewModal extends Component
                 'status' => 'Выполнено',
                 'total' => $task->score ? floatval($this->taskScore) : null,
             ]);
+            TaskLog::create([
+                'task_id' => $task->id,
+                'user_id' => Auth::id(),
+                'action' => 'confirmed',
+                'description' => 'Задача подтверждена' . ($task->score ? '. Оценка: ' . $this->taskScore : ''),
+            ]);
             event(new TaskConfirmedEvent($task));
         }
 
-        $this->task = Task::with(self::TASK_EAGER_LOAD)->find($id);
+        $this->taskId = $id;
+        unset($this->task);
         $this->coTasks = $this->getCoTasks($this->task);
     }
 
@@ -217,6 +265,12 @@ class ViewModal extends Component
 
         $task->response->delete();
         $task->update(['status' => 'Дорабатывается']);
+        TaskLog::create([
+            'task_id' => $task->id,
+            'user_id' => Auth::id(),
+            'action' => 'rejected',
+            'description' => 'Задача отклонена и отправлена на доработку',
+        ]);
         $this->refreshTask();
         event(new TaskRejectedEvent($task));
     }
@@ -224,7 +278,7 @@ class ViewModal extends Component
     public function deleteComment($id): void
     {
         Comment::findOrFail($id)->delete();
-        $this->comments = Comment::with('user')->where('task_id', $this->task->id)->oldest()->get();
+        $this->comments = Comment::with('user')->where('task_id', $this->taskId)->oldest()->get();
     }
 
     public function reSubmit($id): void
@@ -237,6 +291,12 @@ class ViewModal extends Component
 
         $task->response->delete();
         $task->update(['status' => 'Выполняется']);
+        TaskLog::create([
+            'task_id' => $task->id,
+            'user_id' => Auth::id(),
+            'action' => 'resubmitted',
+            'description' => 'Отправка отменена, задача возвращена на доработку',
+        ]);
         $this->refreshTask();
     }
 
@@ -273,11 +333,19 @@ class ViewModal extends Component
 
     public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.view-modal');
+        return view('livewire.view-modal', [
+            'task' => $this->task,
+        ]);
     }
 
     private function refreshTask(): void
     {
-        $this->task = Task::with(self::TASK_EAGER_LOAD)->find($this->task->id);
+        unset($this->task);
+        $task = $this->task;
+
+        if ($task) {
+            $this->logs = $task->logs()->with('user:id,name')->oldest()->get();
+            $this->coTasks = $this->getCoTasks($task);
+        }
     }
 }

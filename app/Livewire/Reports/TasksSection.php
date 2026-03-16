@@ -5,22 +5,19 @@ namespace App\Livewire\Reports;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
+use App\Traits\HasTaskView;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class TasksSection extends Component
 {
+    use HasTaskView;
     public $tasks, $user, $filter = null, $taskCounts = [];
 
     public function mount(): void
     {
         $this->tasks = null;
         $this->user = null;
-    }
-
-    public function view($task_id): void
-    {
-        $this->dispatch('taskClicked', id: $task_id);
     }
 
     #[On('updateUserId')]

@@ -4,11 +4,13 @@ namespace App\Livewire;
 
 use App\Models\Project;
 use App\Models\TaskUser;
+use App\Traits\HasTaskView;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class HelpingTasks extends Component
 {
+    use HasTaskView;
     public $helping_projects, $tasks_without_project;
 
     public function mount(): void
@@ -31,11 +33,6 @@ class HelpingTasks extends Component
         $this->helping_projects = Project::with('tasks')
             ->whereIn('id', $withProject->unique())
             ->get();
-    }
-
-    public function view($task_id): void
-    {
-        $this->dispatch('taskClicked', id: $task_id);
     }
 
     public function render(): \Illuminate\Contracts\View\View

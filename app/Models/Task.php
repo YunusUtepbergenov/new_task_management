@@ -90,6 +90,10 @@ class Task extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function logs(){
+        return $this->hasMany(TaskLog::class);
+    }
+
     public function overdueTasks(){
         return $this->where('overdue', 1);
     }

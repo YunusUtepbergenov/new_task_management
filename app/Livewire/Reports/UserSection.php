@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Reports;
 
-use App\Models\Sector;
+use App\Services\TaskService;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -12,14 +12,14 @@ class UserSection extends Component
 
     public function mount(): void
     {
-        $this->users = Sector::first()->users->where('leave', 0);
+        $this->users = TaskService::cachedSectorsWithUsers()->first()?->users->where('leave', 0) ?? collect();
     }
 
     #[On('updateUsersList')]
     public function updateUsersList($id): void
     {
-        $sector = Sector::with('users')->find($id);
-        $this->users = $sector->users->where('leave', 0);
+        $sector = TaskService::cachedSectorsWithUsers()->find($id);
+        $this->users = $sector ? $sector->users->where('leave', 0) : collect();
         $this->userId = null;
         $this->dispatch('updateSectorTasks', id: $sector->id);
     }

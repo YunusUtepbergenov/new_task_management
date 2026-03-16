@@ -144,7 +144,51 @@
                         @endif
 
                         {{-- Completed Response --}}
-                        @if ($task->response)
+                        @if ($task->group_id && count($coTasks))
+                            @php
+                                $respondedTasks = collect($coTasks)->filter(fn ($ct) => $ct->response);
+                            @endphp
+                            @if ($respondedTasks->count())
+                                <div class="vm-section">
+                                    <div class="vm-section-header">
+                                        <i class="fa fa-check-circle" style="color: #22c55e;"></i>
+                                        <span class="vm-section-title">Ответы участников</span>
+                                        <span class="vm-comment-count">{{ $respondedTasks->count() }}/{{ count($coTasks) }}</span>
+                                    </div>
+                                    @foreach ($respondedTasks as $ct)
+                                        <div class="vm-group-response" style="border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;">
+                                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                                <img style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" src="{{ ($ct->user->avatar) ? asset('user_image/'.$ct->user->avatar) : asset('user_image/avatar.jpg') }}" alt="">
+                                                <span style="font-weight: 600; font-size: 13px; color: var(--text-primary);">{{ $ct->user->short_name }}</span>
+                                                <span style="font-size: 11px; color: var(--text-secondary); margin-left: auto;">{{ $ct->response->created_at->format('d.m.Y H:i') }}</span>
+                                                @can('evaluate', $ct)
+                                                    @if ($ct->status == 'Ждет подтверждения')
+                                                        <button class="btn btn-outline-danger btn-sm" style="border-radius: 6px; font-size: 11px; padding: 2px 10px; margin-left: 4px;" wire:click="taskRejected({{ $ct->id }})">
+                                                            <i class="fa fa-times"></i> Отклонить
+                                                        </button>
+                                                    @endif
+                                                @endcan
+                                            </div>
+                                            <p class="vm-response-text" style="margin-bottom: 6px;">{{ $ct->response->description }}</p>
+                                            @if($ct->response->filename)
+                                                <div class="vm-file-card">
+                                                    <div class="vm-file-card-left">
+                                                        <div class="vm-file-card-icon"><i class="fa fa-file-pdf-o"></i></div>
+                                                        <div>
+                                                            <div class="vm-file-card-name">{{ $ct->response->filename }}</div>
+                                                            <div class="vm-file-card-meta">{{ $ct->response->created_at->format('d.m.Y H:i') }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <a href="{{ route('response.download', $ct->response->filename) }}" class="vm-file-card-download">
+                                                        <i class="fa fa-download"></i>
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        @elseif ($task->response)
                             <div class="vm-section">
                                 <div class="vm-section-header">
                                     <i class="fa fa-check-circle" style="color: #22c55e;"></i>
@@ -231,6 +275,43 @@
                                 <div class="text-danger mt-2" style="font-size: 13px;">{{ $errorMsg }}</div>
                             @endisset
                         </div>
+
+                        {{-- History / Logs --}}
+                        @if (count($logs))
+                            <div class="vm-section">
+                                <div class="vm-section-header">
+                                    <i class="fa fa-history"></i>
+                                    <span class="vm-section-title">История</span>
+                                    <span class="vm-comment-count">{{ count($logs) }}</span>
+                                </div>
+                                <div class="vm-log-timeline">
+                                    @foreach ($logs as $log)
+                                        <div class="vm-log-entry">
+                                            <div class="vm-log-icon vm-log-icon--{{ $log->action }}">
+                                                <i class="fa {{ match($log->action) {
+                                                    'created' => 'fa-plus-circle',
+                                                    'edited' => 'fa-pencil',
+                                                    'deadline_extended' => 'fa-calendar-plus-o',
+                                                    'submitted' => 'fa-paper-plane',
+                                                    'confirmed' => 'fa-check-circle',
+                                                    'rejected' => 'fa-times-circle',
+                                                    'resubmitted' => 'fa-undo',
+                                                    'users_changed' => 'fa-users',
+                                                    'status_changed' => 'fa-exchange',
+                                                    default => 'fa-circle',
+                                                } }}"></i>
+                                            </div>
+                                            <div class="vm-log-body">
+                                                <span class="vm-log-desc">{{ $log->description }}</span>
+                                                <span class="vm-log-meta">
+                                                    {{ $log->user->short_name ?? '—' }} &middot; {{ $log->created_at->format('d.m.Y H:i') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
                         {{-- Comments --}}
                         <div class="vm-comments-section vm-section">

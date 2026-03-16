@@ -2,7 +2,8 @@
 
 namespace App\Livewire\Reports;
 
-use App\Models\{Sector, Task};
+use App\Models\Task;
+use App\Services\TaskService;
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
@@ -35,9 +36,7 @@ class FilterSection extends Component
 
     public function render(): \Illuminate\Contracts\View\View
     {
-        $this->sectors = Sector::with(['users' => function ($query) {
-            $query->where('leave', 0)->orderBy('role_id');
-        }])->get();
+        $this->sectors = TaskService::cachedSectorsWithUsers();
 
         $stats = Task::whereBetween('deadline', [$this->startDate, $this->endDate])
             ->selectRaw('user_id')

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Traits\HasTaskView;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\{Task, User, Scores};
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Archive extends Component
 {
-    use WithPagination;
+    use HasTaskView, WithPagination;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -59,11 +60,6 @@ class Archive extends Component
         $this->score_id = null;
         $this->user_id = null;
         $this->resetPage();
-    }
-
-    public function view(int $task_id): void
-    {
-        $this->dispatch('taskClicked', id: $task_id);
     }
 
     public function render(): \Illuminate\Contracts\View\View

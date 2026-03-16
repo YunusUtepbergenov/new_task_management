@@ -6,6 +6,7 @@ use App\Events\TaskCreatedEvent;
 use App\Models\File;
 use App\Models\Sector;
 use App\Models\Task;
+use App\Models\TaskLog;
 use App\Models\User;
 use App\Services\TaskService;
 use Illuminate\Support\Facades\Auth;
@@ -101,6 +102,13 @@ class CreateTaskModal extends Component
                 }
             }
 
+            TaskLog::create([
+                'task_id' => $task->id,
+                'user_id' => Auth::id(),
+                'action' => 'created',
+                'description' => 'Задача создана',
+            ]);
+
             event(new TaskCreatedEvent($task));
         }
 
@@ -131,9 +139,7 @@ class CreateTaskModal extends Component
 
     private function loadFilteredSectors($user): void
     {
-        $sectors = Sector::with(['users' => function ($query) {
-            $query->where('leave', 0);
-        }])->get();
+        $sectors = TaskService::cachedSectorsWithUsers();
 
         $this->filteredSectors = [];
         foreach ($sectors as $sector) {
@@ -203,9 +209,7 @@ class CreateTaskModal extends Component
         if ($user->isDirector() || $user->isMailer() || $user->isHead()) {
             $creatorsList->push($user);
         } elseif ($user->isDeputy()) {
-            $sectors = Sector::with(['users' => function ($query) {
-                $query->where('leave', 0);
-            }])->get();
+            $sectors = TaskService::cachedSectorsWithUsers();
 
             foreach ($sectors as $sector) {
                 foreach ($sector->users->whereIn('role_id', [2, 14, 19]) as $u) {

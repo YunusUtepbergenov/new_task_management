@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Traits\HasTaskView;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\{Task, User};
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class FinishedTasks extends Component
 {
-    use WithPagination;
+    use HasTaskView, WithPagination;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -36,11 +37,6 @@ class FinishedTasks extends Component
     public function updatedWorkerId(): void
     {
         $this->resetPage();
-    }
-
-    public function view($task_id): void
-    {
-        $this->dispatch('taskClicked', id: $task_id);
     }
 
     public function render(): \Illuminate\Contracts\View\View

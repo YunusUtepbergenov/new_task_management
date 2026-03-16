@@ -2,15 +2,17 @@
 
 namespace App\Livewire;
 
+use App\Traits\HasTaskView;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use App\Models\{Task, Sector};
+use App\Models\Task;
 use App\Services\TaskService;
 use Carbon\Carbon;
 
 class TasksTable extends Component
 {
+    use HasTaskView;
     public $username;
     public $sectors, $scoresGrouped;
 
@@ -24,13 +26,14 @@ class TasksTable extends Component
 
         // Static data that doesn't change between renders
         $this->username = Auth::user()->name;
-        $this->sectors = Sector::with('users')->get();
+        $this->sectors = TaskService::cachedSectorsWithUsers();
         $this->scoresGrouped = ['Категории' => (new TaskService())->scoresList()];
     }
 
     public function render(): \Illuminate\Contracts\View\View
     {
         $baseQuery = Task::with('user:id,name,sector_id,role_id')
+            ->selectRaw('tasks.*, (SELECT COUNT(*) FROM tasks AS t2 WHERE t2.group_id = tasks.group_id AND tasks.group_id IS NOT NULL) as group_member_count')
             ->where('user_id', Auth::id())
             ->where('status', '<>', 'Выполнено')
             ->orderByRaw('COALESCE(extended_deadline, deadline)');
@@ -67,8 +70,4 @@ class TasksTable extends Component
         // Re-render triggers fresh data from render()
     }
 
-    public function view($task_id): void
-    {
-        $this->dispatch('taskClicked', id: $task_id);
-    }
 }
