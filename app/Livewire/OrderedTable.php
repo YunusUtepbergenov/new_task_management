@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use App\Models\Task;
 use App\Models\User;
+use App\Traits\HasTaskDeletion;
+use App\Traits\HasTaskView;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Livewire\Attributes\On;
@@ -12,6 +14,7 @@ use App\Models\Repeat;
 
 class OrderedTable extends Component
 {
+    use HasTaskView, HasTaskDeletion;
     public string $weeklySearch = '';
 
     #[On('task-updated')]
@@ -19,46 +22,6 @@ class OrderedTable extends Component
     public function refreshTasks(): void
     {
         // Re-render triggers fresh data from render()
-    }
-
-    public function deleteTask(int $taskId): void
-    {
-        $task = Task::where('id', $taskId)
-            ->where('creator_id', Auth::id())
-            ->first();
-
-        if (!$task) {
-            return;
-        }
-
-        $tasksToDelete = $task->group_id
-            ? Task::where('group_id', $task->group_id)->get()
-            : collect([$task]);
-
-        foreach ($tasksToDelete as $t) {
-
-            if ($t->response) {
-                if ($t->response->filename) {
-                    \Illuminate\Support\Facades\Storage::delete('files/responses/' . $t->response->filename);
-                }
-                $t->response->delete();
-            }
-
-            if ($t->files) {
-                foreach ($t->files as $file) {
-                    \Illuminate\Support\Facades\Storage::delete('files/' . $file->name);
-                    $file->delete();
-                }
-            }
-
-            if ($t->repeat) {
-                $t->repeat->delete();
-            }
-
-            $t->delete();
-        }
-
-        $this->dispatch('toastr:success', message: 'Задача удалена.');
     }
 
     public function deleteRepeat(int $repeatId): void
@@ -74,11 +37,6 @@ class OrderedTable extends Component
         }
 
         $this->dispatch('toastr:success', message: 'Повторяющаяся задача остановлена.');
-    }
-
-    public function view($task_id): void
-    {
-        $this->dispatch('taskClicked', id: $task_id);
     }
 
     public function updatePlanType($taskId, $newType)

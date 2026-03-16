@@ -4,10 +4,12 @@ namespace App\Livewire\Reports;
 
 use App\Models\Task;
 use App\Models\User as ModelsUser;
+use App\Traits\HasTaskView;
 use Livewire\Component;
 
 class User extends Component
 {
+    use HasTaskView;
     public $userId, $start, $end, $user, $tasks;
     public $editedScores = [];
 
@@ -48,7 +50,4 @@ class User extends Component
         return view('livewire.reports.user');
     }
 
-    public function view($task_id){
-        $this->dispatch('taskClicked', $task_id);
-    }
 }

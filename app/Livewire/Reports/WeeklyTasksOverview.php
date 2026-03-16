@@ -3,6 +3,8 @@
 namespace App\Livewire\Reports;
 
 use App\Models\Sector;
+use App\Traits\HasTaskDeletion;
+use App\Traits\HasTaskView;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
@@ -15,6 +17,8 @@ use Carbon\{Carbon, CarbonPeriod};
 #[Lazy]
 class WeeklyTasksOverview extends Component
 {
+    use HasTaskView, HasTaskDeletion;
+
     public function placeholder(): \Illuminate\Contracts\View\View
     {
         return view('livewire.placeholders.loading');
@@ -50,50 +54,6 @@ class WeeklyTasksOverview extends Component
         }
 
         $this->weeks = array_reverse($weeks, true);
-    }
-
-    public function view(int $taskId): void
-    {
-        $this->dispatch('taskClicked', id: $taskId);
-    }
-
-    public function deleteTask(int $taskId): void
-    {
-        $task = Task::where('id', $taskId)
-            ->where('creator_id', Auth::id())
-            ->first();
-
-        if (!$task) {
-            return;
-        }
-
-        $tasksToDelete = $task->group_id
-            ? Task::where('group_id', $task->group_id)->get()
-            : collect([$task]);
-
-        foreach ($tasksToDelete as $t) {
-            if ($t->response) {
-                if ($t->response->filename) {
-                    \Illuminate\Support\Facades\Storage::delete('files/responses/' . $t->response->filename);
-                }
-                $t->response->delete();
-            }
-
-            if ($t->files) {
-                foreach ($t->files as $file) {
-                    \Illuminate\Support\Facades\Storage::delete('files/' . $file->name);
-                    $file->delete();
-                }
-            }
-
-            if ($t->repeat) {
-                $t->repeat->delete();
-            }
-
-            $t->delete();
-        }
-
-        $this->dispatch('toastr:success', message: 'Задача удалена.');
     }
 
     public function toggleProtocol($taskId): void

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Traits\HasTaskView;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 
 class TasksTable extends Component
 {
+    use HasTaskView;
     public $username;
     public $sectors, $scoresGrouped;
 
@@ -68,8 +70,4 @@ class TasksTable extends Component
         // Re-render triggers fresh data from render()
     }
 
-    public function view($task_id): void
-    {
-        $this->dispatch('taskClicked', id: $task_id);
-    }
 }
