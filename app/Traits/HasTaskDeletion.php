@@ -10,7 +10,11 @@ trait HasTaskDeletion
 {
     public function deleteTask(int $taskId): void
     {
-        $task = Task::where('id', $taskId)->where('creator_id', Auth::id())->first();
+        $user = Auth::user();
+
+        $task = Task::where('id', $taskId)
+            ->when(!$user->isDeputy(), fn ($query) => $query->where('creator_id', $user->id))
+            ->first();
 
         if (!$task) {
             return;
