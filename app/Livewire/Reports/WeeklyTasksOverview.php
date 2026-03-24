@@ -108,18 +108,15 @@ class WeeklyTasksOverview extends Component
             ->groupBy(fn ($task) => $task->group_id ?? $task->id);
 
         $groupedBySector = [];
-        $sectorOrder = [];
+        foreach ($sectorNames as $id => $name) {
+            $groupedBySector[$name] = [];
+        }
 
         foreach ($tasks as $group) {
             $main = $group->first();
             $sectorName = $sectorNames[$main->sector_id] ?? 'Без сектора';
             $groupedBySector[$sectorName][] = $group->toArray();
-            if (!isset($sectorOrder[$sectorName])) {
-                $sectorOrder[$sectorName] = $main->sector_id;
-            }
         }
-
-        uksort($groupedBySector, fn ($a, $b) => $sectorOrder[$a] <=> $sectorOrder[$b]);
 
         $user = Auth::user();
         if ($user->isHead() && $user->sector_id) {
