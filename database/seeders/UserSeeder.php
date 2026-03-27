@@ -27,8 +27,8 @@ class UserSeeder extends Seeder
         ],
         [
             "name" => "Н.К.Ортиков",
-            "sector_id" => 2,
-            "role_id" => 2,
+            "sector_id" => 1,
+            "role_id" => 14,
             "email" => "n.ortiqov@cerr.uz",
             "phone" => "(99) 972-22-61",
             "internal" => "433",
@@ -36,8 +36,8 @@ class UserSeeder extends Seeder
         ],
         [
             "name" => "Х.С.Асадов",
-            "sector_id" => 3,
-            "role_id" => 2,
+            "sector_id" => 1,
+            "role_id" => 14,
             "email" => "k.asadov@cerr.uz",
             "phone" => "(90) 960-16-24",
             "internal" => "409",
