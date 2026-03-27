@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\View\Composers\BirthdayComposer;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
@@ -33,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Paginator::useBootstrap();
+
+        Gate::define('viewPulse', function ($user) {
+            return $user->isDirector();
+        });
 
         View::composer('layouts.main', BirthdayComposer::class);
     }

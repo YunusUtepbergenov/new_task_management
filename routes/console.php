@@ -21,7 +21,7 @@ Schedule::command('telegram:weekly-unsubmitted-reminders')->weeklyOn(6, '09:00')
 Schedule::call(function() {
     DB::table('tasks')
         ->whereRaw('COALESCE(extended_deadline, deadline) <= ?', [Carbon::yesterday()])
-        ->whereIn('status', ['Не прочитано' ,'Выполняется', 'Просроченный'])
+        ->whereIn('status', ['Не прочитано', 'Выполняется', 'Просроченный', 'Дорабатывается'])
         ->where('overdue', 0)
         ->update(['overdue' => 1]);
 })->dailyAt('00:01');
