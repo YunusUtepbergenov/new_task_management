@@ -45,7 +45,25 @@ class TelegramWebhookTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_start_with_valid_token_links_account(): void
+    public function test_start_shows_welcome_message(): void
+    {
+        $this->mock(TelegramBotService::class, function ($mock) {
+            $mock->shouldReceive('sendMessage')->once()->andReturn(true);
+        });
+
+        $response = $this->postJson('/api/telegram/webhook', [
+            'message' => [
+                'chat' => ['id' => 999888],
+                'text' => '/start',
+            ],
+        ], [
+            'X-Telegram-Bot-Api-Secret-Token' => 'test-secret',
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_valid_token_links_account(): void
     {
         $this->seed();
 
@@ -63,7 +81,7 @@ class TelegramWebhookTest extends TestCase
         $this->postJson('/api/telegram/webhook', [
             'message' => [
                 'chat' => ['id' => 999888],
-                'text' => "/start {$plainToken}",
+                'text' => $plainToken,
             ],
         ], [
             'X-Telegram-Bot-Api-Secret-Token' => 'test-secret',
@@ -74,7 +92,7 @@ class TelegramWebhookTest extends TestCase
         $this->assertNull($user->telegram_token);
     }
 
-    public function test_start_with_expired_token_fails(): void
+    public function test_expired_token_fails(): void
     {
         $this->seed();
 
@@ -92,7 +110,7 @@ class TelegramWebhookTest extends TestCase
         $this->postJson('/api/telegram/webhook', [
             'message' => [
                 'chat' => ['id' => 999888],
-                'text' => "/start {$plainToken}",
+                'text' => $plainToken,
             ],
         ], [
             'X-Telegram-Bot-Api-Secret-Token' => 'test-secret',

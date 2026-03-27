@@ -33,8 +33,8 @@ class TelegramWebhookController extends Controller
         $chatId = $message['chat']['id'];
         $text = trim($message['text']);
 
-        if (str_starts_with($text, '/start')) {
-            $this->handleStart($chatId, $text);
+        if ($text === '/start') {
+            $this->handleStart($chatId);
         } elseif ($text === '/tasks') {
             $this->handleTasks($chatId);
         } elseif ($text === '/kpi') {
@@ -43,6 +43,8 @@ class TelegramWebhookController extends Controller
             $this->handleHelp($chatId);
         } elseif ($text === '/unlink') {
             $this->handleUnlink($chatId);
+        } elseif (!str_starts_with($text, '/')) {
+            $this->handleToken($chatId, $text);
         } else {
             $this->telegram->sendMessage($chatId, "🤔 Неизвестная команда.\n\n📖 Введите /help для списка команд.");
         }
@@ -50,16 +52,20 @@ class TelegramWebhookController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    private function handleStart(int $chatId, string $text): void
+    private function handleStart(int $chatId): void
     {
-        $parts = explode(' ', $text, 2);
-        $token = $parts[1] ?? null;
+        $user = User::where('telegram_chat_id', $chatId)->first();
 
-        if (!$token) {
-            $this->telegram->sendMessage($chatId, "👋 <b>Добро пожаловать в Ijro.cerr.uz!</b>\n\n🔑 Для привязки аккаунта сгенерируйте токен в настройках веб-приложения и отправьте:\n\n<code>/start ваш_токен</code>");
+        if ($user) {
+            $this->telegram->sendMessage($chatId, "👋 <b>С возвращением, {$user->short_name}!</b>\n\n📋 Введите /help для списка команд.");
             return;
         }
 
+        $this->telegram->sendMessage($chatId, "👋 <b>Добро пожаловать в Ijro.cerr.uz!</b>\n\n🔑 Для привязки аккаунта сгенерируйте токен в настройках веб-приложения и отправьте его сюда.");
+    }
+
+    private function handleToken(int $chatId, string $token): void
+    {
         $hashedToken = hash('sha256', $token);
 
         $user = User::where('telegram_token', $hashedToken)

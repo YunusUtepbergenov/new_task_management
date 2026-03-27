@@ -114,17 +114,21 @@
                                 <div class="settings-telegram-steps">
                                     <div class="settings-telegram-step">
                                         <span class="settings-step-num">1</span>
-                                        <span>Откройте <a href="https://telegram.com/ijro_cerr_uz_bot" target="_blank" class="settings-link">Telegram бот</a></span>
+                                        <span>Откройте <a href="https://t.me/ijro_cerr_uz_bot" target="_blank" class="settings-link">@ijro_cerr_uz_bot</a></span>
                                     </div>
                                     <div class="settings-telegram-step">
                                         <span class="settings-step-num">2</span>
-                                        <span>Отправьте: <code>/start {{ $telegramToken }}</code></span>
+                                        <span>Нажмите <b>Start</b></span>
+                                    </div>
+                                    <div class="settings-telegram-step">
+                                        <span class="settings-step-num">3</span>
+                                        <span>Отправьте токен: <code>{{ $telegramToken }}</code></span>
                                     </div>
                                 </div>
                                 <p class="settings-telegram-hint"><i class="fa fa-clock-o"></i> Токен действителен 10 минут</p>
                             </div>
                         @else
-                            <p class="settings-telegram-desc">Привяжите Telegram для получения уведомлений.</p>
+                            <p class="settings-telegram-desc">Привяжите Telegram для получения уведомлений через бот <a href="https://t.me/ijro_cerr_uz_bot" target="_blank" class="settings-link">@ijro_cerr_uz_bot</a>.</p>
                         @endif
                         <button class="btn settings-btn settings-btn--primary" wire:click="generateTelegramToken" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="generateTelegramToken">
