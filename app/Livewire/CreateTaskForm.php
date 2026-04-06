@@ -61,14 +61,15 @@ class CreateTaskForm extends Component
 
         $users = User::whereIn('id', $this->task_employee)->get()->keyBy('id');
 
+        $firstUser = $users->get($this->task_employee[0]);
+        $creator = ($firstUser && $firstUser->role_id == 2) ? 2 : Auth::id();
+
         foreach ($this->task_employee as $userId) {
             $user = $users->get($userId);
 
             if (!$user || $user->leave) {
                 continue;
             }
-
-            $creator = ($isMultiple || $user->role_id != 2) ? Auth::id() : 2;
 
             DB::transaction(function () use ($user, $groupId, $creator) {
                 $repeatId = null;

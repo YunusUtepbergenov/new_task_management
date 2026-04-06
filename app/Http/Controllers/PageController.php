@@ -132,7 +132,14 @@ class PageController extends Controller
             'sectors' => $sectors,
             'scoresGrouped' => $scoresGrouped
         ]);
+    }
 
+    public function protocolTasks(){
+        if (Auth::user()->isResearcher() || Auth::user()->isHead()){
+            return redirect()->route('home');
+        }
+
+        return view('page.reports.protocol');
     }
 
     public function reportTable(){

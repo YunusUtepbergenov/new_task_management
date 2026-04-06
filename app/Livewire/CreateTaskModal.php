@@ -69,7 +69,13 @@ class CreateTaskModal extends Component
 
         $isMultiple = count($this->userIds) > 1;
         $groupId = $isMultiple ? Str::uuid()->toString() : null;
-        $creatorId = $isMultiple ? Auth::id() : ($this->creatorId ?? Auth::id());
+
+        if ($isMultiple) {
+            $firstUser = User::find($this->userIds[0]);
+            $creatorId = ($firstUser && $firstUser->isHead()) ? 2 : Auth::id();
+        } else {
+            $creatorId = $this->creatorId ?? Auth::id();
+        }
 
         foreach ($this->userIds as $userId) {
             $user = User::findOrFail($userId);

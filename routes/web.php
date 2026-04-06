@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/weekly-tasks', [PageController::class, 'weeklyTasks'])->name('weekly.tasks');
+    Route::get('/protocol-tasks', [PageController::class, 'protocolTasks'])->name('protocol.tasks');
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
 

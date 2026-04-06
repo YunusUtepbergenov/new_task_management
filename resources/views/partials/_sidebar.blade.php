@@ -40,6 +40,12 @@
                     </li>
                 @endif
 
+                @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy() || Auth::user()->isHR())
+                    <li>
+                        <a href="{{ route('protocol.tasks') }}" wire:navigate.hover><i class="las la-file-alt"></i><span>Протокол</span></a>
+                    </li>
+                @endif
+
                 @if(Auth::user()->isDeputy() || Auth::user()->isHead())
                     <li>
                         <a href="{{ route('archive') }}" wire:navigate.hover><i class="las la-archive"></i><span>Архив задач</span></a>

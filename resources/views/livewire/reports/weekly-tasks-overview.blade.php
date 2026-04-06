@@ -23,9 +23,9 @@
                 @endforeach
             </select>
         </div>
-        <button wire:click="export" class="btn export-btn">
-            <i class="fa fa-file-excel-o"></i> Экспорт в Excel
-        </button>
+        <a href="{{ route('protocol.tasks') }}" class="btn export-btn" wire:navigate>
+            <i class="fa fa-file-text-o"></i> Протокол
+        </a>
     </div>
 
     @foreach ($groupedTasks as $sectorName => $groups)
