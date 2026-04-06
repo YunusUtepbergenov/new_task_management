@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Traits\HasTaskDeletion;
 use App\Traits\HasTaskView;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
@@ -12,7 +13,7 @@ use Carbon\Carbon;
 
 class TasksTable extends Component
 {
-    use HasTaskView;
+    use HasTaskView, HasTaskDeletion;
     public $username;
     public $sectors, $scoresGrouped;
 

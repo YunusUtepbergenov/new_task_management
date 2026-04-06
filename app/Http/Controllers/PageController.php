@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use App\Models\User;
 use App\Models\Sector;
 use App\Models\Journal;
-use App\Models\Project;
 use App\Exports\OffDaysWorkExport;
 use App\Exports\TasksExport;
 use App\Models\Vacation;
@@ -31,8 +29,6 @@ class PageController extends Controller
         $maintainerScores = (new TaskService())->maintainerList();
         $ictScores = (new TaskService())->ictList();
 
-
-        
         $scoresGrouped = [];
 
         if (Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy()) {
@@ -254,24 +250,37 @@ class PageController extends Controller
     }
     
     public function getDocuments(){
-        $tasks = Task::with('response')->where('score_id', 5)->where('deadline', '>', '2025-01-01')->where('status', 'Выполнено')->get();
+        $tasks = Task::with('response')->where('score_id', 1)->where('deadline', '>', '2025-01-01')->where('status', 'Выполнено')->get();
 
-        // Create a ZIP file to download all files at once
-        $zipFileName = 'files_2025.zip';
         $zip = new ZipArchive;
-        $zipPath = storage_path('app/' . $zipFileName);
+        $zipPath = sys_get_temp_dir() . '/files_2025.zip';
 
-        if ($zip->open($zipPath, ZipArchive::CREATE) === TRUE) {
-            foreach ($tasks as $task) {
-                $filePath = storage_path('app/files/responses/' . $task->response->filename);
-                if (file_exists($filePath)) {
-                    $zip->addFile($filePath, basename($filePath));
-                }
-            }
-            $zip->close();
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
+            return back()->with('error', 'Не удалось создать ZIP архив.');
         }
 
-        // return file download
+        $fileCount = 0;
+        foreach ($tasks as $task) {
+            if (!$task->response || empty($task->response->filename)) {
+                continue;
+            }
+            $filePath = storage_path('app/files/responses/' . $task->response->filename);
+            if (file_exists($filePath)) {
+                $zip->addFromString(basename($filePath), file_get_contents($filePath));
+                $fileCount++;
+            }
+        }
+
+        if ($fileCount === 0) {
+            $zip->close();
+            if (file_exists($zipPath)) {
+                unlink($zipPath);
+            }
+            return back()->with('error', 'Нет файлов для скачивания.');
+        }
+
+        $zip->close();
+
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 

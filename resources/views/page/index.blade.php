@@ -5,5 +5,6 @@
 
     @livewire('tasks-table')
 
+    @livewire('edit-task-modal')
     @livewire('create-task-modal')
 @endsection
