@@ -27,8 +27,8 @@ class AuthenticationTest extends TestCase
         $this->seed();
 
         $response = $this->post('/login', [
-            'email' => 'y.utepbergenov@cerr.uz',
-            'password' => 'yu3667500',
+            'email' => 'a.ivanov@example.com',
+            'password' => 'password',
         ]);
 
         $this->assertAuthenticated();
@@ -40,7 +40,7 @@ class AuthenticationTest extends TestCase
         $this->seed();
         
         $this->post('/login', [
-            'email' => 'y.utepbergenov@cerr.uz',
+            'email' => 'a.ivanov@example.com',
             'password' => 'wrong-password',
         ]);
 

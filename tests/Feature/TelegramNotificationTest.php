@@ -59,7 +59,7 @@ class TelegramNotificationTest extends TestCase
         $mock = $this->mock(TelegramBotService::class, function ($mock) {
             $mock->shouldReceive('sendMessage')
                 ->once()
-                ->with(123456, \Mockery::type('string'), 'HTML')
+                ->with(123456, \Mockery::type('string'))
                 ->andReturn(true);
         });
 

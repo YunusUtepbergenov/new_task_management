@@ -20,8 +20,8 @@ class TasksTest extends TestCase
         $this->seed();
 
         $response = $this->post('/login', [
-            'email' => 'y.utepbergenov@cerr.uz',
-            'password' => 'yu3667500',
+            'email' => 'a.ivanov@example.com',
+            'password' => 'password',
         ]);
 
         $this->assertAuthenticated();
@@ -56,7 +56,7 @@ class TasksTest extends TestCase
         $this->seed();
 
         $response = $this->post('/login', [
-            'email' => 'o.khakimov@cerr.uz',
+            'email' => 'a.ivanov@example.com',
             'password' => 'password',
         ]);
 
@@ -72,8 +72,8 @@ class TasksTest extends TestCase
         $this->seed();
 
         $response = $this->post('/login', [
-            'email' => 'y.utepbergenov@cerr.uz',
-            'password' => 'yu3667500',
+            'email' => 'l.mirzaev@example.com',
+            'password' => 'password',
         ]);
 
         $this->assertAuthenticated();
