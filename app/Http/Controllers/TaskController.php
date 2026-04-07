@@ -328,9 +328,9 @@ class TaskController extends Controller
     public function searchTasks(Request $request){
         $user = auth()->user();
         if($user->isDirector() || $user->isDeputy() || $user->isHead() || $user->isMailer() || $user->isHR() || $user->role_id == 2){
-            $tasks = Task::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->orWhere('description', 'LIKE', "%{$request->term}%")->get();
+            $tasks = Task::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->orWhere('description', 'LIKE', "%{$request->term}%")->latest()->get();
         }else{
-            $tasks = Task::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->where('user_id', $user->id)->get();
+            $tasks = Task::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->where('user_id', $user->id)->latest()->get();
         }
         $users = User::select(['id', 'name'])->where('name', 'LIKE', "%{$request->term}%")->get();
 
@@ -346,9 +346,9 @@ class TaskController extends Controller
             });
         }
 
-        $tasks = $tasks->merge($users);
+        $results = $users->merge($tasks);
 
-        return $tasks->toJson();
+        return $results->toJson();
     }
 
     public function bulkStore(Request $request){

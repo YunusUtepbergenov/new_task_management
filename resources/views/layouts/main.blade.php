@@ -63,7 +63,7 @@
 						   </a>
 							<form action="{{ route('task.search') }}" id="searchForm" method="POST">
                                 @csrf
-								<input class="form-control" type="text" name="term" id="search_field" placeholder="Поиск задач, документов..." autocomplete="off">
+								<input class="form-control" type="text" name="term" id="search_field" placeholder="Поиск задач, документов..." autocomplete="off" onkeydown="if(event.key==='Enter') event.preventDefault();">
 								<i class="fa fa-search search-icon-right"></i>
 								<button type="button" class="search-clear-btn" id="search_clear">
 									<i class="fa fa-times"></i>
