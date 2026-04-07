@@ -56,8 +56,7 @@
                     <button wire:click="sendMessage"
                             wire:confirm="Отправить сообщение выбранным пользователям?"
                             wire:loading.attr="disabled"
-                            class="btn btn-primary btn-block"
-                            @if(count($selectedUserIds) === 0 || empty($messageText)) disabled @endif>
+                            class="btn btn-primary btn-block">
                         <span wire:loading.remove wire:target="sendMessage"><i class="fa fa-paper-plane"></i> Отправить</span>
                         <span wire:loading wire:target="sendMessage"><i class="fa fa-spinner fa-spin"></i> Отправка...</span>
                     </button>
