@@ -1517,20 +1517,22 @@ table.dataTable thead > tr > td.sorting {
     margin-bottom: 5px;
 }
 .add-btn {
-    background-color: #256c6c;
-    border: 1px solid rgb(15 23 42 / var(--tw-text-opacity, 1));
+    background-color: var(--sidebar-active-bg);
+    border: none;
+    border-radius: 8px;
     margin-right: 10px;
     color: #fff;
     float: right;
-    font-weight: 520;
+    font-weight: 500;
     min-width: 140px;
-    padding: 5px;
+    padding: 8px 18px;
+    transition: background 0.2s, box-shadow 0.2s;
 }
 .add-btn:hover,
 .add-btn:focus,
 .add-btn:active {
-    background-color: black;
-    border: 1px solid black;
+    background-color: #2563eb;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
     color: #fff;
 }
 .add-btn i {

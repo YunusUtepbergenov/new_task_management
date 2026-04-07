@@ -79,80 +79,87 @@
     <!-- Create Employee Modal -->
     @if (Auth::user()->isHR())
         <div id="create_employee" class="modal custom-modal fade" role="dialog" wire:ignore.self>
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 620px;">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Новый сотрудник</h5>
+                    <div class="vm-header">
+                        <div class="vm-header-left">
+                            <i class="fa fa-user-plus vm-header-icon"></i>
+                            <h5 class="vm-header-title">Новый сотрудник</h5>
+                        </div>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <form wire:submit="createEmployee">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>Введите имя</label>
-                                        <input class="form-control" wire:model="userName" type="text" placeholder="Введите имя">
-                                    </div>
-                                    @error('userName')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label>Введите почта</label>
-                                        <input class="form-control" wire:model="email" type="email" placeholder="Введите почта">
-                                    </div>
-                                    @error('email')
-                                        <div class="alert alert-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
 
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Сектор</label>
-                                <div class="col-sm-4">
+                    <div class="modal-body" style="padding: 0;">
+                        <form wire:submit="createEmployee">
+                            <div class="vm-section">
+                                <div class="vm-section-header">
+                                    <i class="fa fa-id-card-o"></i>
+                                    <span class="vm-section-title">Ф.И.О</span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <input class="form-control" wire:model="userName" type="text" placeholder="Введите полное имя">
+                                </div>
+                                @error('userName')
+                                    <div class="text-danger mb-2">{{ $message }}</div>
+                                @enderror
+
+                                <div class="vm-section-header">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="vm-section-title">Почта</span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <input class="form-control" wire:model="email" type="email" placeholder="Введите почту">
+                                </div>
+                                @error('email')
+                                    <div class="text-danger mb-2">{{ $message }}</div>
+                                @enderror
+
+                                <div class="vm-section-header">
+                                    <i class="fa fa-sitemap"></i>
+                                    <span class="vm-section-title">Сектор</span>
+                                </div>
+                                <div class="form-group mb-3">
                                     <select class="form-control" wire:model="sectorId">
                                         @foreach ($sectors as $sector)
                                             <option value="{{ $sector->id }}">{{ $sector->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
 
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Должность</label>
-                                <div class="col-sm-4">
+                                <div class="vm-section-header">
+                                    <i class="fa fa-briefcase"></i>
+                                    <span class="vm-section-title">Должность</span>
+                                </div>
+                                <div class="form-group mb-3">
                                     <select class="form-control" wire:model="roleId">
                                         @foreach ($roles as $role)
                                             <option value="{{ $role->id }}">{{ $role->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
 
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Введите дату рождения</label>
-                                <div class="col-sm-4">
-                                    <div class="form-group" wire:ignore>
-                                        <input class="form-control datetimepicker" id="birth_date_picker" type="text">
-                                    </div>
+                                <div class="vm-section-header">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="vm-section-title">Дата рождения</span>
                                 </div>
-                            </div>
+                                <div class="form-group mb-3" wire:ignore>
+                                    <input class="form-control datetimepicker" id="birth_date_picker" type="text" placeholder="Выберите дату">
+                                </div>
 
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Введите номер телефона</label>
-                                <div class="col-sm-4">
+                                <div class="vm-section-header">
+                                    <i class="fa fa-phone"></i>
+                                    <span class="vm-section-title">Номер телефона</span>
+                                </div>
+                                <div class="form-group mb-0">
                                     <input class="form-control" wire:model="phone" type="text" placeholder="(93) 123-45-67">
                                 </div>
                             </div>
 
-                            <div class="submit-section">
-                                <button class="btn btn-primary submit-btn" wire:loading.attr="disabled">
-                                    <span wire:loading.remove wire:target="createEmployee">Добавить нового сотрудника</span>
+                            <div class="vm-footer">
+                                <button class="vm-btn-submit" wire:loading.attr="disabled">
+                                    <span wire:loading.remove wire:target="createEmployee">Добавить сотрудника</span>
                                     <span wire:loading wire:target="createEmployee">Добавление...</span>
                                 </button>
                             </div>

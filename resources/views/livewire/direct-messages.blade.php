@@ -32,7 +32,7 @@
                              get filteredUsers() {
                                  if (!this.search) return {{ $availableUsers->toJson() }};
                                  const s = this.search.toLowerCase();
-                                 return {{ $availableUsers->toJson() }}.filter(u => u.name.toLowerCase().includes(s));
+                                 return {{ $availableUsers->toJson() }}.filter(u => u.short_name.toLowerCase().includes(s) || u.name.toLowerCase().includes(s));
                              }
                          }"
                          @click.away="open = false">
@@ -60,8 +60,8 @@
                             </div>
                             {{-- Select all / Deselect --}}
                             <div class="px-2 py-1 border-bottom d-flex justify-content-between">
-                                <button type="button" class="btn btn-sm btn-link p-0" wire:click="selectAll" @click.stop>Выбрать всех</button>
-                                <button type="button" class="btn btn-sm btn-link p-0 text-danger" wire:click="deselectAll" @click.stop>Снять</button>
+                                <button type="button" class="btn settings-btn settings-btn--primary" style="padding: 1px 6px; font-size: 10px; line-height: 1.2;" wire:click="selectAll" @click.stop>Выбрать всех</button>
+                                <button type="button" class="btn settings-btn settings-btn--ghost" style="padding: 1px 6px; font-size: 10px; line-height: 1.2;" wire:click="deselectAll" @click.stop>Снять</button>
                             </div>
                             {{-- User list --}}
                             <div style="overflow-y: auto; max-height: 260px;">
@@ -80,7 +80,7 @@
                                                    }
                                                    $wire.$set('selectedUserIds', [...$wire.selectedUserIds]);
                                                ">
-                                        <span x-text="user.name" style="font-size: 13px;"></span>
+                                        <span x-text="user.short_name" style="font-size: 13px;"></span>
                                         <small class="text-muted ml-1" x-show="user.sector" x-text="user.sector ? '— ' + user.sector.name : ''"></small>
                                     </label>
                                 </template>
@@ -108,7 +108,7 @@
                     <button wire:click="sendMessage"
                             wire:confirm="Отправить сообщение выбранным пользователям?"
                             wire:loading.attr="disabled"
-                            class="btn btn-primary btn-block">
+                            class="btn export-btn" style="width: 100%; justify-content: center;">
                         <span wire:loading.remove wire:target="sendMessage"><i class="fa fa-paper-plane"></i> Отправить</span>
                         <span wire:loading wire:target="sendMessage"><i class="fa fa-spinner fa-spin"></i> Отправка...</span>
                     </button>
@@ -138,7 +138,7 @@
                                     <td class="text-nowrap">{{ $msg->created_at->format('d.m.Y H:i') }}</td>
                                     <td>{{ Str::limit($msg->message_text, 80) }}</td>
                                     <td>
-                                        <span class="badge badge-info" title="{{ $msg->recipients->pluck('name')->join(', ') }}">
+                                        <span class="badge badge-info" title="{{ $msg->recipients->pluck('short_name')->join(', ') }}">
                                             {{ $msg->recipients->count() }}
                                         </span>
                                     </td>
