@@ -43,8 +43,28 @@ class DirectMessages extends Component
         );
 
         $this->reset(['messageText', 'selectedUserIds']);
-        $this->dispatch('message-sent');
         session()->flash('success', 'Сообщение успешно отправлено!');
+    }
+
+    public function selectAll(): void
+    {
+        $this->selectedUserIds = User::whereNotNull('telegram_chat_id')
+            ->where('id', '!=', Auth::id())
+            ->pluck('id')
+            ->map(fn ($id) => (string) $id)
+            ->toArray();
+    }
+
+    public function deselectAll(): void
+    {
+        $this->selectedUserIds = [];
+    }
+
+    public function removeRecipient(int $userId): void
+    {
+        $this->selectedUserIds = array_values(
+            array_filter($this->selectedUserIds, fn ($id) => (int) $id !== $userId)
+        );
     }
 
     public function render()

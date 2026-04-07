@@ -25,19 +25,71 @@
                 </div>
                 <div class="card-body">
                     {{-- Recipients --}}
-                    <div class="form-group mb-3">
+                    <div class="form-group mb-3"
+                         x-data="{
+                             open: false,
+                             search: '',
+                             get filteredUsers() {
+                                 if (!this.search) return {{ $availableUsers->toJson() }};
+                                 const s = this.search.toLowerCase();
+                                 return {{ $availableUsers->toJson() }}.filter(u => u.name.toLowerCase().includes(s));
+                             }
+                         }"
+                         @click.away="open = false">
                         <label class="font-weight-bold mb-2">Получатели</label>
-                        <div wire:ignore>
-                            <select class="form-control select2" id="dm_recipients" multiple>
-                                @foreach ($availableUsers->groupBy('sector.name') as $sectorName => $users)
-                                    <optgroup label="{{ $sectorName ?: 'Без сектора' }}">
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endforeach
-                                    </optgroup>
+
+                        {{-- Selected tags --}}
+                        <div class="form-control d-flex flex-wrap align-items-center gap-1" style="min-height: 38px; cursor: pointer; height: auto;" @click="open = !open">
+                            @if (count($selectedUserIds) > 0)
+                                @foreach ($availableUsers->whereIn('id', $selectedUserIds) as $user)
+                                    <span class="badge badge-primary d-inline-flex align-items-center mr-1 mb-1" style="font-size: 12px;">
+                                        {{ $user->short_name }}
+                                        <span class="ml-1" style="cursor: pointer;" wire:click="removeRecipient({{ $user->id }})">&times;</span>
+                                    </span>
                                 @endforeach
-                            </select>
+                            @else
+                                <span class="text-muted">Выберите получателей...</span>
+                            @endif
                         </div>
+
+                        {{-- Dropdown --}}
+                        <div x-show="open" x-cloak class="border rounded shadow-sm bg-white position-absolute" style="z-index: 1050; width: calc(100% - 30px); max-height: 350px; overflow: hidden; display: flex; flex-direction: column;">
+                            {{-- Search --}}
+                            <div class="p-2 border-bottom">
+                                <input type="text" x-model="search" class="form-control form-control-sm" placeholder="Поиск..." @click.stop>
+                            </div>
+                            {{-- Select all / Deselect --}}
+                            <div class="px-2 py-1 border-bottom d-flex justify-content-between">
+                                <button type="button" class="btn btn-sm btn-link p-0" wire:click="selectAll" @click.stop>Выбрать всех</button>
+                                <button type="button" class="btn btn-sm btn-link p-0 text-danger" wire:click="deselectAll" @click.stop>Снять</button>
+                            </div>
+                            {{-- User list --}}
+                            <div style="overflow-y: auto; max-height: 260px;">
+                                <template x-for="user in filteredUsers" :key="user.id">
+                                    <label class="d-flex align-items-center px-2 py-1 mb-0" style="cursor: pointer;" :class="{ 'bg-light': $wire.selectedUserIds.includes(String(user.id)) }" @click.stop>
+                                        <input type="checkbox"
+                                               class="mr-2"
+                                               :value="user.id"
+                                               :checked="$wire.selectedUserIds.includes(String(user.id))"
+                                               @change="
+                                                   let id = String(user.id);
+                                                   if ($event.target.checked) {
+                                                       $wire.selectedUserIds.push(id);
+                                                   } else {
+                                                       $wire.selectedUserIds = $wire.selectedUserIds.filter(i => i !== id);
+                                                   }
+                                                   $wire.$set('selectedUserIds', [...$wire.selectedUserIds]);
+                                               ">
+                                        <span x-text="user.name" style="font-size: 13px;"></span>
+                                        <small class="text-muted ml-1" x-show="user.sector" x-text="user.sector ? '— ' + user.sector.name : ''"></small>
+                                    </label>
+                                </template>
+                                <div x-show="filteredUsers.length === 0" class="text-muted text-center py-2" style="font-size: 13px;">
+                                    Не найдено
+                                </div>
+                            </div>
+                        </div>
+
                         @error('selectedUserIds')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -116,26 +168,3 @@
     </div>
 </div>
 
-@script
-    <script>
-        function initDmSelect2() {
-            const $recipients = $('#dm_recipients');
-
-            if ($recipients.hasClass('select2-hidden-accessible')) {
-                $recipients.select2('destroy');
-            }
-
-            $recipients.select2({ width: '100%', closeOnSelect: false, placeholder: 'Выберите получателей...' });
-
-            $recipients.off('change.dm').on('change.dm', function () {
-                $wire.$set('selectedUserIds', $(this).val() || []);
-            });
-        }
-
-        initDmSelect2();
-
-        $wire.on('message-sent', () => {
-            $('#dm_recipients').val(null).trigger('change.select2');
-        });
-    </script>
-@endscript
