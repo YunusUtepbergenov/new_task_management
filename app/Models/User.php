@@ -230,6 +230,11 @@ class User extends Authenticatable
         return $this->belongsTo(Sector::class);
     }
 
+    public function sentDirectMessages(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DirectMessage::class, 'sender_id');
+    }
+
     public function routeNotificationForTelegram(): ?int
     {
         return $this->telegram_chat_id;

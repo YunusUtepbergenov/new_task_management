@@ -242,6 +242,14 @@ class PageController extends Controller
         ]);
     }
 
+    public function directMessages(){
+        if (!Auth::user()->isDeputy() && !Auth::user()->isDirector()) {
+            abort(403);
+        }
+
+        return view('page.direct-messages');
+    }
+
     public function settings(){
         return view('page.settings');
     }

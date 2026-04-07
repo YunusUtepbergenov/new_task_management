@@ -5,15 +5,19 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\User;
+use App\Services\DirectMessageService;
 use App\Services\TelegramBotService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class TelegramWebhookController extends Controller
 {
-    public function __construct(private TelegramBotService $telegram)
-    {
+    public function __construct(
+        private TelegramBotService $telegram,
+        private DirectMessageService $directMessageService,
+    ) {
     }
 
     public function handle(Request $request): JsonResponse
@@ -43,6 +47,10 @@ class TelegramWebhookController extends Controller
             $this->handleHelp($chatId);
         } elseif ($text === '/unlink') {
             $this->handleUnlink($chatId);
+        } elseif ($text === '/send') {
+            $this->handleSend($chatId);
+        } elseif (!str_starts_with($text, '/') && preg_match('/^\d[\d,\s]*:/', $text) && Cache::has("tg_send_{$chatId}")) {
+            $this->handleSendReply($chatId, $text);
         } elseif (!str_starts_with($text, '/')) {
             $this->handleToken($chatId, $text);
         } else {
@@ -151,13 +159,103 @@ class TelegramWebhookController extends Controller
 
     private function handleHelp(int $chatId): void
     {
+        $user = User::where('telegram_chat_id', $chatId)->first();
+
         $message = "📖 <b>Доступные команды:</b>\n\n"
             . "📋 /tasks — Список активных задач\n"
             . "📊 /kpi — Текущий KPI за месяц\n"
             . "❓ /help — Список команд\n"
             . "🔓 /unlink — Отвязать Telegram от аккаунта";
 
+        if ($user && ($user->isDeputy() || $user->isDirector())) {
+            $message .= "\n✉️ /send — Отправить сообщение сотрудникам";
+        }
+
         $this->telegram->sendMessage($chatId, $message);
+    }
+
+    private function handleSend(int $chatId): void
+    {
+        $sender = User::where('telegram_chat_id', $chatId)->first();
+
+        if (!$sender) {
+            $this->telegram->sendMessage($chatId, "🔒 Ваш аккаунт не привязан.\n\n🔑 Используйте /start для привязки.");
+            return;
+        }
+
+        if (!$sender->isDeputy() && !$sender->isDirector()) {
+            $this->telegram->sendMessage($chatId, "⛔ У вас нет прав для отправки сообщений.");
+            return;
+        }
+
+        $users = User::whereNotNull('telegram_chat_id')
+            ->where('id', '!=', $sender->id)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        if ($users->isEmpty()) {
+            $this->telegram->sendMessage($chatId, "😕 Нет пользователей с привязанным Telegram.");
+            return;
+        }
+
+        $userMap = [];
+        $lines = ["📋 <b>Список пользователей:</b>\n"];
+
+        foreach ($users as $i => $user) {
+            $num = $i + 1;
+            $userMap[$num] = $user->id;
+            $lines[] = "<b>{$num}.</b> {$user->name}";
+        }
+
+        $lines[] = "\n📝 <b>Ответьте в формате:</b>\n<code>1,3,5: Текст сообщения</code>";
+
+        Cache::put("tg_send_{$chatId}", $userMap, now()->addMinutes(10));
+
+        $this->telegram->sendMessage($chatId, implode("\n", $lines));
+    }
+
+    private function handleSendReply(int $chatId, string $text): void
+    {
+        $sender = User::where('telegram_chat_id', $chatId)->first();
+
+        if (!$sender || (!$sender->isDeputy() && !$sender->isDirector())) {
+            Cache::forget("tg_send_{$chatId}");
+            return;
+        }
+
+        $userMap = Cache::pull("tg_send_{$chatId}");
+
+        if (!$userMap) {
+            return;
+        }
+
+        $colonPos = strpos($text, ':');
+        $numbersPart = trim(substr($text, 0, $colonPos));
+        $messageText = trim(substr($text, $colonPos + 1));
+
+        if (empty($messageText)) {
+            $this->telegram->sendMessage($chatId, "❌ Текст сообщения не может быть пустым.\n\n📝 Используйте /send чтобы начать заново.");
+            return;
+        }
+
+        $numbers = array_map('intval', array_filter(preg_split('/[\s,]+/', $numbersPart)));
+        $recipientIds = [];
+
+        foreach ($numbers as $num) {
+            if (isset($userMap[$num])) {
+                $recipientIds[] = $userMap[$num];
+            }
+        }
+
+        if (empty($recipientIds)) {
+            $this->telegram->sendMessage($chatId, "❌ Не найдены пользователи по указанным номерам.\n\n📝 Используйте /send чтобы начать заново.");
+            return;
+        }
+
+        $directMessage = $this->directMessageService->send($sender, $recipientIds, $messageText, 'telegram');
+        $deliveredCount = $directMessage->recipients()->wherePivot('delivered', true)->count();
+
+        $this->telegram->sendMessage($chatId, "✅ Сообщение отправлено <b>{$deliveredCount}</b> из <b>" . count($recipientIds) . "</b> пользователей.");
     }
 
     private function handleUnlink(int $chatId): void

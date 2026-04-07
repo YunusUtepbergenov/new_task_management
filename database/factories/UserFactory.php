@@ -52,6 +52,21 @@ class UserFactory extends Factory
         });
     }
 
+    public function deputy(): static
+    {
+        return $this->state(fn () => ['role_id' => 14]);
+    }
+
+    public function director(): static
+    {
+        return $this->state(fn () => ['role_id' => 1]);
+    }
+
+    public function withTelegram(): static
+    {
+        return $this->state(fn () => ['telegram_chat_id' => fake()->unique()->numberBetween(100000, 999999)]);
+    }
+
     /**
      * Indicate that the user should have a personal team.
      *

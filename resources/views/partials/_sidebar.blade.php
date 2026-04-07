@@ -52,6 +52,12 @@
                     </li>
                 @endif
 
+                @if(Auth::user()->isDirector() || Auth::user()->isDeputy())
+                    <li>
+                        <a href="{{ route('direct.messages') }}" wire:navigate.hover><i class="la la-paper-plane"></i><span>Рассылка</span></a>
+                    </li>
+                @endif
+
                 <li><a href="{{ route('kpi') }}" wire:navigate.hover><i class="las la-poll"></i><span>KPI</span></a></li>
 
                 <li class="submenu">
