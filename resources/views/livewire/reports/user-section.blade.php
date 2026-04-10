@@ -1,7 +1,7 @@
 <div>
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title mb-0">Сотрудники</h4>
+            <h4 class="card-title mb-0">{{ __('reports.employees') }}</h4>
         </div>
         <div class="card-body">
             <div class="row users_section">

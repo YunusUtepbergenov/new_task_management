@@ -42,13 +42,13 @@
             <div class="task-group">
                 <div class="row">
                     <div class="form-group col-lg-2" wire:ignore>
-                        <label>Категория</label>
+                        <label>{{ __('tasks.category') }}</label>
                         <select class="form-control" id="ctf_task_score">
-                            <option value="" disabled selected>Выберите</option>
+                            <option value="" disabled selected>{{ __('tasks.select') }}</option>
                             @foreach ($this->scoresGrouped as $group => $items)
                                 <optgroup label="{{ $group }}">
                                     @foreach ($items as $type)
-                                        <option value="{{ $type->id }}">{{ $type->name }} (Макс: {{ $type->max_score }})</option>
+                                        <option value="{{ $type->id }}">{{ $type->name }} ({{ __('tasks.max') }} {{ $type->max_score }})</option>
                                     @endforeach
                                 </optgroup>
                             @endforeach
@@ -59,7 +59,7 @@
                     </div>
 
                     <div class="form-group col-lg-4">
-                        <label>Название</label>
+                        <label>{{ __('tasks.name') }}</label>
                         <textarea class="form-control" rows="1" wire:model="task_name" required></textarea>
                         @error('task_name')
                             <div class="text-danger">{{ $message }}</div>
@@ -67,13 +67,13 @@
                     </div>
 
                     <div class="form-group col-lg-2">
-                        <label>Срок</label>
+                        <label>{{ __('tasks.deadline') }}</label>
                         <input
                             type="date"
                             wire:model="deadline"
                             class="form-control"
                             @if($is_repeating) value="" disabled @endif
-                            placeholder="{{ $is_repeating ? 'Определяется автоматически' : '' }}"
+                            placeholder="{{ $is_repeating ? __('tasks.auto_determined') : '' }}"
                             required
                         >
                         @error('deadline')
@@ -82,7 +82,7 @@
                     </div>
 
                     <div class="form-group col-lg-2" wire:ignore>
-                        <label>Ответственный</label>
+                        <label>{{ __('tasks.responsible') }}</label>
                         <select id="ctf_task_employee" class="form-control" multiple>
                             @if (Auth::user()->isDirector() || Auth::user()->isMailer())
                                 @foreach ($this->sectors as $sector)
@@ -120,7 +120,7 @@
                     </div>
 
                     <div class="form-group col-lg-2 d-flex align-items-end">
-                        <button class="btn btn-primary create-task-btn w-100">Создать Задачу</button>
+                        <button class="btn btn-primary create-task-btn w-100">{{ __('tasks.create_task') }}</button>
                     </div>
                 </div>
             </div>

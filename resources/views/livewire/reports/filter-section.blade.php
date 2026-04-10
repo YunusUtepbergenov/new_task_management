@@ -5,13 +5,13 @@
 
     <div class="row filter-row">
         <div class="col-sm-4 col-md-2">
-            <label for="input">От</label>
+            <label for="input">{{ __('reports.from') }}</label>
             <div class="form-group cal-icon">
                 <input class="form-control datetimepicker" id="startDate" name="startDate" wire:model="startDate" >
             </div>
         </div>
         <div class="col-sm-4 col-md-2">
-            <label>До</label>
+            <label>{{ __('reports.to') }}</label>
             <div class="form-group cal-icon">
                 <input class="form-control datetimepicker" id="endDate" name="endDate" wire:model="endDate">
             </div>
@@ -19,13 +19,13 @@
         <div class="col-sm-4 col-md-5">
             <label style="color: #f7f7f7">S</label>
             <div class="">
-                <a id="btnExport" class="btn btn-primary search_button" onclick="fnExcelReport();"> Скачать таблицу </a>
+                <a id="btnExport" class="btn btn-primary search_button" onclick="fnExcelReport();"> {{ __('reports.download_table') }}</a>
             </div>
         </div>
         <div class="col-sm-1 col-md-3" >
             <label style="color: #f7f7f7">S</label>
             <div>
-                <a href="{{ route('download.report', [$startDate, $endDate]) }}" class="btn btn-primary search_button">Отчёт по секторам</a>
+                <a href="{{ route('download.report', [$startDate, $endDate]) }}" class="btn btn-primary search_button">{{ __('reports.sector_report') }}</a>
             </div>
         </div>
     </div>
@@ -37,14 +37,14 @@
                     <thead id="employee_header">
                         <tr>
                             <th>#</th>
-                            <th>Ф.И.О </th>
-                            <th>Эффективность: </th>
-                            <th>Все задачи</th>
-                            <th>Выполнено</th>
-                            <th>Не прочитано</th>
-                            <th>Выполняется</th>
-                            <th>Просроченный</th>
-                            <th>Ждет подтверждения</th>
+                            <th>{{ __('reports.full_name') }} </th>
+                            <th>{{ __('reports.efficiency') }} </th>
+                            <th>{{ __('reports.all_tasks') }}</th>
+                            <th>{{ __('reports.status_done') }}</th>
+                            <th>{{ __('reports.status_unread') }}</th>
+                            <th>{{ __('reports.status_in_progress') }}</th>
+                            <th>{{ __('reports.overdue') }}</th>
+                            <th>{{ __('reports.status_awaiting_confirmation') }}</th>
                         </tr>
                     </thead>
                     <tbody style="overflow: auto;">

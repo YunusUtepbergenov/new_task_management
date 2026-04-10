@@ -3,12 +3,12 @@
 
     <div class="row mb-3">
         <div class="col-md-4">
-            <input type="text" wire:model.live="search" class="form-control" placeholder="Поиск задачи...">
+            <input type="text" wire:model.live="search" class="form-control" placeholder="{{ __('tasks.search_placeholder') }}">
         </div>
         @if (!Auth::user()->isResearcher())
             <div class="col-md-2">
                 <select wire:model.live="worker_id" class="form-control">
-                    <option value="">Все сотрудники</option>
+                    <option value="">{{ __('tasks.all_employees') }}</option>
                     @foreach($workers as $worker)
                         <option value="{{ $worker->id }}">{{ $worker->name }}</option>
                     @endforeach
@@ -24,11 +24,11 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Название</th>
-                            <th>Сотрудник</th>
-                            <th>Срок</th>
-                            <th>Категория</th>
-                            <th>Балл</th>
+                            <th>{{ __('tasks.name') }}</th>
+                            <th>{{ __('tasks.employee') }}</th>
+                            <th>{{ __('tasks.deadline') }}</th>
+                            <th>{{ __('tasks.category') }}</th>
+                            <th>{{ __('tasks.score') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,7 +42,7 @@
                                 <td>{{$task->total}}/{{$task->score->max_score ?? '-' }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="6">Нет завершенных задач</td></tr>
+                            <tr><td colspan="6">{{ __('tasks.no_completed_tasks') }}</td></tr>
                         @endforelse
                     </tbody>
                 </table>

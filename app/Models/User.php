@@ -39,6 +39,7 @@ class User extends Authenticatable
         'birth_date',
         'avatar',
         'leave',
+        'locale',
         'password',
         'telegram_token',
         'telegram_chat_id',

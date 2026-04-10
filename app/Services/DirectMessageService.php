@@ -18,7 +18,7 @@ class DirectMessageService
     public function send(User $sender, array $recipientIds, string $messageText, string $channel = 'web'): DirectMessage
     {
         if (!$sender->isDeputy() && !$sender->isDirector()) {
-            throw new AuthorizationException('У вас нет прав для отправки сообщений.');
+            throw new AuthorizationException(__('notifications.no_permission_send'));
         }
 
         $recipients = User::whereIn('id', $recipientIds)

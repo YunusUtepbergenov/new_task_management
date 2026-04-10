@@ -41,11 +41,12 @@ class CommentStoredNotification extends Notification implements ShouldQueue
 
     public function toTelegram($notifiable): string
     {
+        $locale = $notifiable->locale ?? 'ru';
         $user = User::find($this->comment->user_id);
 
-        return "💬 <b>Новый комментарий!</b>\n\n"
-            . "📌 К заданию: <b>{$this->comment->task->name}</b>\n"
-            . "👤 От: {$user->short_name}";
+        return __('notifications.telegram.new_comment', [], $locale) . "\n\n"
+            . __('notifications.telegram.to_task', [], $locale) . " <b>{$this->comment->task->name}</b>\n"
+            . __('notifications.telegram.from', [], $locale) . " {$user->short_name}";
     }
 
     public function toArray($notifiable)

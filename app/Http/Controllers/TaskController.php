@@ -82,7 +82,7 @@ class TaskController extends Controller
                 'task_id' => $task->id,
                 'user_id' => $request->creator_id,
                 'action' => 'created',
-                'description' => 'Задача создана',
+                'description' => __('notifications.log_task_created'),
             ]);
 
             event(new TaskCreatedEvent($task));
@@ -141,7 +141,7 @@ class TaskController extends Controller
                     'task_id' => $newTask->id,
                     'user_id' => auth()->id(),
                     'action' => 'users_changed',
-                    'description' => 'Ответственные сотрудники изменены',
+                    'description' => __('notifications.log_responsible_changed'),
                 ]);
 
                 if ($isExtended) {
@@ -149,7 +149,7 @@ class TaskController extends Controller
                         'task_id' => $newTask->id,
                         'user_id' => auth()->id(),
                         'action' => 'deadline_extended',
-                        'description' => 'Срок продлён: ' . Carbon::parse($baseTask->deadline)->format('d.m.Y') . ' → ' . $newDeadline->format('d.m.Y'),
+                        'description' => __('notifications.log_deadline_extended') . ' ' . Carbon::parse($baseTask->deadline)->format('d.m.Y') . ' → ' . $newDeadline->format('d.m.Y'),
                     ]);
                 }
 
@@ -183,16 +183,16 @@ class TaskController extends Controller
                 if ($task->name !== $request->name || $task->score_id != $request->score_id) {
                     $changes = [];
                     if ($task->name !== $request->name) {
-                        $changes[] = 'название';
+                        $changes[] = __('notifications.log_name');
                     }
                     if ($task->score_id != $request->score_id) {
-                        $changes[] = 'категория';
+                        $changes[] = __('notifications.log_category');
                     }
                     TaskLog::create([
                         'task_id' => $task->id,
                         'user_id' => auth()->id(),
                         'action' => 'edited',
-                        'description' => 'Задача изменена: ' . implode(', ', $changes),
+                        'description' => __('notifications.log_task_edited') . ' ' . implode(', ', $changes),
                     ]);
                 }
 
@@ -201,7 +201,7 @@ class TaskController extends Controller
                         'task_id' => $task->id,
                         'user_id' => auth()->id(),
                         'action' => 'deadline_extended',
-                        'description' => 'Срок продлён: ' . Carbon::parse($baseTask->deadline)->format('d.m.Y') . ' → ' . $newDeadline->format('d.m.Y'),
+                        'description' => __('notifications.log_deadline_extended') . ' ' . Carbon::parse($baseTask->deadline)->format('d.m.Y') . ' → ' . $newDeadline->format('d.m.Y'),
                     ]);
                 }
 
@@ -378,7 +378,7 @@ class TaskController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Все задачи были успешно созданы для выбранных сотрудников.');
+        return redirect()->back()->with('success', __('notifications.all_tasks_created'));
     }
 
     public function exportWeeklyTasks()

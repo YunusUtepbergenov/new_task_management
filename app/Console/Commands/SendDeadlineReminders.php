@@ -18,7 +18,7 @@ class SendDeadlineReminders extends Command
     {
         $today = Carbon::today()->toDateString();
 
-        $tasksByUser = Task::with('user:id,telegram_chat_id')
+        $tasksByUser = Task::with('user:id,telegram_chat_id,locale')
             ->whereHas('user', fn ($q) => $q->whereNotNull('telegram_chat_id'))
             ->whereRaw('DATE(COALESCE(extended_deadline, deadline)) = ?', [$today])
             ->whereIn('status', ['Не прочитано', 'Выполняется'])
@@ -33,16 +33,22 @@ class SendDeadlineReminders extends Command
         $count = 0;
 
         foreach ($tasksByUser as $userId => $tasks) {
-            $chatId = $tasks->first()->user->telegram_chat_id;
+            $user = $tasks->first()->user;
+            $chatId = $user->telegram_chat_id;
+            $locale = $user->locale ?? 'ru';
 
-            $lines = ["⏰ <b>Напоминание: задачи на сегодня!</b>\n📅 {$today}\n"];
+            $lines = [__('notifications.reminders.title', [], $locale) . "\n📅 {$today}\n"];
+
+            $statusUnread = __('notifications.bot.status_unread', [], $locale);
+            $statusInProgress = __('notifications.bot.status_in_progress', [], $locale);
 
             foreach ($tasks as $i => $task) {
                 $statusEmoji = $task->status === 'Не прочитано' ? '🆕' : '🔵';
-                $lines[] = "{$statusEmoji} " . ($i + 1) . ". <b>{$task->name}</b>\n     Статус: {$task->status}";
+                $statusLabel = $task->status === 'Не прочитано' ? $statusUnread : $statusInProgress;
+                $lines[] = "{$statusEmoji} " . ($i + 1) . ". <b>{$task->name}</b>\n     {$statusLabel}";
             }
 
-            $lines[] = "\n💪 Удачного рабочего дня!";
+            $lines[] = "\n" . __('notifications.reminders.good_day', [], $locale);
 
             $telegram->sendMessage($chatId, implode("\n", $lines));
             $count++;

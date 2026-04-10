@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Изменить дайджест</h5>
+                <h5 class="modal-title">{{ __('documents.edit_digest') }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -15,7 +15,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label>Введите названия</label>
+                                <label>{{ __('documents.enter_name') }}</label>
                                 <input class="form-control" name="name" id="digest_name1" type="text">
                                 <input type="hidden" name="id" id="digest_id">
                             </div>
@@ -25,7 +25,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label>Источник</label>
+                                <label>{{ __('documents.source') }}</label>
                                 <input type="file" class="form-control" name="paper" id="digest_paper1">
                             </div>
                             {{-- <div class="alert alert-danger" id="digest_description1"></div> --}}
@@ -35,7 +35,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label>Cсылка источника</label>
+                                <label>{{ __('documents.source_link') }}</label>
                                 <input class="form-control" name="link" type="text" id="digest_link1">
                             </div>
                         </div>
@@ -44,14 +44,14 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label>Файл ( Pdf/Word, Макс: 5 MB )</label>
+                                <label>{{ __('documents.file_constraints') }}</label>
                                 <input class="form-control" type="file" name="file" id="digest_file1">
                             </div>
                         </div>
                     </div>
 
                     <div class="submit-section">
-                        <button class="btn btn-primary submit-btn">Сохранить</button>
+                        <button class="btn btn-primary submit-btn">{{ __('documents.save') }}</button>
                     </div>
                 </form>
             </div>

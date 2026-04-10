@@ -7,11 +7,11 @@
     <div class="page-header">
         <div class="row align-items-center">
             <div class="col">
-                <h3 class="page-title">Сотрудники</h3>
+                <h3 class="page-title">{{ __('employees.title') }}</h3>
             </div>
             @if (Auth::user()->isHR())
                 <div class="col-auto float-right ml-auto" style="margin-top: 10px;">
-                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_employee">Добавить сотрудника</a>
+                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_employee">{{ __('employees.add_employee') }}</a>
                 </div>
             @endif
         </div>
@@ -25,15 +25,15 @@
                     <thead id="employee_header">
                         <tr>
                             <th>#</th>
-                            <th>Ф.И.О</th>
-                            <th>Почта</th>
-                            <th>Сектор</th>
-                            <th>Должность</th>
-                            <th>Дата рождения</th>
-                            <th>Тел.Номер</th>
-                            <th>Внутренный номер</th>
+                            <th>{{ __('employees.fio') }}</th>
+                            <th>{{ __('employees.email') }}</th>
+                            <th>{{ __('employees.sector') }}</th>
+                            <th>{{ __('employees.position') }}</th>
+                            <th>{{ __('employees.birth_date') }}</th>
+                            <th>{{ __('employees.phone') }}</th>
+                            <th>{{ __('employees.internal_number') }}</th>
                             @if (Auth::user()->isHR())
-                                <th>Действие</th>
+                                <th>{{ __('employees.action') }}</th>
                             @endif
                         </tr>
                     </thead>
@@ -61,7 +61,7 @@
                                         <td>
                                             @if ($sector->id != 1)
                                                 <button class="btn" wire:click="markAsLeft({{ $employee->id }})"
-                                                    wire:confirm="Вы уверены, что хотите удалить этого сотрудника?">
+                                                    wire:confirm="{{ __('employees.delete_confirm') }}">
                                                     <i class="fa fa-sign-out" aria-hidden="true"></i>
                                                 </button>
                                             @endif
@@ -84,7 +84,7 @@
                     <div class="vm-header">
                         <div class="vm-header-left">
                             <i class="fa fa-user-plus vm-header-icon"></i>
-                            <h5 class="vm-header-title">Новый сотрудник</h5>
+                            <h5 class="vm-header-title">{{ __('employees.new_employee') }}</h5>
                         </div>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -96,10 +96,10 @@
                             <div class="vm-section">
                                 <div class="vm-section-header">
                                     <i class="fa fa-id-card-o"></i>
-                                    <span class="vm-section-title">Ф.И.О</span>
+                                    <span class="vm-section-title">{{ __('employees.fio') }}</span>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <input class="form-control" wire:model="userName" type="text" placeholder="Введите полное имя">
+                                    <input class="form-control" wire:model="userName" type="text" placeholder="{{ __('employees.enter_name') }}">
                                 </div>
                                 @error('userName')
                                     <div class="text-danger mb-2">{{ $message }}</div>
@@ -107,10 +107,10 @@
 
                                 <div class="vm-section-header">
                                     <i class="fa fa-envelope-o"></i>
-                                    <span class="vm-section-title">Почта</span>
+                                    <span class="vm-section-title">{{ __('employees.email') }}</span>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <input class="form-control" wire:model="email" type="email" placeholder="Введите почту">
+                                    <input class="form-control" wire:model="email" type="email" placeholder="{{ __('employees.enter_email') }}">
                                 </div>
                                 @error('email')
                                     <div class="text-danger mb-2">{{ $message }}</div>
@@ -118,7 +118,7 @@
 
                                 <div class="vm-section-header">
                                     <i class="fa fa-sitemap"></i>
-                                    <span class="vm-section-title">Сектор</span>
+                                    <span class="vm-section-title">{{ __('employees.sector') }}</span>
                                 </div>
                                 <div class="form-group mb-3">
                                     <select class="form-control" wire:model="sectorId">
@@ -130,7 +130,7 @@
 
                                 <div class="vm-section-header">
                                     <i class="fa fa-briefcase"></i>
-                                    <span class="vm-section-title">Должность</span>
+                                    <span class="vm-section-title">{{ __('employees.position') }}</span>
                                 </div>
                                 <div class="form-group mb-3">
                                     <select class="form-control" wire:model="roleId">
@@ -142,25 +142,25 @@
 
                                 <div class="vm-section-header">
                                     <i class="fa fa-calendar"></i>
-                                    <span class="vm-section-title">Дата рождения</span>
+                                    <span class="vm-section-title">{{ __('employees.birth_date') }}</span>
                                 </div>
                                 <div class="form-group mb-3" wire:ignore>
-                                    <input class="form-control datetimepicker" id="birth_date_picker" type="text" placeholder="Выберите дату">
+                                    <input class="form-control datetimepicker" id="birth_date_picker" type="text" placeholder="{{ __('employees.select_date') }}">
                                 </div>
 
                                 <div class="vm-section-header">
                                     <i class="fa fa-phone"></i>
-                                    <span class="vm-section-title">Номер телефона</span>
+                                    <span class="vm-section-title">{{ __('employees.phone') }}</span>
                                 </div>
                                 <div class="form-group mb-0">
-                                    <input class="form-control" wire:model="phone" type="text" placeholder="(93) 123-45-67">
+                                    <input class="form-control" wire:model="phone" type="text" placeholder="{{ __('employees.phone_placeholder') }}">
                                 </div>
                             </div>
 
                             <div class="vm-footer">
                                 <button class="vm-btn-submit" wire:loading.attr="disabled">
-                                    <span wire:loading.remove wire:target="createEmployee">Добавить сотрудника</span>
-                                    <span wire:loading wire:target="createEmployee">Добавление...</span>
+                                    <span wire:loading.remove wire:target="createEmployee">{{ __('employees.add_employee_btn') }}</span>
+                                    <span wire:loading wire:target="createEmployee">{{ __('employees.adding') }}</span>
                                 </button>
                             </div>
                         </form>

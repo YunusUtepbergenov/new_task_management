@@ -133,7 +133,7 @@
                 <div class="workload-section mb-3">
                   <div>
                     <div class="task-count">{{$taskCount}}</div>
-                    <span class="task-label">Задачи</span>
+                    <span class="task-label">{{ __('reports.tasks') }}</span>
                   </div>
                   <div class="text-center">
                     <div class="progress-ring">
@@ -150,8 +150,8 @@
                     <thead>
                       <tr class="table-light">
                         <th>#</th>
-                        <th>Название</th>
-                        <th>Срок</th>
+                        <th>{{ __('reports.task_name') }}</th>
+                        <th>{{ __('reports.deadline') }}</th>
                       </tr>
                     </thead>
                     <tbody>

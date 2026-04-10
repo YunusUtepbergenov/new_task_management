@@ -4,9 +4,25 @@
             <i class="fa fa-clock-o"></i>
         </div>
         <div>
-            <h3 class="att-page-title">Учёт прихода/ухода</h3>
-            <p class="att-page-subtitle">{{ \Carbon\Carbon::now()->translatedFormat('F Y') }} &middot; Сотрудники центра</p>
+            <h3 class="att-page-title">{{ __('employees.attendance_title') }}</h3>
+            <p class="att-page-subtitle">{{ \Carbon\Carbon::now()->translatedFormat('F Y') }} &middot; {{ __('employees.attendance_subtitle') }}</p>
         </div>
+    </div>
+
+    <div class="att-export-section">
+        <form action="{{ route('export.attendance') }}" method="GET" class="att-export-form">
+            <label>
+                {{ __('ui.from') }}:
+                <input type="date" name="start_date" value="{{ \Carbon\Carbon::now()->startOfMonth()->format('Y-m-d') }}" class="att-date-input">
+            </label>
+            <label>
+                {{ __('ui.to') }}:
+                <input type="date" name="end_date" value="{{ \Carbon\Carbon::today()->format('Y-m-d') }}" class="att-date-input">
+            </label>
+            <button type="submit" class="btn-export">
+                <i class="fa fa-download"></i> Excel
+            </button>
+        </form>
     </div>
 
     <div class="att-card">
@@ -14,7 +30,7 @@
             <table class="att-table">
                 <thead>
                     <tr>
-                        <th class="att-th-sticky">Сотрудник</th>
+                        <th class="att-th-sticky">{{ __('employees.employee') }}</th>
                         @foreach ($dates as $date)
                             <th class="att-th-date {{ in_array($date->dayOfWeek, [6, 0]) ? 'att-th-weekend' : '' }} {{ $date->isToday() ? 'att-th-today' : '' }}">
                                 <span class="att-date-day">{{ $date->format('d') }}</span>

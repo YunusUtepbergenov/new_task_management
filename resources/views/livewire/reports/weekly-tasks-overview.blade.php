@@ -7,8 +7,8 @@
             <i class="fa fa-calendar-check-o"></i>
         </div>
         <div>
-            <h4 class="wto-page-title">Еженедельный план по секторам</h4>
-            <p class="wto-page-subtitle">Задачи на неделю, сгруппированные по секторам</p>
+            <h4 class="wto-page-title">{{ __('reports.weekly_title') }}</h4>
+            <p class="wto-page-subtitle">{{ __('reports.weekly_subtitle') }}</p>
         </div>
     </div>
 
@@ -24,7 +24,7 @@
             </select>
         </div>
         <a href="{{ route('protocol.tasks') }}" class="btn export-btn" wire:navigate>
-            <i class="fa fa-file-text-o"></i> Протокол
+            <i class="fa fa-file-text-o"></i> {{ __('reports.protocol') }}
         </a>
     </div>
 
@@ -43,13 +43,13 @@
                             <tr>
                                 <th>#</th>
                                 <th></th>
-                                <th>Название</th>
-                                <th>Срок</th>
-                                <th>Ответственный</th>
-                                <th>Категория</th>
-                                <th>Статус</th>
+                                <th>{{ __('reports.task_name') }}</th>
+                                <th>{{ __('reports.deadline') }}</th>
+                                <th>{{ __('reports.responsible') }}</th>
+                                <th>{{ __('reports.category') }}</th>
+                                <th>{{ __('reports.status') }}</th>
                                 @if (Auth::user()->isDeputy() || Auth::user()->isHR() || Auth::user()->isHead())
-                                    <th>Для протокола</th>
+                                    <th>{{ __('reports.for_protocol') }}</th>
                                 @endif
                             </tr>
                         </thead>
@@ -69,8 +69,8 @@
                                                     <i class="material-icons">more_vert</i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="javascript:void(0)" wire:click="$dispatch('editTaskClicked', { id: {{ $main['id'] }} })"><i class="fa fa-pencil m-r-5"></i> Изменить</a>
-                                                    <a class="dropdown-item" href="javascript:void(0)" wire:click="deleteTask({{ $main['id'] }})" wire:confirm="Удалить задачу?"><i class="fa fa-trash-o m-r-5"></i> Удалить</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" wire:click="$dispatch('editTaskClicked', { id: {{ $main['id'] }} })"><i class="fa fa-pencil m-r-5"></i> {{ __('reports.edit') }}</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" wire:click="deleteTask({{ $main['id'] }})" wire:confirm="{{ __('reports.delete_task_confirm') }}"><i class="fa fa-trash-o m-r-5"></i> {{ __('reports.delete') }}</a>
                                                 </div>
                                             </div>
                                         @endif
@@ -80,15 +80,15 @@
                                     </td>
                                     <td>
                                         @if ($main['extended_deadline'])
-                                            <span class="badge bg-inverse-warning" title="Оригинальный срок: {{ $main['deadline'] }}">
-                                                {{ \Carbon\Carbon::parse($main['extended_deadline'])->format('Y-m-d') }} <i class="fa fa-clock-o text-danger" title="Срок продлен"></i>
+                                            <span class="badge bg-inverse-warning" title="{{ __('reports.original_deadline') }} {{ $main['deadline'] }}">
+                                                {{ \Carbon\Carbon::parse($main['extended_deadline'])->format('Y-m-d') }} <i class="fa fa-clock-o text-danger" title="{{ __('reports.deadline_extended') }}"></i>
                                             </span>
                                         @else
                                             <span class="badge bg-inverse-warning">{{ \Carbon\Carbon::parse($main['deadline'])->format('Y-m-d') }}</span>
                                         @endif
 
                                         @if (!empty($main['repeat_id']))
-                                            <i class="fa fa-refresh text-info" title="Повторяющаяся задача"></i>
+                                            <i class="fa fa-refresh text-info" title="{{ __('reports.recurring_task') }}"></i>
                                         @endif
                                     </td>
                                     <td>
@@ -110,7 +110,16 @@
                                                 default              => 'warning',
                                             };
                                         @endphp
-                                        <span class="badge bg-inverse-{{ $statusClass }}">{{ $main['status'] }}</span>
+                                        @php
+                                            $wtoStatusMap = [
+                                                'Не прочитано' => __('tasks.status_unread'),
+                                                'Выполняется' => __('tasks.status_in_progress'),
+                                                'Ждет подтверждения' => __('tasks.status_waiting'),
+                                                'Выполнено' => __('tasks.status_completed'),
+                                                'Дорабатывается' => __('tasks.status_revision'),
+                                            ];
+                                        @endphp
+                                        <span class="badge bg-inverse-{{ $statusClass }}">{{ $wtoStatusMap[$main['status']] ?? $main['status'] }}</span>
                                     </td>
 
                                     @if (Auth::user()->isDeputy() || Auth::user()->isHR())
@@ -134,7 +143,7 @@
                 </div>
             @else
                 <div class="card-body text-center text-muted py-4">
-                    <p class="mb-0">Нет задач на выбранную неделю.</p>
+                    <p class="mb-0">{{ __('reports.no_tasks_week') }}</p>
                 </div>
             @endif
         </div>

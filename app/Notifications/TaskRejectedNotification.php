@@ -40,12 +40,13 @@ class TaskRejectedNotification extends Notification implements ShouldQueue
 
     public function toTelegram($notifiable): string
     {
+        $locale = $notifiable->locale ?? 'ru';
         $creator = User::find($this->task->creator_id);
 
-        return "❌ <b>Задание отклонено</b>\n\n"
+        return __('notifications.telegram.task_rejected', [], $locale) . "\n\n"
             . "📌 <b>{$this->task->name}</b>\n"
-            . "👤 Руководитель {$creator->short_name} отклонил ваше задание.\n\n"
-            . "🔄 Пожалуйста, проверьте комментарии.";
+            . "👤 " . __('notifications.telegram.supervisor_rejected', ['name' => $creator->short_name], $locale) . "\n\n"
+            . __('notifications.telegram.please_check_comments', [], $locale);
     }
 
     public function toArray($notifiable)

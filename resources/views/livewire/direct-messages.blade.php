@@ -4,8 +4,8 @@
             <i class="fa fa-paper-plane-o"></i>
         </div>
         <div>
-            <h4 class="wto-page-title">Рассылка сообщений</h4>
-            <p class="wto-page-subtitle">Отправка уведомлений сотрудникам через Telegram</p>
+            <h4 class="wto-page-title">{{ __('ui.direct_messages.title') }}</h4>
+            <p class="wto-page-subtitle">{{ __('ui.direct_messages.subtitle') }}</p>
         </div>
     </div>
 
@@ -21,7 +21,7 @@
         <div class="col-lg-5 mb-4">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0"><i class="fa fa-envelope"></i> Новое сообщение</h5>
+                    <h5 class="card-title mb-0"><i class="fa fa-envelope"></i> {{ __('ui.direct_messages.new_message') }}</h5>
                 </div>
                 <div class="card-body">
                     {{-- Recipients --}}
@@ -36,7 +36,7 @@
                              }
                          }"
                          @click.away="open = false">
-                        <label class="font-weight-bold mb-2">Получатели</label>
+                        <label class="font-weight-bold mb-2">{{ __('ui.direct_messages.recipients') }}</label>
 
                         {{-- Selected tags --}}
                         <div class="form-control d-flex flex-wrap align-items-center gap-1" style="min-height: 38px; cursor: pointer; height: auto;" @click="open = !open">
@@ -48,7 +48,7 @@
                                     </span>
                                 @endforeach
                             @else
-                                <span class="text-muted">Выберите получателей...</span>
+                                <span class="text-muted">{{ __('ui.direct_messages.select_recipients') }}</span>
                             @endif
                         </div>
 
@@ -56,12 +56,12 @@
                         <div x-show="open" x-cloak class="border rounded shadow-sm bg-white position-absolute" style="z-index: 1050; width: calc(100% - 30px); max-height: 350px; overflow: hidden; display: flex; flex-direction: column;">
                             {{-- Search --}}
                             <div class="p-2 border-bottom">
-                                <input type="text" x-model="search" class="form-control form-control-sm" placeholder="Поиск..." @click.stop>
+                                <input type="text" x-model="search" class="form-control form-control-sm" placeholder="{{ __('ui.direct_messages.search') }}" @click.stop>
                             </div>
                             {{-- Select all / Deselect --}}
                             <div class="px-2 py-1 border-bottom d-flex justify-content-between">
-                                <button type="button" class="btn settings-btn settings-btn--primary" style="padding: 1px 6px; font-size: 10px; line-height: 1.2;" wire:click="selectAll" @click.stop>Выбрать всех</button>
-                                <button type="button" class="btn settings-btn settings-btn--ghost" style="padding: 1px 6px; font-size: 10px; line-height: 1.2;" wire:click="deselectAll" @click.stop>Снять</button>
+                                <button type="button" class="btn settings-btn settings-btn--primary" style="padding: 1px 6px; font-size: 10px; line-height: 1.2;" wire:click="selectAll" @click.stop>{{ __('ui.direct_messages.select_all') }}</button>
+                                <button type="button" class="btn settings-btn settings-btn--ghost" style="padding: 1px 6px; font-size: 10px; line-height: 1.2;" wire:click="deselectAll" @click.stop>{{ __('ui.direct_messages.deselect_all') }}</button>
                             </div>
                             {{-- User list --}}
                             <div style="overflow-y: auto; max-height: 260px;">
@@ -85,7 +85,7 @@
                                     </label>
                                 </template>
                                 <div x-show="filteredUsers.length === 0" class="text-muted text-center py-2" style="font-size: 13px;">
-                                    Не найдено
+                                    {{ __('ui.direct_messages.not_found') }}
                                 </div>
                             </div>
                         </div>
@@ -97,8 +97,8 @@
 
                     {{-- Message --}}
                     <div class="form-group mb-3">
-                        <label class="font-weight-bold mb-2">Текст сообщения</label>
-                        <textarea wire:model="messageText" class="form-control" rows="5" placeholder="Введите текст сообщения..."></textarea>
+                        <label class="font-weight-bold mb-2">{{ __('ui.direct_messages.message_text') }}</label>
+                        <textarea wire:model="messageText" class="form-control" rows="5" placeholder="{{ __('ui.direct_messages.message_placeholder') }}"></textarea>
                         @error('messageText')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -106,11 +106,11 @@
 
                     {{-- Send Button --}}
                     <button wire:click="sendMessage"
-                            wire:confirm="Отправить сообщение выбранным пользователям?"
+                            wire:confirm="{{ __('ui.direct_messages.confirm_send') }}"
                             wire:loading.attr="disabled"
                             class="btn export-btn" style="width: 100%; justify-content: center;">
-                        <span wire:loading.remove wire:target="sendMessage"><i class="fa fa-paper-plane"></i> Отправить</span>
-                        <span wire:loading wire:target="sendMessage"><i class="fa fa-spinner fa-spin"></i> Отправка...</span>
+                        <span wire:loading.remove wire:target="sendMessage"><i class="fa fa-paper-plane"></i> {{ __('ui.direct_messages.send') }}</span>
+                        <span wire:loading wire:target="sendMessage"><i class="fa fa-spinner fa-spin"></i> {{ __('ui.direct_messages.sending') }}</span>
                     </button>
                 </div>
             </div>
@@ -120,16 +120,16 @@
         <div class="col-lg-7 mb-4">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0"><i class="fa fa-history"></i> История отправок</h5>
+                    <h5 class="card-title mb-0"><i class="fa fa-history"></i> {{ __('ui.direct_messages.history') }}</h5>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-nowrap mb-0">
                         <thead>
                             <tr>
-                                <th>Дата</th>
-                                <th>Сообщение</th>
-                                <th>Получатели</th>
-                                <th>Канал</th>
+                                <th>{{ __('ui.direct_messages.date') }}</th>
+                                <th>{{ __('ui.direct_messages.message') }}</th>
+                                <th>{{ __('ui.direct_messages.recipients') }}</th>
+                                <th>{{ __('ui.direct_messages.channel') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -144,15 +144,15 @@
                                     </td>
                                     <td>
                                         @if ($msg->channel === 'web')
-                                            <span class="badge badge-light"><i class="fa fa-globe"></i> Веб</span>
+                                            <span class="badge badge-light"><i class="fa fa-globe"></i> {{ __('ui.direct_messages.web') }}</span>
                                         @else
-                                            <span class="badge badge-light"><i class="fa fa-send"></i> Telegram</span>
+                                            <span class="badge badge-light"><i class="fa fa-send"></i> {{ __('ui.direct_messages.telegram') }}</span>
                                         @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center text-muted py-4">Нет отправленных сообщений</td>
+                                    <td colspan="4" class="text-center text-muted py-4">{{ __('ui.direct_messages.no_messages') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -50,7 +50,7 @@ class EmployeesTable extends Component
         $this->roleId = TaskService::cachedRoles()->first()?->id;
 
         $this->dispatch('close-create-modal');
-        $this->dispatch('success', msg: 'Сотрудник успешно добавлен.');
+        $this->dispatch('success', msg: __('notifications.employee_added'));
     }
 
     public function markAsLeft(int $userId): void
@@ -67,7 +67,7 @@ class EmployeesTable extends Component
 
         $user->update(['leave' => 1]);
 
-        $this->dispatch('success', msg: 'Сотрудник удалён из списка.');
+        $this->dispatch('success', msg: __('notifications.employee_removed'));
     }
 
     public function viewProfile(int $id): void

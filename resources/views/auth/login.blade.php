@@ -13,8 +13,8 @@
         <main class="auth-layout">
             <section class="auth-left-pane" aria-label="Platform info">
                 <div class="auth-left-content">
-                    <h1 class="auth-left-title">Центр экономических исследований и реформ</h1>
-                    <p class="auth-left-subtitle">Официальная платформа управления задачами</p>
+                    <h1 class="auth-left-title">{{ __('auth.organization_name') }}</h1>
+                    <p class="auth-left-subtitle">{{ __('auth.platform_subtitle') }}</p>
                 </div>
                 <p class="auth-left-copy">&copy; 2026 CERR.</p>
             </section>
@@ -25,7 +25,7 @@
                         <img src="{{ asset('img/213232-0cd1efa818.jpg') }}" alt="CERR logo" class="auth-brand-image">
                     </div>
 
-                    <h2 class="auth-card-title">Введите свои учетные данные для доступа к своему аккаунту.</h2>
+                    <h2 class="auth-card-title">{{ __('auth.login_subtitle') }}</h2>
 
                     @if ($errors->any())
                         <div class="auth-alert" role="alert">
@@ -40,7 +40,7 @@
                     <form method="POST" action="{{ route('login') }}" class="auth-form">
                         @csrf
 
-                        <label for="email" class="auth-label">Почта</label>
+                        <label for="email" class="auth-label">{{ __('auth.email') }}</label>
                         <div class="auth-input-wrap">
                             <span class="auth-input-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24">
@@ -53,13 +53,13 @@
                                 name="email"
                                 class="auth-input"
                                 value="{{ old('email') }}"
-                                placeholder="Логин"
+                                placeholder="{{ __('auth.email_placeholder') }}"
                                 required
                                 autocomplete="username"
                             >
                         </div>
 
-                        <label for="password" class="auth-label">Пароль</label>
+                        <label for="password" class="auth-label">{{ __('auth.password') }}</label>
                         <div class="auth-input-wrap">
                             <span class="auth-input-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24">
@@ -80,18 +80,18 @@
                         <div class="auth-row">
                             <label class="auth-remember">
                                 <input type="checkbox" name="remember" @checked(old('remember'))>
-                                <span>Запомнить меня</span>
+                                <span>{{ __('auth.remember_me') }}</span>
                             </label>
-                            <a href="{{ route('password.request') }}" class="auth-forgot">Забыл пароль?</a>
+                            <a href="{{ route('password.request') }}" class="auth-forgot">{{ __('auth.forgot_password') }}</a>
                         </div>
 
-                        <button type="submit" class="auth-submit">Log In</button>
+                        <button type="submit" class="auth-submit">{{ __('auth.login') }}</button>
                     </form>
                 </section>
             </section>
         </main>
 
-        <button type="button" class="dark-mode-toggle" title="Темная тема" aria-label="Темная тема">
+        <button type="button" class="dark-mode-toggle" title="{{ __('auth.dark_mode') }}" aria-label="{{ __('auth.dark_mode') }}">
             <i class="fa fa-moon-o"></i>
             <i class="fa fa-sun-o"></i>
         </button>

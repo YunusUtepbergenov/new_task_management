@@ -7,8 +7,8 @@
             <i class="fa fa-file-text-o"></i>
         </div>
         <div>
-            <h4 class="wto-page-title">Задачи для протокола</h4>
-            <p class="wto-page-subtitle">Задачи, отмеченные для включения в протокол</p>
+            <h4 class="wto-page-title">{{ __('reports.protocol_title') }}</h4>
+            <p class="wto-page-subtitle">{{ __('reports.protocol_subtitle') }}</p>
         </div>
     </div>
 
@@ -22,7 +22,7 @@
             </select>
         </div>
         <button wire:click="export" class="btn export-btn">
-            <i class="fa fa-file-excel-o"></i> Экспорт в Excel
+            <i class="fa fa-file-excel-o"></i> {{ __('reports.export_excel') }}
         </button>
     </div>
 
@@ -39,13 +39,13 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Название</th>
-                            <th>Срок</th>
-                            <th>Ответственный</th>
-                            <th>Категория</th>
-                            <th>Статус</th>
+                            <th>{{ __('reports.task_name') }}</th>
+                            <th>{{ __('reports.deadline') }}</th>
+                            <th>{{ __('reports.responsible') }}</th>
+                            <th>{{ __('reports.category') }}</th>
+                            <th>{{ __('reports.status') }}</th>
                             @if (Auth::user()->isDeputy() || Auth::user()->isHR())
-                                <th>Для протокола</th>
+                                <th>{{ __('reports.for_protocol') }}</th>
                             @endif
                         </tr>
                     </thead>
@@ -63,8 +63,8 @@
                                 </td>
                                 <td>
                                     @if ($main['extended_deadline'])
-                                        <span class="badge bg-inverse-warning" title="Оригинальный срок: {{ $main['deadline'] }}">
-                                            {{ \Carbon\Carbon::parse($main['extended_deadline'])->format('Y-m-d') }} <i class="fa fa-clock-o text-danger" title="Срок продлен"></i>
+                                        <span class="badge bg-inverse-warning" title="{{ __('reports.original_deadline') }} {{ $main['deadline'] }}">
+                                            {{ \Carbon\Carbon::parse($main['extended_deadline'])->format('Y-m-d') }} <i class="fa fa-clock-o text-danger" title="{{ __('reports.deadline_extended') }}"></i>
                                         </span>
                                     @else
                                         <span class="badge bg-inverse-warning">{{ \Carbon\Carbon::parse($main['deadline'])->format('Y-m-d') }}</span>
@@ -89,13 +89,22 @@
                                             default              => 'warning',
                                         };
                                     @endphp
-                                    <span class="badge bg-inverse-{{ $statusClass }}">{{ $main['status'] }}</span>
+                                    @php
+                                        $ptStatusMap = [
+                                            'Не прочитано' => __('tasks.status_unread'),
+                                            'Выполняется' => __('tasks.status_in_progress'),
+                                            'Ждет подтверждения' => __('tasks.status_waiting'),
+                                            'Выполнено' => __('tasks.status_completed'),
+                                            'Дорабатывается' => __('tasks.status_revision'),
+                                        ];
+                                    @endphp
+                                    <span class="badge bg-inverse-{{ $statusClass }}">{{ $ptStatusMap[$main['status']] ?? $main['status'] }}</span>
                                 </td>
                                 @if (Auth::user()->isDeputy() || Auth::user()->isHR())
                                     <td>
                                         <input type="checkbox" checked
                                             wire:click="removeFromProtocol({{ $main['id'] }})"
-                                            wire:confirm="Убрать задачу из протокола?" />
+                                            wire:confirm="{{ __('reports.remove_from_protocol') }}" />
                                     </td>
                                 @endif
                             </tr>
@@ -107,7 +116,7 @@
     @empty
         <div class="card">
             <div class="card-body text-center text-muted py-4">
-                <p class="mb-0">Нет задач для протокола на выбранную неделю.</p>
+                <p class="mb-0">{{ __('reports.no_protocol_tasks') }}</p>
             </div>
         </div>
     @endforelse

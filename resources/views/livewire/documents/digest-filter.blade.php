@@ -3,13 +3,13 @@
     <div class="page-header">
         <div class="row align-items-center">
             <div class="col">
-                <h3 class="page-title">Дайджесты</h3>
+                <h3 class="page-title">{{ __('documents.digests') }}</h3>
             </div>
             <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
-                <a href="{{ route('digest.formatter') }}" class="btn add-btn">Форматирование дайджеста</a>
+                <a href="{{ route('digest.formatter') }}" class="btn add-btn">{{ __('documents.format_digest') }}</a>
             </div>
             <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
-                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_digest">Добавить дайджест</a>
+                <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_digest">{{ __('documents.add_digest') }}</a>
             </div>
         </div>
         <ul class="nav nav-tabs nav-tabs-bottom">
@@ -19,7 +19,7 @@
     </div>
     <!-- /Page Header -->
     <div class="form-group">
-        <input type="text" wire:model='search' class="form-control" placeholder="Поиск">
+        <input type="text" wire:model='search' class="form-control" placeholder="{{ __('documents.search') }}">
     </div>
 
     <div class="row">
@@ -30,13 +30,13 @@
                         <tr>
                             <th class="skip-filter"><span>&#8470;</span></th>
                             <th class="skip-filter"></th>
-                            <th class="skip-filter">Название</th>
-                            <th>Автор</th>
-                            <th>Отдел</th>
-                            <th class="skip-filter">Источник</th>
-                            <th class="skip-filter">Дата</th>
-                            <th class="skip-filter">Cсылка</th>
-                            <th class="skip-filter">Файл</th>
+                            <th class="skip-filter">{{ __('documents.title') }}</th>
+                            <th>{{ __('documents.author') }}</th>
+                            <th>{{ __('documents.department') }}</th>
+                            <th class="skip-filter">{{ __('documents.source') }}</th>
+                            <th class="skip-filter">{{ __('documents.date') }}</th>
+                            <th class="skip-filter">{{ __('documents.link') }}</th>
+                            <th class="skip-filter">{{ __('documents.file') }}</th>
                         </tr>
                     </thead>
                     <tbody style="overflow: auto;">
@@ -55,9 +55,9 @@
                                                     <form action="{{ route('digests.destroy', $article->id) }}" method="POST">
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                        <button class="dropdown-item"><i class="fa fa-pencil m-r-5"></i>Удалить</button>
+                                                        <button class="dropdown-item"><i class="fa fa-pencil m-r-5"></i>{{ __('documents.delete') }}</button>
                                                     </form>
-                                                    <a href="#" onclick="editDigest({{ $article->id }})" class="dropdown-item" data-toggle="modal" data-target="#edit_digest"><i class="fa fa-trash-o m-r-5"></i>Изменить</a>
+                                                    <a href="#" onclick="editDigest({{ $article->id }})" class="dropdown-item" data-toggle="modal" data-target="#edit_digest"><i class="fa fa-trash-o m-r-5"></i>{{ __('documents.edit') }}</a>
                                             </div>
                                         </div>
                                     @endif

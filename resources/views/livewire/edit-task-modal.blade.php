@@ -5,7 +5,7 @@
                 <div class="vm-header">
                     <div class="vm-header-left">
                         <i class="fa fa-pencil vm-header-icon"></i>
-                        <h5 class="vm-header-title">Изменить задачу</h5>
+                        <h5 class="vm-header-title">{{ __('tasks.edit_modal_title') }}</h5>
                     </div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -20,15 +20,15 @@
 
                         <div class="vm-section-header">
                             <i class="fa fa-list-alt"></i>
-                            <span class="vm-section-title">Категория</span>
+                            <span class="vm-section-title">{{ __('tasks.category') }}</span>
                         </div>
                         <div class="form-group mb-3" wire:ignore>
                             <select class="form-control select2" id="edit_score">
-                                <option value="" disabled selected>Выберите</option>
+                                <option value="" disabled selected>{{ __('tasks.select') }}</option>
                                 @foreach ($scoresGrouped as $group => $items)
                                     <optgroup label="{{ $group }}">
                                         @foreach ($items as $type)
-                                            <option value="{{ $type['id'] }}">{{ $type['name'] }} (Макс: {{ $type['max_score'] }})</option>
+                                            <option value="{{ $type['id'] }}">{{ $type['name'] }} ({{ __('tasks.max') }} {{ $type['max_score'] }})</option>
                                         @endforeach
                                     </optgroup>
                                 @endforeach
@@ -40,10 +40,10 @@
 
                         <div class="vm-section-header">
                             <i class="fa fa-pencil-square-o"></i>
-                            <span class="vm-section-title">Название</span>
+                            <span class="vm-section-title">{{ __('tasks.name') }}</span>
                         </div>
                         <div class="form-group mb-3">
-                            <input type="text" class="form-control" wire:model="name" placeholder="Введите название задачи">
+                            <input type="text" class="form-control" wire:model="name" placeholder="{{ __('tasks.name_placeholder') }}">
                         </div>
                         @error('name')
                             <div class="text-danger mb-2">{{ $message }}</div>
@@ -51,7 +51,7 @@
 
                         <div class="vm-section-header">
                             <i class="fa fa-calendar"></i>
-                            <span class="vm-section-title">Срок</span>
+                            <span class="vm-section-title">{{ __('tasks.deadline') }}</span>
                         </div>
                         <div class="form-group mb-3">
                             <input type="date" class="form-control" wire:model="deadline">
@@ -62,7 +62,7 @@
 
                         <div class="vm-section-header">
                             <i class="fa fa-users"></i>
-                            <span class="vm-section-title">Ответственный</span>
+                            <span class="vm-section-title">{{ __('tasks.responsible') }}</span>
                         </div>
                         <div class="form-group mb-3" wire:ignore>
                             <select class="form-control select2" id="edit_users" multiple>
@@ -82,7 +82,7 @@
                         @if (count($creators) > 1)
                             <div class="vm-section-header">
                                 <i class="fa fa-user"></i>
-                                <span class="vm-section-title">Постановщик</span>
+                                <span class="vm-section-title">{{ __('tasks.creator') }}</span>
                             </div>
                             <div class="form-group mb-3" wire:ignore>
                                 <select class="form-control" id="edit_creator">
@@ -97,8 +97,8 @@
 
                 <div class="vm-footer">
                     <button class="vm-btn-submit" wire:click="taskUpdate" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="taskUpdate">Изменить</span>
-                        <span wire:loading wire:target="taskUpdate">Сохранение...</span>
+                        <span wire:loading.remove wire:target="taskUpdate">{{ __('tasks.edit_modal_title') }}</span>
+                        <span wire:loading wire:target="taskUpdate">{{ __('tasks.saving') }}</span>
                     </button>
                 </div>
             </div>

@@ -40,12 +40,13 @@ class TaskConfirmedNotification extends Notification implements ShouldQueue
 
     public function toTelegram($notifiable): string
     {
+        $locale = $notifiable->locale ?? 'ru';
         $creator = User::find($this->task->creator_id);
 
-        return "✅ <b>Задание принято!</b>\n\n"
+        return __('notifications.telegram.task_confirmed', [], $locale) . "\n\n"
             . "📌 <b>{$this->task->name}</b>\n"
-            . "👤 Руководитель {$creator->short_name} принял ваше задание.\n\n"
-            . "🎉 Отличная работа!";
+            . "👤 " . __('notifications.telegram.supervisor_accepted', ['name' => $creator->short_name], $locale) . "\n\n"
+            . __('notifications.telegram.great_work', [], $locale);
     }
 
     public function toArray($notifiable)

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
             \Laravel\Jetstream\Http\Middleware\AuthenticateSession::class,
+            \App\Http\Middleware\SetLocale::class,
         ]);
         $middleware->validateCsrfTokens();
     })

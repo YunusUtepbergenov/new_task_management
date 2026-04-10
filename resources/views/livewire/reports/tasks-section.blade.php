@@ -5,33 +5,33 @@
         <div class="card-header">
             <div class="row">
                 <div class="col-sm-2">
-                    <h4 class="card-title mb-0">Задачи</h4>
+                    <h4 class="card-title mb-0">{{ __('reports.tasks') }}</h4>
                 </div>
                 @if ($user)
                 <div class="col-sm-10">
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" wire:model.live="filter" name="filter" id="inlineRadio0" value="">
-                        <label class="form-check-label" for="inlineRadio0" style="color: rgb(15 23 42 / var(--tw-text-opacity, 1)); font-weight:bold">Все ({{ $taskCounts['total'] ?? 0 }})</label>
+                        <label class="form-check-label" for="inlineRadio0" style="color: rgb(15 23 42 / var(--tw-text-opacity, 1)); font-weight:bold">{{ __('reports.all') }} ({{ $taskCounts['total'] ?? 0 }})</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" wire:model.live="filter" name="filter" id="inlineRadio1" value="Не прочитано">
-                        <label class="form-check-label" for="inlineRadio1" style="color: #55ce63; font-weight:bold">Не прочитано ({{ $taskCounts['new_cnt'] ?? 0 }})</label>
+                        <label class="form-check-label" for="inlineRadio1" style="color: #55ce63; font-weight:bold">{{ __('reports.status_unread') }} ({{ $taskCounts['new_cnt'] ?? 0 }})</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" wire:model.live="filter" name="filter" id="inlineRadio2" value="Выполняется">
-                        <label class="form-check-label" for="inlineRadio2" style="color: #4d8af0; font-weight:bold">Выполняется ({{ $taskCounts['doing_cnt'] ?? 0 }})</label>
+                        <label class="form-check-label" for="inlineRadio2" style="color: #4d8af0; font-weight:bold">{{ __('reports.status_in_progress') }} ({{ $taskCounts['doing_cnt'] ?? 0 }})</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" wire:model.live="filter" name="filter" id="inlineRadio3" value="Ждет подтверждения">
-                        <label class="form-check-label" for="inlineRadio3" style="color: #e63c3c; font-weight:bold">Ждет подтверждения ({{ $taskCounts['confirm_cnt'] ?? 0 }})</label>
+                        <label class="form-check-label" for="inlineRadio3" style="color: #e63c3c; font-weight:bold">{{ __('reports.status_awaiting_confirmation') }} ({{ $taskCounts['confirm_cnt'] ?? 0 }})</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" wire:model.live="filter" name="filter" id="inlineRadio4" value="Выполнено">
-                        <label class="form-check-label" for="inlineRadio4" style="color: #6c61f6; font-weight:bold">Выполнено ({{ $taskCounts['finished_cnt'] ?? 0 }})</label>
+                        <label class="form-check-label" for="inlineRadio4" style="color: #6c61f6; font-weight:bold">{{ __('reports.status_done') }} ({{ $taskCounts['finished_cnt'] ?? 0 }})</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" wire:model.live="filter" name="filter" id="inlineRadio5" value="Просроченный">
-                        <label class="form-check-label" for="inlineRadio5" style="color: #ffbc34; font-weight:bold">Просроченный ({{ $taskCounts['overdue_cnt'] ?? 0 }})</label>
+                        <label class="form-check-label" for="inlineRadio5" style="color: #ffbc34; font-weight:bold">{{ __('reports.overdue') }} ({{ $taskCounts['overdue_cnt'] ?? 0 }})</label>
                     </div>
                 </div>
                 @endif
@@ -43,12 +43,12 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Название</th>
-                            <th>Дата создания</th>
-                            <th>Крайний срок</th>
-                            <th>Постановщик</th>
-                            <th>Ответственный</th>
-                            <th>Состояние</th>
+                            <th>{{ __('reports.task_name') }}</th>
+                            <th>{{ __('reports.created_at') }}</th>
+                            <th>{{ __('reports.deadline_col') }}</th>
+                            <th>{{ __('reports.creator') }}</th>
+                            <th>{{ __('reports.responsible') }}</th>
+                            <th>{{ __('reports.state') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -69,7 +69,7 @@
                                     <td>{{ $task->user->name ?? '' }}</td>
                                     <td>
                                         @if ($task->overdue)
-                                            <span class="badge bg-inverse-warning">Просроченный</span>
+                                            <span class="badge bg-inverse-warning">{{ __('reports.overdue') }}</span>
                                         @else
                                             <span class="badge bg-inverse-{{ ($task->status == "Не прочитано") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span>
                                         @endif

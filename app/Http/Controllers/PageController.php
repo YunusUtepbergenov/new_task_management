@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Sector;
 use App\Models\Journal;
+use App\Exports\AttendanceExport;
 use App\Exports\OffDaysWorkExport;
 use App\Exports\TasksExport;
 use App\Models\Vacation;
@@ -33,15 +34,15 @@ class PageController extends Controller
 
         if (Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy()) {
             $scoresGrouped = [
-                'Научные сотрудники' => $scores,
-                'Специалиста по работе с персоналом' => $hrScores,
-                'Главный бухгалтер' => $accountantScores,
-                'Юристконсульт' => $lawyerScores,
-                'Заведующий хозяйством' => $maintainerScores,
-                'Специалист ИКТ' => $ictScores,
+                __('tasks.categories.researchers') => $scores,
+                __('tasks.categories.hr') => $hrScores,
+                __('tasks.categories.accountant') => $accountantScores,
+                __('tasks.categories.lawyer') => $lawyerScores,
+                __('tasks.categories.steward') => $maintainerScores,
+                __('tasks.categories.ict') => $ictScores,
             ];
         } else {
-            $scoresGrouped = ['Категории' => $scores];
+            $scoresGrouped = [__('tasks.categories.default') => $scores];
         }
 
         return view('page.index', [
@@ -68,15 +69,15 @@ class PageController extends Controller
 
         if (Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy()) {
             $scoresGrouped = [
-                'Научные сотрудники' => $scores,
-                'Специалиста по работе с персоналом' => $hrScores,
-                'Главный бухгалтер' => $accountantScores,
-                'Юристконсульт' => $lawyerScores,
-                'Заведующий хозяйством' => $maintainerScores,
-                'Специалист ИКТ' => $ictScores,
+                __('tasks.categories.researchers') => $scores,
+                __('tasks.categories.hr') => $hrScores,
+                __('tasks.categories.accountant') => $accountantScores,
+                __('tasks.categories.lawyer') => $lawyerScores,
+                __('tasks.categories.steward') => $maintainerScores,
+                __('tasks.categories.ict') => $ictScores,
             ];
         } else {
-            $scoresGrouped = ['Категории' => $scores];
+            $scoresGrouped = [__('tasks.categories.default') => $scores];
         }
 
         return view('page.ordered', [
@@ -118,15 +119,15 @@ class PageController extends Controller
 
         if (Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isDeputy()) {
             $scoresGrouped = [
-                'Научные сотрудники' => $scores,
-                'Специалиста по работе с персоналом' => $hrScores,
-                'Главный бухгалтер' => $accountantScores,
-                'Юристконсульт' => $lawyerScores,
-                'Заведующий хозяйством' => $maintainerScores,
-                'Специалист ИКТ' => $ictScores,
+                __('tasks.categories.researchers') => $scores,
+                __('tasks.categories.hr') => $hrScores,
+                __('tasks.categories.accountant') => $accountantScores,
+                __('tasks.categories.lawyer') => $lawyerScores,
+                __('tasks.categories.steward') => $maintainerScores,
+                __('tasks.categories.ict') => $ictScores,
             ];
         } else {
-            $scoresGrouped = ['Категории' => $scores];
+            $scoresGrouped = [__('tasks.categories.default') => $scores];
         }
         return view('page.reports.weekly', [
             'sectors' => $sectors,
@@ -173,6 +174,18 @@ class PageController extends Controller
 
     public function employees(){
         return view('page.employees');
+    }
+
+    public function attendanceExport(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $file = 'attendance_' . $request->start_date . '_' . $request->end_date . '.xlsx';
+
+        return Excel::download(new AttendanceExport($request->start_date, $request->end_date), $file);
     }
 
      public function offDaysWorkExport(){

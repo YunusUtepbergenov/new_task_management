@@ -2,11 +2,7 @@
 
 @section('main')
     @php
-        $months = [
-            1 => "Январь", 2 => "Февраль", 3 => "Март", 4 => "Апрель",
-            5 => "Май", 6 => "Июнь", 7 => "Июль", 8 => "Август",
-            9 => "Сентябрь", 10 => "Октябрь", 11 => "Ноябрь", 12 => "Декабрь"
-        ];
+        $months = __('employees.months');
         $monthIcons = [
             1 => 'fa-snowflake-o', 2 => 'fa-snowflake-o', 3 => 'fa-leaf',
             4 => 'fa-leaf', 5 => 'fa-sun-o', 6 => 'fa-sun-o',
@@ -21,8 +17,8 @@
                 <i class="fa fa-calendar-check-o"></i>
             </div>
             <div>
-                <h3 class="vac-page-title">График отпусков</h3>
-                <p class="vac-page-subtitle">{{ date('Y') }} год &middot; {{ count($vacations) }} месяцев запланировано</p>
+                <h3 class="vac-page-title">{{ __('employees.vacation_title') }}</h3>
+                <p class="vac-page-subtitle">{{ date('Y') }} {{ __('employees.year') }} &middot; {{ count($vacations) }} {{ __('employees.months_planned') }}</p>
             </div>
         </div>
 
@@ -40,7 +36,7 @@
                         <div>
                             <span class="vac-month-name">{{ $months[$vacation->month] }}</span>
                             @if ($isCurrent)
-                                <span class="vac-badge-current">Текущий</span>
+                                <span class="vac-badge-current">{{ __('employees.current') }}</span>
                             @endif
                         </div>
                         <span class="vac-user-count">

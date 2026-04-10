@@ -30,9 +30,9 @@ class DirectMessages extends Component
             'selectedUserIds' => 'required|array|min:1',
             'selectedUserIds.*' => 'exists:users,id',
         ], [
-            'messageText.required' => 'Введите текст сообщения.',
-            'selectedUserIds.required' => 'Выберите хотя бы одного получателя.',
-            'selectedUserIds.min' => 'Выберите хотя бы одного получателя.',
+            'messageText.required' => __('ui.direct_messages.message_required'),
+            'selectedUserIds.required' => __('ui.direct_messages.recipients_required'),
+            'selectedUserIds.min' => __('ui.direct_messages.recipients_required'),
         ]);
 
         $service->send(
@@ -43,7 +43,7 @@ class DirectMessages extends Component
         );
 
         $this->reset(['messageText', 'selectedUserIds']);
-        session()->flash('success', 'Сообщение успешно отправлено!');
+        session()->flash('success', __('notifications.message_sent'));
     }
 
     public function selectAll(): void

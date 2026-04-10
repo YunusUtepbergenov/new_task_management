@@ -3827,6 +3827,55 @@ body.dark-mode .settings-avatar-loading {
     text-transform: capitalize;
 }
 
+/* Export Section */
+.att-export-section {
+    margin-bottom: 16px;
+}
+
+.att-export-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.att-export-form label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.att-date-input {
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 13px;
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+.btn-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    background: #198754;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-export:hover {
+    background: #157347;
+}
+
 /* Card */
 .att-card {
     background: var(--card-bg);

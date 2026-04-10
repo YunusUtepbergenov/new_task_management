@@ -5,7 +5,7 @@
                 <div class="vm-header">
                     <div class="vm-header-left">
                         <i class="fa fa-plus vm-header-icon"></i>
-                        <h5 class="vm-header-title">Новая задача</h5>
+                        <h5 class="vm-header-title">{{ __('tasks.create_modal_title') }}</h5>
                     </div>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -20,15 +20,15 @@
 
                         <div class="vm-section-header">
                             <i class="fa fa-list-alt"></i>
-                            <span class="vm-section-title">Категория</span>
+                            <span class="vm-section-title">{{ __('tasks.category') }}</span>
                         </div>
                         <div class="form-group mb-3" wire:ignore>
                             <select class="form-control select2" id="create_score">
-                                <option value="" disabled selected>Выберите</option>
+                                <option value="" disabled selected>{{ __('tasks.select') }}</option>
                                 @foreach ($scoresGrouped as $group => $items)
                                     <optgroup label="{{ $group }}">
                                         @foreach ($items as $type)
-                                            <option value="{{ $type['id'] }}">{{ $type['name'] }} (Макс: {{ $type['max_score'] }})</option>
+                                            <option value="{{ $type['id'] }}">{{ $type['name'] }} ({{ __('tasks.max') }} {{ $type['max_score'] }})</option>
                                         @endforeach
                                     </optgroup>
                                 @endforeach
@@ -40,10 +40,10 @@
 
                         <div class="vm-section-header">
                             <i class="fa fa-pencil-square-o"></i>
-                            <span class="vm-section-title">Название</span>
+                            <span class="vm-section-title">{{ __('tasks.name') }}</span>
                         </div>
                         <div class="form-group mb-3">
-                            <input type="text" class="form-control" wire:model="name" placeholder="Введите название задачи">
+                            <input type="text" class="form-control" wire:model="name" placeholder="{{ __('tasks.name_placeholder') }}">
                         </div>
                         @error('name')
                             <div class="text-danger mb-2">{{ $message }}</div>
@@ -51,7 +51,7 @@
 
                         <div class="vm-section-header">
                             <i class="fa fa-paperclip"></i>
-                            <span class="vm-section-title">Файлы (Макс: 5 МБ)</span>
+                            <span class="vm-section-title">{{ __('tasks.files') }}</span>
                         </div>
                         <div class="form-group mb-3"
                              x-data="{ dragging: false }"
@@ -62,15 +62,15 @@
                                 <input type="file" wire:model="files" class="vm-dropzone-input" x-ref="createFileInput" multiple>
                                 <div class="vm-dropzone-content" wire:loading.remove wire:target="files">
                                     <i class="fa fa-cloud-upload vm-dropzone-icon"></i>
-                                    <span class="vm-dropzone-text">Нажмите или перетащите файлы</span>
-                                    <span class="vm-dropzone-hint">PDF, DOC, XLS, JPG до 5 МБ</span>
+                                    <span class="vm-dropzone-text">{{ __('tasks.drag_drop') }}</span>
+                                    <span class="vm-dropzone-hint">{{ __('tasks.file_formats') }}</span>
                                 </div>
                                 <div wire:loading wire:target="files" style="width: 100%;">
                                     <div class="vm-upload-progress">
                                         <div class="vm-progress-bar">
                                             <div class="vm-progress-bar-fill"></div>
                                         </div>
-                                        <span style="font-size: 12px; color: var(--text-secondary);">Загрузка файлов...</span>
+                                        <span style="font-size: 12px; color: var(--text-secondary);">{{ __('tasks.uploading') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -80,7 +80,7 @@
                                 <div class="vm-uploaded-file" wire:key="file-{{ $index }}">
                                     <i class="fa fa-check-circle" style="color: #22c55e; font-size: 18px; flex-shrink: 0;"></i>
                                     <span>{{ Str::limit($file->getClientOriginalName(), 25) }}</span>
-                                    <button type="button" class="vm-upload-remove" wire:click.stop="removeFile({{ $index }})" title="Удалить файл">
+                                    <button type="button" class="vm-upload-remove" wire:click.stop="removeFile({{ $index }})" title="{{ __('tasks.remove_file') }}">
                                         <i class="fa fa-times"></i>
                                     </button>
                                 </div>
@@ -92,7 +92,7 @@
 
                         <div class="vm-section-header">
                             <i class="fa fa-calendar"></i>
-                            <span class="vm-section-title">Срок</span>
+                            <span class="vm-section-title">{{ __('tasks.deadline') }}</span>
                         </div>
                         <div class="form-group mb-3">
                             <input type="date" class="form-control" wire:model="deadline">
@@ -103,7 +103,7 @@
 
                         <div class="vm-section-header">
                             <i class="fa fa-users"></i>
-                            <span class="vm-section-title">Ответственный</span>
+                            <span class="vm-section-title">{{ __('tasks.responsible') }}</span>
                         </div>
                         <div class="form-group mb-3" wire:ignore>
                             <select class="form-control select2" id="create_users" multiple>
@@ -123,7 +123,7 @@
                         @if (count($creators) > 1)
                             <div class="vm-section-header">
                                 <i class="fa fa-user"></i>
-                                <span class="vm-section-title">Постановщик</span>
+                                <span class="vm-section-title">{{ __('tasks.creator') }}</span>
                             </div>
                             <div class="form-group mb-3" wire:ignore>
                                 <select class="form-control" id="create_creator">
@@ -138,8 +138,8 @@
 
                 <div class="vm-footer">
                     <button class="vm-btn-submit" wire:click="taskStore" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="taskStore">Поставить Задачу</span>
-                        <span wire:loading wire:target="taskStore">Создание...</span>
+                        <span wire:loading.remove wire:target="taskStore">{{ __('tasks.create_button') }}</span>
+                        <span wire:loading wire:target="taskStore">{{ __('tasks.creating') }}</span>
                     </button>
                 </div>
             </div>

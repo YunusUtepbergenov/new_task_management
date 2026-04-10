@@ -7,10 +7,10 @@
 		<div class="page-header">
 			<div class="row align-items-center">
 				<div class="col">
-                    <h3 class="page-title">Аналитические записки</h3>
+                    <h3 class="page-title">{{ __('documents.notes') }}</h3>
 				</div>
                 <div class="col-auto float-right ml-auto" style="margin-bottom: 10px;">
-                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_note">Добавить записка</a>
+                    <a href="#" class="btn add-btn" data-toggle="modal" data-target="#create_note">{{ __('documents.add_note') }}</a>
                 </div>
             </div>
             <ul class="nav nav-tabs nav-tabs-bottom">
@@ -27,13 +27,13 @@
 							<tr>
 								<th class="skip-filter"><span>&#8470;</span></th>
                                 <th class="skip-filter"></th>
-                                <th class="skip-filter">Название</th>
-								<th>Автор</th>
-								<th>Сектор</th>
-								<th>Источник</th>
-                                <th class="skip-filter">Дата</th>
-                                <th class="skip-filter">Cсылка</th>
-                                <th class="skip-filter">Файл</th>
+                                <th class="skip-filter">{{ __('documents.title') }}</th>
+								<th>{{ __('documents.author') }}</th>
+								<th>{{ __('documents.sector') }}</th>
+								<th>{{ __('documents.source') }}</th>
+                                <th class="skip-filter">{{ __('documents.date') }}</th>
+                                <th class="skip-filter">{{ __('documents.link') }}</th>
+                                <th class="skip-filter">{{ __('documents.file') }}</th>
                             </tr>
 						</thead>
 						<tbody style="overflow: auto;">
@@ -52,9 +52,9 @@
                                                     <form action="{{ route('notes.destroy', $note->id) }}" method="POST">
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                        <button class="dropdown-item"><i class="fa fa-pencil m-r-5"></i>Удалить</button>
+                                                        <button class="dropdown-item"><i class="fa fa-pencil m-r-5"></i>{{ __('documents.delete') }}</button>
                                                     </form>
-                                                    <a href="#" onclick="editNote({{ $note->id }})" class="dropdown-item" data-toggle="modal" data-target="#edit_note"><i class="fa fa-trash-o m-r-5"></i>Изменить</a>
+                                                    <a href="#" onclick="editNote({{ $note->id }})" class="dropdown-item" data-toggle="modal" data-target="#edit_note"><i class="fa fa-trash-o m-r-5"></i>{{ __('documents.edit') }}</a>
                                                 </div>
                                             </div>
                                         @endif

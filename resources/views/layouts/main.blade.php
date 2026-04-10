@@ -63,7 +63,7 @@
 						   </a>
 							<form action="{{ route('task.search') }}" id="searchForm" method="POST">
                                 @csrf
-								<input class="form-control" type="text" name="term" id="search_field" placeholder="Поиск задач, документов..." autocomplete="off" onkeydown="if(event.key==='Enter') event.preventDefault();">
+								<input class="form-control" type="text" name="term" id="search_field" placeholder="{{ __('ui.header.search_placeholder') }}" autocomplete="off" onkeydown="if(event.key==='Enter') event.preventDefault();">
 								<i class="fa fa-search search-icon-right"></i>
 								<button type="button" class="search-clear-btn" id="search_clear">
 									<i class="fa fa-times"></i>
@@ -78,14 +78,14 @@
 				<ul class="nav user-menu">
 					<li class="nav-item flag-nav">
                         <div class="kpi-item">
-                            <span class="kpi-label">KPI (норма)</span>
-                            <span class="kpi-value">{{ $kpi['kpi'] }} баллов</span>
+                            <span class="kpi-label">{{ __('ui.header.kpi_standard') }}</span>
+                            <span class="kpi-value">{{ $kpi['kpi'] }} {{ __('ui.header.points') }}</span>
                         </div>
 					</li>
                     <li class="nav-item flag-nav">
                         <div class="kpi-item">
-                            <span class="kpi-label">KPI (итого)</span>
-                            <span class="kpi-value">{{ $kpi['ovr_kpi'] }} баллов</span>
+                            <span class="kpi-label">{{ __('ui.header.kpi_total') }}</span>
+                            <span class="kpi-value">{{ $kpi['ovr_kpi'] }} {{ __('ui.header.points') }}</span>
                         </div>
 					</li>
                     <!-- Links Dropdown -->
@@ -95,7 +95,7 @@
                         </a>
                         <div class="dropdown-menu notifications">
                             <div class="topnav-dropdown-header">
-                                <span class="notification-title">Ссылки</span>
+                                <span class="notification-title">{{ __('ui.header.links') }}</span>
                             </div>
                             <div class="noti-content">
                                 <ul class="notification-list">
@@ -126,7 +126,7 @@
                         </a>
                         <div class="dropdown-menu notifications">
                             <div class="topnav-dropdown-header">
-                                <span class="notification-title">Ближайшие дни рождения</span>
+                                <span class="notification-title">{{ __('ui.header.birthdays') }}</span>
                             </div>
                             <div class="noti-content">
                                 <ul class="notification-list">
@@ -175,7 +175,7 @@
 		<!-- /Main Wrapper -->
 
         <!-- Dark Mode Toggle -->
-        <button class="dark-mode-toggle" title="Темная тема">
+        <button class="dark-mode-toggle" title="{{ __('ui.header.dark_mode') }}">
             <i class="fa fa-moon-o"></i>
             <i class="fa fa-sun-o"></i>
         </button>

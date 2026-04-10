@@ -19,6 +19,7 @@ class Settings extends Component
     public $phone, $internal;
     public $telegramToken = null;
     public $telegramLinked = false;
+    public string $locale = 'ru';
 
     public function mount(): void
     {
@@ -29,6 +30,7 @@ class Settings extends Component
         $this->phone = Auth::user()->phone;
         $this->internal = Auth::user()->internal;
         $this->telegramLinked = (bool) Auth::user()->telegram_chat_id;
+        $this->locale = Auth::user()->locale ?? 'ru';
     }
 
     public function updatedAvatar(): void
@@ -70,7 +72,7 @@ class Settings extends Component
         $this->avatarDataUrl = null;
         $this->avatar = null;
 
-        $this->dispatch('success', msg: 'Фото профиля успешно изменено.');
+        $this->dispatch('success', msg: __('notifications.avatar_updated'));
         $this->dispatch('avatar-updated', url: $this->avatarPreview);
     }
 
@@ -90,7 +92,7 @@ class Settings extends Component
         $this->avatarDataUrl = null;
         $this->avatar = null;
 
-        $this->dispatch('success', msg: 'Фото профиля удалено.');
+        $this->dispatch('success', msg: __('notifications.avatar_removed'));
         $this->dispatch('avatar-updated', url: $this->avatarPreview);
     }
 
@@ -106,7 +108,7 @@ class Settings extends Component
         $user->internal = $this->internal;
         $user->save();
 
-        $this->dispatch('success', msg: 'Контактная информация обновлена.');
+        $this->dispatch('success', msg: __('notifications.contact_updated'));
     }
 
     public function updatePassword(): void
@@ -120,9 +122,9 @@ class Settings extends Component
         if (Hash::check($this->oldPassword, Auth::user()->password)) {
             Auth::user()->update(['password' => bcrypt($this->newPassword)]);
             $this->reset(['oldPassword', 'newPassword', 'confirmPassword']);
-            $this->dispatch('success', msg: 'Пароль успешно изменен.');
+            $this->dispatch('success', msg: __('notifications.password_changed'));
         } else {
-            $this->addError('oldPassword', 'Неправильный пароль.');
+            $this->addError('oldPassword', __('notifications.wrong_password'));
         }
     }
 
@@ -136,7 +138,17 @@ class Settings extends Component
         ]);
 
         $this->telegramToken = $plainToken;
-        $this->dispatch('success', msg: 'Токен сгенерирован. Действителен 10 минут.');
+        $this->dispatch('success', msg: __('notifications.token_generated'));
+    }
+
+    public function updateLocale(): void
+    {
+        $this->validate(['locale' => 'required|in:ru,uz']);
+
+        Auth::user()->update(['locale' => $this->locale]);
+        app()->setLocale($this->locale);
+
+        $this->dispatch('success', msg: __('notifications.locale_updated'));
     }
 
     public function unlinkTelegram(): void
@@ -149,7 +161,7 @@ class Settings extends Component
 
         $this->telegramLinked = false;
         $this->telegramToken = null;
-        $this->dispatch('success', msg: 'Telegram аккаунт отвязан.');
+        $this->dispatch('success', msg: __('notifications.telegram_unlinked'));
     }
 
     public function render(): \Illuminate\Contracts\View\View

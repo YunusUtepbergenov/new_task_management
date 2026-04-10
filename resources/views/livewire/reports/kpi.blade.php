@@ -5,7 +5,7 @@
 
     <div class="row mb-3">
         <div class="col-md-4">
-            <label class="font-weight-bold">Выберите месяц:</label>
+            <label class="font-weight-bold">{{ __('reports.kpi_select_month') }}</label>
             <input type="month" class="form-control"
                    wire:model.live="selectedMonth"
                    min="2024-01"
@@ -13,7 +13,7 @@
         </div>
         <div class="col-md-4 align-self-end">
             <button wire:click="export" class="vm-btn-submit">
-                <i class="fa fa-download"></i> Экспорт в Excel
+                <i class="fa fa-download"></i> {{ __('reports.export_excel') }}
             </button>
         </div>
     </div>
@@ -25,10 +25,10 @@
                     <thead id="employee_header">
                         <tr>
                             <th>#</th>
-                            <th data-type="string">Ф.И.О</th>
-                            <th data-type="string">Сектор</th>
-                            <th data-type="number">KPI (норма)</th>
-                            <th data-type="number">KPI (итого)</th>
+                            <th data-type="string">{{ __('reports.full_name') }}</th>
+                            <th data-type="string">{{ __('reports.sector') }}</th>
+                            <th data-type="number">{{ __('reports.kpi_norm') }}</th>
+                            <th data-type="number">{{ __('reports.kpi_total') }}</th>
                         </tr>
                     </thead>
                     <tbody style="overflow: auto;" id="table1">

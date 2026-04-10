@@ -20,15 +20,15 @@
                         {{-- Meta Row 1: Dates --}}
                         <div class="vm-meta-row">
                             <div class="vm-meta-field">
-                                <span class="vm-meta-label">НАЧАЛО</span>
+                                <span class="vm-meta-label">{{ __('tasks.start_label') }}</span>
                                 <span class="vm-meta-value">{{ $task->created_at->format('d.m.Y') }}</span>
                             </div>
                             <div class="vm-meta-field">
-                                <span class="vm-meta-label">СРОК</span>
+                                <span class="vm-meta-label">{{ __('tasks.deadline_label') }}</span>
                                 <span class="vm-meta-value">{{ \Carbon\Carbon::parse($task->deadline)->format('d.m.Y') }}</span>
                             </div>
                             <div class="vm-meta-field">
-                                <span class="vm-meta-label">ВРЕМЯ ВЫПОЛНЕНИЯ</span>
+                                <span class="vm-meta-label">{{ __('tasks.completion_time') }}</span>
                                 <span class="vm-meta-value">
                                     @if ($task->response)
                                         {{ $task->response->created_at->format('d.m.Y') }}
@@ -39,7 +39,7 @@
                             </div>
                             @isset($task->extended_deadline)
                                 <div class="vm-meta-field">
-                                    <span class="vm-meta-label">ПРОДЛЕНИЕ</span>
+                                    <span class="vm-meta-label">{{ __('tasks.extension') }}</span>
                                     <span class="vm-meta-value">{{ \Carbon\Carbon::parse($task->extended_deadline)->format('d.m.Y') }}</span>
                                 </div>
                             @endisset
@@ -48,26 +48,35 @@
                         {{-- Meta Row 2: Creator / Status / Category --}}
                         <div class="vm-meta-row vm-meta-row--bordered">
                             <div class="vm-meta-field">
-                                <span class="vm-meta-label">ПОСТАНОВЩИК</span>
+                                <span class="vm-meta-label">{{ __('tasks.creator_label') }}</span>
                                 <span class="vm-meta-value">{{ $task->creator->short_name }}</span>
                             </div>
                             <div class="vm-meta-field">
-                                <span class="vm-meta-label">СОСТОЯНИЕ</span>
+                                <span class="vm-meta-label">{{ __('tasks.state') }}</span>
                                 <span class="vm-meta-value">
                                     @if ($task->overdue)
-                                        <span class="badge bg-inverse-warning">Просроченный</span>
+                                        <span class="badge bg-inverse-warning">{{ __('tasks.overdue') }}</span>
                                     @else
-                                        <span class="badge bg-inverse-{{ ($task->status == 'Не прочитано') ? 'success' : (($task->status == 'Выполняется') ? 'primary' : (($task->status == 'Ждет подтверждения') ? 'danger' : (($task->status == 'Выполнено') ? 'purple' : 'warning'))) }}">{{ $task->status }}</span>
+                                        @php
+                                            $viewStatusMap = [
+                                                'Не прочитано' => __('tasks.status_unread'),
+                                                'Выполняется' => __('tasks.status_in_progress'),
+                                                'Ждет подтверждения' => __('tasks.status_waiting'),
+                                                'Выполнено' => __('tasks.status_completed'),
+                                                'Дорабатывается' => __('tasks.status_revision'),
+                                            ];
+                                        @endphp
+                                        <span class="badge bg-inverse-{{ ($task->status == 'Не прочитано') ? 'success' : (($task->status == 'Выполняется') ? 'primary' : (($task->status == 'Ждет подтверждения') ? 'danger' : (($task->status == 'Выполнено') ? 'purple' : 'warning'))) }}">{{ $viewStatusMap[$task->status] ?? $task->status }}</span>
                                     @endif
                                 </span>
                             </div>
                             <div class="vm-meta-field">
-                                <span class="vm-meta-label">КАТЕГОРИЯ</span>
+                                <span class="vm-meta-label">{{ __('tasks.category_label') }}</span>
                                 <span class="vm-meta-value">{{ ($task->score) ? $task->score->name : '—' }}</span>
                             </div>
                             @if ($task->status == 'Выполнено' && isset($task->score))
                                 <div class="vm-meta-field">
-                                    <span class="vm-meta-label">БАЛЛ</span>
+                                    <span class="vm-meta-label">{{ __('tasks.score_label') }}</span>
                                     <span class="vm-meta-value">{{ $task->total }}/{{ $task->score->max_score }}</span>
                                 </div>
                             @endif
@@ -78,7 +87,7 @@
                             <div class="vm-section">
                                 <div class="vm-section-header">
                                     <i class="fa fa-paperclip"></i>
-                                    <span class="vm-section-title">Прикрепленные файлы</span>
+                                    <span class="vm-section-title">{{ __('tasks.attached_files') }}</span>
                                 </div>
                                 <div class="d-flex flex-wrap" style="gap: 8px;">
                                     @foreach ($task->files as $file)
@@ -95,11 +104,11 @@
                             <div class="vm-section">
                                 <div class="vm-section-header">
                                     <i class="fa fa-pencil-square-o"></i>
-                                    <span class="vm-section-title">Завершить задачу</span>
+                                    <span class="vm-section-title">{{ __('tasks.complete_task') }}</span>
                                 </div>
                                 <div class="vm-response-row">
                                     <div class="vm-response-col">
-                                        <textarea class="form-control vm-response-input" wire:model.live.blur="description" placeholder="Опишите выполненную работу..."></textarea>
+                                        <textarea class="form-control vm-response-input" wire:model.live.blur="description" placeholder="{{ __('tasks.work_description_placeholder') }}"></textarea>
                                         @error('description')
                                             <div class="text-danger mt-1" style="font-size: 13px;">{{ $message }}</div>
                                         @enderror
@@ -116,14 +125,14 @@
                                                     <div class="vm-uploaded-file">
                                                         <i class="fa fa-check-circle" style="color: #22c55e; font-size: 18px; flex-shrink: 0;"></i>
                                                         <span>{{ Str::limit($upload->getClientOriginalName(), 15) }}</span>
-                                                        <button type="button" class="vm-upload-remove" wire:click.stop="$set('upload', null)" title="Удалить файл">
+                                                        <button type="button" class="vm-upload-remove" wire:click.stop="$set('upload', null)" title="{{ __('tasks.remove_file') }}">
                                                             <i class="fa fa-times"></i>
                                                         </button>
                                                     </div>
                                                 @else
                                                     <i class="fa fa-cloud-upload vm-dropzone-icon"></i>
-                                                    <span class="vm-dropzone-text">Нажмите или перетащите файл</span>
-                                                    <span class="vm-dropzone-hint">PDF, DOC, XLS, JPG до 5 МБ</span>
+                                                    <span class="vm-dropzone-text">{{ __('tasks.drag_drop_single') }}</span>
+                                                    <span class="vm-dropzone-hint">{{ __('tasks.file_formats') }}</span>
                                                 @endif
                                             </div>
                                             <div wire:loading wire:target="upload" style="width: 100%;">
@@ -131,7 +140,7 @@
                                                     <div class="vm-progress-bar">
                                                         <div class="vm-progress-bar-fill"></div>
                                                     </div>
-                                                    <span style="font-size: 12px; color: var(--text-secondary);">Загрузка файла...</span>
+                                                    <span style="font-size: 12px; color: var(--text-secondary);">{{ __('tasks.uploading_single') }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -152,7 +161,7 @@
                                 <div class="vm-section">
                                     <div class="vm-section-header">
                                         <i class="fa fa-check-circle" style="color: #22c55e;"></i>
-                                        <span class="vm-section-title">Ответы участников</span>
+                                        <span class="vm-section-title">{{ __('tasks.participants_responses') }}</span>
                                         <span class="vm-comment-count">{{ $respondedTasks->count() }}/{{ count($coTasks) }}</span>
                                     </div>
                                     @foreach ($respondedTasks as $ct)
@@ -164,7 +173,7 @@
                                                 @can('evaluate', $ct)
                                                     @if ($ct->status == 'Ждет подтверждения')
                                                         <button class="btn btn-outline-danger btn-sm" style="border-radius: 6px; font-size: 11px; padding: 2px 10px; margin-left: 4px;" wire:click="taskRejected({{ $ct->id }})">
-                                                            <i class="fa fa-times"></i> Отклонить
+                                                            <i class="fa fa-times"></i> {{ __('tasks.reject') }}
                                                         </button>
                                                     @endif
                                                 @endcan
@@ -192,7 +201,7 @@
                             <div class="vm-section">
                                 <div class="vm-section-header">
                                     <i class="fa fa-check-circle" style="color: #22c55e;"></i>
-                                    <span class="vm-section-title">Завершенная задача</span>
+                                    <span class="vm-section-title">{{ __('tasks.completed_task') }}</span>
                                 </div>
                                 <p class="vm-response-text">{{ $task->response->description }}</p>
                                 @if($task->response->filename)
@@ -216,7 +225,7 @@
                         <div class="vm-section">
                             <div class="vm-section-header">
                                 <i class="fa fa-users"></i>
-                                <span class="vm-section-title">Ответственные</span>
+                                <span class="vm-section-title">{{ __('tasks.responsible_users') }}</span>
                             </div>
                             <div class="vm-users-row">
                                 @forelse ($coTasks as $ct)
@@ -232,7 +241,7 @@
                                         @can('evaluate', $task)
                                             @if ($task->status == 'Ждет подтверждения' && $task->group_id && isset($ct->score))
                                                 <div class="vm-score-wrap" x-data="{ scoreErr: '' }">
-                                                    <label style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Оценка (Макс: {{ $ct->score->max_score }})</label>
+                                                    <label style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">{{ __('tasks.score_input') }} {{ $ct->score->max_score }})</label>
                                                     <input type="number"
                                                         class="vm-score-input"
                                                         wire:model="groupScores.{{ $ct->id }}"
@@ -256,7 +265,7 @@
                                         @can('evaluate', $task)
                                             @if ($task->status == 'Ждет подтверждения' && !$task->group_id && isset($task->score))
                                                 <div class="vm-score-wrap" x-data="{ scoreErr: '' }" style="margin-left: auto;">
-                                                    <label style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Оценка (Макс: {{ $task->score->max_score }})</label>
+                                                    <label style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">{{ __('tasks.score_input') }} {{ $task->score->max_score }})</label>
                                                     <input type="number" class="vm-score-input"
                                                         wire:model="taskScore"
                                                         placeholder="0"
@@ -281,7 +290,7 @@
                             <div class="vm-section">
                                 <div class="vm-section-header">
                                     <i class="fa fa-history"></i>
-                                    <span class="vm-section-title">История</span>
+                                    <span class="vm-section-title">{{ __('tasks.history') }}</span>
                                     <span class="vm-comment-count">{{ count($logs) }}</span>
                                 </div>
                                 <div class="vm-log-timeline">
@@ -317,14 +326,14 @@
                         <div class="vm-comments-section vm-section">
                             <div class="vm-section-header">
                                 <i class="fa fa-comments-o"></i>
-                                <span class="vm-section-title">Комментарии</span>
+                                <span class="vm-section-title">{{ __('tasks.comments') }}</span>
                                 <span class="vm-comment-count">{{ $comments->count() }}</span>
                             </div>
 
                             {{-- Comment Form --}}
                             <div class="vm-comment-form" x-data>
                                 <div class="vm-comment-input-wrap">
-                                    <textarea class="form-control vm-comment-input" wire:model="comment" rows="2" placeholder="Напишите комментарий..."
+                                    <textarea class="form-control vm-comment-input" wire:model="comment" rows="2" placeholder="{{ __('tasks.comment_placeholder') }}"
                                         x-ref="commentInput"
                                         x-on:keydown.enter.prevent="if (!$event.shiftKey) { $wire.storeComment({{ $task->id }}) }"
                                         x-on:comment-added.window="$el.value = ''"></textarea>
@@ -375,22 +384,22 @@
                     {{-- Footer --}}
                     @if (!$task->response && $task->user_id == Auth::user()->id)
                         <div class="vm-footer">
-                            <button class="btn vm-btn-submit" wire:click="storeResponse">Завершить задачу</button>
+                            <button class="btn vm-btn-submit" wire:click="storeResponse">{{ __('tasks.complete_task') }}</button>
                         </div>
                     @endif
 
                     @can('evaluate', $task)
                         @if ($task->status == 'Ждет подтверждения')
                             <div class="vm-footer" style="justify-content: flex-end; gap: 10px;">
-                                <button class="btn btn-outline-secondary" style="border-radius: 8px;" wire:click="taskRejected({{ $task->id }})">Отменить</button>
-                                <button class="btn vm-btn-submit" wire:click="taskConfirmed({{ $task->id }})">Подтвердить</button>
+                                <button class="btn btn-outline-secondary" style="border-radius: 8px;" wire:click="taskRejected({{ $task->id }})">{{ __('tasks.reject') }}</button>
+                                <button class="btn vm-btn-submit" wire:click="taskConfirmed({{ $task->id }})">{{ __('tasks.confirm') }}</button>
                             </div>
                         @endif
                     @endcan
 
                     @if ($task->user_id == auth()->user()->id && $task->status == 'Ждет подтверждения')
                         <div class="vm-footer">
-                            <button class="btn btn-outline-secondary w-100" style="border-radius: 8px;" wire:click="reSubmit({{ $task->id }})">Отменить отправку</button>
+                            <button class="btn btn-outline-secondary w-100" style="border-radius: 8px;" wire:click="reSubmit({{ $task->id }})">{{ __('tasks.cancel_submission') }}</button>
                         </div>
                     @endif
 

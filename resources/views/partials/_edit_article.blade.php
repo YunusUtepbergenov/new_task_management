@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Изменить статью</h5>
+                <h5 class="modal-title">{{ __('documents.edit_article') }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -15,7 +15,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label>Введите названия</label>
+                                <label>{{ __('documents.enter_name') }}</label>
                                 <input class="form-control" name="name" id="article_name1" type="text">
                                 <input type="hidden" name="id" id="article_id">
                             </div>
@@ -26,15 +26,15 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label>Краткое Содержание</label>
-                                <textarea rows="4" class="form-control" name="description" id="article_description1" placeholder="Поручение / Комментария"></textarea>
+                                <label>{{ __('documents.brief_summary') }}</label>
+                                <textarea rows="4" class="form-control" name="description" id="article_description1" placeholder="{{ __('documents.task_or_comment') }}"></textarea>
                             </div>
                             {{-- <div class="alert alert-danger" id="description"></div> --}}
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Тематика</label>
+                        <label class="col-sm-3 col-form-label">{{ __('documents.topic') }}</label>
                         <div class="col-sm-4">
                             <select class="form-control" name="category_id" id="article_category_id1">
                                 @foreach ($categories as $category)
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Автор</label>
+                        <label class="col-sm-3 col-form-label">{{ __('documents.author') }}</label>
                         <div class="col-sm-4">
                             <select class="form-control" name="user_id" id="article_user_id1">
                                     @foreach ($users as $user)
@@ -58,7 +58,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label>Cсылка</label>
+                                <label>{{ __('documents.link') }}</label>
                                 <input class="form-control" name="link" type="text" id="article_link1">
                             </div>
                             {{-- <div class="alert alert-danger" id="email"></div> --}}
@@ -68,7 +68,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <label>Файл ( Макс: 5 MB )</label>
+                                <label>{{ __('documents.file_constraints_short') }}</label>
                                 <input class="form-control" type="file" name="file" id="article_file1">
                             </div>
                             {{-- <div class="alert alert-danger" id="file"></div> --}}
@@ -76,7 +76,7 @@
                     </div>
 
                     <div class="submit-section">
-                        <button class="btn btn-primary submit-btn">Сохранить</button>
+                        <button class="btn btn-primary submit-btn">{{ __('documents.save') }}</button>
                     </div>
                 </form>
             </div>

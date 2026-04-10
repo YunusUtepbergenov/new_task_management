@@ -54,10 +54,18 @@ class TelegramWebhookController extends Controller
         } elseif (!str_starts_with($text, '/')) {
             $this->handleToken($chatId, $text);
         } else {
-            $this->telegram->sendMessage($chatId, "🤔 Неизвестная команда.\n\n📖 Введите /help для списка команд.");
+            $locale = $this->getUserLocale($chatId);
+            $this->telegram->sendMessage($chatId, __('notifications.bot.unknown_command', [], $locale) . "\n\n" . __('notifications.bot.enter_help', [], $locale));
         }
 
         return response()->json(['ok' => true]);
+    }
+
+    private function getUserLocale(int $chatId): string
+    {
+        $user = User::where('telegram_chat_id', $chatId)->first();
+
+        return $user->locale ?? 'ru';
     }
 
     private function handleStart(int $chatId): void
@@ -65,11 +73,12 @@ class TelegramWebhookController extends Controller
         $user = User::where('telegram_chat_id', $chatId)->first();
 
         if ($user) {
-            $this->telegram->sendMessage($chatId, "👋 <b>С возвращением, {$user->short_name}!</b>\n\n📋 Введите /help для списка команд.");
+            $locale = $user->locale ?? 'ru';
+            $this->telegram->sendMessage($chatId, __('notifications.bot.welcome_back', ['name' => $user->short_name], $locale) . "\n\n" . __('notifications.bot.help_hint', [], $locale));
             return;
         }
 
-        $this->telegram->sendMessage($chatId, "👋 <b>Добро пожаловать в Ijro.cerr.uz!</b>\n\n🔑 Для привязки аккаунта сгенерируйте токен в настройках веб-приложения и отправьте его сюда.");
+        $this->telegram->sendMessage($chatId, __('notifications.bot.welcome', [], 'ru') . "\n\n" . __('notifications.bot.link_instructions', [], 'ru'));
     }
 
     private function handleToken(int $chatId, string $token): void
@@ -81,7 +90,7 @@ class TelegramWebhookController extends Controller
             ->first();
 
         if (!$user) {
-            $this->telegram->sendMessage($chatId, "❌ <b>Неверный или просроченный токен.</b>\n\n🔄 Пожалуйста, сгенерируйте новый токен в настройках.");
+            $this->telegram->sendMessage($chatId, __('notifications.bot.invalid_token', [], 'ru') . "\n\n" . __('notifications.bot.generate_new_token', [], 'ru'));
             return;
         }
 
@@ -91,7 +100,8 @@ class TelegramWebhookController extends Controller
             'telegram_token_expires_at' => null,
         ]);
 
-        $this->telegram->sendMessage($chatId, "✅ <b>Аккаунт успешно привязан!</b>\n\n🎉 Добро пожаловать, <b>{$user->short_name}</b>!\n\nТеперь вы будете получать уведомления о задачах.\n\n📋 Введите /help для списка команд.");
+        $locale = $user->locale ?? 'ru';
+        $this->telegram->sendMessage($chatId, __('notifications.bot.account_linked', [], $locale) . "\n\n" . __('notifications.bot.welcome_name', ['name' => $user->short_name], $locale) . "\n\n" . __('notifications.bot.will_receive', [], $locale) . "\n\n" . __('notifications.bot.help_hint', [], $locale));
     }
 
     private function handleTasks(int $chatId): void
@@ -99,9 +109,11 @@ class TelegramWebhookController extends Controller
         $user = User::where('telegram_chat_id', $chatId)->first();
 
         if (!$user) {
-            $this->telegram->sendMessage($chatId, "🔒 Ваш аккаунт не привязан.\n\n🔑 Используйте /start для привязки.");
+            $this->telegram->sendMessage($chatId, __('notifications.bot.not_linked', [], 'ru') . "\n\n" . __('notifications.bot.use_start', [], 'ru'));
             return;
         }
+
+        $locale = $user->locale ?? 'ru';
 
         $tasks = Task::where('user_id', $user->id)
             ->whereIn('status', ['Не прочитано', 'Выполняется'])
@@ -111,11 +123,14 @@ class TelegramWebhookController extends Controller
             ->get();
 
         if ($tasks->isEmpty()) {
-            $this->telegram->sendMessage($chatId, "🎉 <b>У вас нет активных задач!</b>\n\n✨ Все задачи выполнены.");
+            $this->telegram->sendMessage($chatId, __('notifications.bot.no_active_tasks', [], $locale) . "\n\n" . __('notifications.bot.all_completed', [], $locale));
             return;
         }
 
-        $lines = ["📋 <b>Ваши активные задачи ({$tasks->count()}):</b>"];
+        $lines = [__('notifications.bot.active_tasks_count', ['count' => $tasks->count()], $locale)];
+
+        $statusUnread = __('notifications.bot.status_unread', [], $locale);
+        $statusInProgress = __('notifications.bot.status_in_progress', [], $locale);
 
         foreach ($tasks as $i => $task) {
             $deadline = Carbon::parse($task->extended_deadline ?? $task->deadline)->format('Y-m-d');
@@ -127,8 +142,9 @@ class TelegramWebhookController extends Controller
             if ($task->overdue) {
                 $statusEmoji = '🔴';
             }
+            $statusLabel = $task->status === 'Не прочитано' ? $statusUnread : $statusInProgress;
             $num = $i + 1;
-            $lines[] = "\n━━━━━━━━━━━━━━━━━━━\n<b>{$num}.</b> 📌 <b>{$task->name}</b>\n📅 Срок: {$deadline}\n{$statusEmoji} Статус: {$task->status}";
+            $lines[] = "\n━━━━━━━━━━━━━━━━━━━\n<b>{$num}.</b> 📌 <b>{$task->name}</b>\n" . __('notifications.telegram.deadline', [], $locale) . " {$deadline}\n{$statusEmoji} {$statusLabel}";
         }
 
         $lines[] = "\n━━━━━━━━━━━━━━━━━━━";
@@ -141,17 +157,18 @@ class TelegramWebhookController extends Controller
         $user = User::where('telegram_chat_id', $chatId)->first();
 
         if (!$user) {
-            $this->telegram->sendMessage($chatId, "Ваш аккаунт не привязан. Используйте /start для привязки.");
+            $this->telegram->sendMessage($chatId, __('notifications.bot.not_linked', [], 'ru') . " " . __('notifications.bot.use_start', [], 'ru'));
             return;
         }
 
+        $locale = $user->locale ?? 'ru';
         $kpi = $user->kpiBoth();
         $month = Carbon::now()->translatedFormat('F Y');
 
-        $message = "📊 <b>KPI за {$month}</b>\n\n"
+        $message = __('notifications.bot.kpi_title', ['month' => $month], $locale) . "\n\n"
             . "n━━━━━━━━━━━━━━━━━━━\n"
-            . "🎯 Норма: <b>{$kpi['kpi']}</b> баллов\n"
-            . "📈 Итого: <b>{$kpi['ovr_kpi']}</b> баллов\n"
+            . __('notifications.bot.kpi_norm', [], $locale) . " <b>{$kpi['kpi']}</b> " . __('notifications.bot.kpi_points', [], $locale) . "\n"
+            . __('notifications.bot.kpi_total', [], $locale) . " <b>{$kpi['ovr_kpi']}</b> " . __('notifications.bot.kpi_points', [], $locale) . "\n"
             . "n━━━━━━━━━━━━━━━━━━━";
 
         $this->telegram->sendMessage($chatId, $message);
@@ -160,15 +177,16 @@ class TelegramWebhookController extends Controller
     private function handleHelp(int $chatId): void
     {
         $user = User::where('telegram_chat_id', $chatId)->first();
+        $locale = $user->locale ?? 'ru';
 
-        $message = "📖 <b>Доступные команды:</b>\n\n"
-            . "📋 /tasks — Список активных задач\n"
-            . "📊 /kpi — Текущий KPI за месяц\n"
-            . "❓ /help — Список команд\n"
-            . "🔓 /unlink — Отвязать Telegram от аккаунта";
+        $message = __('notifications.bot.available_commands', [], $locale) . "\n\n"
+            . __('notifications.bot.cmd_tasks', [], $locale) . "\n"
+            . __('notifications.bot.cmd_kpi', [], $locale) . "\n"
+            . __('notifications.bot.cmd_help', [], $locale) . "\n"
+            . __('notifications.bot.cmd_unlink', [], $locale);
 
         if ($user && ($user->isDeputy() || $user->isDirector())) {
-            $message .= "\n✉️ /send — Отправить сообщение сотрудникам";
+            $message .= "\n" . __('notifications.bot.cmd_send', [], $locale);
         }
 
         $this->telegram->sendMessage($chatId, $message);
@@ -179,12 +197,14 @@ class TelegramWebhookController extends Controller
         $sender = User::where('telegram_chat_id', $chatId)->first();
 
         if (!$sender) {
-            $this->telegram->sendMessage($chatId, "🔒 Ваш аккаунт не привязан.\n\n🔑 Используйте /start для привязки.");
+            $this->telegram->sendMessage($chatId, __('notifications.bot.not_linked', [], 'ru') . "\n\n" . __('notifications.bot.use_start', [], 'ru'));
             return;
         }
 
+        $locale = $sender->locale ?? 'ru';
+
         if (!$sender->isDeputy() && !$sender->isDirector()) {
-            $this->telegram->sendMessage($chatId, "⛔ У вас нет прав для отправки сообщений.");
+            $this->telegram->sendMessage($chatId, __('notifications.bot.no_permission', [], $locale));
             return;
         }
 
@@ -194,12 +214,12 @@ class TelegramWebhookController extends Controller
             ->get(['id', 'name']);
 
         if ($users->isEmpty()) {
-            $this->telegram->sendMessage($chatId, "😕 Нет пользователей с привязанным Telegram.");
+            $this->telegram->sendMessage($chatId, __('notifications.bot.no_telegram_users', [], $locale));
             return;
         }
 
         $userMap = [];
-        $lines = ["📋 <b>Список пользователей:</b>\n"];
+        $lines = [__('notifications.bot.user_list', [], $locale) . "\n"];
 
         foreach ($users as $i => $user) {
             $num = $i + 1;
@@ -207,7 +227,7 @@ class TelegramWebhookController extends Controller
             $lines[] = "<b>{$num}.</b> {$user->name}";
         }
 
-        $lines[] = "\n📝 <b>Ответьте в формате:</b>\n<code>1,3,5: Текст сообщения</code>";
+        $lines[] = "\n" . __('notifications.bot.reply_format', [], $locale) . "\n<code>1,3,5: Текст сообщения</code>";
 
         Cache::put("tg_send_{$chatId}", $userMap, now()->addMinutes(10));
 
@@ -234,7 +254,8 @@ class TelegramWebhookController extends Controller
         $messageText = trim(substr($text, $colonPos + 1));
 
         if (empty($messageText)) {
-            $this->telegram->sendMessage($chatId, "❌ Текст сообщения не может быть пустым.\n\n📝 Используйте /send чтобы начать заново.");
+            $locale = $sender->locale ?? 'ru';
+            $this->telegram->sendMessage($chatId, __('notifications.bot.empty_message', [], $locale) . "\n\n" . __('notifications.bot.use_send_again', [], $locale));
             return;
         }
 
@@ -248,14 +269,16 @@ class TelegramWebhookController extends Controller
         }
 
         if (empty($recipientIds)) {
-            $this->telegram->sendMessage($chatId, "❌ Не найдены пользователи по указанным номерам.\n\n📝 Используйте /send чтобы начать заново.");
+            $locale = $sender->locale ?? 'ru';
+            $this->telegram->sendMessage($chatId, __('notifications.bot.no_users_found', [], $locale) . "\n\n" . __('notifications.bot.use_send_again', [], $locale));
             return;
         }
 
         $directMessage = $this->directMessageService->send($sender, $recipientIds, $messageText, 'telegram');
         $deliveredCount = $directMessage->recipients()->wherePivot('delivered', true)->count();
 
-        $this->telegram->sendMessage($chatId, "✅ Сообщение отправлено <b>{$deliveredCount}</b> из <b>" . count($recipientIds) . "</b> пользователей.");
+        $locale = $sender->locale ?? 'ru';
+        $this->telegram->sendMessage($chatId, __('notifications.bot.message_sent', ['delivered' => $deliveredCount, 'total' => count($recipientIds)], $locale));
     }
 
     private function handleUnlink(int $chatId): void
@@ -263,12 +286,13 @@ class TelegramWebhookController extends Controller
         $user = User::where('telegram_chat_id', $chatId)->first();
 
         if (!$user) {
-            $this->telegram->sendMessage($chatId, "Ваш аккаунт не привязан.");
+            $this->telegram->sendMessage($chatId, __('notifications.bot.not_linked', [], 'ru'));
             return;
         }
 
+        $locale = $user->locale ?? 'ru';
         $user->update(['telegram_chat_id' => null]);
 
-        $this->telegram->sendMessage($chatId, "✅ <b>Аккаунт успешно отвязан.</b>\n\n🔕 Вы больше не будете получать уведомления.\n\n🔑 Для повторной привязки используйте /start");
+        $this->telegram->sendMessage($chatId, __('notifications.bot.unlinked', [], $locale) . "\n\n" . __('notifications.bot.no_more_notifications', [], $locale) . "\n\n" . __('notifications.bot.use_start_relink', [], $locale));
     }
 }

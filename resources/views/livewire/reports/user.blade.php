@@ -3,7 +3,7 @@
     <div class="page-header">
         <div class="row align-items-center">
             <div class="col">
-                <h3 class="page-title">Задачи ({{ $user->name }})</h3>
+                <h3 class="page-title">{{ __('reports.tasks') }} ({{ $user->name }})</h3>
             </div>
         </div>
     </div>
@@ -22,12 +22,12 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Название</th>
-                                    <th>Постановщик</th>
-                                    <th>Крайний срок</th>
-                                    <th>Категория</th>
-                                    <th>Балл</th>
-                                    <th>Состояние</th>
+                                    <th>{{ __('reports.task_name') }}</th>
+                                    <th>{{ __('reports.creator') }}</th>
+                                    <th>{{ __('reports.deadline_col') }}</th>
+                                    <th>{{ __('reports.category') }}</th>
+                                    <th>{{ __('reports.score') }}</th>
+                                    <th>{{ __('reports.state') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -57,7 +57,7 @@
                                                         class="form-control form-control-sm"
                                                         style="width: 70px; margin-right: 5px;">
                                                     <button class="btn btn-sm btn-primary"
-                                                            wire:click="saveScore({{ $task->id }})">Сохранить</button>
+                                                            wire:click="saveScore({{ $task->id }})">{{ __('reports.save') }}</button>
                                                 </div>
                                                 @error("editedScores.{$task->id}")
                                                     <div class="text-danger small">{{ $message }}</div>
@@ -69,7 +69,7 @@
                                     
                                     <td>
                                         @if ($task->overdue)
-                                            <span class="badge bg-inverse-warning">Просроченный</span>
+                                            <span class="badge bg-inverse-warning">{{ __('reports.overdue') }}</span>
                                         @else
                                             <span class="badge bg-inverse-{{ ($task->status == "Не прочитано") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span>
                                         @endif

@@ -19,8 +19,8 @@ class SendWeeklyUnsubmittedReminders extends Command
         $weekEnd   = Carbon::now()->endOfWeek()->toDateString();
 
         $tasks = Task::with([
-                'user:id,short_name,telegram_chat_id',
-                'creator:id,short_name,telegram_chat_id',
+                'user:id,short_name,telegram_chat_id,locale',
+                'creator:id,short_name,telegram_chat_id,locale',
             ])
             ->whereRaw('DATE(COALESCE(extended_deadline, deadline)) BETWEEN ? AND ?', [$weekStart, $weekEnd])
             ->whereIn('status', ['Не прочитано', 'Выполняется'])
@@ -34,20 +34,22 @@ class SendWeeklyUnsubmittedReminders extends Command
         // --- Notify assignees ---
         $assigneeCount = 0;
         foreach ($tasks->groupBy('user_id') as $userTasks) {
-            $chatId = $userTasks->first()->user?->telegram_chat_id;
+            $user = $userTasks->first()->user;
+            $chatId = $user?->telegram_chat_id;
             if (!$chatId) {
                 continue;
             }
 
-            $lines = ["📋 <b>Итоги недели: незавершённые задачи</b>\n📅 Неделя: {$weekStart} – {$weekEnd}\n"];
+            $locale = $user->locale ?? 'ru';
+            $lines = [__('notifications.reminders.weekly_title', [], $locale) . "\n" . __('notifications.reminders.week_label', [], $locale) . " {$weekStart} – {$weekEnd}\n"];
 
             foreach ($userTasks as $i => $task) {
                 $statusEmoji = $task->status === 'Не прочитано' ? '🆕' : '🔵';
                 $deadline    = $task->extended_deadline ?? $task->deadline;
-                $lines[]     = "{$statusEmoji} " . ($i + 1) . ". <b>{$task->name}</b>\n     Срок: {$deadline}";
+                $lines[]     = "{$statusEmoji} " . ($i + 1) . ". <b>{$task->name}</b>\n     " . __('notifications.telegram.deadline', [], $locale) . " {$deadline}";
             }
 
-            $lines[] = "\n⚠️ Пожалуйста, сдайте задачи на проверку или продлите срок на следующую неделю.";
+            $lines[] = "\n" . __('notifications.reminders.submit_or_extend', [], $locale);
 
             $telegram->sendMessage($chatId, implode("\n", $lines));
             $assigneeCount++;
@@ -68,16 +70,21 @@ class SendWeeklyUnsubmittedReminders extends Command
                 continue;
             }
 
-            $lines = ["👤 <b>Отчёт руководителя: незавершённые поручения</b>\n📅 Неделя: {$weekStart} – {$weekEnd}\n"];
+            $locale = $creator->locale ?? 'ru';
+            $statusUnread = __('notifications.bot.status_unread', [], $locale);
+            $statusInProgress = __('notifications.bot.status_in_progress', [], $locale);
+
+            $lines = ["👤 " . __('notifications.reminders.supervisor_title', [], $locale) . "\n" . __('notifications.reminders.week_label', [], $locale) . " {$weekStart} – {$weekEnd}\n"];
 
             foreach ($tasksToReport as $i => $task) {
                 $statusEmoji  = $task->status === 'Не прочитано' ? '🆕' : '🔵';
+                $statusLabel  = $task->status === 'Не прочитано' ? $statusUnread : $statusInProgress;
                 $deadline     = $task->extended_deadline ?? $task->deadline;
                 $assigneeName = $task->user?->short_name ?? '—';
-                $lines[]      = "{$statusEmoji} " . ($i + 1) . ". <b>{$task->name}</b>\n     Ответственный: {$assigneeName}\n     Срок: {$deadline}\n     Статус: {$task->status}";
+                $lines[]      = "{$statusEmoji} " . ($i + 1) . ". <b>{$task->name}</b>\n     {$assigneeName}\n     " . __('notifications.telegram.deadline', [], $locale) . " {$deadline}\n     {$statusLabel}";
             }
 
-            $lines[] = "\n⚠️ Задачи не сданы на проверку. Пожалуйста, выясните ситуацию и при необходимости продлите срок.";
+            $lines[] = "\n" . __('notifications.reminders.tasks_not_submitted', [], $locale);
 
             $telegram->sendMessage($chatId, implode("\n", $lines));
             $creatorCount++;

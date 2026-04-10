@@ -112,7 +112,7 @@ class CreateTaskModal extends Component
                 'task_id' => $task->id,
                 'user_id' => Auth::id(),
                 'action' => 'created',
-                'description' => 'Задача создана',
+                'description' => __('notifications.log_task_created'),
             ]);
 
             event(new TaskCreatedEvent($task));
@@ -123,7 +123,7 @@ class CreateTaskModal extends Component
 
         $this->dispatch('close-create-modal');
         $this->dispatch('task-created');
-        $this->dispatch('success', msg: 'Задача успешно создана.');
+        $this->dispatch('success', msg: __('notifications.task_created'));
     }
 
     public function updatedFiles(): void
@@ -180,28 +180,28 @@ class CreateTaskModal extends Component
 
         if ($user->isDirector() || $user->isMailer() || $user->isDeputy()) {
             $this->scoresGrouped = [
-                'Научные сотрудники' => $service->scoresList()->map(fn ($s) => [
+                __('tasks.categories.researchers') => $service->scoresList()->map(fn ($s) => [
                     'id' => $s->id, 'name' => $s->name, 'max_score' => $s->max_score,
                 ])->toArray(),
-                'Специалиста по работе с персоналом' => $service->hrList()->map(fn ($s) => [
+                __('tasks.categories.hr') => $service->hrList()->map(fn ($s) => [
                     'id' => $s->id, 'name' => $s->name, 'max_score' => $s->max_score,
                 ])->toArray(),
-                'Главный бухгалтер' => $service->accountantList()->map(fn ($s) => [
+                __('tasks.categories.accountant') => $service->accountantList()->map(fn ($s) => [
                     'id' => $s->id, 'name' => $s->name, 'max_score' => $s->max_score,
                 ])->toArray(),
-                'Юристконсульт' => $service->lawyerList()->map(fn ($s) => [
+                __('tasks.categories.lawyer') => $service->lawyerList()->map(fn ($s) => [
                     'id' => $s->id, 'name' => $s->name, 'max_score' => $s->max_score,
                 ])->toArray(),
-                'Заведующий хозяйством' => $service->maintainerList()->map(fn ($s) => [
+                __('tasks.categories.steward') => $service->maintainerList()->map(fn ($s) => [
                     'id' => $s->id, 'name' => $s->name, 'max_score' => $s->max_score,
                 ])->toArray(),
-                'Специалист ИКТ' => $service->ictList()->map(fn ($s) => [
+                __('tasks.categories.ict') => $service->ictList()->map(fn ($s) => [
                     'id' => $s->id, 'name' => $s->name, 'max_score' => $s->max_score,
                 ])->toArray(),
             ];
         } else {
             $this->scoresGrouped = [
-                'Категории' => $service->scoresList()->map(fn ($s) => [
+                __('tasks.categories.default') => $service->scoresList()->map(fn ($s) => [
                     'id' => $s->id, 'name' => $s->name, 'max_score' => $s->max_score,
                 ])->toArray(),
             ];

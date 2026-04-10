@@ -1,11 +1,11 @@
 <div>
     <div class="row filter-row">
         <div class="col-sm-4 col-md-2">
-            <label for="input">Источник</label>
+            <label for="input">{{ __('ui.research.source') }}</label>
             <div class="form-group">
                 <select class="form-control" wire:model='type' name="type">
-                    <option value="houses">Недвижимости</option>
-                    <option value="cars">Автомобили</option>
+                    <option value="houses">{{ __('ui.research.real_estate') }}</option>
+                    <option value="cars">{{ __('ui.research.cars') }}</option>
                 </select>
             </div>
         </div>
@@ -13,7 +13,7 @@
             <div class="col-sm-4 col-md-5">
                 <label style="color: #f7f7f7">S</label>
                 <div class="">
-                    <a id="btnExport" class="btn btn-primary search_button" data-toggle="modal" data-target="#create_scrape">Добавить</a>
+                    <a id="btnExport" class="btn btn-primary search_button" data-toggle="modal" data-target="#create_scrape">{{ __('ui.research.add') }}</a>
                 </div>
             </div>
         @endif
@@ -26,10 +26,10 @@
                     <thead id="employee_header">
                         <tr>
                             <th><span>&#8470;</span></th>
-                            <th>Наименование</th>
-                            <th>Дата</th>
-                            <th>Файл</th>
-                            <th>Действие</th>
+                            <th>{{ __('ui.research.name') }}</th>
+                            <th>{{ __('ui.research.date') }}</th>
+                            <th>{{ __('ui.research.file') }}</th>
+                            <th>{{ __('ui.research.action') }}</th>
                         </tr>
                     </thead>
                     <tbody style="overflow: auto;">
@@ -39,7 +39,7 @@
                                 <td>{{ $result->name }}</td>
                                 <td>{{ $result->date }}</td>
                                 <td>{{ $result->file }}</td>
-                                <td><a href="{{ route('scrape.download', $result->id) }}">Скачать</a></td>
+                                <td><a href="{{ route('scrape.download', $result->id) }}">{{ __('ui.research.download') }}</a></td>
                             </tr>
                         @endforeach
                     </tbody>

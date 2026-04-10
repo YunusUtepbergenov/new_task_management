@@ -7,7 +7,7 @@
         </div>
         <div class="col-md-3">
             <select wire:model.live="score_id" class="form-control">
-                <option value="">Все категории</option>
+                <option value="">{{ __('tasks.all_categories') }}</option>
                 @foreach($scoreTypes as $score)
                     <option value="{{ $score['id'] }}">{{ $score['name'] }}</option>
                 @endforeach
@@ -15,7 +15,7 @@
         </div>
         <div class="col-md-3">
             <select wire:model.live="user_id" class="form-control">
-                <option value="">Все сотрудники</option>
+                <option value="">{{ __('tasks.all_employees') }}</option>
                 @foreach($workers as $worker)
                     <option value="{{ $worker['id'] }}">{{ $worker['name'] }}</option>
                 @endforeach
@@ -23,7 +23,7 @@
         </div>
         @if($month || $score_id || $user_id)
             <div class="col-md-2">
-                <button wire:click="clearFilters" class="btn btn-secondary">Сбросить фильтры</button>
+                <button wire:click="clearFilters" class="btn btn-secondary">{{ __('tasks.clear_filters') }}</button>
             </div>
         @endif
     </div>
@@ -35,11 +35,11 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Название</th>
-                            <th>Сотрудник</th>
-                            <th>Срок</th>
-                            <th>Категория</th>
-                            <th>Балл</th>
+                            <th>{{ __('tasks.name') }}</th>
+                            <th>{{ __('tasks.employee') }}</th>
+                            <th>{{ __('tasks.deadline') }}</th>
+                            <th>{{ __('tasks.category') }}</th>
+                            <th>{{ __('tasks.score') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,7 +53,7 @@
                                 <td>{{ $task->total }}/{{ $task->score->max_score ?? '-' }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="6">Нет завершенных задач за выбранный период</td></tr>
+                            <tr><td colspan="6">{{ __('tasks.no_tasks_period') }}</td></tr>
                         @endforelse
                     </tbody>
                 </table>

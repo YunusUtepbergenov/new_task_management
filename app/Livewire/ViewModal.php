@@ -88,7 +88,7 @@ class ViewModal extends Component
                 'task_id' => $task->id,
                 'user_id' => Auth::id(),
                 'action' => 'status_changed',
-                'description' => 'Статус изменён: Не прочитано → Выполняется',
+                'description' => __('notifications.status_changed'),
             ]);
         }
 
@@ -142,7 +142,7 @@ class ViewModal extends Component
         }
 
         $response = Response::create($responseData);
-        $this->dispatch('success', msg: 'Задача выполнена. Пожалуйста, дождитесь подтверждения.');
+        $this->dispatch('success', msg: __('notifications.task_submitted_wait'));
 
         event(new TaskSubmittedEvent($response->task));
 
@@ -151,7 +151,7 @@ class ViewModal extends Component
             'task_id' => $this->taskId,
             'user_id' => Auth::id(),
             'action' => 'submitted',
-            'description' => 'Задача отправлена на подтверждение',
+            'description' => __('notifications.task_submitted_for_confirmation'),
         ]);
         $this->refreshTask();
         $this->description = '';
@@ -193,13 +193,13 @@ class ViewModal extends Component
                 $scoreValue = $this->groupScores[$groupTask->id] ?? null;
 
                 if (!is_numeric($scoreValue)) {
-                    $this->errorMsg = 'Введите балл для пользователя: ' . $groupTask->user->name;
+                    $this->errorMsg = __('notifications.enter_score_for') . ' ' . $groupTask->user->name;
                     return;
                 }
 
                 if ($groupTask->score) {
                     if ($scoreValue < $groupTask->score->min_score || $scoreValue > $groupTask->score->max_score) {
-                        $this->errorMsg = 'Оценка для ' . $groupTask->user->name . ' должна быть между ' .
+                        $this->errorMsg = __('notifications.score_for') . ' ' . $groupTask->user->name . ' ' . __('notifications.must_be_between') . ' ' .
                             $groupTask->score->min_score . ' и ' . $groupTask->score->max_score;
                         return;
                     }
@@ -209,7 +209,7 @@ class ViewModal extends Component
             }
 
             if ($task->score && $totalGroupScore > $task->score->max_score) {
-                $this->errorMsg = 'Сумма всех оценок (' . $totalGroupScore . ') превышает максимально допустимое значение (' . $task->score->max_score . ').';
+                $this->errorMsg = __('notifications.sum_exceeds') . ' (' . $totalGroupScore . ') ' . __('notifications.exceeds_max') . ' (' . $task->score->max_score . ').';
                 return;
             }
 
@@ -222,7 +222,7 @@ class ViewModal extends Component
                     'task_id' => $groupTask->id,
                     'user_id' => Auth::id(),
                     'action' => 'confirmed',
-                    'description' => 'Задача подтверждена. Оценка: ' . $this->groupScores[$groupTask->id],
+                    'description' => __('notifications.task_confirmed_score') . ' ' . $this->groupScores[$groupTask->id],
                 ]);
                 event(new TaskConfirmedEvent($groupTask));
             }
@@ -231,7 +231,7 @@ class ViewModal extends Component
                 if (!isset($this->taskScore) ||
                     floatval($this->taskScore) < $task->score->min_score ||
                     floatval($this->taskScore) > $task->score->max_score) {
-                    $this->errorMsg = 'Оценка должна быть между ' .
+                    $this->errorMsg = __('notifications.score_between') . ' ' .
                         $task->score->min_score . ' и ' . $task->score->max_score;
                     return;
                 }
@@ -245,7 +245,7 @@ class ViewModal extends Component
                 'task_id' => $task->id,
                 'user_id' => Auth::id(),
                 'action' => 'confirmed',
-                'description' => 'Задача подтверждена' . ($task->score ? '. Оценка: ' . $this->taskScore : ''),
+                'description' => __('notifications.task_confirmed') . ($task->score ? '. ' . __('notifications.task_confirmed_score') . ' ' . $this->taskScore : ''),
             ]);
             event(new TaskConfirmedEvent($task));
         }
@@ -269,7 +269,7 @@ class ViewModal extends Component
             'task_id' => $task->id,
             'user_id' => Auth::id(),
             'action' => 'rejected',
-            'description' => 'Задача отклонена и отправлена на доработку',
+            'description' => __('notifications.task_rejected'),
         ]);
         $this->refreshTask();
         event(new TaskRejectedEvent($task));
@@ -295,7 +295,7 @@ class ViewModal extends Component
             'task_id' => $task->id,
             'user_id' => Auth::id(),
             'action' => 'resubmitted',
-            'description' => 'Отправка отменена, задача возвращена на доработку',
+            'description' => __('notifications.submission_cancelled'),
         ]);
         $this->refreshTask();
     }
@@ -312,7 +312,7 @@ class ViewModal extends Component
         $user->internal = $this->internal;
         $user->save();
 
-        $this->dispatch('success', msg: 'Информация профиля успешно изменена.');
+        $this->dispatch('success', msg: __('notifications.profile_updated'));
     }
 
     public function updatePassword(): void
@@ -325,9 +325,9 @@ class ViewModal extends Component
 
         if (Hash::check($this->oldPassword, auth()->user()->password)) {
             auth()->user()->update(['password' => bcrypt($this->newPassword)]);
-            $this->dispatch('success', msg: 'Пароль успешно изменен');
+            $this->dispatch('success', msg: __('notifications.password_changed'));
         } else {
-            $this->dispatch('danger', msg: 'Неправильный пароль');
+            $this->dispatch('danger', msg: __('notifications.wrong_password'));
         }
     }
 

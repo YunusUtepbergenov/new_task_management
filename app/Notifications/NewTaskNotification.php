@@ -37,13 +37,14 @@ class NewTaskNotification extends Notification implements ShouldQueue
 
     public function toTelegram($notifiable): string
     {
+        $locale = $notifiable->locale ?? 'ru';
         $creator = User::find($this->task->creator_id);
         $deadline = Carbon::parse($this->task->extended_deadline ?? $this->task->deadline)->format('d.m.Y');
 
-        return "🆕 <b>Новое задание!</b>\n\n"
+        return __('notifications.telegram.new_task', [], $locale) . "\n\n"
             . "📌 <b>{$this->task->name}</b>\n"
-            . "👤 От: {$creator->short_name}\n"
-            . "📅 Срок: {$deadline}";
+            . __('notifications.telegram.from', [], $locale) . " {$creator->short_name}\n"
+            . __('notifications.telegram.deadline', [], $locale) . " {$deadline}";
     }
 
     public function toArray($notifiable)

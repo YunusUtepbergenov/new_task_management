@@ -5,8 +5,8 @@
     <div class="dropdown-menu notifications"
          :style="open ? 'display: block; right: 0; left: auto;' : ''">
         <div class="topnav-dropdown-header">
-            <span class="notification-title">Уведомления</span>
-            <a href="javascript:void(0)" wire:click.prevent="dismissAll" class="clear-notifications">Удалить все уведомления</a>
+            <span class="notification-title">{{ __('notifications.notifications_title') }}</span>
+            <a href="javascript:void(0)" wire:click.prevent="dismissAll" class="clear-notifications">{{ __('notifications.clear_all') }}</a>
         </div>
         <div class="noti-content">
             <ul class="notification-list">
@@ -14,15 +14,15 @@
                     @php
                         $data = $notification->data;
                         $message = match($notification->type) {
-                            'App\Notifications\NewTaskNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> добавил Не прочитано задание',
-                            'App\Notifications\TaskSubmittedNotification' => '<span class="noti-title">' . e($data['user_name']) . '</span> выполнил задание',
-                            'App\Notifications\CommentStoredNotification' => '<span class="noti-title">' . e($data['user_name']) . '</span> написал комментарий к заданию',
-                            'App\Notifications\TaskConfirmedNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> принял ваше задание',
-                            'App\Notifications\TaskRejectedNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> отклонил вашего задания',
+                            'App\Notifications\NewTaskNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> ' . __('notifications.added_task'),
+                            'App\Notifications\TaskSubmittedNotification' => '<span class="noti-title">' . e($data['user_name']) . '</span> ' . __('notifications.completed_task'),
+                            'App\Notifications\CommentStoredNotification' => '<span class="noti-title">' . e($data['user_name']) . '</span> ' . __('notifications.wrote_comment'),
+                            'App\Notifications\TaskConfirmedNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> ' . __('notifications.accepted_task'),
+                            'App\Notifications\TaskRejectedNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> ' . __('notifications.rejected_task'),
                             default => null,
                         };
                         $suffix = $notification->type === 'App\Notifications\TaskSubmittedNotification'
-                            ? '. Пожалуйста, проверьте это задание.'
+                            ? __('notifications.please_check_this')
                             : '';
                     @endphp
 
