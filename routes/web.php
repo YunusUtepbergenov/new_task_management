@@ -49,6 +49,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('digest/formatter', [DigestController::class, 'formatter'])->name('digest.formatter');
     Route::get('workload', [PageController::class, 'workload'])->name('workload');
 
+    Route::post('/locale/{locale}', function (string $locale) {
+        if (! in_array($locale, ['ru', 'uz'])) {
+            abort(400);
+        }
+        auth()->user()->update(['locale' => $locale]);
+        app()->setLocale($locale);
+        return back();
+    })->name('locale.switch');
+
     Route::get('/user_logs', function(){
         return view('page.attendance');
     })->name('attendance');

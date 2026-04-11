@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <rect fill="#1EB53A" width="900" height="600"/>
+  <rect fill="#0099B5" width="900" height="200"/>
+  <rect fill="#CE1126" y="195" width="900" height="10"/>
+  <rect fill="#fff" y="200" width="900" height="200"/>
+  <rect fill="#CE1126" y="395" width="900" height="10"/>
+  <circle fill="#fff" cx="200" cy="100" r="60"/>
+  <circle fill="#0099B5" cx="220" cy="100" r="55"/>
+  <g fill="#fff">
+    <g id="s"><polygon points="340,40 344,52 356,52 346,60 350,72 340,64 330,72 334,60 324,52 336,52"/></g>
+    <use href="#s" x="40"/>
+    <use href="#s" x="80"/>
+    <use href="#s" y="35" x="20"/>
+    <use href="#s" y="35" x="60"/>
+    <use href="#s" y="70" x="0"/>
+    <use href="#s" y="70" x="40"/>
+    <use href="#s" y="70" x="80"/>
+    <use href="#s" y="105" x="20"/>
+    <use href="#s" y="105" x="60"/>
+    <use href="#s" y="140" x="40"/>
+    <use href="#s" y="140" x="80"/>
+  </g>
+</svg>

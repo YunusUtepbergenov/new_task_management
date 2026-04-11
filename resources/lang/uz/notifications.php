@@ -113,6 +113,12 @@ return [
         'status_in_progress' => 'Бажарилмоқда',
     ],
 
+    // Turnstile notifications
+    'turnstile' => [
+        'entry' => 'Сиз биноға <b>:time</b> да кирдингиз',
+        'exit' => 'Сиз бинодан <b>:time</b> да чиқдингиз',
+    ],
+
     // Deadline reminders
     'reminders' => [
         'title' => '⏰ <b>Эслатма: бугунги вазифалар!</b>',

@@ -16,6 +16,7 @@ $days = [
 
 Schedule::command('tasks:generate-repeats')->dailyAt('01:00');
 Schedule::command('telegram:deadline-reminders')->dailyAt('09:00');
+Schedule::command('telegram:turnstile-notifications')->everyTwoMinutes();
 Schedule::command('telegram:weekly-unsubmitted-reminders')->weeklyOn(6, '09:00');
 
 Schedule::call(function() {

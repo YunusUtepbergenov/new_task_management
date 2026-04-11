@@ -113,6 +113,12 @@ return [
         'status_in_progress' => 'Выполняется',
     ],
 
+    // Turnstile notifications
+    'turnstile' => [
+        'entry' => 'Вы вошли в здание в <b>:time</b>',
+        'exit' => 'Вы вышли из здания в <b>:time</b>',
+    ],
+
     // Deadline reminders
     'reminders' => [
         'title' => '⏰ <b>Напоминание: задачи на сегодня!</b>',

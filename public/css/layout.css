@@ -825,6 +825,75 @@ body.sidebar-collapsed .sidebar .sidebar-logout-btn i {
 }
 
 /* ============================================
+   Language Switcher
+   ============================================ */
+.lang-toggle {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+}
+
+.lang-flag {
+    width: 20px;
+    height: 14px;
+    border-radius: 2px;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+.lang-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.lang-dropdown {
+    min-width: 160px !important;
+    padding: 6px 0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+
+.lang-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    font-size: 14px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.lang-option:hover {
+    background: #f1f5f9;
+}
+
+.lang-option.active {
+    background: #eff6ff;
+    font-weight: 600;
+    color: #3b82f6;
+}
+
+body.dark-mode .lang-dropdown {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+body.dark-mode .lang-option:hover {
+    background: #334155;
+}
+
+body.dark-mode .lang-option.active {
+    background: #1e3a5f;
+    color: #60a5fa;
+}
+
+/* ============================================
    Dark Mode Toggle
    ============================================ */
 .dark-mode-toggle {

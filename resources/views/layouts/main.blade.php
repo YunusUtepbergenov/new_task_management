@@ -146,6 +146,35 @@
                         </div>
                     </li>
                     <!-- /Birthdays Dropdown -->
+                    <!-- Language Switcher -->
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-toggle nav-link lang-toggle" data-toggle="dropdown">
+                            @if(app()->getLocale() === 'ru')
+                                <img src="{{ asset('assets/img/flags/ru.svg') }}" alt="RU" class="lang-flag">
+                                <span class="lang-label">RU</span>
+                            @else
+                                <img src="{{ asset('assets/img/flags/uz.svg') }}" alt="UZ" class="lang-flag">
+                                <span class="lang-label">UZ</span>
+                            @endif
+                        </a>
+                        <div class="dropdown-menu lang-dropdown">
+                            <form action="{{ route('locale.switch', 'ru') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="lang-option {{ app()->getLocale() === 'ru' ? 'active' : '' }}">
+                                    <img src="{{ asset('assets/img/flags/ru.svg') }}" alt="RU" class="lang-flag">
+                                    <span>Русский</span>
+                                </button>
+                            </form>
+                            <form action="{{ route('locale.switch', 'uz') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="lang-option {{ app()->getLocale() === 'uz' ? 'active' : '' }}">
+                                    <img src="{{ asset('assets/img/flags/uz.svg') }}" alt="UZ" class="lang-flag">
+                                    <span>Ўзбекча</span>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                    <!-- /Language Switcher -->
                     @livewire('notifications')
 				</ul>
 				<!-- /Header Menu -->

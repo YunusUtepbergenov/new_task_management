@@ -11,8 +11,8 @@ return [
 
     // Photo
     'change_photo' => 'Ўзгартириш',
-    'save_photo' => 'Суратни сақлаш',
-    'delete_photo' => 'Суратни ўчириш',
+    'save_photo' => 'Расмни сақлаш',
+    'delete_photo' => 'Расмни ўчириш',
     'delete_photo_confirm' => 'Профил сурати ўчирилсинми?',
     'photo_hint' => 'JPG, JPEG ёки PNG &middot; Макс 5 МБ',
 
@@ -21,7 +21,7 @@ return [
     'telegram_subtitle' => 'Вазифалар ҳақида билдиришномалар',
     'linked' => 'Улинган',
     'not_linked' => 'Уланмаган',
-    'telegram_linked_msg' => 'Сизнинг Telegram ҳисобингиз улинган. Сиз билдиришномалар олмоқдасиз.',
+    'telegram_linked_msg' => 'Сизнинг Telegram аккаунтингиз уланган. Сиз билдиришномалар олмоқдасиз.',
     'unlink' => 'Узиш',
     'unlink_confirm' => 'Telegram ҳисобдан узилсинми?',
     'your_token' => 'Сизнинг токенингиз:',
