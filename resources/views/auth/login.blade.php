@@ -75,6 +75,9 @@
                                 required
                                 autocomplete="current-password"
                             >
+                            <button type="button" class="auth-toggle-password" onclick="togglePassword()" aria-label="Toggle password visibility">
+                                <i class="fa fa-eye" id="toggleIcon"></i>
+                            </button>
                         </div>
 
                         <div class="auth-row">
@@ -97,6 +100,18 @@
         </button>
 
         <script>
+            function togglePassword() {
+                var input = document.getElementById('password');
+                var icon = document.getElementById('toggleIcon');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            }
+
             (function () {
                 function applyThemeFromStorage() {
                     if (localStorage.getItem('dark-mode') === 'true') {

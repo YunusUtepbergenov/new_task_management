@@ -3729,6 +3729,21 @@ body.dark-mode .vm-log-meta {
     margin-bottom: 8px;
 }
 
+.settings-copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 14px;
+    padding: 2px 4px;
+    float: right;
+    transition: all 0.2s;
+}
+
+.settings-copy-btn:hover {
+    color: var(--sidebar-active-bg);
+}
+
 .settings-telegram-code {
     display: block;
     font-size: 15px;

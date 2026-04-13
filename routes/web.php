@@ -104,19 +104,18 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('tasks/bulk-store', [TaskController::class, 'bulkStore'])->name('tasks.bulk_store');
     Route::get('/reports/weekly-tasks', [TaskController::class, 'exportWeeklyTasks'])->name('tasks.weekly_report');
+
+    Route::get('check-telegram-login', [UserController::class, 'checkUserLogin']);
+    Route::get('users/export', [UserController::class, 'export']);
+    Route::get('users/late/export', [UserController::class, 'lateComersExport']);
+    Route::get('sectors/export', [UserController::class, 'sector']);
+    Route::get('/getdocuments', [PageController::class, 'getDocuments']);
+
+    Route::get('/export/attendance', [PageController::class, 'attendanceExport'])
+        ->name('export.attendance');
+
+    Route::get('/export/off-days', [PageController::class, 'offDaysWorkExport'])
+        ->name('export.off-days');
+
+    Route::get('/reports/top-writers/export', [PageController::class, 'exportTopReportWriters']);
 });
-
-
-Route::get('check-telegram-login', [UserController::class, 'checkUserLogin']);
-Route::get('users/export', [UserController::class, 'export']);
-Route::get('users/late/export', [UserController::class, 'lateComersExport']);
-Route::get('sectors/export', [UserController::class, 'sector']);
-Route::get('/getdocuments', [PageController::class, 'getDocuments']);
-
-Route::get('/export/attendance', [PageController::class, 'attendanceExport'])
-    ->name('export.attendance');
-
-Route::get('/export/off-days', [PageController::class, 'offDaysWorkExport'])
-    ->name('export.off-days');
-
-Route::get('/reports/top-writers/export', [PageController::class, 'exportTopReportWriters']);

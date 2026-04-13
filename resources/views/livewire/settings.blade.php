@@ -110,7 +110,12 @@
                                     <i class="fa fa-key" style="color: var(--sidebar-active-bg);"></i>
                                     <span>{{ __('settings.your_token') }}</span>
                                 </div>
-                                <code class="settings-telegram-code">{{ $telegramToken }}</code>
+                                <code class="settings-telegram-code">
+                                    {{ $telegramToken }}
+                                    <button type="button" class="settings-copy-btn" onclick="copyToken(this, '{{ $telegramToken }}')" title="Copy">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </code>
                                 <div class="settings-telegram-steps">
                                     <div class="settings-telegram-step">
                                         <span class="settings-step-num">1</span>
@@ -272,6 +277,22 @@
 
 @script
     <script>
+        function copyToken(btn, token) {
+            var textarea = document.createElement('textarea');
+            textarea.value = token;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            btn.innerHTML = '<i class="fa fa-check"></i>';
+            setTimeout(function() {
+                btn.innerHTML = '<i class="fa fa-copy"></i>';
+            }, 2000);
+        }
+
         $wire.on('avatar-updated', (params) => {
             const url = params.url;
             const $sidebarAvatar = $('.sidebar-user-profile .user-avatar');
