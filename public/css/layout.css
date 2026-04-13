@@ -3751,7 +3751,6 @@ body.dark-mode .vm-log-meta {
     border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 8px 12px;
-    user-select: all;
     word-break: break-all;
     margin-bottom: 12px;
     color: var(--text-primary);

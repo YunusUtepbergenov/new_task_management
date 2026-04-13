@@ -110,12 +110,12 @@
                                     <i class="fa fa-key" style="color: var(--sidebar-active-bg);"></i>
                                     <span>{{ __('settings.your_token') }}</span>
                                 </div>
-                                <code class="settings-telegram-code">
-                                    {{ $telegramToken }}
-                                    <button type="button" class="settings-copy-btn" onclick="copyToken(this, '{{ $telegramToken }}')" title="Copy">
+                                <div class="settings-telegram-code">
+                                    <span class="settings-token-text">{{ $telegramToken }}</span>
+                                    <button type="button" class="settings-copy-btn" wire:click="$dispatch('copy-token')" title="Copy">
                                         <i class="fa fa-copy"></i>
                                     </button>
-                                </code>
+                                </div>
                                 <div class="settings-telegram-steps">
                                     <div class="settings-telegram-step">
                                         <span class="settings-step-num">1</span>
@@ -277,21 +277,23 @@
 
 @script
     <script>
-        function copyToken(btn, token) {
-            var textarea = document.createElement('textarea');
-            textarea.value = token;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
+        Livewire.on('copy-token', () => {
+            var text = document.querySelector('.settings-token-text');
+            if (!text) return;
+            var range = document.createRange();
+            range.selectNodeContents(text);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
             document.execCommand('copy');
-            document.body.removeChild(textarea);
+            sel.removeAllRanges();
 
-            btn.innerHTML = '<i class="fa fa-check"></i>';
+            var btn = document.querySelector('.settings-copy-btn');
+            btn.innerHTML = '<i class="fa fa-check" style="color: #22c55e;"></i>';
             setTimeout(function() {
                 btn.innerHTML = '<i class="fa fa-copy"></i>';
             }, 2000);
-        }
+        });
 
         $wire.on('avatar-updated', (params) => {
             const url = params.url;
