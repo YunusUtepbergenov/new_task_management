@@ -8,6 +8,7 @@ use App\Services\TelegramBotService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class SendTurnstileNotifications extends Command
 {
@@ -26,17 +27,22 @@ class SendTurnstileNotifications extends Command
             ->keyBy('log_id');
 
         if ($users->isEmpty()) {
+            Log::info('Turnstile notifications: No users with both log_id and telegram_chat_id.');
             $this->info('No users with both log_id and telegram_chat_id.');
             return self::SUCCESS;
         }
 
-        $since = Carbon::now()->subMinutes(3);
+        $since = Carbon::now()->subMinutes(5);
+
+        Log::info('Turnstile notifications: checking since ' . $since . ', users: ' . $users->keys()->implode(','));
 
         $logs = TurnstileLog::on('turnstile')
             ->whereIn('id', $users->keys()->toArray())
             ->where('auth_datetime', '>=', $since)
             ->orderBy('auth_datetime')
             ->get();
+
+        Log::info('Turnstile notifications: found ' . $logs->count() . ' entries.');
 
         if ($logs->isEmpty()) {
             $this->info('No new turnstile entries.');

@@ -71,7 +71,23 @@
                                         @if ($task->overdue)
                                             <span class="badge bg-inverse-warning">{{ __('reports.overdue') }}</span>
                                         @else
-                                            <span class="badge bg-inverse-{{ ($task->status == "Не прочитано") ? 'success' : (($task->status == "Выполняется") ? 'primary' : (($task->status == "Ждет подтверждения") ? 'danger' : (($task->status == "Выполнено") ? 'purple' : 'warning') )) }}">{{ $task->status }}</span>
+                                            @php
+                                                $tsStatusClass = match($task->status) {
+                                                    'Не прочитано'       => 'success',
+                                                    'Выполняется'        => 'primary',
+                                                    'Ждет подтверждения' => 'danger',
+                                                    'Выполнено'          => 'purple',
+                                                    default              => 'warning',
+                                                };
+                                                $tsStatusMap = [
+                                                    'Не прочитано' => __('tasks.status_unread'),
+                                                    'Выполняется' => __('tasks.status_in_progress'),
+                                                    'Ждет подтверждения' => __('tasks.status_waiting'),
+                                                    'Выполнено' => __('tasks.status_completed'),
+                                                    'Дорабатывается' => __('tasks.status_revision'),
+                                                ];
+                                            @endphp
+                                            <span class="badge bg-inverse-{{ $tsStatusClass }}">{{ $tsStatusMap[$task->status] ?? $task->status }}</span>
                                         @endif
                                     </td>
                                 </tr>

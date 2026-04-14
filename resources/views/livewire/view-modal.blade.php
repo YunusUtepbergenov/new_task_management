@@ -311,7 +311,7 @@
                                                 } }}"></i>
                                             </div>
                                             <div class="vm-log-body">
-                                                <span class="vm-log-desc">{{ $log->description }}</span>
+                                                <span class="vm-log-desc">{{ $log->translatedDescription() }}</span>
                                                 <span class="vm-log-meta">
                                                     {{ $log->user->short_name ?? '—' }} &middot; {{ $log->created_at->format('d.m.Y H:i') }}
                                                 </span>

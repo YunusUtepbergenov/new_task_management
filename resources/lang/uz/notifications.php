@@ -115,7 +115,7 @@ return [
 
     // Turnstile notifications
     'turnstile' => [
-        'entry' => 'Сиз биноға <b>:time</b> да кирдингиз',
+        'entry' => 'Сиз бинога <b>:time</b> да кирдингиз',
         'exit' => 'Сиз бинодан <b>:time</b> да чиқдингиз',
     ],
 

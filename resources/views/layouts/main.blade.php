@@ -508,6 +508,11 @@
                         $('#view_task').modal('show');
                     });
 
+                    $(document).on('hidden.bs.modal', '#view_task', function () {
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open').css('padding-right', '');
+                    });
+
                     Livewire.on('profile-show-modal', () => {
                         $('#profile_modal').modal('show');
                     });
