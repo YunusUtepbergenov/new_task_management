@@ -267,6 +267,12 @@ class PageController extends Controller
         return view('page.settings');
     }
 
+    public function announcements()
+    {
+        abort_unless(Auth::id() === 30, 403);
+        return view('page.admin.announcements');
+    }
+
     public function read($id, Request $request){
         Auth::user()->unreadNotifications->where('id', $id)->markAsRead();
         return redirect()->back();

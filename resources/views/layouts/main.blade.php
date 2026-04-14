@@ -198,6 +198,10 @@
 
 			@livewire('view-modal')
 
+            @auth
+                @livewire('feature-announcements')
+            @endauth
+
             <!-- Old right sidebar (hidden by CSS) -->
             <div class="sidebar_right"></div>
         </div>

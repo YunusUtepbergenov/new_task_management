@@ -19,6 +19,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('employee', [PageController::class, 'employees'])->name('employees');
     Route::get('vacations', [PageController::class, 'vacations'])->name('vacations');
     Route::get('settings', [PageController::class, 'settings'])->name('settings');
+    Route::get('admin/announcements', [PageController::class, 'announcements'])->name('admin.announcements');
     Route::get('surveys', [PageController::class, 'surveys'])->name('surveys');
     Route::get('notes', [NoteController::class, 'index'])->name('notes.index');
 
