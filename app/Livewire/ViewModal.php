@@ -15,20 +15,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
-use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
-#[Lazy]
 class ViewModal extends Component
 {
     use WithFileUploads;
-
-    public function placeholder(): string
-    {
-        return '<div id="view_task" class="modal custom-modal fade" role="dialog"></div>';
-    }
 
     public ?int $taskId = null;
     public $comment, $comments, $profile;

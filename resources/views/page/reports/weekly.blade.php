@@ -3,5 +3,4 @@
 @section('main')
     @livewire('reports.weekly-tasks-overview')
     @livewire('edit-task-modal')
-    @livewire('view-modal')
 @endsection

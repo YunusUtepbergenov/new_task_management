@@ -421,8 +421,8 @@
                     }
                 });
 
-                // Search clear button
-                $('#search_clear').on('click', function(){
+                // Search clear button (delegated to survive wire:navigate)
+                $(document).on('click', '#search_clear', function(){
                     $('#search_field').val('').focus();
                     $('.result_search').hide().html('');
                     window.toggleSearchIcons('');
@@ -438,13 +438,13 @@
                     }
                 };
 
-                $('#search_field').on('input', function(){
+                $(document).on('input', '#search_field', function(){
                     window.toggleSearchIcons($(this).val());
                 });
 
-                $('#search_field').keyup(function(){
+                $(document).on('keyup', '#search_field', function(){
                     $('.result_search').html('');
-                    var searchField = $('#search_field').val();
+                    var searchField = $(this).val();
                     var formData1 = new FormData($("#searchForm")[0]);
 
                     var url = document.getElementById('searchForm').getAttribute("action");
