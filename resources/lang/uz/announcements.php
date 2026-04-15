@@ -3,6 +3,7 @@
 return [
     'title' => 'Yangiliklar',
     'new_badge' => 'Yangi',
+    'all_caught_up' => 'Barcha yangiliklardan xabardorsiz',
     'count' => '{1} :count ta yangi e\'lon|[2,*] :count ta yangi e\'lon',
     'close' => 'Yopish',
     'got_it' => 'Tushundim',

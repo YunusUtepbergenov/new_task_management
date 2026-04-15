@@ -175,6 +175,7 @@
                         </div>
                     </li>
                     <!-- /Language Switcher -->
+                    @livewire('feature-announcements')
                     @livewire('notifications')
 				</ul>
 				<!-- /Header Menu -->
@@ -197,10 +198,6 @@
 			<!-- /Page Wrapper -->
 
 			@livewire('view-modal')
-
-            @auth
-                @livewire('feature-announcements')
-            @endauth
 
             <!-- Old right sidebar (hidden by CSS) -->
             <div class="sidebar_right"></div>

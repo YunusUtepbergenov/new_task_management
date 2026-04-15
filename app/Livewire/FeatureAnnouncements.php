@@ -17,7 +17,9 @@ class FeatureAnnouncements extends Component
             return;
         }
 
-        $unseenIds = $this->unseenQuery()->pluck('id');
+        $unseenIds = FeatureAnnouncement::visibleTo($user)
+            ->whereDoesntHave('seenByUsers', fn ($q) => $q->where('users.id', $user->id))
+            ->pluck('id');
 
         if ($unseenIds->isEmpty()) {
             return;
@@ -39,20 +41,28 @@ class FeatureAnnouncements extends Component
 
     public function render(): View
     {
-        $unseen = Auth::check() ? $this->unseenQuery()->get() : collect();
-
-        return view('livewire.feature-announcements', [
-            'unseen' => $unseen,
-            'hasUnseen' => $unseen->isNotEmpty(),
-        ]);
-    }
-
-    private function unseenQuery()
-    {
         $user = Auth::user();
 
-        return FeatureAnnouncement::visibleTo($user)
-            ->whereDoesntHave('seenByUsers', fn ($q) => $q->where('users.id', $user->id))
-            ->latest('published_at');
+        if (! $user) {
+            return view('livewire.feature-announcements', [
+                'history' => collect(),
+                'unseenCount' => 0,
+                'hasUnseen' => false,
+            ]);
+        }
+
+        $history = FeatureAnnouncement::visibleTo($user)
+            ->with(['seenByUsers' => fn ($q) => $q->where('users.id', $user->id)])
+            ->latest('published_at')
+            ->limit(30)
+            ->get();
+
+        $unseenCount = $history->filter(fn ($a) => $a->seenByUsers->isEmpty())->count();
+
+        return view('livewire.feature-announcements', [
+            'history' => $history,
+            'unseenCount' => $unseenCount,
+            'hasUnseen' => $unseenCount > 0,
+        ]);
     }
 }

@@ -35,7 +35,7 @@ class FeatureAnnouncementsTest extends TestCase
         Livewire::actingAs($user)
             ->test(FeatureAnnouncementsComponent::class)
             ->assertViewHas('hasUnseen', true)
-            ->assertViewHas('unseen', fn ($unseen) => $unseen->contains('id', $announcement->id));
+            ->assertViewHas('history', fn ($history) => $history->contains('id', $announcement->id));
     }
 
     public function test_role_targeted_announcement_is_hidden_from_other_roles(): void
