@@ -101,6 +101,7 @@ class WeeklyTasksOverview extends Component
                 'score:id,name',
             ])
             ->select(['id', 'name', 'status', 'deadline', 'extended_deadline', 'for_protocol', 'creator_id', 'sector_id', 'score_id', 'user_id', 'group_id', 'repeat_id'])
+            ->selectRaw('(SELECT COUNT(*) FROM tasks AS t2 WHERE t2.group_id = tasks.group_id AND tasks.group_id IS NOT NULL) as group_member_count')
             ->where(function ($query) use ($start, $end) {
                 $query->whereRaw('COALESCE(extended_deadline, deadline) BETWEEN ? AND ?', [$start, $end])
                     ->orWhere(function ($query) use ($start) {

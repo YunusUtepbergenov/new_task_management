@@ -95,6 +95,7 @@ class EditTaskModal extends Component
 
         if ($task->group_id) {
             $this->userIds = Task::where('group_id', $task->group_id)
+                ->orderBy('id')
                 ->pluck('user_id')
                 ->toArray();
         } else {

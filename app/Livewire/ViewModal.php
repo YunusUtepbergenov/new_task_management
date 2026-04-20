@@ -64,7 +64,14 @@ class ViewModal extends Component
     {
         $this->reset(['errorMsg', 'taskScore', 'groupScores', 'upload', 'description', 'comment']);
         $this->dispatch('show-modal');
-        $this->taskId = $id;
+
+        $clicked = Task::find($id);
+        if ($clicked && $clicked->group_id && $clicked->user_id !== Auth::id()) {
+            $firstId = Task::where('group_id', $clicked->group_id)->orderBy('id')->value('id');
+            $this->taskId = $firstId ?: $id;
+        } else {
+            $this->taskId = $id;
+        }
         unset($this->task);
 
         $task = $this->task;

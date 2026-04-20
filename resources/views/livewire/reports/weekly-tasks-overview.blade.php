@@ -57,8 +57,8 @@
                             @foreach ($groups as $index => $taskGroup)
                                 @php
                                     $main = $taskGroup[0];
-                                    $uniqueUsers = collect($taskGroup)->pluck('user.short_name')->unique()->filter()->values();
-                                    $users = $uniqueUsers->first();
+                                    $users = $main['user']['short_name'] ?? '';
+                                    $groupMemberCount = $main['group_member_count'] ?? null;
                                 @endphp
                                 <tr wire:key="weekly-row-{{ $main['id'] }}">
                                     <td>{{ $index + 1 }}</td>
@@ -93,9 +93,9 @@
                                     </td>
                                     <td>
                                         {{ $users }}
-                                        @if ($uniqueUsers->count() > 1)
+                                        @if (!empty($main['group_id']) && $groupMemberCount > 1)
                                             <span style="background:rgba(59,130,246,0.1);color:var(--sidebar-active-bg);border-radius:20px;padding:1px 7px;font-size:11px;font-weight:600;margin-left:4px;">
-                                                <i class="fa fa-users"></i> {{ collect($taskGroup)->count() }}
+                                                <i class="fa fa-users"></i> {{ $groupMemberCount }}
                                             </span>
                                         @endif
                                     </td>

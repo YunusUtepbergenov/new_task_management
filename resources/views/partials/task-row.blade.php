@@ -1,7 +1,7 @@
 @php
     $main_task = $task[0];
-    $uniqueResponsibles = collect($task)->pluck('user.short_name')->filter()->unique()->values();
-    $responsibles = $uniqueResponsibles->first();
+    $responsibles = $main_task['user']['short_name'] ?? '';
+    $groupMemberCount = $main_task['group_member_count'] ?? null;
 @endphp
 
 <tr wire:key="task-row-{{ $main_task['id'] }}">
@@ -48,13 +48,9 @@
     </td>
     <td>
         {{ $responsibles }}
-        @if ($uniqueResponsibles->count() > 1)
+        @if (!empty($main_task['group_id']) && $groupMemberCount > 1)
             <span style="background:rgba(59,130,246,0.1);color:var(--sidebar-active-bg);border-radius:20px;padding:1px 7px;font-size:11px;font-weight:600;margin-left:4px;">
-                <i class="fa fa-users"></i> {{ $uniqueResponsibles->count() }}
-            </span>
-        @elseif (!empty($main_task['group_id']))
-            <span style="background:rgba(59,130,246,0.1);color:var(--sidebar-active-bg);border-radius:20px;padding:1px 7px;font-size:11px;font-weight:600;margin-left:4px;">
-                <i class="fa fa-users"></i> {{ $main_task['group_member_count'] ?? '' }}
+                <i class="fa fa-users"></i> {{ $groupMemberCount }}
             </span>
         @endif
     </td>
