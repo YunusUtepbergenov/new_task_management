@@ -2529,6 +2529,11 @@ body.dark-mode .card-header .italic {
     white-space: nowrap;
 }
 
+.vm-users-row--evaluating .vm-user-card {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 280px;
+}
+
 /* Response form row */
 .vm-response-row {
     display: flex;

@@ -222,12 +222,18 @@
                         @endif
 
                         {{-- Responsible Users --}}
+                        @php
+                            $evalMode = $task->group_id
+                                && $task->status == 'Ждет подтверждения'
+                                && isset($task->score)
+                                && Gate::allows('evaluate', $task);
+                        @endphp
                         <div class="vm-section">
                             <div class="vm-section-header">
                                 <i class="fa fa-users"></i>
                                 <span class="vm-section-title">{{ __('tasks.responsible_users') }}</span>
                             </div>
-                            <div class="vm-users-row">
+                            <div class="vm-users-row @if ($evalMode) vm-users-row--evaluating @endif">
                                 @forelse ($coTasks as $ct)
                                     <div class="vm-user-card">
                                         <img class="vm-user-avatar" src="{{ ($ct->user->avatar) ? asset('user_image/'.$ct->user->avatar) : asset('user_image/avatar.jpg') }}" alt="">
