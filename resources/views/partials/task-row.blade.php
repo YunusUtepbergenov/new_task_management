@@ -1,5 +1,6 @@
 @php
-    $main_task = $task[0];
+    $main_task = $task['main'];
+    $members = $task['members'];
     $responsibles = $main_task['user']['short_name'] ?? '';
     $groupMemberCount = $main_task['group_member_count'] ?? null;
 @endphp

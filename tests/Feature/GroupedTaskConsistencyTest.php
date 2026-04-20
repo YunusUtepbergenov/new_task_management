@@ -145,6 +145,41 @@ class GroupedTaskConsistencyTest extends TestCase
             ->assertSet('taskId', $assigneeTask->id);
     }
 
+    public function test_weekly_tasks_main_is_first_selected_user_even_when_their_task_filtered_out(): void
+    {
+        $this->seed();
+
+        $creator = User::where('role_id', 2)->first();
+        $this->actingAs($creator);
+
+        // First-selected user is in sector 1 (EXCLUDED from weekly allowedSectors).
+        $excludedFirst = User::where('sector_id', 1)->where('id', '<>', $creator->id)->first();
+        $this->assertNotNull($excludedFirst, 'need a user in sector 1 for this scenario');
+
+        // Second user is in sector 4 (INCLUDED).
+        $includedSecond = User::where('sector_id', 4)->first();
+        $this->assertNotNull($includedSecond);
+
+        $group = $this->createGroupedTask($creator, [$excludedFirst, $includedSecond]);
+        $group['tasks'][0]->update([
+            'sector_id' => $excludedFirst->sector_id,
+            'status' => 'Ждет подтверждения',
+            'deadline' => now()->startOfWeek()->addDay()->format('Y-m-d'),
+        ]);
+        $group['tasks'][1]->update([
+            'sector_id' => $includedSecond->sector_id,
+            'deadline' => now()->startOfWeek()->addDay()->format('Y-m-d'),
+        ]);
+
+        app(LivewireManager::class)->withoutLazyLoading();
+
+        // Row's wire:key contains the main task id. With the fix it must be the
+        // first-selected user's task id, NOT the filtered-collection first item.
+        Livewire::test(WeeklyTasksOverview::class)
+            ->assertSee('weekly-row-' . $group['tasks'][0]->id)
+            ->assertDontSee('weekly-row-' . $group['tasks'][1]->id);
+    }
+
     public function test_evaluate_button_gated_by_first_selected_user_status(): void
     {
         $this->seed();

@@ -83,21 +83,50 @@ class OrderedTable extends Component
             });
         }
 
-        $weeklyTasks = $weeklyQuery
-            ->get()
-            ->groupBy(fn ($task) => $task->group_id ?: $task->id)
-            ->map->toArray();
+        $weeklyRaw = $weeklyQuery->get();
+        $allRaw = (clone $baseQuery)->whereNull('project_id')->get();
 
-        $all_tasks = (clone $baseQuery)
-            ->whereNull('project_id')
-            ->get()
-            ->groupBy(fn ($task) => $task->group_id ?: $task->id)
-            ->map->toArray();
+        $groupIds = $weeklyRaw->pluck('group_id')
+            ->merge($allRaw->pluck('group_id'))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $groupMains = collect();
+        if (!empty($groupIds)) {
+            $groupMains = Task::with('user:id,name,sector_id,role_id')
+                ->selectRaw('tasks.*, (SELECT COUNT(*) FROM tasks AS t2 WHERE t2.group_id = tasks.group_id AND tasks.group_id IS NOT NULL) as group_member_count')
+                ->whereIn('group_id', $groupIds)
+                ->whereIn('id', function ($q) use ($groupIds) {
+                    $q->selectRaw('MIN(id)')->from('tasks')->whereIn('group_id', $groupIds)->groupBy('group_id');
+                })
+                ->get()
+                ->keyBy('group_id');
+        }
+
+        $buildGroups = function ($rawTasks) use ($groupMains) {
+            return $rawTasks
+                ->groupBy(fn ($task) => $task->group_id ?: $task->id)
+                ->map(function ($group) use ($groupMains) {
+                    $filteredFirst = $group->first();
+                    $main = $filteredFirst->group_id && isset($groupMains[$filteredFirst->group_id])
+                        ? $groupMains[$filteredFirst->group_id]
+                        : $filteredFirst;
+
+                    return [
+                        'main' => $main->toArray(),
+                        'members' => $group->toArray(),
+                    ];
+                })
+                ->values()
+                ->toArray();
+        };
 
         return view('livewire.ordered-table', [
             'username' => Auth::user()->name,
-            'weeklyTasks' => $weeklyTasks,
-            'all_tasks' => $all_tasks,
+            'weeklyTasks' => $buildGroups($weeklyRaw),
+            'all_tasks' => $buildGroups($allRaw),
         ]);
     }
 }

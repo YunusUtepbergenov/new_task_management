@@ -40,7 +40,16 @@ class TasksTable extends Component
             ->orderByRaw('COALESCE(extended_deadline, deadline)')
             ->orderBy('id');
 
-        $weeklyTasks = (clone $baseQuery)
+        $wrap = fn ($collection) => $collection
+            ->groupBy(fn ($task) => $task->group_id ?: $task->id)
+            ->map(fn ($group) => [
+                'main' => $group->first()->toArray(),
+                'members' => $group->toArray(),
+            ])
+            ->values()
+            ->toArray();
+
+        $weeklyTasks = $wrap((clone $baseQuery)
             ->where(function ($query) {
                 $query->where(function ($q) {
                     $q->whereNull('extended_deadline')
@@ -50,15 +59,11 @@ class TasksTable extends Component
                       ->where('extended_deadline', '<=', Carbon::now()->endOfWeek());
                 });
             })
-            ->get()
-            ->groupBy(fn ($task) => $task->group_id ?: $task->id)
-            ->map->toArray();
+            ->get());
 
-        $all_tasks = (clone $baseQuery)
+        $all_tasks = $wrap((clone $baseQuery)
             ->whereNull('project_id')
-            ->get()
-            ->groupBy(fn ($task) => $task->group_id ?: $task->id)
-            ->map->toArray();
+            ->get());
 
         return view('livewire.tasks-table', [
             'weeklyTasks' => $weeklyTasks,

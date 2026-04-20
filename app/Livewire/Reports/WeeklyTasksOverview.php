@@ -114,15 +114,36 @@ class WeeklyTasksOverview extends Component
             ->get()
             ->groupBy(fn ($task) => $task->group_id ?? $task->id);
 
+        $groupIds = $tasks->map(fn ($g) => $g->first()->group_id)->filter()->unique()->values()->all();
+        $groupMains = collect();
+        if (!empty($groupIds)) {
+            $groupMains = Task::with(['user:id,name', 'score:id,name'])
+                ->select(['id', 'name', 'status', 'deadline', 'extended_deadline', 'for_protocol', 'creator_id', 'sector_id', 'score_id', 'user_id', 'group_id', 'repeat_id'])
+                ->selectRaw('(SELECT COUNT(*) FROM tasks AS t2 WHERE t2.group_id = tasks.group_id AND tasks.group_id IS NOT NULL) as group_member_count')
+                ->whereIn('group_id', $groupIds)
+                ->whereIn('id', function ($q) use ($groupIds) {
+                    $q->selectRaw('MIN(id)')->from('tasks')->whereIn('group_id', $groupIds)->groupBy('group_id');
+                })
+                ->get()
+                ->keyBy('group_id');
+        }
+
         $groupedBySector = [];
         foreach ($sectorNames as $id => $name) {
             $groupedBySector[$name] = [];
         }
 
         foreach ($tasks as $group) {
-            $main = $group->first();
-            $sectorName = $sectorNames[$main->sector_id] ?? 'Без сектора';
-            $groupedBySector[$sectorName][] = $group->toArray();
+            $filteredFirst = $group->first();
+            $main = $filteredFirst->group_id && isset($groupMains[$filteredFirst->group_id])
+                ? $groupMains[$filteredFirst->group_id]
+                : $filteredFirst;
+
+            $sectorName = $sectorNames[$filteredFirst->sector_id] ?? 'Без сектора';
+            $groupedBySector[$sectorName][] = [
+                'main' => $main->toArray(),
+                'members' => $group->toArray(),
+            ];
         }
 
         $user = Auth::user();

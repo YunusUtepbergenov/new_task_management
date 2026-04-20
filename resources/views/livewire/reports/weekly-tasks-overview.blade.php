@@ -54,9 +54,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($groups as $index => $taskGroup)
+                            @foreach ($groups as $index => $item)
                                 @php
-                                    $main = $taskGroup[0];
+                                    $main = $item['main'];
+                                    $taskGroup = $item['members'];
                                     $users = $main['user']['short_name'] ?? '';
                                     $groupMemberCount = $main['group_member_count'] ?? null;
                                 @endphp
