@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Paginator::useBootstrap();
+
+        // Application-wide password policy: at least 8 characters containing
+        // uppercase, lowercase, a number and a special character.
+        Password::defaults(fn () => Password::min(8)->mixedCase()->numbers()->symbols());
 
         Gate::define('viewPulse', function ($user) {
             return $user->isDirector();

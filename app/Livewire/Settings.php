@@ -113,14 +113,27 @@ class Settings extends Component
 
     public function updatePassword(): void
     {
+        // Mirrors the application password policy (see AppServiceProvider::boot),
+        // but reports a single human-readable, localized message instead of the
+        // framework's raw "validation.password.*" keys.
         $this->validate([
-            'oldPassword' => 'required|min:6|max:20',
-            'newPassword' => 'required|min:6|max:20',
+            'oldPassword' => 'required|string',
+            'newPassword' => ['bail', 'required', 'string', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/'],
             'confirmPassword' => 'required|same:newPassword',
+        ], [
+            'oldPassword.required' => __('settings.old_password_required'),
+            'newPassword.required' => __('settings.password_required'),
+            'newPassword.min' => __('settings.password_requirements'),
+            'newPassword.regex' => __('settings.password_requirements'),
+            'confirmPassword.required' => __('settings.password_confirm_required'),
+            'confirmPassword.same' => __('settings.password_mismatch'),
         ]);
 
         if (Hash::check($this->oldPassword, Auth::user()->password)) {
-            Auth::user()->update(['password' => bcrypt($this->newPassword)]);
+            Auth::user()->forceFill([
+                'password' => bcrypt($this->newPassword),
+                'password_changed_at' => now(),
+            ])->save();
             $this->reset(['oldPassword', 'newPassword', 'confirmPassword']);
             $this->dispatch('success', msg: __('notifications.password_changed'));
         } else {

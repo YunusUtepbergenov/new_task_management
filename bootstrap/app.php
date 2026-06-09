@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \Laravel\Jetstream\Http\Middleware\AuthenticateSession::class,
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\EnsurePasswordNotExpired::class,
         ]);
         $middleware->validateCsrfTokens();
     })

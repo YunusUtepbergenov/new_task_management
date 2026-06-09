@@ -539,5 +539,9 @@ class UserSeeder extends Seeder
             "password" => Hash::make("password")
         ],
     ]);
+
+        DB::table("users")->whereNull("password_changed_at")->update([
+            "password_changed_at" => now(),
+        ]);
     }
 }

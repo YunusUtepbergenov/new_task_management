@@ -238,6 +238,7 @@
                                 @enderror
                             </div>
                         </div>
+                        <p class="settings-avatar-hint"><i class="fa fa-info-circle"></i> {{ __('settings.password_requirements') }}</p>
                         <div class="settings-card-footer">
                             <button type="submit" class="btn settings-btn settings-btn--primary" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="updatePassword">{{ __('settings.change_password') }}</span>

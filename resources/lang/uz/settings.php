@@ -50,10 +50,16 @@ return [
     'old_password' => 'Эски парол',
     'old_password_placeholder' => 'Жорий паролни киритинг',
     'new_password' => 'Янги парол',
-    'new_password_placeholder' => 'Камида 6 та белги',
+    'new_password_placeholder' => 'Камида 8 та белги',
     'confirm_password' => 'Паролни тасдиқланг',
     'confirm_password_placeholder' => 'Янги паролни такрорланг',
     'change_password' => 'Паролни ўзгартириш',
+    'password_requirements' => 'Камида 8 та белги: катта ва кичик ҳарф, рақам ва махсус белги.',
+    'password_expired_notice' => 'Паролингиз муддати тугади. Давом этиш учун янги парол ўрнатинг.',
+    'old_password_required' => 'Жорий паролни киритинг.',
+    'password_required' => 'Янги паролни киритинг.',
+    'password_confirm_required' => 'Янги паролни тасдиқланг.',
+    'password_mismatch' => 'Пароллар мос келмади.',
 
     // Misc
     'photo_alt' => 'Профил сурати',

@@ -50,10 +50,16 @@ return [
     'old_password' => 'Прежний пароль',
     'old_password_placeholder' => 'Введите текущий пароль',
     'new_password' => 'Новый пароль',
-    'new_password_placeholder' => 'Минимум 6 символов',
+    'new_password_placeholder' => 'Минимум 8 символов',
     'confirm_password' => 'Подтвердите пароль',
     'confirm_password_placeholder' => 'Повторите новый пароль',
     'change_password' => 'Изменить пароль',
+    'password_requirements' => 'Минимум 8 символов: заглавная и строчная буквы, цифра и спецсимвол.',
+    'password_expired_notice' => 'Срок действия вашего пароля истёк. Пожалуйста, задайте новый пароль, чтобы продолжить работу.',
+    'old_password_required' => 'Введите текущий пароль.',
+    'password_required' => 'Введите новый пароль.',
+    'password_confirm_required' => 'Подтвердите новый пароль.',
+    'password_mismatch' => 'Пароли не совпадают.',
 
     // Misc
     'photo_alt' => 'Фото профиля',

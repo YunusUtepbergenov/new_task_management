@@ -32,6 +32,7 @@ class CreateNewUser implements CreatesNewUsers
             'sector_id' => $input['sector_id'],
             'role_id' => $input['role_id'],
             'password' => Hash::make($input['password']),
+            'password_changed_at' => now(),
         ]);
     }
 }

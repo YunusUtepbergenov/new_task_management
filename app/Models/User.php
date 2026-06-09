@@ -19,6 +19,11 @@ class User extends Authenticatable
     use Notifiable;
     // use TwoFactorAuthenticatable;
 
+    /**
+     * Number of months a password remains valid before the user is required to change it.
+     */
+    public const PASSWORD_VALIDITY_MONTHS = 3;
+
     protected static function booted(): void
     {
         static::saved(fn () => TaskService::clearUsersCache());
@@ -41,6 +46,7 @@ class User extends Authenticatable
         'leave',
         'locale',
         'password',
+        'password_changed_at',
         'telegram_token',
         'telegram_chat_id',
         'telegram_token_expires_at',
@@ -67,7 +73,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'birth_date' => 'date',
         'telegram_token_expires_at' => 'datetime',
+        'password_changed_at' => 'datetime',
     ];
+
+    /**
+     * Determine whether the user's password has expired and must be changed.
+     */
+    public function passwordExpired(): bool
+    {
+        if (is_null($this->password_changed_at)) {
+            return true;
+        }
+
+        return $this->password_changed_at->lt(now()->subMonths(self::PASSWORD_VALIDITY_MONTHS));
+    }
 
     /**
      * The accessors to append to the model's array form.

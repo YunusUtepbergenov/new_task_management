@@ -66,6 +66,40 @@ class PasswordResetTest extends TestCase
         });
     }
 
+    public function test_reset_password_with_weak_password_shows_readable_error()
+    {
+        if (! Features::enabled(Features::resetPasswords())) {
+            return $this->markTestSkipped('Password updates are not enabled.');
+        }
+
+        config(['app.locale' => 'ru']);
+        Notification::fake();
+
+        $this->seed();
+        $user = User::first();
+
+        $this->post('/forgot-password', [
+            'email' => $user->email,
+        ]);
+
+        Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
+            $response = $this->post('/reset-password', [
+                'token' => $notification->token,
+                'email' => $user->email,
+                'password' => 'weakpass',
+                'password_confirmation' => 'weakpass',
+            ]);
+
+            $response->assertSessionHasErrors('password');
+
+            foreach (session('errors')->get('password') as $message) {
+                $this->assertStringNotContainsString('validation.', $message);
+            }
+
+            return true;
+        });
+    }
+
     public function test_password_can_be_reset_with_valid_token()
     {
         if (! Features::enabled(Features::resetPasswords())) {
@@ -85,8 +119,8 @@ class PasswordResetTest extends TestCase
             $response = $this->post('/reset-password', [
                 'token' => $notification->token,
                 'email' => $user->email,
-                'password' => 'password',
-                'password_confirmation' => 'password',
+                'password' => 'Str0ng#Pass1',
+                'password_confirmation' => 'Str0ng#Pass1',
             ]);
 
             $response->assertSessionHasNoErrors();
