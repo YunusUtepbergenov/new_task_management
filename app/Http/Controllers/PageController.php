@@ -283,28 +283,39 @@ class PageController extends Controller
         return back();
     }
     
-    public function getDocuments(){
-        $tasks = Task::with('response')->where('score_id', 1)->where('deadline', '>', '2025-01-01')->where('status', 'Выполнено')->get();
-
+    public function getDocuments()
+    {
+        $tasks = Task::with('response')
+            ->where('sector_id', 5)
+            ->where('deadline', '>', '2022-01-01')
+            ->where('status', 'Выполнено')
+            ->get();
+    
         $zip = new ZipArchive;
-        $zipPath = sys_get_temp_dir() . '/files_2025.zip';
-
+        $zipPath = sys_get_temp_dir() . '/files_' . date('Y_m_d_His') . '.zip';
+    
         if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
             return back()->with('error', 'Не удалось создать ZIP архив.');
         }
-
+    
         $fileCount = 0;
         foreach ($tasks as $task) {
             if (!$task->response || empty($task->response->filename)) {
                 continue;
             }
+    
             $filePath = storage_path('app/files/responses/' . $task->response->filename);
-            if (file_exists($filePath)) {
-                $zip->addFromString(basename($filePath), file_get_contents($filePath));
-                $fileCount++;
+            if (!file_exists($filePath)) {
+                continue;
             }
+    
+            $year = \Carbon\Carbon::parse($task->deadline)->format('Y');
+            $entryName = $year . '/' . $task->id . '_' . basename($filePath);
+    
+            $zip->addFile($filePath, $entryName);
+            $fileCount++;
         }
-
+    
         if ($fileCount === 0) {
             $zip->close();
             if (file_exists($zipPath)) {
@@ -312,9 +323,9 @@ class PageController extends Controller
             }
             return back()->with('error', 'Нет файлов для скачивания.');
         }
-
+    
         $zip->close();
-
+    
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 
