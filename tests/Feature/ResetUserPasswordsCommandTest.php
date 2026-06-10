@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Exports\UsersPasswordExport;
 use App\Mail\TemporaryPasswordMail;
 use App\Models\User;
+use App\Services\TelegramBotService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -110,6 +111,80 @@ class ResetUserPasswordsCommandTest extends TestCase
         $this->artisan('users:reset-passwords')->assertSuccessful();
 
         Mail::assertNothingSent();
+    }
+
+    public function test_passwords_are_sent_via_telegram_to_linked_users(): void
+    {
+        $this->seed();
+        Excel::fake();
+
+        $linked = User::where('leave', 0)->orderBy('id')->first();
+        $linked->forceFill(['telegram_chat_id' => 555001])->save();
+
+        $this->mock(TelegramBotService::class, function ($mock) {
+            $mock->shouldReceive('sendMessage')
+                ->once()
+                ->withArgs(fn ($chatId, $text) => $chatId === 555001 && str_contains($text, '<code>') && str_contains($text, 'Здравствуйте'))
+                ->andReturn(true);
+        });
+
+        $this->artisan('users:reset-passwords --telegram')->assertSuccessful();
+
+        $linked->refresh();
+        $this->assertFalse(Hash::check('password', $linked->password));
+    }
+
+    public function test_telegram_message_is_localized_to_the_user_locale(): void
+    {
+        $this->seed();
+        Excel::fake();
+
+        $linked = User::where('leave', 0)->orderBy('id')->first();
+        $linked->forceFill(['telegram_chat_id' => 555020, 'locale' => 'uz'])->save();
+
+        $this->mock(TelegramBotService::class, function ($mock) {
+            $mock->shouldReceive('sendMessage')
+                ->once()
+                ->withArgs(fn ($chatId, $text) => $chatId === 555020 && str_contains($text, 'Ассалому алайкум'))
+                ->andReturn(true);
+        });
+
+        $this->artisan('users:reset-passwords --telegram')->assertSuccessful();
+    }
+
+    public function test_skip_telegram_excludes_users_from_telegram(): void
+    {
+        $this->seed();
+        Excel::fake();
+
+        $skipped = User::where('leave', 0)->orderBy('id')->first();
+        $skipped->forceFill(['telegram_chat_id' => 555010])->save();
+        $delivered = User::where('leave', 0)->orderBy('id')->skip(1)->first();
+        $delivered->forceFill(['telegram_chat_id' => 555011])->save();
+
+        $this->mock(TelegramBotService::class, function ($mock) {
+            $mock->shouldReceive('sendMessage')
+                ->once()
+                ->withArgs(fn ($chatId, $text) => $chatId === 555011)
+                ->andReturn(true);
+        });
+
+        $this->artisan('users:reset-passwords --telegram --skip-telegram='.$skipped->email)->assertSuccessful();
+    }
+
+    public function test_no_telegram_sent_without_the_flag(): void
+    {
+        $this->seed();
+        Excel::fake();
+
+        $linked = User::where('leave', 0)->orderBy('id')->first();
+        $linked->forceFill(['telegram_chat_id' => 555030])->save();
+
+        $this->mock(TelegramBotService::class, function ($mock) {
+            $mock->shouldNotReceive('sendMessage');
+        });
+
+        $this->artisan('users:reset-passwords')->assertSuccessful();
     }
 
     public function test_dry_run_does_not_change_passwords(): void
