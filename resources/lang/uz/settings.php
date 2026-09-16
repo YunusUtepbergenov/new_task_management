@@ -60,6 +60,9 @@ return [
     'password_required' => 'Янги паролни киритинг.',
     'password_confirm_required' => 'Янги паролни тасдиқланг.',
     'password_mismatch' => 'Пароллар мос келмади.',
+    'suggest_password' => 'Кучли парол таклиф қилиш',
+    'show_password' => 'Паролни кўрсатиш',
+    'hide_password' => 'Паролни яшириш',
 
     // Misc
     'photo_alt' => 'Профил сурати',

@@ -27,10 +27,19 @@ class EnsurePasswordNotExpired
     /**
      * Routes the user may still reach while their password is expired,
      * so they can actually change it (settings page + its Livewire calls), log out, or switch language.
+     *
+     * Livewire endpoints are matched by route name because Livewire 4 serves them
+     * under a hashed prefix (e.g. "livewire-95f8ed9f/update"), not "livewire/*".
      */
     private function isAllowed(Request $request): bool
     {
-        return $request->routeIs('settings', 'logout', 'locale.switch')
-            || $request->is('livewire/*');
+        return $request->routeIs(
+            'settings',
+            'logout',
+            'locale.switch',
+            '*livewire.update',
+            'livewire.upload-file',
+            'livewire.preview-file',
+        );
     }
 }

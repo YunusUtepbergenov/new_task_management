@@ -43,6 +43,21 @@ class PasswordExpiryTest extends TestCase
         $this->get(route('settings'))->assertOk();
     }
 
+    public function test_expired_user_livewire_requests_are_not_redirected(): void
+    {
+        $this->seed();
+
+        $user = User::first();
+        $user->forceFill(['password_changed_at' => now()->subMonths(4)])->save();
+        $this->actingAs($user);
+
+        // Livewire 4 serves its update endpoint under a hashed prefix (livewire-{hash}/update),
+        // so the middleware must recognise it by route name or the settings form can never submit.
+        $response = $this->postJson(route('default-livewire.update'), [], ['X-Livewire' => '1']);
+
+        $this->assertNotSame(302, $response->getStatusCode(), 'Livewire update request was redirected by the password-expiry middleware.');
+    }
+
     public function test_user_with_recent_password_can_access_the_app(): void
     {
         $this->seed();

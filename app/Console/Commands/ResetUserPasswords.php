@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Exports\UsersPasswordExport;
 use App\Mail\TemporaryPasswordMail;
 use App\Models\User;
+use App\Services\PasswordGenerator;
 use App\Services\TelegramBotService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
@@ -26,7 +27,7 @@ class ResetUserPasswords extends Command
 
     protected $description = 'Reset every active user password to a strong random one and export the new credentials to an Excel file for distribution';
 
-    public function handle(TelegramBotService $telegram): int
+    public function handle(TelegramBotService $telegram, PasswordGenerator $generator): int
     {
         $users = User::where('leave', 0)->orderBy('name')->get();
 
@@ -52,7 +53,7 @@ class ResetUserPasswords extends Command
         $credentials = [];
 
         foreach ($users as $user) {
-            $password = $this->generatePassword();
+            $password = $generator->generate(10);
 
             $user->forceFill([
                 'password' => Hash::make($password),
@@ -274,23 +275,5 @@ class ResetUserPasswords extends Command
         if ($unmatched->isNotEmpty()) {
             $this->warn("These {$optionLabel} addresses did not match any active user: ".$unmatched->implode(', '));
         }
-    }
-
-    /**
-     * Generate a 10-character password that satisfies the application password policy
-     * (uppercase, lowercase, number and special character).
-     */
-    private function generatePassword(): string
-    {
-        do {
-            $password = Str::password(10);
-        } while (
-            ! preg_match('/[A-Z]/', $password)
-            || ! preg_match('/[a-z]/', $password)
-            || ! preg_match('/\d/', $password)
-            || ! preg_match('/[^A-Za-z0-9]/', $password)
-        );
-
-        return $password;
     }
 }

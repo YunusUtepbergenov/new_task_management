@@ -60,6 +60,9 @@ return [
     'password_required' => 'Введите новый пароль.',
     'password_confirm_required' => 'Подтвердите новый пароль.',
     'password_mismatch' => 'Пароли не совпадают.',
+    'suggest_password' => 'Предложить надёжный пароль',
+    'show_password' => 'Показать пароль',
+    'hide_password' => 'Скрыть пароль',
 
     // Misc
     'photo_alt' => 'Фото профиля',

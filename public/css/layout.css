@@ -3593,6 +3593,29 @@ body.dark-mode .vm-log-meta {
     pointer-events: none;
 }
 
+.settings-input--toggle {
+    padding-right: 40px !important;
+}
+
+.settings-input-toggle {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 6px 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.settings-input-toggle:hover {
+    color: var(--sidebar-active-bg);
+}
+
 .settings-input {
     padding-left: 36px !important;
     border-radius: 8px !important;

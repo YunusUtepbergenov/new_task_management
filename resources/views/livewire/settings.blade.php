@@ -205,7 +205,7 @@
                     </div>
                 </div>
                 <div class="settings-card-body">
-                    <form wire:submit="updatePassword">
+                    <form wire:submit="updatePassword" x-data="{ showNew: false, showConfirm: false }" x-on:password-suggested.window="showNew = true; showConfirm = true">
                         <div class="settings-form-group">
                             <label class="settings-label">{{ __('settings.old_password') }}</label>
                             <div class="settings-input-wrap">
@@ -221,7 +221,10 @@
                                 <label class="settings-label">{{ __('settings.new_password') }}</label>
                                 <div class="settings-input-wrap">
                                     <i class="fa fa-shield settings-input-icon"></i>
-                                    <input type="password" class="form-control settings-input" wire:model="newPassword" placeholder="{{ __('settings.new_password_placeholder') }}" autocomplete="off">
+                                    <input :type="showNew ? 'text' : 'password'" type="password" class="form-control settings-input settings-input--toggle" wire:model="newPassword" placeholder="{{ __('settings.new_password_placeholder') }}" autocomplete="off">
+                                    <button type="button" class="settings-input-toggle" x-on:click="showNew = !showNew" :title="showNew ? '{{ __('settings.hide_password') }}' : '{{ __('settings.show_password') }}'">
+                                        <i class="fa" :class="showNew ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                    </button>
                                 </div>
                                 @error('newPassword')
                                     <div class="settings-error"><i class="fa fa-exclamation-circle"></i> {{ $message }}</div>
@@ -231,7 +234,10 @@
                                 <label class="settings-label">{{ __('settings.confirm_password') }}</label>
                                 <div class="settings-input-wrap">
                                     <i class="fa fa-shield settings-input-icon"></i>
-                                    <input type="password" class="form-control settings-input" wire:model="confirmPassword" placeholder="{{ __('settings.confirm_password_placeholder') }}" autocomplete="off">
+                                    <input :type="showConfirm ? 'text' : 'password'" type="password" class="form-control settings-input settings-input--toggle" wire:model="confirmPassword" placeholder="{{ __('settings.confirm_password_placeholder') }}" autocomplete="off">
+                                    <button type="button" class="settings-input-toggle" x-on:click="showConfirm = !showConfirm" :title="showConfirm ? '{{ __('settings.hide_password') }}' : '{{ __('settings.show_password') }}'">
+                                        <i class="fa" :class="showConfirm ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                    </button>
                                 </div>
                                 @error('confirmPassword')
                                     <div class="settings-error"><i class="fa fa-exclamation-circle"></i> {{ $message }}</div>
@@ -239,8 +245,12 @@
                             </div>
                         </div>
                         <p class="settings-avatar-hint"><i class="fa fa-info-circle"></i> {{ __('settings.password_requirements') }}</p>
-                        <div class="settings-card-footer">
-                            <button type="submit" class="btn settings-btn settings-btn--primary" wire:loading.attr="disabled">
+                        <div class="settings-card-footer" style="gap: 8px;">
+                            <button type="button" class="btn settings-btn settings-btn--ghost" wire:click="suggestPassword" wire:loading.attr="disabled" wire:target="suggestPassword">
+                                <span wire:loading.remove wire:target="suggestPassword"><i class="fa fa-magic"></i> {{ __('settings.suggest_password') }}</span>
+                                <span wire:loading wire:target="suggestPassword"><i class="fa fa-spinner fa-spin"></i> {{ __('settings.generating') }}</span>
+                            </button>
+                            <button type="submit" class="btn settings-btn settings-btn--primary" wire:loading.attr="disabled" wire:target="updatePassword">
                                 <span wire:loading.remove wire:target="updatePassword">{{ __('settings.change_password') }}</span>
                                 <span wire:loading wire:target="updatePassword"><i class="fa fa-spinner fa-spin"></i> {{ __('settings.saving') }}</span>
                             </button>
@@ -278,8 +288,8 @@
 
 @script
     <script>
-        Livewire.on('copy-token', () => {
-            var text = document.querySelector('.settings-token-text');
+        function copyTextFrom(textSelector, buttonSelector) {
+            var text = document.querySelector(textSelector);
             if (!text) return;
             var range = document.createRange();
             range.selectNodeContents(text);
@@ -289,12 +299,15 @@
             document.execCommand('copy');
             sel.removeAllRanges();
 
-            var btn = document.querySelector('.settings-copy-btn');
+            var btn = document.querySelector(buttonSelector);
+            if (!btn) return;
             btn.innerHTML = '<i class="fa fa-check" style="color: #22c55e;"></i>';
             setTimeout(function() {
                 btn.innerHTML = '<i class="fa fa-copy"></i>';
             }, 2000);
-        });
+        }
+
+        Livewire.on('copy-token', () => copyTextFrom('.settings-token-text', '.settings-copy-btn'));
 
         $wire.on('avatar-updated', (params) => {
             const url = params.url;

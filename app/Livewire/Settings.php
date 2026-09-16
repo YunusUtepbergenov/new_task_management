@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Services\PasswordGenerator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -139,6 +140,20 @@ class Settings extends Component
         } else {
             $this->addError('oldPassword', __('notifications.wrong_password'));
         }
+    }
+
+    /**
+     * Fill both new-password fields with a generated password that meets the policy.
+     * The view listens for the dispatched event and reveals the fields so the user can read it.
+     */
+    public function suggestPassword(PasswordGenerator $generator): void
+    {
+        $password = $generator->generate();
+
+        $this->newPassword = $password;
+        $this->confirmPassword = $password;
+        $this->resetErrorBag(['newPassword', 'confirmPassword']);
+        $this->dispatch('password-suggested');
     }
 
     public function generateTelegramToken(): void
