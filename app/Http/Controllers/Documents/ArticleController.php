@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
+use App\Traits\DownloadsPrivateFiles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
+    use DownloadsPrivateFiles;
+
     /**
      * Display a listing of the resource.
      *
@@ -108,6 +111,6 @@ class ArticleController extends Controller
     }
 
     public function articleDownload($filename){
-        return response()->download(storage_path('app/files/articles/'.$filename));
+        return $this->downloadPrivateFile('files/articles', $filename);
     }
 }

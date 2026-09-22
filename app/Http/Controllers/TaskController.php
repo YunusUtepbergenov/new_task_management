@@ -11,6 +11,7 @@ use App\Models\TaskLog;
 use App\Models\TaskUser;
 use App\Models\TelegramDb;
 use App\Models\User;
+use App\Traits\DownloadsPrivateFiles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -19,6 +20,8 @@ use Illuminate\Support\Facades\Http;
 
 class TaskController extends Controller
 {
+    use DownloadsPrivateFiles;
+
     public $days = array(
         1 => 'Monday',
         2 => 'Tuesday',
@@ -317,12 +320,12 @@ class TaskController extends Controller
     }
 
     public function download($id){
-        $file = File::where('id', $id)->first();
-        return response()->download(storage_path('app/files/'.$file->name));
+        $file = File::findOrFail($id);
+        return $this->downloadPrivateFile('files', $file->name);
     }
 
     public function responseDownload($filename){
-        return response()->download(storage_path('app/files/responses/'.$filename));
+        return $this->downloadPrivateFile('files/responses', $filename);
     }
 
     public function searchTasks(Request $request){

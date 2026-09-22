@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Documents;
 
 use App\Http\Controllers\Controller;
 use App\Models\Note;
+use App\Traits\DownloadsPrivateFiles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class NoteController extends Controller
 {
+    use DownloadsPrivateFiles;
+
     /**
      * Display a listing of the resource.
      *
@@ -50,7 +53,7 @@ class NoteController extends Controller
         if($source){
             $source_name = uniqid().$request->file('paper')->getClientOriginalName();
             $source_name = str_replace($chars, "_", $source_name);
-            $upload = $source->move(public_path("/note_sources"), $source_name);
+            Storage::disk('local')->putFileAs('files/note_sources/', $source, $source_name);
             $note->paper = $source_name;
         }
 
@@ -93,10 +96,10 @@ class NoteController extends Controller
         $source = $request->file('paper');
         if($source){
             if($notes->paper)
-                unlink(public_path('note_sources/'.$notes->paper));
+                Storage::disk('local')->delete('files/note_sources/'.$notes->paper);
             $source_name = uniqid().$request->file('paper')->getClientOriginalName();
             $source_name = str_replace($chars, "_", $source_name);
-            $source->move(public_path("/note_sources"), $source_name);
+            Storage::disk('local')->putFileAs('files/note_sources/', $source, $source_name);
             $notes->paper = $source_name;
         }
 
@@ -133,11 +136,11 @@ class NoteController extends Controller
     }
 
     public function sourceDownload($filename){
-        return response()->download(public_path('note_sources/'.$filename));
+        return $this->downloadPrivateFile('files/note_sources', $filename);
     }
 
     public function noteDownload($filename){
-        return response()->download(storage_path('app/files/notes/'.$filename));
+        return $this->downloadPrivateFile('files/notes', $filename);
     }
 
     public function getNoteInfo($id){

@@ -3,10 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Scraper;
+use App\Traits\DownloadsPrivateFiles;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ResearchController extends Controller
 {
+    use DownloadsPrivateFiles;
+
+    /**
+     * @var array<int, string>
+     */
+    public const CATEGORIES = ['houses', 'jobs', 'cars', 'products', 'corruption'];
+
     public function scraping(){
         return view('page.research.scraping');
     }
@@ -14,14 +24,14 @@ class ResearchController extends Controller
     public function storeScrape(Request $request){
         $request->validate([
             'name' => 'required',
-            'category' => 'required',
+            'category' => ['required', Rule::in(self::CATEGORIES)],
             'file' => 'file|max:60000'
         ]);
 
         $file = $request->file('file');
         if($file){
             $filename = $request->file->getClientOriginalName();
-            $upload = $file->move(public_path("scraper/".$request->category.'/'), $filename);
+            $upload = Storage::disk('local')->putFileAs('files/scraper/'.$request->category.'/', $file, $filename);
             if( !$upload ){
                 return response()->json(['status' => 0,'msg'=>'Something went wrong, upload is failed.']);
             }else{
@@ -44,9 +54,9 @@ class ResearchController extends Controller
     }
 
     public function download($id){
-        $scrape = Scraper::where('id', $id)->first();
-        $file = public_path("scraper/".$scrape->category.'/'.$scrape->file);
+        $scrape = Scraper::findOrFail($id);
+        abort_unless(in_array($scrape->category, self::CATEGORIES, true), 404);
 
-        return response()->download($file);
+        return $this->downloadPrivateFile('files/scraper/'.$scrape->category, $scrape->file);
     }
 }

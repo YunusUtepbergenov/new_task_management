@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TelegramAuthController;
 use App\Http\Controllers\Api\TelegramWebhookController;
+use App\Http\Middleware\VerifyTelegramApiSecret;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,5 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/telegram/verify-token', [TelegramAuthController::class, 'verify']);
-Route::post('/telegram/get-user-tasks', [TelegramAuthController::class, 'getTasks']);
+Route::post('/telegram/get-user-tasks', [TelegramAuthController::class, 'getTasks'])
+    ->middleware(VerifyTelegramApiSecret::class);
 Route::post('/telegram/webhook', [TelegramWebhookController::class, 'handle']);

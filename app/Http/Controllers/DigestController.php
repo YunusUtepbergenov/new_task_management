@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Digest;
 use App\Models\User;
+use App\Traits\DownloadsPrivateFiles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 
 class DigestController extends Controller
 {
+    use DownloadsPrivateFiles;
+
     /**
      * Display a listing of the resource.
      *
@@ -49,7 +52,7 @@ class DigestController extends Controller
         if($source){
             $source_name = uniqid().$request->file('paper')->getClientOriginalName();
             $source_name = str_replace($chars, "_", $source_name);
-            $upload = $source->move(public_path("/digest_sources"), $source_name);
+            Storage::disk('local')->putFileAs('files/digest_sources/', $source, $source_name);
             $digest->paper = $source_name;
         }
 
@@ -84,10 +87,10 @@ class DigestController extends Controller
         $source = $request->file('paper');
         if($source){
             if($digest->paper)
-                unlink(public_path('digest_sources/'.$digest->paper));
+                Storage::disk('local')->delete('files/digest_sources/'.$digest->paper);
             $source_name = uniqid().$request->file('paper')->getClientOriginalName();
             $source_name = str_replace($chars, "_", $source_name);
-            $source->move(public_path("/digest_sources"), $source_name);
+            Storage::disk('local')->putFileAs('files/digest_sources/', $source, $source_name);
             $digest->paper = $source_name;
         }
 
@@ -118,7 +121,7 @@ class DigestController extends Controller
     }
 
     public function paperDownload($filename){
-        return response()->download(public_path('digest_sources/'.$filename));
+        return $this->downloadPrivateFile('files/digest_sources', $filename);
     }
 
     public function getDigestInfo($id){
@@ -127,7 +130,7 @@ class DigestController extends Controller
     }
 
     public function digestDownload($filename){
-        return response()->download(storage_path('app/files/digests/'.$filename));
+        return $this->downloadPrivateFile('files/digests', $filename);
     }
 
     public function uploadTest(Request $request){
@@ -138,9 +141,10 @@ class DigestController extends Controller
         $input = $request->file('file');
 
         $filename = uniqid().$input->getClientOriginalName();
-        $upload = $input->move(public_path("/tmp_digests"), $filename);
+        Storage::disk('local')->putFileAs('files/tmp_digests/', $input, $filename);
+        $path = Storage::disk('local')->path('files/tmp_digests/'.$filename);
 
-        $file = fopen(public_path("tmp_digests/".$filename), 'r');
+        $file = fopen($path, 'r');
 
         $response = Http::attach(
             'attachment', $file
@@ -148,10 +152,9 @@ class DigestController extends Controller
             'name' => auth()->user()->name
         ]);
 
-        copy($response->json(), public_path("tmp_digests/".$filename));
-        // unlink(public_path("tmp_digests/".$filename));
+        copy($response->json(), $path);
 
-        return response()->download(public_path("tmp_digests/".$filename));
+        return response()->download($path)->deleteFileAfterSend(true);
     }
 
     public function formatter(){
