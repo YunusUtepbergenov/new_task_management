@@ -36,6 +36,7 @@ return [
     'to' => 'До',
     'download_table' => 'Скачать таблицу',
     'sector_report' => 'Отчёт по секторам',
+    'done_tasks_report' => 'Выполненные задачи',
     'efficiency' => 'Эффективность:',
     'all_tasks' => 'Все задачи',
     'overdue' => 'Просроченный',

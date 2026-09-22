@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Sector;
 use App\Models\Journal;
 use App\Exports\AttendanceExport;
+use App\Exports\DoneTasksExport;
 use App\Exports\OffDaysWorkExport;
 use App\Exports\TasksExport;
 use App\Models\Vacation;
@@ -166,6 +167,12 @@ class PageController extends Controller
 
     public function downloadReport($param1, $param2){
         return Excel::download(new TasksExport($param1, $param2), 'report.xlsx');
+    }
+
+    public function downloadDoneTasks(string $start, string $end){
+        $file = 'done_tasks_' . $start . '_' . $end . '.xlsx';
+
+        return Excel::download(new DoneTasksExport($start, $end), $file);
     }
 
     public function surveys(){

@@ -26,6 +26,7 @@
             <label style="color: #f7f7f7">S</label>
             <div>
                 <a href="{{ route('download.report', [$startDate, $endDate]) }}" class="btn btn-primary search_button">{{ __('reports.sector_report') }}</a>
+                <a href="{{ route('download.done_tasks', [$startDate, $endDate]) }}" class="btn btn-primary search_button">{{ __('reports.done_tasks_report') }}</a>
             </div>
         </div>
     </div>

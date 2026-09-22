@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('report/{id}/{start}/{end}', [PageController::class, 'userReport'])->name('user.report');
     Route::get('notifications/read/all', [PageController::class, 'readNoti'])->name('read.noti');
     Route::get('reports/download/{start}/{end}', [PageController::class, 'downloadReport'])->name('download.report');
+    Route::get('reports/done/download/{start}/{end}', [PageController::class, 'downloadDoneTasks'])->name('download.done_tasks');
     Route::get('/research/scraping', [ResearchController::class, 'scraping'])->name('scraping');
     Route::get('/scrape/download/{id}', [ResearchController::class, 'download'])->name('scrape.download');
     Route::get('/digest/source/download/{filename}', [DigestController::class, 'paperDownload'])->name('paper.download');
