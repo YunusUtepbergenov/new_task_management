@@ -18,6 +18,16 @@
                     <a href="{{ route('home') }}" wire:navigate.hover><i class="la la-stream"></i> <span>{{ __('ui.sidebar.projects_tasks') }}</span></a>
                 </li>
 
+                <li>
+                    @php $mailBadge = Auth::user()->mailBadge(); @endphp
+                    <a href="{{ route('mails.index') }}" wire:navigate.hover class="sidebar-link-with-count">
+                        <i class="la la-envelope"></i> <span>{{ __('ui.sidebar.mails') }}</span>
+                        @if ($mailBadge['count'])
+                            <b class="sidebar-count {{ $mailBadge['overdue'] ? 'sidebar-count--late' : '' }}" title="{{ __('ui.sidebar.mails_open', ['count' => $mailBadge['count']]) }}">{{ $mailBadge['count'] > 99 ? '99+' : $mailBadge['count'] }}</b>
+                        @endif
+                    </a>
+                </li>
+
                 @if(Auth::user()->isDirector() || Auth::user()->isMailer() || Auth::user()->isHead() || Auth::user()->isDeputy() || Auth::user()->isHR() || Auth::user()->isAccountant())
                     <li>
                         <a href="{{ route('weekly.tasks') }}" wire:navigate.hover><i class="las la-tasks"></i><span>{{ __('ui.sidebar.weekly_tasks') }}</span></a>

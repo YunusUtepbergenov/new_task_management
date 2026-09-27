@@ -272,6 +272,42 @@ class User extends Authenticatable
         return $this->role->name === "Заведующий сектором";
     }
 
+    /**
+     * Only the mailer registers correspondence, assigns executors and changes statuses.
+     */
+    public function canManageMails(): bool
+    {
+        return $this->isMailer();
+    }
+
+    public function canViewAllMails(): bool
+    {
+        return $this->isMailer() || $this->isDirector() || $this->isDeputy();
+    }
+
+    /**
+     * Sidebar badge for edo.ijro.uz: open items the user can see, and whether any of them is overdue.
+     *
+     * @return array{count: int, overdue: bool}
+     */
+    public function mailBadge(): array
+    {
+        return once(fn (): array => [
+            'count' => MailItem::query()->visibleTo($this)->open()->count(),
+            'overdue' => MailItem::query()->visibleTo($this)->whereHas('deadlines', fn ($deadlines) => $deadlines->overdue())->exists(),
+        ]);
+    }
+
+    /**
+     * Active sector heads, optionally without branch heads ("Барча шўъба мудирлари" vs "…ва филиаллар").
+     */
+    public function scopeSectorHeads(\Illuminate\Database\Eloquent\Builder $query, bool $withBranches = true): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->where('leave', 0)
+            ->whereHas('role', fn ($role) => $role->where('name', 'Заведующий сектором'))
+            ->unless($withBranches, fn ($heads) => $heads->whereHas('sector', fn ($sector) => $sector->where('name', 'not like', '%филиал%')));
+    }
+
     public function isHR(){
         return $this->role->name === "Специалист по работе с персоналом";
     }
@@ -299,6 +335,16 @@ class User extends Authenticatable
 
     public function taskOwners(){
         return $this->whereIn('role_id', [1, 2, 14]);
+    }
+
+    /**
+     * Two-letter avatar initials: surname and first name ("Ризаева Зиёда" → "РЗ").
+     */
+    public function initials(): string
+    {
+        $parts = preg_split('/\s+/u', trim((string) $this->name));
+
+        return mb_strtoupper(mb_substr($parts[0] ?? '', 0, 1).mb_substr($parts[1] ?? '', 0, 1));
     }
 
     public function getShortNameAttribute(): string

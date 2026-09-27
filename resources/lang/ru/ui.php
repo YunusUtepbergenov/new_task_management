@@ -5,6 +5,8 @@ return [
     'sidebar' => [
         'collapse' => 'Свернуть',
         'projects_tasks' => 'Проекты и задачи',
+        'mails' => 'edo.ijro.uz',
+        'mails_open' => 'Открытых поручений: :count',
         'weekly_tasks' => 'Недельные задачи',
         'protocol' => 'Протокол',
         'archive' => 'Архив задач',
