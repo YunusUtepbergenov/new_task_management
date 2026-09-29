@@ -8,7 +8,7 @@
 
     <div class="mx-drawer-body">
         <div class="mx-grid">
-            <label class="mx-field mx-span-2">{{ __('mails.fields.type') }}
+            <label class="mx-field mx-span-2">{{ __('mails.fields.type') }} *
                 <input type="text" class="mx-input" list="mail-types" wire:model="type">
                 <datalist id="mail-types">
                     @foreach ($types as $typeOption)
@@ -17,21 +17,17 @@
                 </datalist>
                 @error('type') <span class="mx-error">{{ $message }}</span> @enderror
             </label>
-            <label class="mx-field">{{ __('mails.fields.document_number') }}
+            <label class="mx-field">{{ __('mails.fields.document_number') }} *
                 <input type="text" class="mx-input" wire:model="document_number">
                 @error('document_number') <span class="mx-error">{{ $message }}</span> @enderror
             </label>
-            <label class="mx-field">{{ __('mails.fields.document_date') }}
+            <label class="mx-field">{{ __('mails.fields.document_date') }} *
                 <input type="date" class="mx-input" wire:model="document_date">
                 @error('document_date') <span class="mx-error">{{ $message }}</span> @enderror
             </label>
             <label class="mx-field mx-span-2">{{ __('mails.fields.title') }} *
                 <textarea class="mx-input" rows="3" wire:model="title"></textarea>
                 @error('title') <span class="mx-error">{{ $message }}</span> @enderror
-            </label>
-            <label class="mx-field mx-span-2">{{ __('mails.fields.description') }}
-                <textarea class="mx-input" rows="2" wire:model="description"></textarea>
-                @error('description') <span class="mx-error">{{ $message }}</span> @enderror
             </label>
         </div>
 
@@ -50,9 +46,10 @@
         </div>
 
         <div style="display: flex; align-items: center; justify-content: space-between;">
-            <h4 class="mx-section-title">{{ __('mails.fields.items') }} · {{ count($items) }}</h4>
+            <h4 class="mx-section-title">{{ __('mails.fields.items') }} · {{ count($items) }} *</h4>
             <button type="button" class="mx-btn mx-btn--link" wire:click="addItem"><i class="fa fa-plus"></i> {{ __('mails.actions.add_item') }}</button>
         </div>
+        @error('items') <span class="mx-error">{{ $message }}</span> @enderror
 
         @foreach ($items as $index => $item)
             <fieldset class="mx-fieldset" wire:key="mail-item-{{ $item['uid'] }}-{{ $index }}">
@@ -67,7 +64,7 @@
                         @error("items.$index.content") <span class="mx-error">{{ $message }}</span> @enderror
                     </label>
                 </div>
-                <div class="mx-field">{{ __('mails.fields.main_executor') }}
+                <div class="mx-field">{{ __('mails.fields.main_executor') }} *
                     <x-form.user-picker model="items.{{ $index }}.main_executor_id" :options="$userOptions" :placeholder="__('mails.picker.choose_main')" />
                     @error("items.$index.main_executor_id") <span class="mx-error">{{ $message }}</span> @enderror
                 </div>
@@ -81,7 +78,7 @@
                     </x-form.user-picker>
                     @error("items.$index.co_executor_ids.*") <span class="mx-error">{{ $message }}</span> @enderror
                 </div>
-                <div class="mx-field">{{ __('mails.fields.deadlines') }}
+                <div class="mx-field">{{ __('mails.fields.deadlines') }} *
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
                         @foreach ($item['deadlines'] as $deadlineIndex => $deadline)
                             <span class="mx-date" wire:key="mail-item-{{ $item['uid'] }}-deadline-{{ $deadlineIndex }}">
@@ -94,6 +91,7 @@
                             <button type="button" class="mx-btn mx-btn--link" wire:click="repeatMonthly({{ $index }})">+ {{ __('mails.actions.repeat_monthly') }}</button>
                         @endif
                     </div>
+                    @error("items.$index.deadlines") <span class="mx-error">{{ $message }}</span> @enderror
                     @foreach ($item['deadlines'] as $deadlineIndex => $deadline)
                         @error("items.$index.deadlines.$deadlineIndex.deadline") <span class="mx-error">{{ $message }}</span> @enderror
                     @endforeach

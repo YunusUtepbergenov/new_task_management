@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('document_number')->nullable();
             $table->date('document_date')->nullable();
             $table->text('title');
-            $table->text('description')->nullable();
             $table->foreignId('creator_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });

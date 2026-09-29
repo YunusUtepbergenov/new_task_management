@@ -33,9 +33,6 @@
 
     <div class="mx-doc-summary">
         <p>{{ $document->title }}</p>
-        @if ($document->description)
-            <p class="mx-doc-description">{{ $document->description }}</p>
-        @endif
     </div>
 
     {{-- Execution overview --}}
@@ -188,6 +185,21 @@
                                             <label class="mx-field">{{ __('mails.fields.note') }}
                                                 <textarea class="mx-input" rows="2" wire:model="statusForms.{{ $deadline->id }}.note" placeholder="{{ __('mails.stats.note_placeholder') }}"></textarea>
                                             </label>
+                                            @if ($deadline->files->isNotEmpty())
+                                                <div class="mx-field">{{ __('mails.upload.attached') }}
+                                                    <div class="mx-pop-files">
+                                                        @foreach ($deadline->files as $file)
+                                                            <x-mails.file-card wire:key="pop-file-{{ $file->id }}"
+                                                                :name="$file->original_name"
+                                                                :size="$file->size"
+                                                                :meta="$file->created_at->format('d.m.Y')"
+                                                                :href="route('mails.files.download', $file)"
+                                                                :remove-action="'deleteFile('.$file->id.')'"
+                                                                :confirm="__('mails.actions.confirm_delete_file')" />
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
                                             <x-mails.dropzone model="deadlineUploads.{{ $deadline->id }}" compact :title="__('mails.actions.attach')" />
                                             @error("deadlineUploads.$deadline->id") <span class="mx-error">{{ $message }}</span> @enderror
                                             <div style="display: flex; justify-content: flex-end; gap: 6px;">

@@ -32,8 +32,6 @@ class MailForm extends Component
 
     public string $title = '';
 
-    public string $description = '';
-
     /**
      * @var list<array{uid: string, id: int|null, clause: string, content: string, main_executor_id: string|null, co_executor_ids: list<string>, deadlines: list<array{id: int|null, deadline: string}>}>
      */
@@ -152,7 +150,7 @@ class MailForm extends Component
         $this->ensureItemsHaveAssignees();
 
         $attributes = collect($validated)
-            ->only(['type', 'document_number', 'document_date', 'title', 'description'])
+            ->only(['type', 'document_number', 'document_date', 'title'])
             ->map(fn ($value) => $value === '' ? null : $value)
             ->all();
 
@@ -173,19 +171,18 @@ class MailForm extends Component
     protected function rules(): array
     {
         return [
-            'type' => ['nullable', 'string', 'max:255'],
-            'document_number' => ['nullable', 'string', 'max:100'],
-            'document_date' => ['nullable', 'date'],
+            'type' => ['required', 'string', 'max:255'],
+            'document_number' => ['required', 'string', 'max:100'],
+            'document_date' => ['required', 'date'],
             'title' => ['required', 'string', 'max:5000'],
-            'description' => ['nullable', 'string', 'max:5000'],
-            'items' => ['array'],
+            'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['nullable', 'integer'],
             'items.*.clause' => ['nullable', 'string', 'max:255'],
             'items.*.content' => ['nullable', 'string', 'max:5000'],
             'items.*.main_executor_id' => ['nullable', 'integer', Rule::exists('users', 'id')],
             'items.*.co_executor_ids' => ['array'],
             'items.*.co_executor_ids.*' => ['integer', Rule::exists('users', 'id')],
-            'items.*.deadlines' => ['array'],
+            'items.*.deadlines' => ['required', 'array', 'min:1'],
             'items.*.deadlines.*.id' => ['nullable', 'integer'],
             'items.*.deadlines.*.deadline' => ['required', 'date'],
             'newFiles.*' => ['file', 'max:51200'],
@@ -198,9 +195,25 @@ class MailForm extends Component
     protected function validationAttributes(): array
     {
         return [
+            'type' => __('mails.fields.type'),
+            'document_number' => __('mails.fields.document_number'),
+            'document_date' => __('mails.fields.document_date'),
             'title' => __('mails.fields.title'),
             'items.*.deadlines.*.deadline' => __('mails.fields.deadline'),
             'items.*.main_executor_id' => __('mails.fields.main_executor'),
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function messages(): array
+    {
+        return [
+            'items.required' => __('mails.messages.item_required'),
+            'items.min' => __('mails.messages.item_required'),
+            'items.*.deadlines.required' => __('mails.messages.deadline_required'),
+            'items.*.deadlines.min' => __('mails.messages.deadline_required'),
         ];
     }
 
@@ -228,7 +241,6 @@ class MailForm extends Component
         $this->document_number = (string) $document->document_number;
         $this->document_date = (string) $document->document_date?->toDateString();
         $this->title = $document->title;
-        $this->description = (string) $document->description;
 
         $this->items = $document->items->map(fn (MailItem $item): array => [
             'uid' => Str::random(8),

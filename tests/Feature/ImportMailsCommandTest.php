@@ -150,4 +150,99 @@ class ImportMailsCommandTest extends TestCase
     {
         $this->artisan('mails:import', ['path' => 'C:/nope/missing.xlsx'])->assertFailed();
     }
+
+    /**
+     * The newer export: two extra count columns before the document number, a "ЖАМИ" row,
+     * status in column N, dates typed as text, and documents without a row number.
+     *
+     * @param  list<list<mixed>>  $rows
+     */
+    private function writeNewLayout(array $rows): void
+    {
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet()->setTitle('База');
+        $sheet->fromArray(['edo.ijro.uz (28.09.2026)'], null, 'A1');
+        $sheet->fromArray(['Уникал №', 'Ҳужжат тури', 'Бажариш муддати', 'Ижро қилиш зарур хужжат сони', 'Муддати ўтиб кетган топшириқлар', 'Муддати ўтган кунлар сони', 'Топшириқ рақами', 'Ҳужжат санаси', 'Ҳужжат мазмуни', 'Топшириқ мазмуни', 'Ижрочи', 'Шўъба номи', 'Бир нечта ходимга бириктирилган', 'Ҳолати / изоҳ', 'Ҳисоб ID', 'Ҳисоб ижрочи'], null, 'A2');
+        $sheet->fromArray([12, 'ЖАМИ', null, 64, 57], null, 'A3');
+
+        foreach ($rows as $index => [$number, $deadline, $documentNumber, $documentDate, $title, $clause, $executor, $status]) {
+            $sheet->fromArray([$number, $documentNumber ? 'ЎзР Президенти ҳужжатлари' : null, $deadline, 1, 1, 10, $documentNumber, $documentDate, $title, $clause, $executor, null, null, $status, 1, 'ignored'], null, 'A'.($index + 4), true);
+        }
+
+        (new Xlsx($spreadsheet))->save($this->path);
+    }
+
+    public function test_it_reads_the_newer_layout_by_header_names(): void
+    {
+        $user = User::factory()->create(['name' => 'Янгиев Равшан Ботирович', 'sector_id' => 4]);
+
+        $this->writeNewLayout([
+            [1, '25.09.2026', 'ПФ-50', '21.05.2026', 'Янги ҳужжат', '2-банд', 'Р.Янгиев', 'Кўриб чиқилмоқда'],
+            [null, '25.12 2026', null, null, null, '3-банд', null, 'Қайтарилди'],
+            [null, '30.07.2026', '19-PA 1/1-3665', '08.07.2026', 'Рақамсиз ҳужжат', '1-хатбоши', 'Р.Янгиев', 'Бажарилмади'],
+        ]);
+
+        $this->artisan('mails:import', ['path' => $this->path])
+            ->expectsOutputToContain('Imported 2 documents')
+            ->assertSuccessful();
+
+        $first = MailDocument::where('document_number', 'ПФ-50')->with('items.deadlines', 'items.executors')->sole();
+        $this->assertSame('2026-05-21', $first->document_date->toDateString());
+        $this->assertSame(['2-банд', '3-банд'], $first->items->pluck('clause')->all());
+        $this->assertSame('2026-12-25', $first->items[1]->deadlines->sole()->deadline->toDateString());
+        $this->assertSame(MailDeadline::STATUS_RETURNED, $first->items[1]->deadlines->sole()->status);
+        $this->assertSame($user->id, $first->items[1]->mainExecutor()->id);
+        $this->assertSame(1, MailDocument::where('document_number', '19-PA 1/1-3665')->count());
+    }
+
+    public function test_sync_updates_existing_documents_and_deletes_what_is_missing(): void
+    {
+        $old = User::factory()->create(['name' => 'Эскиев Олим', 'sector_id' => 3]);
+        $new = User::factory()->create(['name' => 'Янгиев Равшан', 'sector_id' => 4]);
+
+        $this->writeNewLayout([
+            [1, '25.05.2026', 'ПФ-21', '16.02.2026', 'Ислоҳотлар', '26-банд', 'О.Эскиев', 'Бажарилмади'],
+            [null, '25.06.2026', null, null, null, '12-банд', 'О.Эскиев', 'Бажарилмади'],
+            [2, '01.12.2025', '03-РА 2-926', '06.02.2024', 'Эски ҳужжат', '11-банд', 'О.Эскиев', 'Бажарилмади'],
+        ]);
+        $this->artisan('mails:import', ['path' => $this->path])->assertSuccessful();
+
+        $kept = MailDocument::where('document_number', 'ПФ-21')->sole()->items()->where('clause', '26-банд')->sole();
+
+        $this->writeNewLayout([
+            [1, '25.05.2026', 'ПФ-21', '16.02.2026', 'Ислоҳотлар', '26-банд', 'Р.Янгиев', 'Кўриб чиқилмоқда'],
+            [null, '25.09.2026', null, null, null, '30-банд', 'Р.Янгиев', 'Қайтарилди'],
+            [2, '25.09.2026', '02-PA 1/1-2652', '21.05.2026', 'Янги ҳужжат', '2-банд', 'Р.Янгиев', 'Бажарилмади'],
+        ]);
+
+        $this->artisan('mails:import', ['path' => $this->path, '--sync' => true, '--force' => true])
+            ->expectsOutputToContain('Imported 1 new documents and updated 1')
+            ->expectsOutputToContain('03-РА 2-926')
+            ->assertSuccessful();
+
+        $this->assertSame(['ПФ-21', '02-PA 1/1-2652'], MailDocument::orderBy('id')->pluck('document_number')->all());
+
+        $document = MailDocument::where('document_number', 'ПФ-21')->with('items.deadlines', 'items.executors')->sole();
+        $this->assertSame(['26-банд', '30-банд'], $document->items->pluck('clause')->all());
+
+        $item = $document->items->firstWhere('clause', '26-банд');
+        $this->assertSame($kept->id, $item->id);
+        $this->assertSame($new->id, $item->mainExecutor()->id);
+        $this->assertSame(MailDeadline::STATUS_IN_REVIEW, $item->deadlines->sole()->status);
+        $this->assertSame(MailDeadline::STATUS_RETURNED, $document->items->firstWhere('clause', '30-банд')->deadlines->sole()->status);
+        $this->assertNotContains($old->id, $document->items->flatMap->executors->pluck('id')->all());
+    }
+
+    public function test_sync_dry_run_changes_nothing(): void
+    {
+        $this->writeNewLayout([[1, '25.05.2026', 'ПФ-21', '16.02.2026', 'Ислоҳотлар', '26-банд', null, 'Бажарилмади']]);
+        $this->artisan('mails:import', ['path' => $this->path])->assertSuccessful();
+        MailDocument::factory()->create(['document_number' => 'ЭСКИ-1']);
+
+        $this->artisan('mails:import', ['path' => $this->path, '--sync' => true, '--dry-run' => true])
+            ->expectsOutputToContain('Would delete 1 documents')
+            ->assertSuccessful();
+
+        $this->assertSame(2, MailDocument::count());
+    }
 }

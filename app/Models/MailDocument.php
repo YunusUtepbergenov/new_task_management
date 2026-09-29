@@ -18,7 +18,6 @@ class MailDocument extends Model
         'document_number',
         'document_date',
         'title',
-        'description',
         'creator_id',
     ];
 

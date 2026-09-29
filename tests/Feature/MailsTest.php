@@ -56,6 +56,21 @@ class MailsTest extends TestCase
         );
     }
 
+    /**
+     * Fill every required field of the create form, with one item for the given executor.
+     */
+    private function validForm(\Livewire\Features\SupportTesting\Testable $form, ?User $executor = null): \Livewire\Features\SupportTesting\Testable
+    {
+        return $form
+            ->set('type', 'ЎзР Президенти ҳужжатлари')
+            ->set('document_number', 'ПФ-99')
+            ->set('document_date', '2026-09-01')
+            ->set('title', 'Хат')
+            ->set('items.0.main_executor_id', $executor ? (string) $executor->id : null)
+            ->call('addDeadline', 0)
+            ->set('items.0.deadlines.0.deadline', '2026-10-01');
+    }
+
     public function test_every_authenticated_user_can_open_the_mail_list(): void
     {
         $this->actingAs($this->employee())->get(route('mails.index'))->assertOk();
@@ -217,9 +232,7 @@ class MailsTest extends TestCase
 
     public function test_items_require_an_executor_or_a_sector(): void
     {
-        Livewire::actingAs(User::factory()->mailer()->create())
-            ->test(MailForm::class)
-            ->set('title', 'Хат')
+        $this->validForm(Livewire::actingAs(User::factory()->mailer()->create())->test(MailForm::class))
             ->call('save')
             ->assertHasErrors(['items.0.main_executor_id']);
 
@@ -278,12 +291,14 @@ class MailsTest extends TestCase
             ->test(MailForm::class, ['mailDocument' => $document])
             ->call('addItem')
             ->set('items.1.main_executor_id', (string) $replacement->id)
+            ->call('addDeadline', 1)
+            ->set('items.1.deadlines.0.deadline', today()->addMonth()->toDateString())
             ->call('removeItem', 0)
             ->call('save')
             ->assertHasNoErrors();
 
         $this->assertSame([$replacement->id], MailItem::sole()->executors()->pluck('users.id')->all());
-        $this->assertSame(0, MailDeadline::count());
+        $this->assertSame(1, MailDeadline::count());
     }
 
     public function test_mailer_changes_a_deadline_status(): void
@@ -392,33 +407,61 @@ class MailsTest extends TestCase
         $this->actingAs(User::factory()->director()->create())->get(route('mails.report'))->assertOk();
     }
 
-    public function test_report_counts_past_due_deadlines_by_sector_and_employee(): void
+    public function test_report_counts_one_row_per_deadline_and_executor_like_the_excel_sheet(): void
     {
         $executor = $this->employee(2);
-        $document = $this->documentAssignedTo($executor, [$this->employee(3)]);
+        $coExecutor = $this->employee(3);
+        $document = $this->documentAssignedTo($executor, [$coExecutor]);
         $item = $document->items()->sole();
         $item->deadlines()->update(['deadline' => today()->subDays(5), 'status' => MailDeadline::STATUS_IN_REVIEW]);
-        MailDeadline::factory()->for($item, 'item')->create();
+        // A second deadline that is not due yet and not started: counted as required, not in a status column.
+        MailDeadline::factory()->for($item, 'item')->create(['deadline' => today()->addMonth()]);
 
         $reports = app(MailReportService::class);
-        $bySector = collect($reports->bySector()['rows'])->keyBy('name');
-        $sectorTwo = $bySector[\App\Models\Sector::find(2)->name];
+        $total = $reports->bySector()['total'];
 
-        $this->assertSame(1, $sectorTwo['items']);
-        $this->assertSame(2, $sectorTwo['deadlines']);
+        // 2 deadlines x 2 executors.
+        $this->assertSame(1, $total['documents']);
+        $this->assertSame(4, $total['required']);
+        $this->assertSame(2, $total['past_due']);
+        $this->assertSame(['done' => 0, 'pending' => 0, 'in_review' => 2, 'returned' => 0], $total['statuses']);
+        $this->assertSame(4, $total['multi']);
+        $this->assertSame(2, $total['executors']);
+
+        $sectorTwo = collect($reports->bySector()['rows'])->firstWhere('name', \App\Models\Sector::find(2)->name);
+        $this->assertSame(1, $sectorTwo['documents']);
+        $this->assertSame(1, $sectorTwo['executors']);
+        $this->assertSame(2, $sectorTwo['required']);
         $this->assertSame(1, $sectorTwo['past_due']);
-        $this->assertSame(1, $sectorTwo['past_due_by_status'][MailDeadline::STATUS_IN_REVIEW]);
-        $this->assertSame(1, $sectorTwo['multi']);
 
         $byEmployee = collect($reports->byEmployee()['rows']);
-        $this->assertCount(2, $byEmployee);
-        $this->assertSame(1, $byEmployee->firstWhere('name', $executor->short_name)['main_items']);
+        $this->assertSame(1, $byEmployee->firstWhere('name', $executor->short_name)['documents']);
+        $this->assertSame(0, $byEmployee->firstWhere('name', $coExecutor->short_name)['documents']);
+        $this->assertSame(2, $byEmployee->firstWhere('name', $coExecutor->short_name)['required']);
 
         Livewire::actingAs(User::factory()->director()->create())
             ->test(MailReport::class)
             ->assertSee(\App\Models\Sector::find(2)->name)
-            ->set('tab', 'employee')
+            ->call('setTab', 'employee')
             ->assertSee($executor->short_name);
+    }
+
+    public function test_items_given_to_all_heads_count_once_under_a_group_row(): void
+    {
+        $heads = User::factory()->head()->count(3)->sequence(['sector_id' => 2], ['sector_id' => 3], ['sector_id' => 4])->create();
+        $document = $this->documentAssignedTo(null, $heads->all());
+        $document->deadlines()->update(['deadline' => today()->subDay()]);
+
+        $reports = app(MailReportService::class);
+
+        $this->assertSame(1, $reports->bySector()['total']['required']);
+        $this->assertSame(0, $reports->bySector()['total']['multi']);
+
+        $group = collect($reports->byEmployee()['rows'])->sole();
+        $this->assertTrue($group['is_group']);
+        $this->assertSame(__('mails.report.all_heads'), $group['name']);
+        $this->assertSame(1, $group['required']);
+        $this->assertSame(1, $group['statuses']['pending']);
     }
 
     public function test_report_export_downloads_an_excel_file(): void
@@ -462,11 +505,9 @@ class MailsTest extends TestCase
 
     public function test_saving_redirects_to_the_document_in_the_inbox(): void
     {
-        Livewire::actingAs(User::factory()->mailer()->create())
-            ->test(MailForm::class)
-            ->set('title', 'Хат')
-            ->set('items.0.main_executor_id', (string) $this->employee()->id)
+        $this->validForm(Livewire::actingAs(User::factory()->mailer()->create())->test(MailForm::class), $this->employee())
             ->call('save')
+            ->assertHasNoErrors()
             ->assertRedirect(route('mails.index', ['document' => MailDocument::sole()->id]));
     }
 
@@ -638,5 +679,56 @@ class MailsTest extends TestCase
             ->test(MailInbox::class)
             ->assertViewHas('scopes', null)
             ->assertDontSeeHtml('mx-scope');
+    }
+
+    public function test_mailer_can_delete_an_outdated_deadline_file(): void
+    {
+        $mailer = User::factory()->mailer()->create();
+        $executor = $this->employee();
+        $document = $this->documentAssignedTo($executor);
+        $deadline = $document->deadlines()->sole();
+        $file = app(MailService::class)->attachFile($document, UploadedFile::fake()->create('eski-javob.docx', 10), $mailer, $deadline);
+
+        Livewire::actingAs($mailer)
+            ->test(MailShow::class, ['mailDocument' => $document])
+            ->assertSee('eski-javob.docx')
+            ->assertSeeHtml('deleteFile('.$file->id.')');
+
+        Livewire::actingAs($executor)
+            ->test(MailShow::class, ['mailDocument' => $document])
+            ->assertDontSeeHtml('deleteFile('.$file->id.')')
+            ->call('deleteFile', $file->id)
+            ->assertForbidden();
+        $this->assertModelExists($file);
+
+        Livewire::actingAs($mailer)
+            ->test(MailShow::class, ['mailDocument' => $document])
+            ->call('deleteFile', $file->id)
+            ->assertDontSee('eski-javob.docx');
+
+        $this->assertModelMissing($file);
+        Storage::disk('local')->assertMissing($file->path());
+    }
+
+    public function test_type_number_date_items_and_deadlines_are_required(): void
+    {
+        Livewire::actingAs(User::factory()->mailer()->create())
+            ->test(MailForm::class)
+            ->set('title', 'Фақат мазмун')
+            ->set('items.0.main_executor_id', (string) $this->employee()->id)
+            ->call('save')
+            ->assertHasErrors(['type' => 'required', 'document_number' => 'required', 'document_date' => 'required', 'items.0.deadlines' => 'required']);
+
+        Livewire::actingAs(User::factory()->mailer()->create())
+            ->test(MailForm::class)
+            ->set('type', 'ЎзР Президенти ҳужжатлари')
+            ->set('document_number', 'ПФ-99')
+            ->set('document_date', '2026-09-01')
+            ->set('title', 'Топшириқсиз')
+            ->call('removeItem', 0)
+            ->call('save')
+            ->assertHasErrors(['items' => 'required']);
+
+        $this->assertSame(0, MailDocument::count());
     }
 }
