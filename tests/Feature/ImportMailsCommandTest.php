@@ -245,4 +245,83 @@ class ImportMailsCommandTest extends TestCase
 
         $this->assertSame(2, MailDocument::count());
     }
+
+    /**
+     * The newest export: "Асосий Ижрочи" and "Қўшимча ижрочи" columns, one row per deadline.
+     *
+     * @param  list<array{0: int|null, 1: string, 2: string|null, 3: string|null, 4: string|null, 5: string|null, 6: string|null, 7: string|null, 8: string|null}>  $rows
+     */
+    private function writeSplitLayout(array $rows): void
+    {
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet()->setTitle('База');
+        $sheet->fromArray(['edo.ijro.uz (28.09.2026)'], null, 'A1');
+        $sheet->fromArray(['Уникал №', 'Ҳужжат тури', 'Бажариш муддати', 'Ижро қилиш зарур хужжат сони', 'Муддати ўтиб кетган топшириқлар', 'Муддати ўтган кунлар сони', 'Топшириқ рақами', 'Ҳужжат санаси', 'Ҳужжат мазмуни', 'Топшириқ мазмуни', 'Асосий Ижрочи', 'Қўшимча ижрочи', 'Шўъба номи', 'Бир нечта ходимга бириктирилган', 'Ҳолати / изоҳ', 'Ҳисоб ID', 'Ҳисоб ижрочи'], null, 'A2');
+        $sheet->fromArray([13, 'ЖАМИ', null, 57, 50], null, 'A3');
+
+        foreach ($rows as $index => [$number, $deadline, $documentNumber, $documentDate, $title, $clause, $main, $extra, $status]) {
+            $sheet->fromArray([$number, $documentNumber ? 'ЎзР Президенти ҳужжатлари' : null, $deadline, 1, 1, 10, $documentNumber, $documentDate, $title, $clause, $main, $extra, null, $extra ? 1 : null, $status, 1, 'ignored'], null, 'A'.($index + 4), true);
+        }
+
+        (new Xlsx($spreadsheet))->save($this->path);
+    }
+
+    public function test_it_reads_main_and_additional_executor_columns(): void
+    {
+        $main = User::factory()->create(['name' => 'Асосийев Бахтиёр', 'sector_id' => 7]);
+        $first = User::factory()->create(['name' => 'Қўшимчаева Зиёда', 'sector_id' => 8]);
+        $second = User::factory()->create(['name' => 'Ёрдамчиев Руслан', 'sector_id' => 4]);
+        $mailer = User::factory()->mailer()->create(['name' => 'Мактубова Дилафруз', 'sector_id' => 2]);
+
+        $this->writeSplitLayout([
+            [1, '15.08.2026', '19-РА 1-13412', '28.07.2026', 'Баённома', 'Bayonning 1-bandi', 'Б.Асосийев', "З.Қўшимчаева\nР.Ёрдамчиев", 'Кўриб чиқилмоқда'],
+            [null, '25.09.2026', null, null, null, 'Bayonning 3-bandi', null, null, 'Бажарилмади'],
+            [2, '01.11.2025', 'ПФ-117', '25.07.2025', 'Ижро интизоми', '85-банд.', 'Диля опа', 'Барча шўъба мудирлари', 'Бажарилмади'],
+            [null, '01.12.2025', null, null, null, null, null, null, 'Бажарилмади'],
+        ]);
+
+        $this->artisan('mails:import', ['path' => $this->path, '--alias' => ['Диля опа=Мактубова Дилафруз']])
+            ->expectsOutputToContain('Imported 2 documents')
+            ->doesntExpectOutputToContain('not matched')
+            ->assertSuccessful();
+
+        $protocol = MailDocument::where('document_number', '19-РА 1-13412')->with('items.executors', 'items.deadlines')->sole();
+        $this->assertCount(2, $protocol->items);
+        foreach ($protocol->items as $item) {
+            // The second item leaves the executor cells empty and inherits them from the first.
+            $this->assertSame($main->id, $item->mainExecutor()->id);
+            $this->assertEqualsCanonicalizing([$first->id, $second->id], $item->coExecutors()->pluck('id')->all());
+            $this->assertCount(1, $item->deadlines);
+        }
+
+        $order = MailDocument::where('document_number', 'ПФ-117')->with('items.executors', 'items.deadlines')->sole();
+        $item = $order->items->sole();
+        $this->assertSame($mailer->id, $item->mainExecutor()->id);
+        $this->assertEqualsCanonicalizing(User::sectorHeads(false)->pluck('id')->all(), $item->coExecutors()->pluck('id')->all());
+        $this->assertCount(2, $item->deadlines);
+    }
+
+    public function test_unknown_nicknames_are_reported_without_an_alias(): void
+    {
+        $this->writeSplitLayout([[1, '01.11.2025', 'ПФ-117', '25.07.2025', 'Ижро интизоми', '85-банд.', 'Диля опа', null, 'Бажарилмади']]);
+
+        $this->artisan('mails:import', ['path' => $this->path])
+            ->expectsOutputToContain('Диля опа')
+            ->assertSuccessful();
+    }
+
+    public function test_sync_asks_before_overwriting_existing_data(): void
+    {
+        $this->writeNewLayout([[1, '25.05.2026', 'ПФ-21', '16.02.2026', 'Ислоҳотлар', '26-банд', null, 'Бажарилмади']]);
+        $this->artisan('mails:import', ['path' => $this->path])->assertSuccessful();
+        $deadline = MailDeadline::sole();
+        $deadline->changeStatus(MailDeadline::STATUS_DONE);
+
+        $this->artisan('mails:import', ['path' => $this->path, '--sync' => true])
+            ->expectsConfirmation('--sync overwrites statuses, executors and deadlines changed in the app with the values from this file, and deletes documents that are not in it. Continue?', 'no')
+            ->expectsOutputToContain('Nothing changed.')
+            ->assertSuccessful();
+
+        $this->assertSame(MailDeadline::STATUS_DONE, $deadline->fresh()->status);
+    }
 }

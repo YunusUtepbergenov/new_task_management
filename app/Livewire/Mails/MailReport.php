@@ -31,7 +31,7 @@ class MailReport extends Component
         $byEmployee = $reports->byEmployee();
 
         return view('livewire.mails.mail-report', [
-            'total' => $bySector['total'],
+            'total' => $this->tab === 'employee' ? $byEmployee['total'] : $bySector['total'],
             'sectorRows' => $bySector['rows'],
             'employeeRows' => $byEmployee['rows'],
             'rows' => $this->tab === 'employee' ? $byEmployee['rows'] : $bySector['rows'],

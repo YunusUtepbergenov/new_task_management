@@ -15,9 +15,10 @@ use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
 /**
  * Imports the edo.ijro.uz control sheet ("База"). Columns are found by their header names
- * (document number, date, content, clause, executor, status…), so both the old and the newer
- * export layouts work. Merged cells only carry a value in their first row, so empty cells
- * inherit from above. With --sync the database is made to match the file: documents in the
+ * (document number, date, content, clause, executor, status…), so every export layout works:
+ * older files have one "Ижрочи" column and a separate row per co-executor; newer files have
+ * "Асосий Ижрочи" (main) and "Қўшимча ижрочи" (additional, one per line) on a single row.
+ * Merged cells only carry a value in their first row, so empty cells inherit from above. With --sync the database is made to match the file: documents in the
  * file are updated (items, executors, deadlines, statuses) and everything else is deleted.
  */
 class ImportMails extends Command
@@ -26,7 +27,8 @@ class ImportMails extends Command
         {path : Path to the .xlsx file}
         {--dry-run : Parse and report without saving}
         {--sync : Update existing documents and delete documents and items missing from the file}
-        {--force : Do not ask for confirmation before deleting}';
+        {--force : Do not ask for confirmation before deleting}
+        {--alias=* : Map a name used in the file to an employee, e.g. --alias="Диля опа=Закирова Дилафруз"}';
 
     protected $description = 'Import control documents from the edo.ijro.uz Excel sheet';
 
@@ -34,7 +36,7 @@ class ImportMails extends Command
      * Header keyword => column key. The first matching header wins; unmatched keys fall back
      * to the positions used by the original export.
      *
-     * @var array<string, array{0: list<string>, 1: int}>
+     * @var array<string, array{0: list<string>, 1: int|null}>
      */
     private const COLUMNS = [
         'number' => [['№'], 0],
@@ -45,6 +47,8 @@ class ImportMails extends Command
         'title' => [['ҳужжат мазмуни'], 6],
         'clause' => [['топшириқ мазмуни'], 7],
         'executor' => [['ижрочи'], 8],
+        'main_executor' => [['асосий ижрочи'], null],
+        'extra_executors' => [['қўшимча ижрочи'], null],
         'status' => [['ҳолати'], 11],
     ];
 
@@ -73,6 +77,14 @@ class ImportMails extends Command
             $this->error("File not found: {$path}");
 
             return self::FAILURE;
+        }
+
+        // Once the app is the source of truth, a sync would undo work done in it.
+        if ($this->option('sync') && ! $this->option('dry-run') && ! $this->option('force') && MailDocument::query()->exists()
+            && ! $this->confirm('--sync overwrites statuses, executors and deadlines changed in the app with the values from this file, and deletes documents that are not in it. Continue?')) {
+            $this->info('Nothing changed.');
+
+            return self::SUCCESS;
         }
 
         $documents = $this->parse($path);
@@ -215,8 +227,11 @@ class ImportMails extends Command
         $item = null;
         $lastExecutor = null;
 
+        $splitExecutors = $columns['main_executor'] !== null;
+        $lastExtras = [];
+
         foreach (array_slice($rows, $headerIndex + 1) as $row) {
-            $cell = fn (string $key): mixed => $row[$columns[$key]] ?? null;
+            $cell = fn (string $key): mixed => $columns[$key] === null ? null : ($row[$columns[$key]] ?? null);
 
             if ($this->normalize((string) $cell('type')) === 'жами') {
                 continue;
@@ -226,7 +241,8 @@ class ImportMails extends Command
                 $cell('number'), $cell('type'), $cell('document_number'), $cell('document_date'), $cell('title'), $cell('status'),
             ];
             $clause = $this->clean($cell('clause'));
-            $executor = $this->clean($cell('executor'));
+            $executor = $this->clean($cell($splitExecutors ? 'main_executor' : 'executor'));
+            $extras = $splitExecutors ? $this->names($cell('extra_executors')) : [];
             $deadline = $this->date($cell('deadline'));
 
             if ($this->clean($number) !== null || $this->clean($documentNumber) !== null) {
@@ -245,9 +261,34 @@ class ImportMails extends Command
                 ];
                 $item = null;
                 $lastExecutor = null;
+                $lastExtras = [];
             }
 
             if (! $doc || (! $deadline && ! $clause && ! $executor)) {
+                continue;
+            }
+
+            if ($splitExecutors) {
+                // One row per deadline; empty executor cells mean "same executors as the item above".
+                $sameClause = $item && $clause !== null && $clause === $item['clause'] && ($executor === null || $executor === $lastExecutor);
+
+                if (! $item || ($clause !== null && ! $sameClause)) {
+                    if ($item) {
+                        $doc['items'][] = $item;
+                    }
+
+                    if ($executor !== null) {
+                        [$lastExecutor, $lastExtras] = [$executor, $extras];
+                    }
+
+                    $item = $this->newItem($clause, $lastExecutor);
+                    foreach ($lastExtras as $extra) {
+                        $this->addExecutor($item, $extra, false);
+                    }
+                }
+
+                $this->addDeadline($item, $deadline, $status);
+
                 continue;
             }
 
@@ -265,12 +306,7 @@ class ImportMails extends Command
                 $this->addExecutor($item, $executor, false);
             }
 
-            if ($deadline && ! collect($item['deadlines'])->contains('deadline', $deadline)) {
-                $item['deadlines'][] = [
-                    'deadline' => $deadline,
-                    'status' => self::STATUS_MAP[Str::lower((string) $this->clean($status))] ?? MailDeadline::STATUS_PENDING,
-                ];
-            }
+            $this->addDeadline($item, $deadline, $status);
         }
 
         if ($doc) {
@@ -281,14 +317,41 @@ class ImportMails extends Command
     }
 
     /**
+     * @param  array<string, mixed>  $item
+     */
+    private function addDeadline(array &$item, ?string $deadline, mixed $status): void
+    {
+        if ($deadline && ! collect($item['deadlines'])->contains('deadline', $deadline)) {
+            $item['deadlines'][] = [
+                'deadline' => $deadline,
+                'status' => self::STATUS_MAP[Str::lower((string) $this->clean($status))] ?? MailDeadline::STATUS_PENDING,
+            ];
+        }
+    }
+
+    /**
+     * Split an "additional executors" cell: one name per line (commas and semicolons work too).
+     *
+     * @return list<string>
+     */
+    private function names(mixed $value): array
+    {
+        return collect(preg_split('/[\r\n,;]+/u', (string) $value))
+            ->map(fn (string $name): ?string => $this->clean($name))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    /**
      * Find the header row (the one naming "Ҳужжат тури") and map column keys to indexes.
      *
      * @param  list<list<mixed>>  $rows
-     * @return array{0: int, 1: array<string, int>}
+     * @return array{0: int, 1: array<string, int|null>}
      */
     private function columns(array $rows): array
     {
-        $defaults = array_map(fn (array $column): int => $column[1], self::COLUMNS);
+        $defaults = array_map(fn (array $column): ?int => $column[1], self::COLUMNS);
 
         foreach (array_slice($rows, 0, 10, true) as $index => $row) {
             $headers = array_map(fn ($value): string => $this->normalize(preg_replace('/\s+/u', ' ', (string) $value)), $row);
@@ -385,6 +448,17 @@ class ImportMails extends Command
      */
     private function findUser(string $shortName): ?User
     {
+        $this->users ??= User::all(['id', 'name', 'sector_id', 'leave']);
+
+        $alias = $this->aliases()[$this->normalize($shortName)] ?? null;
+
+        if ($alias !== null) {
+            return $this->users
+                ->filter(fn (User $user): bool => str_starts_with($this->normalize(preg_replace('/\s+/u', ' ', $user->name)), $alias))
+                ->sortBy('leave')
+                ->first();
+        }
+
         $parts = preg_split('/[.\s]+/u', $this->normalize($shortName), -1, PREG_SPLIT_NO_EMPTY);
 
         if (count($parts) < 2) {
@@ -393,8 +467,6 @@ class ImportMails extends Command
 
         [$initial, $surname] = [mb_substr($parts[0], 0, 1), $parts[count($parts) - 1]];
 
-        $this->users ??= User::all(['id', 'name', 'sector_id', 'leave']);
-
         $matches = $this->users->filter(function (User $user) use ($initial, $surname): bool {
             $nameParts = preg_split('/\s+/u', $this->normalize($user->name), -1, PREG_SPLIT_NO_EMPTY);
 
@@ -402,6 +474,27 @@ class ImportMails extends Command
         });
 
         return $matches->sortBy('leave')->first();
+    }
+
+    /**
+     * Nicknames from config('mails.executor_aliases') and --alias options, as
+     * normalized "name in the file" => normalized start of the employee's full name.
+     *
+     * @return array<string, string>
+     */
+    private function aliases(): array
+    {
+        $pairs = config('mails.executor_aliases', []);
+
+        foreach ($this->option('alias') as $option) {
+            [$from, $to] = array_pad(explode('=', $option, 2), 2, '');
+            $pairs[$from] = $to;
+        }
+
+        return collect($pairs)
+            ->filter(fn ($to, $from): bool => trim((string) $from) !== '' && trim((string) $to) !== '')
+            ->mapWithKeys(fn ($to, $from): array => [$this->normalize((string) $from) => $this->normalize((string) $to)])
+            ->all();
     }
 
     private function normalize(string $value): string

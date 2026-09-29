@@ -13,10 +13,11 @@ use Illuminate\Support\Collection;
  * Execution summaries by sector and by employee, counted the same way as the
  * "Свод_шўбалар" / "Свод_ходимлар" sheets of the edo.ijro.uz Excel export:
  *
- * - one assignment row = one deadline of one item for one executor (co-executors get their
- *   own rows, like the extra rows in the Excel "База" sheet);
- * - an item given to many sector heads at once ("Барча шўъба мудирлари") is one row per
- *   deadline under a single group entry, not one row per head;
+ * - one row = one deadline of one item, counted once for the item's main executor
+ *   ("Асосий Ижрочи"); an item given to many sector heads without a main executor counts
+ *   under a single "Барча шўъба мудирлари" entry;
+ * - additional executors ("Қўшимча ижрочи") do not get rows of their own; the employee
+ *   summary shows how many deadlines they share as an extra column instead;
  * - "past due" means the deadline date has passed, whatever the status;
  * - status columns count all rows, not only past-due ones, except deadlines that are not due
  *   yet and not started (the Excel sheet leaves their status blank);
@@ -42,6 +43,13 @@ class MailReportService
      * @var Collection<int, array<string, mixed>>|null
      */
     private ?Collection $rows = null;
+
+    /**
+     * Deadlines shared as an additional executor, one entry per deadline and person.
+     *
+     * @var Collection<int, array<string, mixed>>|null
+     */
+    private ?Collection $extraRows = null;
 
     /**
      * @return array{rows: list<array<string, mixed>>, total: array<string, mixed>}
@@ -71,23 +79,28 @@ class MailReportService
      */
     public function byEmployee(): array
     {
-        $rows = $this->rows()
-            ->groupBy('person')
-            ->map(function (Collection $rows, string $person): array {
-                $first = $rows->first();
+        $this->rows();
+        $mainRows = $this->rows->groupBy('person');
+        $extraRows = $this->extraRows->groupBy('person');
 
-                return $this->summarize($rows, 'person', $person) + [
+        $rows = $mainRows->keys()->merge($extraRows->keys())->unique()
+            ->map(function (string $person) use ($mainRows, $extraRows): array {
+                $own = $mainRows->get($person, collect());
+                $first = $own->first() ?? $extraRows->get($person)->first();
+
+                return $this->summarize($own, 'person', $person) + [
                     'name' => $first['person_name'],
                     'initials' => $first['initials'],
                     'left' => $first['left'],
                     'is_group' => $person === self::GROUP,
+                    'as_extra' => $extraRows->get($person, collect())->count(),
                 ];
             })
-            ->sortBy([['past_due', 'desc'], ['required', 'desc'], ['name', 'asc']])
+            ->sortBy([['past_due', 'desc'], ['required', 'desc'], ['as_extra', 'desc'], ['name', 'asc']])
             ->values()
             ->all();
 
-        return ['rows' => $rows, 'total' => $this->total()];
+        return ['rows' => $rows, 'total' => $this->total() + ['as_extra' => $this->extraRows->count()]];
     }
 
     /**
@@ -108,10 +121,10 @@ class MailReportService
      */
     private function summarize(Collection $rows, ?string $key = null, ?string $value = null): array
     {
-        $responsible = $rows->where('responsible', true);
+        $responsible = $key ? $this->rows()->where('responsible', true)->where($key, $value) : $rows->where('responsible', true);
 
         return [
-            'documents' => ($key ? $this->rows()->where('responsible', true)->where($key, $value) : $responsible)->pluck('document')->unique()->count(),
+            'documents' => $responsible->pluck('document')->unique()->count(),
             'required' => $rows->count(),
             'past_due' => $rows->where('past_due', true)->count(),
             'statuses' => collect(self::STATUS_COLUMNS)->mapWithKeys(fn (string $status): array => [
@@ -124,7 +137,7 @@ class MailReportService
     }
 
     /**
-     * One entry per deadline and executor.
+     * One entry per deadline, for the item's main executor (or the group entry).
      *
      * @return Collection<int, array<string, mixed>>
      */
@@ -139,60 +152,79 @@ class MailReportService
             ->get();
 
         $rows = collect();
+        $extraRows = collect();
 
         foreach ($documents as $document) {
             foreach ($document->items->values() as $index => $item) {
-                $assignees = $this->assignees($item);
-                $multi = count($assignees) > 1;
+                $main = $item->mainExecutor();
+                $extras = $main ? $item->coExecutors() : collect();
+                $owner = $this->owner($item);
+
+                if (! $owner) {
+                    continue;
+                }
 
                 foreach ($item->deadlines as $deadline) {
-                    foreach ($assignees as $position => $assignee) {
-                        $rows->push($assignee + [
-                            'document' => $document->id,
-                            // The document counts once, for whoever answers for its first item.
-                            'responsible' => $index === 0 && $position === 0,
-                            'status' => $deadline->status,
-                            'past_due' => $deadline->deadline->lt(today()),
-                            'multi' => $multi,
-                        ]);
+                    $rows->push($owner + [
+                        'document' => $document->id,
+                        // The document counts once, for whoever answers for its first item.
+                        'responsible' => $index === 0,
+                        'status' => $deadline->status,
+                        'past_due' => $deadline->deadline->lt(today()),
+                        'multi' => $extras->isNotEmpty(),
+                    ]);
+
+                    foreach ($extras as $extra) {
+                        $extraRows->push($this->person($extra));
                     }
                 }
             }
         }
 
+        $this->extraRows = $extraRows;
+
         return $this->rows = $rows;
     }
 
     /**
-     * Who an item's rows are counted for: the main executor and each co-executor, or a single
-     * group entry when the item went to many sector heads without a main executor.
+     * Who an item's deadlines are counted for: the main executor; without one, a single group
+     * entry when the item went to many sector heads, or the only co-executor.
      *
-     * @return list<array{person: string, person_name: string, initials: string, left: bool, sector: string}>
+     * @return array{person: string, person_name: string, initials: string, left: bool, sector: string}|null
      */
-    private function assignees(MailItem $item): array
+    private function owner(MailItem $item): ?array
     {
         $main = $item->mainExecutor();
         $coExecutors = $item->coExecutors();
 
-        if (! $main && $coExecutors->count() > 1) {
-            return [[
+        if ($main) {
+            return $this->person($main);
+        }
+
+        if ($coExecutors->count() > 1) {
+            return [
                 'person' => self::GROUP,
                 'person_name' => __('mails.report.all_heads'),
                 'initials' => '∑',
                 'left' => false,
                 'sector' => self::GROUP,
-            ]];
+            ];
         }
 
-        return collect([$main])->filter()->merge($coExecutors)
-            ->map(fn (User $user): array => [
-                'person' => (string) $user->id,
-                'person_name' => $user->short_name,
-                'initials' => $user->initials(),
-                'left' => (bool) $user->leave,
-                'sector' => (string) ($user->pivot->sector_id ?? 0),
-            ])
-            ->values()
-            ->all();
+        return $coExecutors->isNotEmpty() ? $this->person($coExecutors->first()) : null;
+    }
+
+    /**
+     * @return array{person: string, person_name: string, initials: string, left: bool, sector: string}
+     */
+    private function person(User $user): array
+    {
+        return [
+            'person' => (string) $user->id,
+            'person_name' => $user->short_name,
+            'initials' => $user->initials(),
+            'left' => (bool) $user->leave,
+            'sector' => (string) ($user->pivot->sector_id ?? 0),
+        ];
     }
 }

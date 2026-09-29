@@ -17,7 +17,7 @@
         $statusColumns = \App\Services\MailReportService::STATUS_COLUMNS;
         $statusDots = ['done' => 'done', 'pending' => 'late', 'in_review' => 'in_review', 'returned' => 'returned'];
         $share = fn (array $row): int => $row['required'] ? (int) round($row['past_due'] / $row['required'] * 100) : 0;
-        $columnCount = $isEmployee ? 9 : 10;
+        $columnCount = $isEmployee ? 10 : 9;
     @endphp
 
     <div class="mx-stats mx-stats--5">
@@ -65,34 +65,34 @@
                     <col style="width: 48px;">
                     <col>
                     <col style="width: 108px;">
-                    @unless ($isEmployee)
-                        <col style="width: 108px;">
-                    @endunless
                     <col style="width: 128px;"><col style="width: 136px;">
                     <col style="width: 110px;"><col style="width: 118px;"><col style="width: 160px;"><col style="width: 112px;">
                     <col style="width: 150px;">
+                    @if ($isEmployee)
+                        <col style="width: 150px;">
+                    @endif
                 </colgroup>
                 <thead>
                     <tr class="mx-grid-groups">
                         <th colspan="2"></th>
-                        <th colspan="{{ $isEmployee ? 1 : 2 }}" class="mx-grid-group mx-bl">{{ __('mails.report.group_scope') }}</th>
+                        <th class="mx-bl"></th>
                         <th colspan="2" class="mx-grid-group mx-bl">{{ __('mails.report.group_deadlines') }}</th>
                         <th colspan="4" class="mx-grid-group mx-grid-group--late mx-bl">{{ __('mails.report.group_status') }}</th>
-                        <th class="mx-bl"></th>
+                        <th colspan="{{ $isEmployee ? 2 : 1 }}" class="mx-bl"></th>
                     </tr>
                     <tr class="mx-grid-heads">
                         <th>№</th>
                         <th>{{ $isEmployee ? __('mails.report.employee') : __('mails.report.sector') }}</th>
                         <th class="mx-n mx-bl" title="{{ __('mails.report.help.documents') }}">{{ __('mails.report.documents') }}</th>
-                        @unless ($isEmployee)
-                            <th class="mx-n" title="{{ __('mails.report.help.executors') }}">{{ __('mails.report.executors') }}</th>
-                        @endunless
                         <th class="mx-n mx-bl" title="{{ __('mails.report.help.required') }}">{{ __('mails.report.required') }}</th>
                         <th class="mx-n" title="{{ __('mails.report.help.past_due') }}">{{ __('mails.report.past_due') }}</th>
                         @foreach ($statusColumns as $status)
                             <th class="mx-n {{ $loop->first ? 'mx-bl' : '' }}" title="{{ __('mails.report.help.status') }}">{{ __('mails.statuses.'.$status) }}</th>
                         @endforeach
                         <th class="mx-n mx-bl" title="{{ __('mails.report.help.multi') }}">{{ __('mails.report.multi') }}</th>
+                        @if ($isEmployee)
+                            <th class="mx-n" title="{{ __('mails.report.help.as_extra') }}">{{ __('mails.report.as_extra') }}</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -101,9 +101,6 @@
                             <td></td>
                             <td>{{ __('mails.report.total') }}</td>
                             <td class="mx-n mx-bl">{{ $total['documents'] }}</td>
-                            @unless ($isEmployee)
-                                <td class="mx-n">{{ $total['executors'] }}</td>
-                            @endunless
                             <td class="mx-n mx-bl">{{ $total['required'] }}</td>
                             <td class="mx-n"><span class="mx-grid-past">{{ $total['past_due'] }}</span><span class="mx-grid-pct">{{ $share($total) }}%</span></td>
                             @foreach ($statusColumns as $status)
@@ -116,6 +113,9 @@
                                 </td>
                             @endforeach
                             <td class="mx-n mx-bl">{{ $total['multi'] ?: '–' }}</td>
+                            @if ($isEmployee)
+                                <td class="mx-n">{{ $total['as_extra'] ?: '–' }}</td>
+                            @endif
                         </tr>
                     @endif
 
@@ -134,9 +134,6 @@
                                 </span>
                             </td>
                             <td class="mx-n mx-bl">{{ $row['documents'] ?: '–' }}</td>
-                            @unless ($isEmployee)
-                                <td class="mx-n">{{ $row['executors'] }}</td>
-                            @endunless
                             <td class="mx-n mx-bl">{{ $row['required'] }}</td>
                             <td class="mx-n">
                                 <span class="mx-grid-past {{ $row['past_due'] ? '' : 'is-zero' }}">{{ $row['past_due'] }}</span><span class="mx-grid-pct">{{ $share($row) }}%</span>
@@ -151,6 +148,9 @@
                                 </td>
                             @endforeach
                             <td class="mx-n mx-bl">{{ $row['multi'] ?: '–' }}</td>
+                            @if ($isEmployee)
+                                <td class="mx-n">{{ $row['as_extra'] ?: '–' }}</td>
+                            @endif
                         </tr>
                     @empty
                         <tr><td colspan="{{ $columnCount }}" class="mx-empty">{{ __('mails.report.empty') }}</td></tr>
@@ -163,13 +163,13 @@
             <summary><i class="fa fa-question-circle-o"></i> {{ __('mails.report.help_title') }}</summary>
             <dl>
                 <dt>{{ __('mails.report.documents') }}</dt><dd>{{ __('mails.report.help.documents') }}</dd>
-                @unless ($isEmployee)
-                    <dt>{{ __('mails.report.executors') }}</dt><dd>{{ __('mails.report.help.executors') }}</dd>
-                @endunless
                 <dt>{{ __('mails.report.required') }}</dt><dd>{{ __('mails.report.help.required') }}</dd>
                 <dt>{{ __('mails.report.past_due') }}</dt><dd>{{ __('mails.report.help.past_due') }}</dd>
                 <dt>{{ __('mails.report.group_status') }}</dt><dd>{{ __('mails.report.help.status') }}</dd>
                 <dt>{{ __('mails.report.multi') }}</dt><dd>{{ __('mails.report.help.multi') }}</dd>
+                @if ($isEmployee)
+                    <dt>{{ __('mails.report.as_extra') }}</dt><dd>{{ __('mails.report.help.as_extra') }}</dd>
+                @endif
             </dl>
         </details>
     </section>

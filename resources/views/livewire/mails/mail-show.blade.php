@@ -111,35 +111,71 @@
                         </div>
                     </div>
 
-                    <div class="mx-people" x-data="{ expanded: false }">
-                        @if ($mainExecutor)
-                            <span class="mx-person" title="{{ $sectorNames[$mainExecutor->pivot->sector_id] ?? '' }}">
-                                <span class="mx-avatar">{{ $mainExecutor->initials() }}</span>
-                                <span class="mx-person-text">
-                                    <span>{{ $mainExecutor->short_name }}</span>
-                                    <small>{{ __('mails.messages.responsible') }}{{ $mainExecutor->leave ? ' · '.__('mails.fields.left') : '' }}</small>
-                                </span>
-                            </span>
-                        @endif
+                </div>
+
+                @if ($mainExecutor || $coExecutors->isNotEmpty())
+                    <div class="mx-team" x-data="{ open: false }">
+                        <div class="mx-team-row">
+                            @if ($mainExecutor)
+                                <div class="mx-team-main">
+                                    <span class="mx-avatar mx-avatar--lg">{{ $mainExecutor->initials() }}</span>
+                                    <span class="mx-team-text">
+                                        <span class="mx-team-label">{{ __('mails.fields.main_executor') }}</span>
+                                        <span class="mx-team-name">
+                                            {{ $mainExecutor->short_name }}
+                                            @if ($mainExecutor->leave)
+                                                <span class="mx-team-left">{{ __('mails.fields.left') }}</span>
+                                            @endif
+                                        </span>
+                                        <span class="mx-team-sector" title="{{ $sectorNames[$mainExecutor->pivot->sector_id] ?? '' }}">{{ $sectorNames[$mainExecutor->pivot->sector_id] ?? '' }}</span>
+                                    </span>
+                                </div>
+                            @endif
+
+                            @if ($coExecutors->isNotEmpty())
+                                <button type="button" class="mx-team-co" @click="open = !open" :aria-expanded="open">
+                                    <span class="mx-team-stack" aria-hidden="true">
+                                        @foreach ($coExecutors->take(5) as $coExecutor)
+                                            <span class="mx-avatar mx-avatar--ring">{{ $coExecutor->initials() }}</span>
+                                        @endforeach
+                                        @if ($coExecutors->count() > 5)
+                                            <span class="mx-avatar mx-avatar--ring mx-avatar--more">+{{ $coExecutors->count() - 5 }}</span>
+                                        @endif
+                                    </span>
+                                    <span class="mx-team-text">
+                                        <span class="mx-team-label">{{ __('mails.fields.co_executors') }} · {{ $coExecutors->count() }}</span>
+                                        <span class="mx-team-summary">
+                                            {{ $coExecutors->take(2)->pluck('short_name')->join(', ') }}@if ($coExecutors->count() > 2)<span class="mx-muted"> {{ __('mails.messages.and_more', ['count' => $coExecutors->count() - 2]) }}</span>@endif
+                                        </span>
+                                    </span>
+                                    <span class="mx-team-toggle">
+                                        <span x-text="open ? @js(__('mails.actions.hide')) : @js(__('mails.actions.show_all'))">{{ __('mails.actions.show_all') }}</span>
+                                        <i class="fa fa-angle-down" :style="open ? 'transform: rotate(180deg)' : ''"></i>
+                                    </span>
+                                </button>
+                            @endif
+                        </div>
+
                         @if ($coExecutors->isNotEmpty())
-                            <button type="button" class="mx-avatar-stack" @click="expanded = !expanded" :aria-expanded="expanded"
-                                    title="{{ $coExecutors->pluck('short_name')->join(', ') }}">
-                                @foreach ($coExecutors->take(4) as $coExecutor)
-                                    <span class="mx-avatar mx-avatar--ring">{{ $coExecutor->initials() }}</span>
-                                @endforeach
-                                @if ($coExecutors->count() > 4)
-                                    <span class="mx-avatar mx-avatar--ring mx-avatar--more">+{{ $coExecutors->count() - 4 }}</span>
-                                @endif
-                                <span class="mx-avatar-stack-label">{{ __('mails.messages.co_executors_count', ['count' => $coExecutors->count()]) }}</span>
-                            </button>
-                            <div class="mx-people-list" x-show="expanded" x-transition style="display: none;">
+                            <div class="mx-team-grid" x-show="open" x-transition.opacity.duration.150ms style="display: none;">
                                 @foreach ($coExecutors as $coExecutor)
-                                    <span class="mx-token"><span class="mx-avatar mx-avatar--xs">{{ $coExecutor->initials() }}</span>{{ $coExecutor->short_name }}</span>
+                                    <div class="mx-team-card" wire:key="co-{{ $item->id }}-{{ $coExecutor->id }}">
+                                        <span class="mx-avatar mx-avatar--sm">{{ $coExecutor->initials() }}</span>
+                                        <span class="mx-team-text">
+                                            <span class="mx-team-name">
+                                                {{ $coExecutor->short_name }}
+                                                @if ($coExecutor->leave)
+                                                    <span class="mx-team-left">{{ __('mails.fields.left') }}</span>
+                                                @endif
+                                            </span>
+                                            <span class="mx-team-sector" title="{{ $sectorNames[$coExecutor->pivot->sector_id] ?? '' }}">{{ $sectorNames[$coExecutor->pivot->sector_id] ?? '' }}</span>
+                                        </span>
+                                    </div>
                                 @endforeach
                             </div>
                         @endif
                     </div>
-                </div>
+                @endif
 
                 @if ($item->deadlines->isNotEmpty())
                     <ul class="mx-deadline-list">

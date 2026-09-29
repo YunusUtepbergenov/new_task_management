@@ -407,7 +407,7 @@ class MailsTest extends TestCase
         $this->actingAs(User::factory()->director()->create())->get(route('mails.report'))->assertOk();
     }
 
-    public function test_report_counts_one_row_per_deadline_and_executor_like_the_excel_sheet(): void
+    public function test_report_counts_each_deadline_once_for_the_main_executor(): void
     {
         $executor = $this->employee(2);
         $coExecutor = $this->employee(3);
@@ -420,30 +420,32 @@ class MailsTest extends TestCase
         $reports = app(MailReportService::class);
         $total = $reports->bySector()['total'];
 
-        // 2 deadlines x 2 executors.
+        // 2 deadlines, both counted for the main executor only.
         $this->assertSame(1, $total['documents']);
-        $this->assertSame(4, $total['required']);
-        $this->assertSame(2, $total['past_due']);
-        $this->assertSame(['done' => 0, 'pending' => 0, 'in_review' => 2, 'returned' => 0], $total['statuses']);
-        $this->assertSame(4, $total['multi']);
-        $this->assertSame(2, $total['executors']);
+        $this->assertSame(2, $total['required']);
+        $this->assertSame(1, $total['past_due']);
+        $this->assertSame(['done' => 0, 'pending' => 0, 'in_review' => 1, 'returned' => 0], $total['statuses']);
+        $this->assertSame(2, $total['multi']);
+        $this->assertSame(1, $total['executors']);
 
-        $sectorTwo = collect($reports->bySector()['rows'])->firstWhere('name', \App\Models\Sector::find(2)->name);
-        $this->assertSame(1, $sectorTwo['documents']);
-        $this->assertSame(1, $sectorTwo['executors']);
-        $this->assertSame(2, $sectorTwo['required']);
-        $this->assertSame(1, $sectorTwo['past_due']);
+        $sectors = collect($reports->bySector()['rows']);
+        $this->assertSame(2, $sectors->firstWhere('name', \App\Models\Sector::find(2)->name)['required']);
+        $this->assertNull($sectors->firstWhere('name', \App\Models\Sector::find(3)->name));
 
         $byEmployee = collect($reports->byEmployee()['rows']);
-        $this->assertSame(1, $byEmployee->firstWhere('name', $executor->short_name)['documents']);
-        $this->assertSame(0, $byEmployee->firstWhere('name', $coExecutor->short_name)['documents']);
-        $this->assertSame(2, $byEmployee->firstWhere('name', $coExecutor->short_name)['required']);
+        $main = $byEmployee->firstWhere('name', $executor->short_name);
+        $extra = $byEmployee->firstWhere('name', $coExecutor->short_name);
+        $this->assertSame([1, 2, 0], [$main['documents'], $main['required'], $main['as_extra']]);
+        $this->assertSame([0, 0, 2], [$extra['documents'], $extra['required'], $extra['as_extra']]);
+        $this->assertSame(2, $reports->byEmployee()['total']['as_extra']);
 
         Livewire::actingAs(User::factory()->director()->create())
             ->test(MailReport::class)
             ->assertSee(\App\Models\Sector::find(2)->name)
             ->call('setTab', 'employee')
-            ->assertSee($executor->short_name);
+            ->assertSee($executor->short_name)
+            ->assertSee($coExecutor->short_name)
+            ->assertSee(__('mails.report.as_extra'));
     }
 
     public function test_items_given_to_all_heads_count_once_under_a_group_row(): void
