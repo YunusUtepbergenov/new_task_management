@@ -92,6 +92,7 @@ class MailReportService
                     'name' => $first['person_name'],
                     'initials' => $first['initials'],
                     'left' => $first['left'],
+                    'person' => $person,
                     'is_group' => $person === self::GROUP,
                     'as_extra' => $extraRows->get($person, collect())->count(),
                 ];
@@ -101,6 +102,64 @@ class MailReportService
             ->all();
 
         return ['rows' => $rows, 'total' => $this->total() + ['as_extra' => $this->extraRows->count()]];
+    }
+
+    /**
+     * One employee's (or the "all heads" group's) items that have deadlines, split into the
+     * items they answer for as main executor and the ones they share as additional executor,
+     * each grouped by document.
+     *
+     * "responsible" names the person the document itself is counted for when that is someone else.
+     *
+     * @return array{main: Collection<int, array{document: MailDocument, items: Collection<int, MailItem>, responsible: string|null}>, extra: Collection<int, array{document: MailDocument, items: Collection<int, MailItem>, responsible: string|null}>}|null
+     */
+    public function personTasks(string $person): ?array
+    {
+        $query = MailItem::query()
+            ->whereHas('deadlines')
+            ->with(['document', 'deadlines', 'executors'])
+            ->orderBy('mail_document_id')
+            ->orderBy('position');
+
+        if ($person === self::GROUP) {
+            $query->whereDoesntHave('executors', fn ($executors) => $executors->where('mail_item_user.is_main', true))
+                ->has('executors', '>', 1);
+        } elseif (ctype_digit($person)) {
+            $query->whereHas('executors', fn ($executors) => $executors->where('users.id', (int) $person));
+        } else {
+            return null;
+        }
+
+        $items = $query->get();
+        // Same ownership rule as the report rows: the main executor, or the only executor.
+        [$main, $extra] = $items->partition(
+            fn (MailItem $item): bool => $person === self::GROUP || ($this->owner($item)['person'] ?? null) === $person
+        );
+
+        // Whoever answers for a document's first item gets the document in the "documents" column.
+        $responsible = MailItem::query()
+            ->whereIn('mail_document_id', $items->pluck('mail_document_id')->unique())
+            ->whereHas('deadlines')
+            ->with('executors')
+            ->orderBy('position')
+            ->orderBy('id')
+            ->get()
+            ->unique('mail_document_id')
+            ->mapWithKeys(fn (MailItem $item): array => [$item->mail_document_id => $this->owner($item)]);
+
+        $byDocument = fn (Collection $items): Collection => $items
+            ->groupBy('mail_document_id')
+            ->map(fn (Collection $items, int $documentId): array => [
+                'document' => $items->first()->document,
+                'items' => $items->values(),
+                'responsible' => ($responsible[$documentId]['person'] ?? null) === $person
+                    ? null
+                    : ($responsible[$documentId]['person_name'] ?? null),
+            ])
+            ->sortByDesc(fn (array $group) => $group['document']->document_date)
+            ->values();
+
+        return ['main' => $byDocument($main), 'extra' => $byDocument($extra)];
     }
 
     /**

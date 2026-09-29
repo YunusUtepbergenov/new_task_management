@@ -123,15 +123,18 @@
                         <tr wire:key="{{ $tab }}-row-{{ $loop->index }}" x-show="! query || @js(mb_strtolower($row['name'])).includes(query.toLowerCase())">
                             <td class="mx-muted">{{ $loop->iteration }}</td>
                             <td>
-                                <span class="mx-grid-name" title="{{ $row['name'] }}">
-                                    @if ($isEmployee)
+                                @if ($isEmployee)
+                                    <button type="button" class="mx-grid-name mx-grid-person {{ $person === $row['person'] ? 'is-active' : '' }}" wire:click="showPerson('{{ $row['person'] }}')" title="{{ __('mails.report.open_tasks') }}">
                                         <span class="mx-avatar mx-avatar--sm {{ $row['is_group'] ? 'mx-avatar--group' : '' }}">{{ $row['initials'] }}</span>
-                                    @endif
-                                    <span>{{ $row['name'] }}</span>
-                                    @if ($isEmployee && $row['left'])
-                                        <small class="mx-muted">{{ __('mails.fields.left') }}</small>
-                                    @endif
-                                </span>
+                                        <span>{{ $row['name'] }}</span>
+                                        @if ($row['left'])
+                                            <small class="mx-muted">{{ __('mails.fields.left') }}</small>
+                                        @endif
+                                        <i class="fa fa-angle-right mx-grid-person-arrow" aria-hidden="true"></i>
+                                    </button>
+                                @else
+                                    <span class="mx-grid-name" title="{{ $row['name'] }}"><span>{{ $row['name'] }}</span></span>
+                                @endif
                             </td>
                             <td class="mx-n mx-bl">{{ $row['documents'] ?: '–' }}</td>
                             <td class="mx-n mx-bl">{{ $row['required'] }}</td>
@@ -173,4 +176,100 @@
             </dl>
         </details>
     </section>
+
+    {{-- Selected employee's tasks --}}
+    @if ($panel)
+        <div class="mx-backdrop" wire:click="closePerson" x-on:keydown.escape.window="$wire.closePerson()"></div>
+        <aside class="mx-drawer mx-person-drawer" role="dialog" aria-modal="true" aria-labelledby="person-drawer-title" wire:key="person-drawer-{{ $panel['person'] }}">
+            <div class="mx-drawer-head">
+                <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                    <span class="mx-avatar mx-avatar--lg {{ $panel['is_group'] ? 'mx-avatar--group' : '' }}">{{ $panel['initials'] }}</span>
+                    <div style="min-width: 0;">
+                        <h3 id="person-drawer-title">{{ $panel['name'] }}</h3>
+                        @if ($panel['sector'])
+                            <div class="mx-muted" style="font-size: 12px;">{{ $panel['sector'] }}</div>
+                        @endif
+                    </div>
+                </div>
+                <button type="button" class="mx-btn mx-btn--icon" wire:click="closePerson" aria-label="{{ __('mails.actions.close') }}">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+
+            <div class="mx-drawer-body">
+                <div class="mx-person-stats">
+                    <div><b>{{ $panel['documents'] }}</b><span>{{ __('mails.report.documents') }}</span></div>
+                    <div><b>{{ $panel['required'] }}</b><span>{{ __('mails.report.required') }}</span></div>
+                    <div class="{{ $panel['past_due'] ? 'is-late' : '' }}"><b>{{ $panel['past_due'] }}</b><span>{{ __('mails.report.past_due') }}</span></div>
+                    <div><b>{{ $panel['as_extra'] }}</b><span>{{ __('mails.report.as_extra') }}</span></div>
+                </div>
+
+                @foreach (['main' => __('mails.report.role_main'), 'extra' => __('mails.report.as_extra')] as $role => $roleTitle)
+                    @if ($panel[$role]->isNotEmpty())
+                        @php($taskNumber = 0)
+                        <section class="mx-section">
+                            <h3 class="mx-section-head">
+                                {{ $roleTitle }}
+                                <span>{{ trans_choice('mails.report.documents_count', $panel[$role]->count()) }} · {{ trans_choice('mails.report.deadlines_count', $panel[$role]->sum(fn ($group) => $group['items']->sum(fn ($item) => $item->deadlines->count()))) }}</span>
+                            </h3>
+                            @foreach ($panel[$role] as $group)
+                                <article class="mx-person-doc" wire:key="person-{{ $role }}-{{ $group['document']->id }}">
+                                    <header class="mx-person-doc-head">
+                                        <div style="min-width: 0;">
+                                            <div class="mx-person-doc-number">
+                                                {{ $group['document']->document_number ?: '#'.$group['document']->id }}
+                                                @if ($group['document']->document_date)
+                                                    <span class="mx-muted">· {{ $group['document']->document_date->format('d.m.Y') }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="mx-person-doc-title" title="{{ $group['document']->title }}">{{ $group['document']->title }}</div>
+                                            @if ($role === 'main' && $group['responsible'])
+                                                <div class="mx-person-doc-note">
+                                                    <i class="fa fa-info-circle"></i> {{ __('mails.report.document_counted_for', ['name' => $group['responsible']]) }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <a href="{{ route('mails.index', ['document' => $group['document']->id, 'scope' => 'all']) }}" class="mx-btn mx-btn--link" wire:navigate>
+                                            {{ __('mails.report.open_document') }} <i class="fa fa-angle-right"></i>
+                                        </a>
+                                    </header>
+                                    <ol class="mx-person-tasks">
+                                        @foreach ($group['items'] as $item)
+                                            @foreach ($item->deadlines as $deadline)
+                                                @php($taskNumber++)
+                                                <li class="mx-person-task {{ $deadline->isOverdue() ? 'is-late' : '' }}" wire:key="person-deadline-{{ $deadline->id }}">
+                                                    <span class="mx-person-task-number">{{ $taskNumber }}</span>
+                                                    <div class="mx-person-task-body">
+                                                        <div class="mx-person-task-clause">
+                                                            {{ $item->clause ?: __('mails.fields.item') }}
+                                                            @if ($item->deadlines->count() > 1)
+                                                                <span class="mx-person-task-part">{{ __('mails.report.deadline_of', ['number' => $loop->iteration, 'total' => $loop->count]) }}</span>
+                                                            @endif
+                                                        </div>
+                                                        @if ($item->content)
+                                                            <div class="mx-person-task-content" title="{{ $item->content }}">{{ $item->content }}</div>
+                                                        @endif
+                                                        @if ($role === 'extra' && $item->mainExecutor())
+                                                            <div class="mx-person-task-meta">{{ __('mails.fields.main_executor') }}: {{ $item->mainExecutor()->short_name }}</div>
+                                                        @endif
+                                                    </div>
+                                                    <div class="mx-person-task-side">
+                                                        <span class="mx-person-task-date">{{ $deadline->deadline->format('d.m.Y') }}</span>
+                                                        <span class="mx-chip {{ $deadline->chipClass() }}"><span class="mx-dot"></span>{{ __('mails.statuses.'.$deadline->status) }}</span>
+                                                        @if ($deadline->isOverdue())
+                                                            <span class="mx-person-task-late">{{ __('mails.messages.days_overdue', ['days' => $deadline->overdueDays()]) }}</span>
+                                                        @endif
+                                                    </div>
+                                                </li>
+                                            @endforeach
+                                        @endforeach
+                                    </ol>
+                                </article>
+                            @endforeach
+                        </section>
+                    @endif
+                @endforeach
+            </div>
+        </aside>
+    @endif
 </div>

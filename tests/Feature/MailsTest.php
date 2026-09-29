@@ -733,4 +733,93 @@ class MailsTest extends TestCase
 
         $this->assertSame(0, MailDocument::count());
     }
+
+    public function test_clicking_an_employee_shows_their_tasks_split_by_role(): void
+    {
+        $executor = $this->employee(2);
+        $coExecutor = $this->employee(3);
+        $own = $this->documentAssignedTo($executor, [$coExecutor]);
+        $own->update(['title' => 'Asosiy hujjat']);
+        $shared = $this->documentAssignedTo($coExecutor, [$executor]);
+        $shared->update(['title' => 'Qoshimcha hujjat']);
+        $this->documentAssignedTo($this->employee(4))->update(['title' => 'Begona hujjat']);
+
+        $tasks = app(MailReportService::class)->personTasks((string) $executor->id);
+        $this->assertSame([$own->id], $tasks['main']->pluck('document.id')->all());
+        $this->assertSame([$shared->id], $tasks['extra']->pluck('document.id')->all());
+
+        Livewire::actingAs(User::factory()->director()->create())
+            ->test(MailReport::class)
+            ->call('setTab', 'employee')
+            ->assertDontSee('Asosiy hujjat')
+            ->call('showPerson', (string) $executor->id)
+            ->assertSet('person', (string) $executor->id)
+            ->assertSee(__('mails.report.role_main'))
+            ->assertSee('Asosiy hujjat')
+            ->assertSee('Qoshimcha hujjat')
+            ->assertDontSee('Begona hujjat')
+            ->assertSee(route('mails.index', ['document' => $own->id, 'scope' => 'all']))
+            ->call('closePerson')
+            ->assertSet('person', null)
+            ->assertDontSee('Asosiy hujjat');
+    }
+
+    public function test_panel_lists_one_numbered_row_per_deadline_like_the_report(): void
+    {
+        $executor = $this->employee(2);
+        $other = $this->employee(3);
+        $document = $this->documentAssignedTo($other);
+        $document->items()->create(['clause' => '7-банд', 'content' => 'Иккинчи банд', 'position' => 2])
+            ->executors()->attach($executor->id, ['is_main' => true, 'sector_id' => 2]);
+        $item = $document->items()->where('clause', '7-банд')->sole();
+        MailDeadline::factory()->for($item, 'item')->count(3)->sequence(
+            ['deadline' => today()->subDays(3)],
+            ['deadline' => today()->addDay()],
+            ['deadline' => today()->addMonth()],
+        )->create();
+
+        $row = collect(app(MailReportService::class)->byEmployee()['rows'])->firstWhere('person', (string) $executor->id);
+        $this->assertSame([0, 3], [$row['documents'], $row['required']]);
+
+        Livewire::actingAs(User::factory()->director()->create())
+            ->test(MailReport::class)
+            ->set('tab', 'employee')
+            ->call('showPerson', (string) $executor->id)
+            ->assertSee(trans_choice('mails.report.deadlines_count', 3))
+            ->assertSee(__('mails.report.deadline_of', ['number' => 3, 'total' => 3]))
+            ->assertSee(__('mails.report.document_counted_for', ['name' => $other->short_name]));
+    }
+
+    public function test_group_row_opens_items_given_to_all_heads(): void
+    {
+        $heads = User::factory()->head()->count(2)->sequence(['sector_id' => 2], ['sector_id' => 3])->create();
+        $this->documentAssignedTo(null, $heads->all())->update(['title' => 'Barcha mudirlar']);
+        $this->documentAssignedTo($heads->first())->update(['title' => 'Bitta mudir']);
+
+        Livewire::actingAs(User::factory()->director()->create())
+            ->test(MailReport::class)
+            ->set('tab', 'employee')
+            ->call('showPerson', 'group')
+            ->assertSee('Barcha mudirlar')
+            ->assertDontSee('Bitta mudir');
+    }
+
+    public function test_unknown_person_or_sector_tab_shows_no_panel(): void
+    {
+        $executor = $this->employee(2);
+        $this->documentAssignedTo($executor)->update(['title' => 'Yashirin hujjat']);
+
+        $this->assertNull(app(MailReportService::class)->personTasks('abc'));
+
+        Livewire::actingAs(User::factory()->director()->create())
+            ->test(MailReport::class)
+            ->set('tab', 'employee')
+            ->call('showPerson', '999999')
+            ->assertDontSee('Yashirin hujjat')
+            ->call('showPerson', (string) $executor->id)
+            ->assertSee('Yashirin hujjat')
+            ->call('setTab', 'sector')
+            ->assertSet('person', null)
+            ->assertDontSee('Yashirin hujjat');
+    }
 }
