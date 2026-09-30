@@ -7,6 +7,7 @@ use App\Models\MailDocument;
 use App\Models\MailFile;
 use App\Models\MailItem;
 use App\Models\User;
+use App\Notifications\MailAssignedNotification;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -15,15 +16,24 @@ use Illuminate\Support\Str;
 class MailService
 {
     /**
+     * Executors attached during the current save: user id => item ids.
+     *
+     * @var array<int, list<int>>
+     */
+    private array $assigned = [];
+
+    /**
      * Create or update a document together with its items, executors and deadlines.
      * Items and deadlines missing from the payload are removed; existing deadlines keep their status.
      *
      * @param  array<string, mixed>  $attributes
      * @param  list<array{id?: int|null, clause?: string|null, content?: string|null, main_executor_id?: int|string|null, co_executor_ids?: list<int|string>, deadlines?: list<array{id?: int|null, deadline: string, status?: string|null, note?: string|null}>}>  $items
      */
-    public function save(array $attributes, array $items, User $author, ?MailDocument $document = null): MailDocument
+    public function save(array $attributes, array $items, User $author, ?MailDocument $document = null, bool $notify = true): MailDocument
     {
-        return DB::transaction(function () use ($attributes, $items, $author, $document): MailDocument {
+        $this->assigned = [];
+
+        $document = DB::transaction(function () use ($attributes, $items, $author, $document): MailDocument {
             if ($document) {
                 $document->update($attributes);
             } else {
@@ -44,6 +54,12 @@ class MailService
 
             return $document->refresh();
         });
+
+        if ($notify) {
+            $this->notifyAssigned($document, $author);
+        }
+
+        return $document;
     }
 
     public function attachFile(MailDocument $document, UploadedFile $upload, User $uploader, ?MailDeadline $deadline = null): MailFile
@@ -110,6 +126,10 @@ class MailService
         $userIds = $coExecutorIds->when($mainExecutorId, fn ($ids) => $ids->prepend($mainExecutorId))->values();
 
         $existingSectors = $item->executors()->pluck('mail_item_user.sector_id', 'users.id');
+
+        foreach ($userIds->reject(fn (int $id): bool => $existingSectors->has($id)) as $id) {
+            $this->assigned[$id][] = $item->id;
+        }
         $currentSectors = User::whereIn('id', $userIds)->pluck('sector_id', 'id');
 
         $item->executors()->sync($userIds->mapWithKeys(fn (int $id): array => [$id => [
@@ -145,6 +165,25 @@ class MailService
             $deadline->files->each->delete();
             $deadline->delete();
         });
+    }
+
+    /**
+     * Tells newly attached executors (other than the author) which items they were given.
+     */
+    private function notifyAssigned(MailDocument $document, User $author): void
+    {
+        if (! $this->assigned) {
+            return;
+        }
+
+        $users = User::whereIn('id', array_keys($this->assigned))
+            ->where('id', '!=', $author->id)
+            ->where('leave', 0)
+            ->get();
+
+        foreach ($users as $user) {
+            $user->notify(new MailAssignedNotification($document, $this->assigned[$user->id], $author));
+        }
     }
 
     private function deleteDeadlineFiles(MailItem $item): void

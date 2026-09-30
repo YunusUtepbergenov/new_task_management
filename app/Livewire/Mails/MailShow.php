@@ -5,10 +5,12 @@ namespace App\Livewire\Mails;
 use App\Models\MailDeadline;
 use App\Models\MailDocument;
 use App\Models\Sector;
+use App\Notifications\MailStatusChangedNotification;
 use App\Services\MailService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -57,7 +59,14 @@ class MailShow extends Component
         ]);
 
         $form = $this->statusForms[$deadlineId];
+        $previousStatus = $deadline->status;
         $deadline->changeStatus($form['status'], filled($form['note']) ? $form['note'] : null);
+
+        // "Not sent" is a correction, not news for the executors.
+        if ($deadline->status !== $previousStatus && $deadline->status !== MailDeadline::STATUS_PENDING) {
+            $recipients = $deadline->item->executors->where('leave', 0)->where('id', '!=', Auth::id());
+            Notification::send($recipients, new MailStatusChangedNotification($deadline, $previousStatus, Auth::user()));
+        }
 
         $this->dispatch('mail-updated');
         $this->dispatch('mail-deadline-saved');

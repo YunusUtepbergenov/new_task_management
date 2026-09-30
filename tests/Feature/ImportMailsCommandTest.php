@@ -6,6 +6,7 @@ use App\Models\MailDeadline;
 use App\Models\MailDocument;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -303,6 +304,7 @@ class ImportMailsCommandTest extends TestCase
 
     public function test_it_reads_the_flat_layout_with_new_status_names(): void
     {
+        Notification::fake();
         User::factory()->head()->count(2)->sequence(['sector_id' => 3], ['sector_id' => 4])->create();
         $head = User::factory()->head()->create(['name' => 'Мудиров Ҳасан', 'sector_id' => 7]);
         $executor = User::factory()->create(['name' => 'Асосийев Бахтиёр', 'sector_id' => 7]);
@@ -332,6 +334,7 @@ class ImportMailsCommandTest extends TestCase
         $this->assertSame($head->id, $order->mainExecutor()->id);
         $this->assertSame(\App\Models\MailItem::HEADS_SECTORS, $order->heads_group);
         $this->assertSame(MailDeadline::STATUS_RETURNED, $order->deadlines->sole()->status);
+        Notification::assertNothingSent();
     }
 
     public function test_unknown_nicknames_are_reported_without_an_alias(): void

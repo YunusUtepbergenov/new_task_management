@@ -33,6 +33,8 @@ return [
     'accepted_task' => 'принял ваше задание',
     'rejected_task' => 'отклонил ваше задание',
     'please_check_this' => '. Пожалуйста, проверьте это задание.',
+    'assigned_mail' => 'назначил(а) вам документ edo.ijro.uz',
+    'changed_mail_status' => 'изменил(а) статус поручения edo.ijro.uz',
 
     // Task log descriptions
     'log_task_created' => 'Задача создана',
@@ -134,5 +136,27 @@ return [
     'birthday' => [
         'intro' => '{1}🎉 Сегодня свой день рождения отмечает наш коллега:|[2,*]🎉 Сегодня свой день рождения отмечают наши коллеги:',
         'congratulate' => '{1}🥳 Не забудьте поздравить нашего коллегу!|[2,*]🥳 Не забудьте поздравить наших коллег!',
+    ],
+    // edo.ijro.uz (Telegram)
+    'mails' => [
+        'assigned' => '📨 <b>edo.ijro.uz: вам назначен новый документ</b>',
+        'document' => '📄 Документ:',
+        'date' => '🗓 Дата документа:',
+        'your_items' => '📋 Ваши поручения:',
+        'as_main' => 'ответственный исполнитель',
+        'as_co' => 'соисполнитель',
+        'deadline' => '📅 Срок:',
+        'status_changed' => '🔄 <b>edo.ijro.uz: статус поручения изменён</b>',
+        'status_sent' => '📤 <b>edo.ijro.uz: поручение отправлено</b>',
+        'status_returned' => '↩️ <b>edo.ijro.uz: поручение возвращено</b>',
+        'status_done' => '✅ <b>edo.ijro.uz: поручение закрыто</b>',
+        'item' => '📋 Поручение:',
+        'status' => 'Статус:',
+        'note' => '📝 Комментарий:',
+        'reminder_title' => '⏰ <b>edo.ijro.uz: сроки поручений</b>',
+        'overdue' => '‼️ Просрочено',
+        'due_today' => '🔴 Срок сегодня',
+        'due_soon' => '🟡 Ближайшие сроки',
+        'days_overdue' => 'опоздание :days дн.',
     ],
 ];

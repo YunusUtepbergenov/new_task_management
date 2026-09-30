@@ -128,7 +128,7 @@ class ImportMails extends Command
             }
 
             if (! $dryRun) {
-                $keptIds[] = $service->save($document['attributes'], $document['items'], $author)->id;
+                $keptIds[] = $service->save($document['attributes'], $document['items'], $author, notify: false)->id;
             }
 
             $created++;
@@ -180,7 +180,7 @@ class ImportMails extends Command
             return $item;
         }, $document['items']);
 
-        $service->save($document['attributes'], $items, $author, $existing);
+        $service->save($document['attributes'], $items, $author, $existing, notify: false);
 
         foreach ($existing->fresh()->load('items.deadlines')->items as $item) {
             $fileItem = collect($document['items'])->first(fn (array $candidate): bool => $this->normalize((string) $candidate['clause']) === $this->normalize((string) $item->clause));
