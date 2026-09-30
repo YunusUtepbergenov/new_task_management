@@ -16,11 +16,11 @@
     @endunless
 >
     @if ($isTotal)
-        <td></td>
-        <td>{{ __('mails.report.total') }}</td>
+        <td class="mx-sticky"></td>
+        <td class="mx-sticky mx-sticky--name">{{ __('mails.report.total') }}</td>
     @else
-        <td class="mx-muted">{{ $number }}</td>
-        <td>
+        <td class="mx-muted mx-sticky">{{ $number }}</td>
+        <td class="mx-sticky mx-sticky--name">
             @if ($isEmployee)
                 <button type="button" class="mx-grid-name mx-grid-person {{ $person === $row['person'] ? 'is-active' : '' }}" wire:click="showPerson('{{ $row['person'] }}')" title="{{ __('mails.report.open_tasks') }}">
                     <span class="mx-avatar mx-avatar--sm {{ $row['is_group'] ? 'mx-avatar--group' : '' }}">{{ $row['initials'] }}</span>

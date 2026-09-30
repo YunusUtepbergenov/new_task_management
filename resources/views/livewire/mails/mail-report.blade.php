@@ -61,28 +61,28 @@
         <div class="mx-table-wrap">
             <table class="mx-grid-table mx-grid-table--split">
                 <colgroup>
-                    <col style="width: 48px;">
+                    <col style="width: 44px;">
                     <col style="width: 260px;">
-                    <col style="width: 104px;">
+                    <col style="width: 90px;">
                     @foreach (['not_due', 'past_due'] as $part)
-                        <col style="width: 96px;">
+                        <col style="width: 64px;">
                         @foreach ($statusColumns as $status)
-                            <col style="width: {{ $status === 'in_review' ? 124 : 104 }}px;">
+                            <col style="width: 92px;">
                         @endforeach
                     @endforeach
-                    <col style="width: 104px;">
+                    <col style="width: 92px;">
                 </colgroup>
                 <thead>
                     <tr class="mx-grid-groups">
-                        <th colspan="2"></th>
+                        <th colspan="2" class="mx-sticky"></th>
                         <th class="mx-bl"></th>
                         <th colspan="{{ count($statusColumns) + 1 }}" class="mx-grid-group mx-bl" title="{{ __('mails.report.help.not_due') }}">{{ __('mails.report.not_due') }}</th>
                         <th colspan="{{ count($statusColumns) + 1 }}" class="mx-grid-group mx-grid-group--late mx-bl" title="{{ __('mails.report.help.past_due') }}">{{ __('mails.report.past_due') }}</th>
                         <th class="mx-bl"></th>
                     </tr>
                     <tr class="mx-grid-heads">
-                        <th>№</th>
-                        <th>{{ $isEmployee ? __('mails.report.employee') : __('mails.report.sector') }}</th>
+                        <th class="mx-sticky">№</th>
+                        <th class="mx-sticky mx-sticky--name">{{ $isEmployee ? __('mails.report.employee') : __('mails.report.sector') }}</th>
                         <th class="mx-n mx-bl" title="{{ __('mails.report.help.required') }}">{{ __('mails.report.required') }}</th>
                         @foreach (['not_due', 'past_due'] as $part)
                             <th class="mx-n mx-bl">{{ __('mails.report.part_total') }}</th>
@@ -141,71 +141,57 @@
             </div>
 
             <div class="mx-drawer-body">
-                <div class="mx-person-stats">
-                    <div><b>{{ $panel['required'] }}</b><span>{{ __('mails.report.required') }}</span></div>
-                    <div><b>{{ $panel['not_due'] }}</b><span>{{ __('mails.report.not_due') }}</span></div>
-                    <div class="{{ $panel['past_due'] ? 'is-late' : '' }}"><b>{{ $panel['past_due'] }}</b><span>{{ __('mails.report.past_due') }}</span></div>
-                    <div><b>{{ $panel['closed'] }}</b><span>{{ __('mails.report.closed') }}</span></div>
-                </div>
-
                 @foreach (['main' => __('mails.report.role_main'), 'extra' => __('mails.report.as_extra')] as $role => $roleTitle)
                     @if ($panel[$role]->isNotEmpty())
                         @php($taskNumber = 0)
-                        <section class="mx-section">
-                            <h3 class="mx-section-head">
+                        <section class="mx-person-role">
+                            <h4 class="mx-person-role-title">
                                 {{ $roleTitle }}
-                                <span>{{ trans_choice('mails.report.documents_count', $panel[$role]->count()) }} · {{ trans_choice('mails.report.deadlines_count', $panel[$role]->sum(fn ($group) => $group['items']->sum(fn ($item) => $item->deadlines->count()))) }}</span>
-                            </h3>
+                                <span>{{ trans_choice('mails.report.documents_count', $panel[$role]->count()) }}, {{ trans_choice('mails.report.deadlines_count', $panel[$role]->sum(fn ($group) => $group['items']->sum(fn ($item) => $item->deadlines->count()))) }}</span>
+                            </h4>
                             @foreach ($panel[$role] as $group)
-                                <article class="mx-person-doc" wire:key="person-{{ $role }}-{{ $group['document']->id }}">
-                                    <header class="mx-person-doc-head">
-                                        <div style="min-width: 0;">
-                                            <div class="mx-person-doc-number">
-                                                {{ $group['document']->document_number ?: '#'.$group['document']->id }}
-                                                @if ($group['document']->document_date)
-                                                    <span class="mx-muted">· {{ $group['document']->document_date->format('d.m.Y') }}</span>
-                                                @endif
-                                            </div>
-                                            <div class="mx-person-doc-title" title="{{ $group['document']->title }}">{{ $group['document']->title }}</div>
-                                        </div>
-                                        <a href="{{ route('mails.index', ['document' => $group['document']->id, 'scope' => 'all']) }}" class="mx-btn mx-btn--link" wire:navigate>
-                                            {{ __('mails.report.open_document') }} <i class="fa fa-angle-right"></i>
-                                        </a>
-                                    </header>
-                                    <ol class="mx-person-tasks">
+                                <div class="mx-person-doc" wire:key="person-{{ $role }}-{{ $group['document']->id }}">
+                                    <div class="mx-person-doc-head">
+                                        <a href="{{ route('mails.index', ['document' => $group['document']->id, 'scope' => 'all']) }}" class="mx-person-doc-number" title="{{ __('mails.report.open_document') }}" wire:navigate>{{ $group['document']->document_number ?: '#'.$group['document']->id }}</a>
+                                        @if ($group['document']->document_date)
+                                            <span class="mx-muted">{{ $group['document']->document_date->format('d.m.Y') }}</span>
+                                        @endif
+                                        <div class="mx-person-doc-title">{{ $group['document']->title }}</div>
+                                    </div>
+                                    <table class="mx-person-tasks">
                                         @foreach ($group['items'] as $item)
                                             @foreach ($item->deadlines as $deadline)
                                                 @php($taskNumber++)
-                                                <li class="mx-person-task {{ $deadline->isOverdue() ? 'is-late' : '' }}" wire:key="person-deadline-{{ $deadline->id }}">
-                                                    <span class="mx-person-task-number">{{ $taskNumber }}</span>
-                                                    <div class="mx-person-task-body">
+                                                <tr class="{{ $deadline->isOverdue() ? 'is-late' : '' }}" wire:key="person-deadline-{{ $deadline->id }}">
+                                                    <td class="mx-person-task-no">{{ $taskNumber }}.</td>
+                                                    <td>
                                                         <div class="mx-person-task-clause">
                                                             {{ $item->clause ?: __('mails.fields.item') }}
                                                             @if ($item->deadlines->count() > 1)
-                                                                <span class="mx-person-task-part">{{ __('mails.report.deadline_of', ['number' => $loop->iteration, 'total' => $loop->count]) }}</span>
+                                                                <span class="mx-muted">({{ __('mails.report.deadline_of', ['number' => $loop->iteration, 'total' => $loop->count]) }})</span>
                                                             @endif
                                                         </div>
                                                         @if ($item->content)
-                                                            <div class="mx-person-task-content" title="{{ $item->content }}">{{ $item->content }}</div>
+                                                            <div class="mx-person-task-content">{{ $item->content }}</div>
                                                         @endif
                                                         @if ($role === 'extra' && $item->mainExecutor())
-                                                            <div class="mx-person-task-meta">{{ __('mails.fields.main_executor') }}: {{ $item->mainExecutor()->short_name }}</div>
+                                                            <div class="mx-person-task-content">{{ __('mails.fields.main_executor') }}: {{ $item->mainExecutor()->short_name }}</div>
                                                         @endif
-                                                    </div>
-                                                    <div class="mx-person-task-side">
-                                                        <span class="mx-person-task-date">{{ $deadline->deadline->format('d.m.Y') }}</span>
-                                                        <span class="mx-chip {{ $deadline->chipClass() }}"><span class="mx-dot"></span>{{ __('mails.statuses.'.$deadline->status) }}</span>
+                                                    </td>
+                                                    <td class="mx-person-task-date">{{ $deadline->deadline->format('d.m.Y') }}</td>
+                                                    <td class="mx-person-task-status">
+                                                        <span class="mx-chip {{ $deadline->chipClass() }}">{{ __('mails.statuses.'.$deadline->status) }}</span>
                                                         @if ($deadline->isOverdue())
-                                                            <span class="mx-person-task-late">{{ __('mails.messages.days_overdue', ['days' => $deadline->overdueDays()]) }}</span>
-                                                        @else
-                                                            <x-mails.closed-on-time :deadline="$deadline" />
+                                                            <small>{{ __('mails.messages.days_overdue', ['days' => $deadline->overdueDays()]) }}</small>
+                                                        @elseif ($deadline->lateDays() !== null)
+                                                            <small><x-mails.closed-on-time :deadline="$deadline" /></small>
                                                         @endif
-                                                    </div>
-                                                </li>
+                                                    </td>
+                                                </tr>
                                             @endforeach
                                         @endforeach
-                                    </ol>
-                                </article>
+                                    </table>
+                                </div>
                             @endforeach
                         </section>
                     @endif

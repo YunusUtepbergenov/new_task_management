@@ -8,7 +8,6 @@
 
 @if ($lateDays !== null)
     <span {{ $attributes->class(['mx-closed', 'mx-closed--late' => $lateDays > 0]) }}>
-        <i class="fa {{ $lateDays ? 'fa-clock-o' : 'fa-check' }}" aria-hidden="true"></i>
         {{ $lateDays ? __("mails.messages.{$verb}_late", ['days' => $lateDays]) : __("mails.messages.{$verb}_on_time") }}
     </span>
 @endif
