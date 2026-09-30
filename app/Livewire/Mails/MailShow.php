@@ -32,13 +32,6 @@ class MailShow extends Component
     public array $statusForms = [];
 
     /**
-     * Document-level upload; attached as soon as it finishes uploading.
-     *
-     * @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile|null
-     */
-    public $upload = null;
-
-    /**
      * Response files keyed by deadline id; attached as soon as they finish uploading.
      *
      * @var array<int, \Livewire\Features\SupportFileUploads\TemporaryUploadedFile>
@@ -70,17 +63,6 @@ class MailShow extends Component
         $this->dispatch('mail-deadline-saved');
     }
 
-    public function updatedUpload(): void
-    {
-        $document = $this->authorizedDocument('update');
-
-        $this->validate(['upload' => ['required', 'file', 'max:51200']]);
-
-        app(MailService::class)->attachFile($document, $this->upload, Auth::user());
-
-        $this->reset('upload');
-    }
-
     public function updatedDeadlineUploads(mixed $value, string $deadlineId): void
     {
         $document = $this->authorizedDocument('update');
@@ -93,10 +75,13 @@ class MailShow extends Component
         unset($this->deadlineUploads[$deadlineId]);
     }
 
+    /**
+     * Response files only; document files are managed in the edit form.
+     */
     public function deleteFile(int $fileId): void
     {
         $document = $this->authorizedDocument('update');
-        $document->files()->findOrFail($fileId)->delete();
+        $document->files()->whereNotNull('mail_deadline_id')->findOrFail($fileId)->delete();
     }
 
     public function deleteDocument(MailService $service): void

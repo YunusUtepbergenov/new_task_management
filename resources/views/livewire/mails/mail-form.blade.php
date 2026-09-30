@@ -26,13 +26,22 @@
                 @error('document_date') <span class="mx-error">{{ $message }}</span> @enderror
             </label>
             <label class="mx-field mx-span-2">{{ __('mails.fields.title') }} *
-                <textarea class="mx-input" rows="3" wire:model="title"></textarea>
+                <input type="text" class="mx-input" wire:model="title">
                 @error('title') <span class="mx-error">{{ $message }}</span> @enderror
             </label>
         </div>
 
         <div class="mx-field">{{ __('mails.messages.document_files') }}
             <div class="mx-file-grid">
+                @foreach ($existingFiles as $existingFile)
+                    @continue(in_array($existingFile['id'], $removedFileIds, true))
+                    <x-mails.file-card wire:key="existing-file-{{ $existingFile['id'] }}"
+                        :name="$existingFile['name']"
+                        :size="$existingFile['size']"
+                        :href="$existingFile['url']"
+                        :remove-action="'removeExistingFile('.$existingFile['id'].')'"
+                        :confirm="__('mails.actions.confirm_delete_file')" />
+                @endforeach
                 @foreach ($newFiles as $fileIndex => $newFile)
                     <x-mails.file-card wire:key="new-file-{{ $fileIndex }}"
                         :name="$newFile->getClientOriginalName()"

@@ -3,6 +3,7 @@
 namespace App\Livewire\Mails;
 
 use App\Models\MailDocument;
+use App\Models\MailFile;
 use App\Models\MailItem;
 use App\Models\User;
 use App\Services\MailService;
@@ -36,6 +37,18 @@ class MailForm extends Component
      * @var list<array{uid: string, id: int|null, clause: string, content: string, main_executor_id: string|null, co_executor_ids: list<string>, deadlines: list<array{id: int|null, deadline: string}>}>
      */
     public array $items = [];
+
+    /**
+     * Files already attached to the document being edited.
+     *
+     * @var list<array{id: int, name: string, size: int|null, url: string}>
+     */
+    public array $existingFiles = [];
+
+    /**
+     * @var list<int>
+     */
+    public array $removedFileIds = [];
 
     /**
      * @var list<\Livewire\Features\SupportFileUploads\TemporaryUploadedFile>
@@ -140,6 +153,16 @@ class MailForm extends Component
         $this->newFiles = array_values($this->newFiles);
     }
 
+    /**
+     * Marks an attached file for deletion; it is removed when the form is saved.
+     */
+    public function removeExistingFile(int $fileId): void
+    {
+        if (collect($this->existingFiles)->contains('id', $fileId)) {
+            $this->removedFileIds = array_values(array_unique([...$this->removedFileIds, $fileId]));
+        }
+    }
+
     public function save(MailService $service): void
     {
         $document = $this->documentId ? MailDocument::findOrFail($this->documentId) : null;
@@ -155,6 +178,8 @@ class MailForm extends Component
             ->all();
 
         $document = $service->save($attributes, $validated['items'] ?? [], Auth::user(), $document);
+
+        $document->files()->whereNull('mail_deadline_id')->whereIn('id', $this->removedFileIds)->get()->each->delete();
 
         foreach ($this->newFiles as $upload) {
             $service->attachFile($document, $upload, Auth::user());
@@ -234,9 +259,15 @@ class MailForm extends Component
 
     private function fillFromDocument(MailDocument $document): void
     {
-        $document->load(['items.executors', 'items.deadlines']);
+        $document->load(['items.executors', 'items.deadlines', 'files' => fn ($files) => $files->whereNull('mail_deadline_id')]);
 
         $this->documentId = $document->id;
+        $this->existingFiles = $document->files->map(fn (MailFile $file): array => [
+            'id' => $file->id,
+            'name' => $file->original_name,
+            'size' => $file->size,
+            'url' => route('mails.files.download', $file),
+        ])->all();
         $this->type = (string) $document->type;
         $this->document_number = (string) $document->document_number;
         $this->document_date = (string) $document->document_date?->toDateString();

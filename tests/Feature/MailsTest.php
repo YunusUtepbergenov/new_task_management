@@ -346,11 +346,6 @@ class MailsTest extends TestCase
 
         Livewire::actingAs($executor)
             ->test(MailShow::class, ['mailDocument' => $document])
-            ->set('upload', UploadedFile::fake()->create('answer.pdf', 10))
-            ->assertForbidden();
-
-        Livewire::actingAs($executor)
-            ->test(MailShow::class, ['mailDocument' => $document])
             ->set("deadlineUploads.{$deadline->id}", UploadedFile::fake()->create('answer.pdf', 10))
             ->assertForbidden();
 
@@ -534,20 +529,33 @@ class MailsTest extends TestCase
             ->assertRedirect(route('mails.index', ['document' => MailDocument::sole()->id]));
     }
 
-    public function test_mailer_uploads_a_document_file_as_soon_as_it_is_chosen(): void
+    public function test_document_files_are_managed_in_the_edit_form_and_only_listed_on_the_page(): void
     {
+        $mailer = User::factory()->mailer()->create();
         $document = $this->documentAssignedTo($this->employee());
+        $file = app(MailService::class)->attachFile($document, UploadedFile::fake()->create('asl-hujjat.pdf', 20), $mailer);
 
-        Livewire::actingAs(User::factory()->mailer()->create())
+        // The page lists the file but offers no upload or delete for it.
+        Livewire::actingAs($mailer)
             ->test(MailShow::class, ['mailDocument' => $document])
-            ->set('upload', UploadedFile::fake()->create('asl-hujjat.pdf', 20))
-            ->assertHasNoErrors()
-            ->assertSet('upload', null)
-            ->assertSee('asl-hujjat.pdf');
+            ->assertSee('asl-hujjat.pdf')
+            ->assertDontSeeHtml('wire:model="upload"')
+            ->assertDontSeeHtml("deleteFile({$file->id})")
+            ->call('deleteFile', $file->id)
+            ->assertNotFound();
 
-        $file = MailFile::sole();
-        $this->assertNull($file->mail_deadline_id);
-        Storage::disk('local')->assertExists($file->path());
+        // The edit form shows it, removes it on save and adds the newly chosen one.
+        Livewire::actingAs($mailer)
+            ->test(MailForm::class, ['mailDocument' => $document])
+            ->assertSee('asl-hujjat.pdf')
+            ->call('removeExistingFile', $file->id)
+            ->assertDontSee('asl-hujjat.pdf')
+            ->set('pendingFiles', [UploadedFile::fake()->create('yangi-hujjat.pdf', 20)])
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertSame(['yangi-hujjat.pdf'], $document->files()->pluck('original_name')->all());
+        Storage::disk('local')->assertMissing($file->path());
     }
 
     public function test_form_file_picks_add_up_instead_of_replacing_each_other(): void
@@ -597,6 +605,26 @@ class MailsTest extends TestCase
 
         $sectorSheet = (new \App\Exports\Sheets\MailReportSheet('sector'))->view()->render();
         $this->assertStringContainsString($sectorName, $sectorSheet);
+    }
+
+    public function test_a_single_co_executor_is_shown_without_the_expand_toggle(): void
+    {
+        $main = $this->employee();
+        $only = User::factory()->create(['name' => 'Ягонаев Ҳамкор Тестович', 'sector_id' => 3]);
+        $document = $this->documentAssignedTo($main, [$only]);
+
+        Livewire::actingAs($main)
+            ->test(MailShow::class, ['mailDocument' => $document])
+            ->assertSee(__('mails.fields.co_executor'))
+            ->assertSee($only->short_name)
+            ->assertDontSee(__('mails.actions.show_all'));
+
+        $two = $this->documentAssignedTo($main, [$only, $this->employee(4)]);
+
+        Livewire::actingAs($main)
+            ->test(MailShow::class, ['mailDocument' => $two])
+            ->assertSee(__('mails.fields.co_executors'))
+            ->assertSee(__('mails.actions.show_all'));
     }
 
     public function test_items_are_numbered_in_the_detail_pane(): void

@@ -69,7 +69,7 @@
     @endif
 
     {{-- Document files --}}
-    @if ($canManage || $document->files->isNotEmpty())
+    @if ($document->files->isNotEmpty())
         <section class="mx-section">
             <h3 class="mx-section-head">{{ __('mails.messages.document_files') }} <span>{{ $document->files->count() }}</span></h3>
             <div class="mx-file-grid">
@@ -78,15 +78,9 @@
                         :name="$file->original_name"
                         :size="$file->size"
                         :meta="$file->created_at->format('d.m.Y')"
-                        :href="route('mails.files.download', $file)"
-                        :remove-action="$canManage ? 'deleteFile('.$file->id.')' : null"
-                        :confirm="__('mails.actions.confirm_delete_file')" />
+                        :href="route('mails.files.download', $file)" />
                 @endforeach
-                @if ($canManage)
-                    <x-mails.dropzone model="upload" />
-                @endif
             </div>
-            @error('upload') <span class="mx-error">{{ $message }}</span> @enderror
         </section>
     @endif
 
@@ -132,7 +126,25 @@
                                 </div>
                             @endif
 
-                            @if ($coExecutors->isNotEmpty())
+                            @if ($coExecutors->count() === 1)
+                                {{-- A single co-executor is shown in full; nothing to expand. --}}
+                                @php
+                                    $coExecutor = $coExecutors->first();
+                                @endphp
+                                <div class="mx-team-co mx-team-co--static">
+                                    <span class="mx-avatar mx-avatar--lg">{{ $coExecutor->initials() }}</span>
+                                    <span class="mx-team-text">
+                                        <span class="mx-team-label">{{ __('mails.fields.co_executor') }}</span>
+                                        <span class="mx-team-name">
+                                            {{ $coExecutor->short_name }}
+                                            @if ($coExecutor->leave)
+                                                <span class="mx-team-left">{{ __('mails.fields.left') }}</span>
+                                            @endif
+                                        </span>
+                                        <span class="mx-team-sector" title="{{ $sectorNames[$coExecutor->pivot->sector_id] ?? '' }}">{{ $sectorNames[$coExecutor->pivot->sector_id] ?? '' }}</span>
+                                    </span>
+                                </div>
+                            @elseif ($coExecutors->isNotEmpty())
                                 <button type="button" class="mx-team-co" @click="open = !open" :aria-expanded="open">
                                     <span class="mx-team-stack" aria-hidden="true">
                                         @foreach ($coExecutors->take(5) as $coExecutor)
@@ -156,7 +168,7 @@
                             @endif
                         </div>
 
-                        @if ($coExecutors->isNotEmpty())
+                        @if ($coExecutors->count() > 1)
                             <div class="mx-team-grid" x-show="open" x-transition.opacity.duration.150ms style="display: none;">
                                 @foreach ($coExecutors as $coExecutor)
                                     <div class="mx-team-card" wire:key="co-{{ $item->id }}-{{ $coExecutor->id }}">
