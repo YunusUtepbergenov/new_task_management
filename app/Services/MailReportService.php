@@ -11,17 +11,15 @@ use Illuminate\Support\Collection;
 
 /**
  * Execution summaries by sector and by employee, counted the same way as the
- * "Свод_шўбалар" / "Свод_ходимлар" sheets of the edo.ijro.uz Excel export:
+ * "Свод_шўбалар" / "Свод_ходимлар" sheets of the edo.ijro.uz Excel file:
  *
  * - one row = one deadline of one item, counted once for the item's main executor
  *   ("Асосий Ижрочи"); an item given to many sector heads without a main executor counts
  *   under a single "Барча шўъба мудирлари" entry;
- * - additional executors ("Қўшимча ижрочи") do not get rows of their own; the employee
- *   summary shows how many deadlines they share as an extra column instead;
- * - "past due" means the deadline date has passed, whatever the status;
- * - status columns count all rows, not only past-due ones, except deadlines that are not due
- *   yet and not started (the Excel sheet leaves their status blank);
- * - the document count goes to the document's responsible person (first item's executor).
+ * - rows are split into "not due yet" and "past due" (the deadline date has passed, whatever
+ *   the status), and each part is broken down by status;
+ * - in the sector summary, items given to every sector head count under "Барча шўъбалар"
+ *   (or "Барча шўъба ва филиаллар"), and items of people who left under a separate row.
  */
 class MailReportService
 {
@@ -31,13 +29,15 @@ class MailReportService
      * @var list<string>
      */
     public const STATUS_COLUMNS = [
-        MailDeadline::STATUS_DONE,
         MailDeadline::STATUS_PENDING,
         MailDeadline::STATUS_IN_REVIEW,
         MailDeadline::STATUS_RETURNED,
+        MailDeadline::STATUS_DONE,
     ];
 
     private const GROUP = 'group';
+
+    private const LEFT = 'left';
 
     /**
      * @var Collection<int, array<string, mixed>>|null
@@ -45,11 +45,11 @@ class MailReportService
     private ?Collection $rows = null;
 
     /**
-     * Deadlines shared as an additional executor, one entry per deadline and person.
+     * People who share deadlines as additional executors, keyed by person, with their details.
      *
-     * @var Collection<int, array<string, mixed>>|null
+     * @var Collection<string, array<string, mixed>>|null
      */
-    private ?Collection $extraRows = null;
+    private ?Collection $extraPeople = null;
 
     /**
      * @return array{rows: list<array<string, mixed>>, total: array<string, mixed>}
@@ -60,48 +60,45 @@ class MailReportService
 
         $rows = $this->rows()
             ->groupBy('sector')
-            ->map(fn (Collection $rows, string $sector): array => $this->summarize($rows, 'sector', $sector) + [
-                'name' => match (true) {
-                    $sector === self::GROUP => __('mails.report.all_sectors'),
+            ->map(fn (Collection $rows, string $sector): array => $this->summarize($rows) + [
+                'name' => match ($sector) {
+                    MailItem::HEADS_SECTORS => __('mails.report.all_sectors'),
+                    MailItem::HEADS_SECTORS_AND_BRANCHES => __('mails.report.all_sectors_and_branches'),
+                    self::LEFT => __('mails.report.left_sector'),
                     default => $sectorNames[(int) $sector] ?? __('mails.report.no_sector'),
                 },
-                'executors' => $rows->pluck('person')->unique()->count(),
             ])
             ->sortBy([['past_due', 'desc'], ['required', 'desc'], ['name', 'asc']])
             ->values()
             ->all();
 
-        return ['rows' => $rows, 'total' => $this->total()];
+        return ['rows' => $rows, 'total' => $this->summarize($this->rows())];
     }
 
     /**
+     * Every main executor, plus people who are only additional executors (with zero rows,
+     * like the Excel sheet lists them), so their shared tasks can still be opened.
+     *
      * @return array{rows: list<array<string, mixed>>, total: array<string, mixed>}
      */
     public function byEmployee(): array
     {
-        $this->rows();
-        $mainRows = $this->rows->groupBy('person');
-        $extraRows = $this->extraRows->groupBy('person');
+        $byPerson = $this->rows()->groupBy('person');
+        $people = $this->rows()->keyBy('person')->union($this->extraPeople);
 
-        $rows = $mainRows->keys()->merge($extraRows->keys())->unique()
-            ->map(function (string $person) use ($mainRows, $extraRows): array {
-                $own = $mainRows->get($person, collect());
-                $first = $own->first() ?? $extraRows->get($person)->first();
-
-                return $this->summarize($own, 'person', $person) + [
-                    'name' => $first['person_name'],
-                    'initials' => $first['initials'],
-                    'left' => $first['left'],
-                    'person' => $person,
-                    'is_group' => $person === self::GROUP,
-                    'as_extra' => $extraRows->get($person, collect())->count(),
-                ];
-            })
-            ->sortBy([['past_due', 'desc'], ['required', 'desc'], ['as_extra', 'desc'], ['name', 'asc']])
+        $rows = $people
+            ->map(fn (array $person, string $key): array => $this->summarize($byPerson->get($key, collect())) + [
+                'name' => $person['person_name'],
+                'initials' => $person['initials'],
+                'left' => $person['left'],
+                'person' => $key,
+                'is_group' => $key === self::GROUP,
+            ])
+            ->sortBy([['past_due', 'desc'], ['required', 'desc'], ['name', 'asc']])
             ->values()
             ->all();
 
-        return ['rows' => $rows, 'total' => $this->total() + ['as_extra' => $this->extraRows->count()]];
+        return ['rows' => $rows, 'total' => $this->summarize($this->rows())];
     }
 
     /**
@@ -109,9 +106,7 @@ class MailReportService
      * items they answer for as main executor and the ones they share as additional executor,
      * each grouped by document.
      *
-     * "responsible" names the person the document itself is counted for when that is someone else.
-     *
-     * @return array{main: Collection<int, array{document: MailDocument, items: Collection<int, MailItem>, responsible: string|null}>, extra: Collection<int, array{document: MailDocument, items: Collection<int, MailItem>, responsible: string|null}>}|null
+     * @return array{main: Collection<int, array{document: MailDocument, items: Collection<int, MailItem>}>, extra: Collection<int, array{document: MailDocument, items: Collection<int, MailItem>}>}|null
      */
     public function personTasks(string $person): ?array
     {
@@ -130,32 +125,14 @@ class MailReportService
             return null;
         }
 
-        $items = $query->get();
         // Same ownership rule as the report rows: the main executor, or the only executor.
-        [$main, $extra] = $items->partition(
+        [$main, $extra] = $query->get()->partition(
             fn (MailItem $item): bool => $person === self::GROUP || ($this->owner($item)['person'] ?? null) === $person
         );
 
-        // Whoever answers for a document's first item gets the document in the "documents" column.
-        $responsible = MailItem::query()
-            ->whereIn('mail_document_id', $items->pluck('mail_document_id')->unique())
-            ->whereHas('deadlines')
-            ->with('executors')
-            ->orderBy('position')
-            ->orderBy('id')
-            ->get()
-            ->unique('mail_document_id')
-            ->mapWithKeys(fn (MailItem $item): array => [$item->mail_document_id => $this->owner($item)]);
-
         $byDocument = fn (Collection $items): Collection => $items
             ->groupBy('mail_document_id')
-            ->map(fn (Collection $items, int $documentId): array => [
-                'document' => $items->first()->document,
-                'items' => $items->values(),
-                'responsible' => ($responsible[$documentId]['person'] ?? null) === $person
-                    ? null
-                    : ($responsible[$documentId]['person_name'] ?? null),
-            ])
+            ->map(fn (Collection $items): array => ['document' => $items->first()->document, 'items' => $items->values()])
             ->sortByDesc(fn (array $group) => $group['document']->document_date)
             ->values();
 
@@ -163,35 +140,24 @@ class MailReportService
     }
 
     /**
-     * @return array<string, mixed>
-     */
-    private function total(): array
-    {
-        $rows = $this->rows();
-
-        return $this->summarize($rows) + [
-            'executors' => $rows->pluck('person')->unique()->count(),
-        ];
-    }
-
-    /**
      * @param  Collection<int, array<string, mixed>>  $rows
-     * @return array{documents: int, required: int, past_due: int, statuses: array<string, int>, multi: int}
+     * @return array{required: int, not_due: int, not_due_statuses: array<string, int>, past_due: int, past_due_statuses: array<string, int>, closed: int, executors: int}
      */
-    private function summarize(Collection $rows, ?string $key = null, ?string $value = null): array
+    private function summarize(Collection $rows): array
     {
-        $responsible = $key ? $this->rows()->where('responsible', true)->where($key, $value) : $rows->where('responsible', true);
+        [$pastDue, $notDue] = $rows->partition(fn (array $row): bool => $row['past_due']);
+        $byStatus = fn (Collection $rows): array => collect(self::STATUS_COLUMNS)
+            ->mapWithKeys(fn (string $status): array => [$status => $rows->where('status', $status)->count()])
+            ->all();
 
         return [
-            'documents' => $responsible->pluck('document')->unique()->count(),
             'required' => $rows->count(),
-            'past_due' => $rows->where('past_due', true)->count(),
-            'statuses' => collect(self::STATUS_COLUMNS)->mapWithKeys(fn (string $status): array => [
-                $status => $rows->where('status', $status)
-                    ->reject(fn (array $row): bool => $row['status'] === MailDeadline::STATUS_PENDING && ! $row['past_due'])
-                    ->count(),
-            ])->all(),
-            'multi' => $rows->where('multi', true)->count(),
+            'not_due' => $notDue->count(),
+            'not_due_statuses' => $byStatus($notDue),
+            'past_due' => $pastDue->count(),
+            'past_due_statuses' => $byStatus($pastDue),
+            'closed' => $rows->where('status', MailDeadline::STATUS_DONE)->count(),
+            'executors' => $rows->pluck('person')->unique()->count(),
         ];
     }
 
@@ -206,41 +172,45 @@ class MailReportService
             return $this->rows;
         }
 
-        $documents = MailDocument::query()
-            ->with(['items' => fn ($items) => $items->whereHas('deadlines')->with(['executors', 'deadlines'])])
+        $items = MailItem::query()
+            ->whereHas('deadlines')
+            ->with(['executors', 'deadlines'])
             ->get();
 
         $rows = collect();
-        $extraRows = collect();
+        $extraPeople = collect();
 
-        foreach ($documents as $document) {
-            foreach ($document->items->values() as $index => $item) {
-                $main = $item->mainExecutor();
-                $extras = $main ? $item->coExecutors() : collect();
-                $owner = $this->owner($item);
+        foreach ($items as $item) {
+            $owner = $this->owner($item);
 
-                if (! $owner) {
-                    continue;
-                }
+            if (! $owner) {
+                continue;
+            }
 
-                foreach ($item->deadlines as $deadline) {
-                    $rows->push($owner + [
-                        'document' => $document->id,
-                        // The document counts once, for whoever answers for its first item.
-                        'responsible' => $index === 0,
-                        'status' => $deadline->status,
-                        'past_due' => $deadline->deadline->lt(today()),
-                        'multi' => $extras->isNotEmpty(),
-                    ]);
+            $sector = match (true) {
+                $item->heads_group !== null => $item->heads_group,
+                $owner['person'] === self::GROUP => MailItem::HEADS_SECTORS,
+                $owner['left'] => self::LEFT,
+                default => $owner['sector'],
+            };
 
-                    foreach ($extras as $extra) {
-                        $extraRows->push($this->person($extra));
-                    }
+            foreach ($item->deadlines as $deadline) {
+                $rows->push([
+                    ...$owner,
+                    'sector' => $sector,
+                    'status' => $deadline->status,
+                    'past_due' => $deadline->isPastDue(),
+                ]);
+            }
+
+            if ($item->mainExecutor()) {
+                foreach ($item->coExecutors() as $extra) {
+                    $extraPeople->put((string) $extra->id, $this->person($extra));
                 }
             }
         }
 
-        $this->extraRows = $extraRows;
+        $this->extraPeople = $extraPeople;
 
         return $this->rows = $rows;
     }
@@ -266,7 +236,7 @@ class MailReportService
                 'person_name' => __('mails.report.all_heads'),
                 'initials' => '∑',
                 'left' => false,
-                'sector' => self::GROUP,
+                'sector' => MailItem::HEADS_SECTORS,
             ];
         }
 

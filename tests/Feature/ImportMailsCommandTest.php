@@ -301,6 +301,39 @@ class ImportMailsCommandTest extends TestCase
         $this->assertCount(2, $item->deadlines);
     }
 
+    public function test_it_reads_the_flat_layout_with_new_status_names(): void
+    {
+        User::factory()->head()->count(2)->sequence(['sector_id' => 3], ['sector_id' => 4])->create();
+        $head = User::factory()->head()->create(['name' => 'Мудиров Ҳасан', 'sector_id' => 7]);
+        $executor = User::factory()->create(['name' => 'Асосийев Бахтиёр', 'sector_id' => 7]);
+
+        // Every row repeats the № and the document columns.
+        $this->writeSplitLayout([
+            [1, '25.05.2026', 'ПҚ-314', '22.10.2025', 'Қарор', '2-илова 8-банд.', 'Б.Асосийев', null, 'Юборилмаган'],
+            [2, '25.07.2026', 'ПҚ-314', '22.10.2025', 'Қарор', '2-илова 8-банд.', 'Б.Асосийев', null, 'Юборилган, кўриб чиқилмоқда'],
+            [3, '25.09.2026', 'ПҚ-314', '22.10.2025', 'Қарор', '3-банд.', 'Б.Асосийев', null, 'Ёпилган'],
+            [4, '14.02.2026', '2-2026', '14.01.2026', 'Фармон', '4-банд.', 'Ҳ.Мудиров', 'Барча шўъба мудирлари', 'Қайтарилган'],
+        ]);
+
+        $this->artisan('mails:import', ['path' => $this->path])
+            ->expectsOutputToContain('Imported 2 documents')
+            ->assertSuccessful();
+
+        $decree = MailDocument::where('document_number', 'ПҚ-314')->with('items.deadlines')->sole();
+        $this->assertSame(['2-илова 8-банд.', '3-банд.'], $decree->items->pluck('clause')->all());
+        $this->assertSame([MailDeadline::STATUS_PENDING, MailDeadline::STATUS_IN_REVIEW], $decree->items[0]->deadlines->pluck('status')->all());
+        $this->assertSame(MailDeadline::STATUS_DONE, $decree->items[1]->deadlines->sole()->status);
+        // The file does not say when it was closed.
+        $this->assertNull($decree->items[1]->deadlines->sole()->completed_at);
+        $this->assertSame($executor->id, $decree->items[0]->executors->sole()->id);
+
+        // A head as main executor with "all heads" as additional executors is still an "all heads" item.
+        $order = MailDocument::where('document_number', '2-2026')->with('items.deadlines', 'items.executors')->sole()->items->sole();
+        $this->assertSame($head->id, $order->mainExecutor()->id);
+        $this->assertSame(\App\Models\MailItem::HEADS_SECTORS, $order->heads_group);
+        $this->assertSame(MailDeadline::STATUS_RETURNED, $order->deadlines->sole()->status);
+    }
+
     public function test_unknown_nicknames_are_reported_without_an_alias(): void
     {
         $this->writeSplitLayout([[1, '01.11.2025', 'ПФ-117', '25.07.2025', 'Ижро интизоми', '85-банд.', 'Диля опа', null, 'Бажарилмади']]);

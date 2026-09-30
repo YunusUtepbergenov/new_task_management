@@ -414,38 +414,60 @@ class MailsTest extends TestCase
         $document = $this->documentAssignedTo($executor, [$coExecutor]);
         $item = $document->items()->sole();
         $item->deadlines()->update(['deadline' => today()->subDays(5), 'status' => MailDeadline::STATUS_IN_REVIEW]);
-        // A second deadline that is not due yet and not started: counted as required, not in a status column.
+        // Not due yet: one not started, one already closed.
         MailDeadline::factory()->for($item, 'item')->create(['deadline' => today()->addMonth()]);
+        MailDeadline::factory()->for($item, 'item')->create(['deadline' => today()->addWeek(), 'status' => MailDeadline::STATUS_DONE]);
 
         $reports = app(MailReportService::class);
         $total = $reports->bySector()['total'];
 
-        // 2 deadlines, both counted for the main executor only.
-        $this->assertSame(1, $total['documents']);
-        $this->assertSame(2, $total['required']);
+        // 3 deadlines, all counted for the main executor only.
+        $this->assertSame(3, $total['required']);
+        $this->assertSame(2, $total['not_due']);
+        $this->assertSame(['pending' => 1, 'in_review' => 0, 'returned' => 0, 'done' => 1], $total['not_due_statuses']);
         $this->assertSame(1, $total['past_due']);
-        $this->assertSame(['done' => 0, 'pending' => 0, 'in_review' => 1, 'returned' => 0], $total['statuses']);
-        $this->assertSame(2, $total['multi']);
+        $this->assertSame(['pending' => 0, 'in_review' => 1, 'returned' => 0, 'done' => 0], $total['past_due_statuses']);
+        $this->assertSame(1, $total['closed']);
         $this->assertSame(1, $total['executors']);
 
         $sectors = collect($reports->bySector()['rows']);
-        $this->assertSame(2, $sectors->firstWhere('name', \App\Models\Sector::find(2)->name)['required']);
+        $this->assertSame(3, $sectors->firstWhere('name', \App\Models\Sector::find(2)->name)['required']);
         $this->assertNull($sectors->firstWhere('name', \App\Models\Sector::find(3)->name));
 
+        // The additional executor is listed with zero rows, like the Excel sheet, so their tasks can be opened.
         $byEmployee = collect($reports->byEmployee()['rows']);
-        $main = $byEmployee->firstWhere('name', $executor->short_name);
-        $extra = $byEmployee->firstWhere('name', $coExecutor->short_name);
-        $this->assertSame([1, 2, 0], [$main['documents'], $main['required'], $main['as_extra']]);
-        $this->assertSame([0, 0, 2], [$extra['documents'], $extra['required'], $extra['as_extra']]);
-        $this->assertSame(2, $reports->byEmployee()['total']['as_extra']);
+        $this->assertSame(3, $byEmployee->firstWhere('name', $executor->short_name)['required']);
+        $this->assertSame(0, $byEmployee->firstWhere('name', $coExecutor->short_name)['required']);
 
         Livewire::actingAs(User::factory()->director()->create())
             ->test(MailReport::class)
             ->assertSee(\App\Models\Sector::find(2)->name)
+            ->assertSee(__('mails.report.not_due'))
+            ->assertSee(__('mails.statuses.in_review'))
             ->call('setTab', 'employee')
             ->assertSee($executor->short_name)
-            ->assertSee($coExecutor->short_name)
-            ->assertSee(__('mails.report.as_extra'));
+            ->assertSee($coExecutor->short_name);
+    }
+
+    public function test_sector_report_puts_all_heads_items_and_people_who_left_in_their_own_rows(): void
+    {
+        User::factory()->head()->count(2)->sequence(['sector_id' => 2], ['sector_id' => 3])->create();
+        $main = $this->employee(4);
+        $this->documentAssignedTo($main, User::sectorHeads(false)->get()->all());
+        $gone = $this->employee(5);
+        $this->documentAssignedTo($gone);
+        $gone->update(['leave' => 1]);
+
+        $this->assertSame(MailItem::HEADS_SECTORS, MailItem::where('heads_group', '!=', null)->sole()->heads_group);
+
+        $reports = app(MailReportService::class);
+        $sectors = collect($reports->bySector()['rows'])->pluck('required', 'name');
+        $this->assertSame(1, $sectors[__('mails.report.all_sectors')]);
+        $this->assertSame(1, $sectors[__('mails.report.left_sector')]);
+        $this->assertFalse($sectors->has(\App\Models\Sector::find(4)->name));
+
+        // The employee summary still counts the item for its main executor.
+        $this->assertSame(1, collect($reports->byEmployee()['rows'])->firstWhere('person', (string) $main->id)['required']);
     }
 
     public function test_items_given_to_all_heads_count_once_under_a_group_row(): void
@@ -457,13 +479,12 @@ class MailsTest extends TestCase
         $reports = app(MailReportService::class);
 
         $this->assertSame(1, $reports->bySector()['total']['required']);
-        $this->assertSame(0, $reports->bySector()['total']['multi']);
+        $this->assertSame(__('mails.report.all_sectors'), collect($reports->bySector()['rows'])->sole()['name']);
 
-        $group = collect($reports->byEmployee()['rows'])->sole();
-        $this->assertTrue($group['is_group']);
+        $group = collect($reports->byEmployee()['rows'])->firstWhere('is_group', true);
         $this->assertSame(__('mails.report.all_heads'), $group['name']);
         $this->assertSame(1, $group['required']);
-        $this->assertSame(1, $group['statuses']['pending']);
+        $this->assertSame(1, $group['past_due_statuses']['pending']);
     }
 
     public function test_report_export_downloads_an_excel_file(): void
@@ -779,15 +800,14 @@ class MailsTest extends TestCase
         )->create();
 
         $row = collect(app(MailReportService::class)->byEmployee()['rows'])->firstWhere('person', (string) $executor->id);
-        $this->assertSame([0, 3], [$row['documents'], $row['required']]);
+        $this->assertSame([3, 1, 2], [$row['required'], $row['past_due'], $row['not_due']]);
 
         Livewire::actingAs(User::factory()->director()->create())
             ->test(MailReport::class)
             ->set('tab', 'employee')
             ->call('showPerson', (string) $executor->id)
             ->assertSee(trans_choice('mails.report.deadlines_count', 3))
-            ->assertSee(__('mails.report.deadline_of', ['number' => 3, 'total' => 3]))
-            ->assertSee(__('mails.report.document_counted_for', ['name' => $other->short_name]));
+            ->assertSee(__('mails.report.deadline_of', ['number' => 3, 'total' => 3]));
     }
 
     public function test_group_row_opens_items_given_to_all_heads(): void
@@ -821,5 +841,129 @@ class MailsTest extends TestCase
             ->call('setTab', 'sector')
             ->assertSet('person', null)
             ->assertDontSee('Yashirin hujjat');
+    }
+
+    public function test_closed_deadlines_show_whether_they_were_closed_on_time(): void
+    {
+        $deadline = MailDeadline::factory()->create(['deadline' => today()->subDays(4)]);
+        $this->assertNull($deadline->lateDays());
+
+        $deadline->changeStatus(MailDeadline::STATUS_DONE);
+        $this->assertSame(4, $deadline->fresh()->lateDays());
+        $this->assertTrue($deadline->fresh()->isPastDue());
+
+        $deadline->update(['completed_at' => today()->subDays(6)]);
+        $this->assertSame(0, $deadline->fresh()->lateDays());
+        $this->assertFalse($deadline->fresh()->isPastDue());
+
+        // Imported as closed: the closing date is unknown, so the deadline date decides, as in Excel.
+        $deadline->update(['completed_at' => null]);
+        $this->assertNull($deadline->fresh()->lateDays());
+        $this->assertTrue($deadline->fresh()->isPastDue());
+        $deadline->update(['deadline' => today()->addDay()]);
+        $this->assertFalse($deadline->fresh()->isPastDue());
+    }
+
+    public function test_a_result_sent_on_time_stays_on_time_when_approved_after_the_deadline(): void
+    {
+        $executor = $this->employee();
+        $document = $this->documentAssignedTo($executor);
+        $deadline = $document->deadlines()->sole();
+        $deadline->update(['deadline' => today()->subDays(2)]);
+
+        $this->travelTo(today()->subDays(5));
+        $deadline->changeStatus(MailDeadline::STATUS_IN_REVIEW);
+        $this->travelBack();
+
+        // Waiting for approval after the date: not overdue anywhere.
+        $deadline->refresh();
+        $this->assertSame(0, $deadline->lateDays());
+        $this->assertFalse($deadline->isOverdue());
+        $this->assertSame(0, MailDeadline::overdue()->count());
+        Livewire::actingAs(User::factory()->director()->create())
+            ->test(MailInbox::class)
+            ->call('setScope', 'all')
+            ->assertViewHas('tabs', fn ($tabs) => $tabs['late'] === 0 && $tabs['review'] === 1);
+
+        // Approved later: still on time, and the report counts it as closed before the deadline.
+        $deadline->changeStatus(MailDeadline::STATUS_DONE);
+        $deadline->refresh();
+        $this->assertSame(0, $deadline->lateDays());
+        $this->assertTrue($deadline->completed_at->gt($deadline->deadline));
+
+        $total = app(MailReportService::class)->bySector()['total'];
+        $this->assertSame([0, 1, 1], [$total['past_due'], $total['not_due'], $total['not_due_statuses']['done']]);
+        $this->assertSame(1, $total['closed']);
+
+        Livewire::actingAs($executor)
+            ->test(MailShow::class, ['mailDocument' => $document])
+            ->assertSee(__('mails.messages.closed_on_time'));
+    }
+
+    public function test_a_result_sent_late_counts_as_past_due_even_once_closed(): void
+    {
+        $document = $this->documentAssignedTo($this->employee());
+        $deadline = $document->deadlines()->sole();
+        $deadline->update(['deadline' => today()->subDays(3)]);
+
+        $deadline->changeStatus(MailDeadline::STATUS_IN_REVIEW);
+        $this->assertSame(3, $deadline->fresh()->lateDays());
+        $this->assertTrue($deadline->fresh()->isOverdue());
+        $this->assertSame(1, MailDeadline::overdue()->count());
+
+        $deadline->fresh()->changeStatus(MailDeadline::STATUS_DONE);
+        $total = app(MailReportService::class)->bySector()['total'];
+        $this->assertSame([1, 1, 0], [$total['past_due'], $total['past_due_statuses']['done'], $total['not_due']]);
+
+        // Setting it back to "not sent" forgets the sending date.
+        $deadline->fresh()->changeStatus(MailDeadline::STATUS_PENDING);
+        $this->assertNull($deadline->fresh()->sent_at);
+        $this->assertNull($deadline->fresh()->completed_at);
+    }
+
+    public function test_a_result_returned_and_sent_again_after_the_deadline_is_late(): void
+    {
+        $deadline = $this->documentAssignedTo($this->employee())->deadlines()->sole();
+        $deadline->update(['deadline' => today()->subDays(2)]);
+
+        $this->travelTo(today()->subDays(6));
+        $deadline->changeStatus(MailDeadline::STATUS_IN_REVIEW);
+        $this->travelTo(today()->subDays(4));
+        $deadline->fresh()->changeStatus(MailDeadline::STATUS_RETURNED, 'Тўлдирилсин');
+        $this->travelBack();
+
+        // The return cancelled the on-time sending.
+        $this->assertNull($deadline->fresh()->sent_at);
+        $this->assertTrue($deadline->fresh()->isOverdue());
+
+        $deadline->fresh()->changeStatus(MailDeadline::STATUS_IN_REVIEW);
+        $this->assertSame(2, $deadline->fresh()->lateDays());
+        $this->assertTrue($deadline->fresh()->isOverdue());
+
+        // Saving a note while it stays sent keeps the sending date.
+        $this->travelTo(today()->addDays(3));
+        $deadline->fresh()->changeStatus(MailDeadline::STATUS_IN_REVIEW, 'Изоҳ');
+        $this->travelBack();
+        $this->assertSame(2, $deadline->fresh()->lateDays());
+
+        $deadline->fresh()->changeStatus(MailDeadline::STATUS_DONE);
+        $this->assertSame(2, $deadline->fresh()->lateDays());
+        $this->assertSame(1, app(MailReportService::class)->bySector()['total']['past_due_statuses']['done']);
+    }
+
+    public function test_detail_pane_shows_late_closing(): void
+    {
+        $executor = $this->employee();
+        $document = $this->documentAssignedTo($executor);
+        $document->deadlines()->sole()->update([
+            'deadline' => today()->subDays(3),
+            'status' => MailDeadline::STATUS_DONE,
+            'completed_at' => now(),
+        ]);
+
+        Livewire::actingAs($executor)
+            ->test(MailShow::class, ['mailDocument' => $document])
+            ->assertSee(__('mails.statuses.done'))
+            ->assertSee(__('mails.messages.closed_late', ['days' => 3]));
     }
 }

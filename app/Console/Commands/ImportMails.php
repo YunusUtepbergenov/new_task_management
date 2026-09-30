@@ -60,6 +60,12 @@ class ImportMails extends Command
         'кўриб чиқилмоқда' => MailDeadline::STATUS_IN_REVIEW,
         'қайтарилди' => MailDeadline::STATUS_RETURNED,
         'бажарилди' => MailDeadline::STATUS_DONE,
+        // Status names since the 30.09.2026 layout.
+        'юборилмаган' => MailDeadline::STATUS_PENDING,
+        'юборилган, кўриб чиқилмоқда' => MailDeadline::STATUS_IN_REVIEW,
+        'юборилган' => MailDeadline::STATUS_IN_REVIEW,
+        'қайтарилган' => MailDeadline::STATUS_RETURNED,
+        'ёпилган' => MailDeadline::STATUS_DONE,
     ];
 
     /**
@@ -183,7 +189,8 @@ class ImportMails extends Command
                 $status = collect($fileItem['deadlines'] ?? [])->firstWhere('deadline', $deadline->deadline->toDateString())['status'] ?? null;
 
                 if ($status && $status !== $deadline->status) {
-                    $deadline->changeStatus($status, $deadline->note);
+                    // The file does not say when a deadline was closed, so on-time closing stays unknown.
+                    $deadline->update(['status' => $status, 'completed_at' => null]);
                 }
             }
         }
@@ -245,12 +252,18 @@ class ImportMails extends Command
             $extras = $splitExecutors ? $this->names($cell('extra_executors')) : [];
             $deadline = $this->date($cell('deadline'));
 
-            if ($this->clean($number) !== null || $this->clean($documentNumber) !== null) {
+            $startsDocument = $this->clean($number) !== null || $this->clean($documentNumber) !== null;
+            // Flat layouts repeat the document columns on every row: same document, next item or deadline.
+            $documentKey = $this->documentKey($documentNumber, $documentDate, $title);
+            $sameDocument = $doc && $documentKey !== null && $documentKey === $doc['key'];
+
+            if ($startsDocument && ! $sameDocument) {
                 if ($doc) {
                     $documents[] = $this->finishDocument($doc, $item);
                 }
 
                 $doc = [
+                    'key' => $documentKey,
                     'attributes' => [
                         'type' => $this->clean($type),
                         'document_number' => $this->clean($documentNumber),
@@ -391,7 +404,19 @@ class ImportMails extends Command
             $doc['items'][] = $item;
         }
 
+        unset($doc['key']);
+
         return $doc;
+    }
+
+    /**
+     * What identifies a document across rows: its number, date and title.
+     */
+    private function documentKey(mixed $documentNumber, mixed $documentDate, mixed $title): ?string
+    {
+        $number = $this->clean($documentNumber);
+
+        return $number === null ? null : implode('|', [$this->normalize($number), $this->date($documentDate), $this->normalize((string) $this->clean($title))]);
     }
 
     /**

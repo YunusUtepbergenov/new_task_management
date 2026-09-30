@@ -1,25 +1,31 @@
-{{-- Plain table for the Excel export, same columns as the report page. Expects $report (rows + total) and $mode ('sector'|'employee'). --}}
+{{-- Plain table for the Excel export, laid out like the "Свод" sheets. Expects $report (rows + total) and $mode ('sector'|'employee'). --}}
 @php
     $statusColumns = \App\Services\MailReportService::STATUS_COLUMNS;
     $isEmployee = $mode === 'employee';
+    $cells = fn (array $row): array => [
+        $row['required'],
+        $row['not_due'], ...array_values($row['not_due_statuses']),
+        $row['past_due'], ...array_values($row['past_due_statuses']),
+        $row['closed'],
+    ];
 @endphp
 <table>
     <thead>
         <tr>
             <th rowspan="2">№</th>
             <th rowspan="2">{{ $isEmployee ? __('mails.report.employee') : __('mails.report.sector') }}</th>
-            <th rowspan="2">{{ __('mails.report.documents') }}</th>
             <th rowspan="2">{{ __('mails.report.required') }}</th>
+            <th rowspan="2">{{ __('mails.report.not_due') }}</th>
+            <th colspan="{{ count($statusColumns) }}">{{ __('mails.report.of_which') }}</th>
             <th rowspan="2">{{ __('mails.report.past_due') }}</th>
-            <th colspan="{{ count($statusColumns) }}">{{ __('mails.report.group_status') }}</th>
-            <th rowspan="2">{{ __('mails.report.multi') }}</th>
-            @if ($isEmployee)
-                <th rowspan="2">{{ __('mails.report.as_extra') }}</th>
-            @endif
+            <th colspan="{{ count($statusColumns) }}">{{ __('mails.report.of_which') }}</th>
+            <th rowspan="2">{{ __('mails.report.closed') }}</th>
         </tr>
         <tr>
-            @foreach ($statusColumns as $status)
-                <th>{{ __('mails.statuses.'.$status) }}</th>
+            @foreach ([1, 2] as $part)
+                @foreach ($statusColumns as $status)
+                    <th>{{ __('mails.statuses.'.$status) }}</th>
+                @endforeach
             @endforeach
         </tr>
     </thead>
@@ -27,31 +33,17 @@
         <tr style="font-weight: bold;">
             <td></td>
             <td>{{ __('mails.report.total') }}</td>
-            <td>{{ $report['total']['documents'] }}</td>
-            <td>{{ $report['total']['required'] }}</td>
-            <td>{{ $report['total']['past_due'] }}</td>
-            @foreach ($statusColumns as $status)
-                <td>{{ $report['total']['statuses'][$status] }}</td>
+            @foreach ($cells($report['total']) as $value)
+                <td>{{ $value }}</td>
             @endforeach
-            <td>{{ $report['total']['multi'] }}</td>
-            @if ($isEmployee)
-                <td>{{ $report['total']['as_extra'] }}</td>
-            @endif
         </tr>
         @foreach ($report['rows'] as $row)
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $row['name'] }}{{ ($row['left'] ?? false) ? ' ('.__('mails.fields.left').')' : '' }}</td>
-                <td>{{ $row['documents'] }}</td>
-                <td>{{ $row['required'] }}</td>
-                <td>{{ $row['past_due'] }}</td>
-                @foreach ($statusColumns as $status)
-                    <td>{{ $row['statuses'][$status] }}</td>
+                @foreach ($cells($row) as $value)
+                    <td>{{ $value }}</td>
                 @endforeach
-                <td>{{ $row['multi'] }}</td>
-                @if ($isEmployee)
-                    <td>{{ $row['as_extra'] }}</td>
-                @endif
             </tr>
         @endforeach
     </tbody>

@@ -184,6 +184,7 @@
                                 $late = $deadline->isOverdue();
                                 $relative = match (true) {
                                     $deadline->status === 'done' => $deadline->completed_at ? __('mails.stats.completed_on', ['date' => $deadline->completed_at->format('d.m.Y')]) : '',
+                                    $deadline->status === 'in_review' && $deadline->sent_at => __('mails.stats.sent_on', ['date' => $deadline->sent_at->format('d.m.Y')]),
                                     $late => __('mails.messages.days_overdue', ['days' => $deadline->overdueDays()]),
                                     default => __('mails.messages.days_left', ['days' => (int) today()->diffInDays($deadline->deadline)]),
                                 };
@@ -191,7 +192,10 @@
                             <li class="mx-deadline {{ $late ? 'is-late' : '' }}" wire:key="deadline-{{ $deadline->id }}">
                                 <span class="mx-deadline-date"><span class="mx-dot mx-dot--{{ $late ? 'late' : $deadline->status }}"></span>{{ $deadline->deadline->format('d.m.Y') }}</span>
                                 <span class="mx-chip {{ $deadline->chipClass() }}">{{ __('mails.statuses.'.$deadline->status) }}</span>
-                                <span class="mx-deadline-relative">{{ $relative }}</span>
+                                <span class="mx-deadline-relative">
+                                    {{ $relative }}
+                                    <x-mails.closed-on-time :deadline="$deadline" />
+                                </span>
                                 <span class="mx-deadline-note" title="{{ $deadline->note }}">{{ $deadline->note }}</span>
                                 <span class="mx-deadline-files">
                                     @foreach ($deadline->files as $file)

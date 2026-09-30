@@ -14,12 +14,41 @@ class MailItem extends Model
 {
     use HasFactory;
 
+    /**
+     * The item went to every sector head ("Барча шўъба мудирлари").
+     */
+    public const HEADS_SECTORS = 'sectors';
+
+    /**
+     * The item went to every sector and branch head ("Барча шўъба ва филиаллар мудирлари").
+     */
+    public const HEADS_SECTORS_AND_BRANCHES = 'sectors_and_branches';
+
     protected $fillable = [
         'mail_document_id',
         'clause',
         'content',
         'position',
+        'heads_group',
     ];
+
+    /**
+     * Which "all heads" group the given co-executors cover, if any.
+     *
+     * @param  Collection<int, int|string>|array<int, int|string>  $coExecutorIds
+     */
+    public static function headsGroupFor(Collection|array $coExecutorIds): ?string
+    {
+        $coExecutorIds = collect($coExecutorIds)->map(fn ($id): int => (int) $id);
+        $sectorHeads = User::sectorHeads(false)->pluck('id');
+        $allHeads = User::sectorHeads()->pluck('id');
+
+        return match (true) {
+            $allHeads->count() > $sectorHeads->count() && $allHeads->diff($coExecutorIds)->isEmpty() => self::HEADS_SECTORS_AND_BRANCHES,
+            $sectorHeads->count() > 1 && $sectorHeads->diff($coExecutorIds)->isEmpty() => self::HEADS_SECTORS,
+            default => null,
+        };
+    }
 
     public function document(): BelongsTo
     {

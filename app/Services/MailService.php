@@ -74,10 +74,15 @@ class MailService
      */
     private function saveItem(MailDocument $document, array $data, int $position): MailItem
     {
+        $coExecutorIds = collect($data['co_executor_ids'] ?? [])->filter();
         $attributes = [
             'clause' => $data['clause'] ?? null,
             'content' => $data['content'] ?? null,
             'position' => $position,
+            // A head who is the main executor still belongs to an "all heads" assignment.
+            'heads_group' => $coExecutorIds->isEmpty()
+                ? null
+                : MailItem::headsGroupFor($coExecutorIds->push($data['main_executor_id'] ?? null)->filter()),
         ];
 
         $item = filled($data['id'] ?? null)
