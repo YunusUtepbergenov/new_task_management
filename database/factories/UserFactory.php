@@ -63,6 +63,16 @@ class UserFactory extends Factory
         return $this->state(fn () => ['role_id' => 1]);
     }
 
+    public function mailer(): static
+    {
+        return $this->state(fn () => ['role_id' => 9]);
+    }
+
+    public function head(): static
+    {
+        return $this->state(fn () => ['role_id' => 2]);
+    }
+
     public function withTelegram(): static
     {
         return $this->state(fn () => ['telegram_chat_id' => fake()->unique()->numberBetween(100000, 999999)]);

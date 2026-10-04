@@ -12,6 +12,7 @@ use App\Exports\TasksExport;
 use App\Models\Vacation;
 use Illuminate\Http\Request;
 use App\Services\TaskService;
+use App\Services\WorkloadService;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TopUsersExport;
@@ -219,14 +220,14 @@ class PageController extends Controller
         return view('page.vacation', ['vacations' => $vacations, 'sectors' => $sectors, 'roles' => $roles]);
     }
 
-    public function workload(){
-        $sectors = Sector::with(['users' => function($query) {
-            $query->where('leave', 0)->with(['tasks' => function($q) {
-                $q->select('id', 'user_id', 'name', 'deadline', 'status')->where('status', '<>', 'Выполнено');
-            }]);
-        }])->whereIn('id', [2,3,4,5,6,7,8,9,10,12,13,14,15,16])->get();
+    public function workload(Request $request, WorkloadService $workloadService)
+    {
+        $variant = in_array($request->query('v'), ['a', 'b', 'c'], true) ? $request->query('v') : 'a';
 
-        return view('page.reports.workload', compact('sectors'));
+        return view('page.reports.workload', [
+            'overview' => $workloadService->overview(),
+            'variant' => $variant,
+        ]);
     }
 
 

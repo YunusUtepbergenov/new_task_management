@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DigestController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\Documents\ArticleController;
 use App\Http\Controllers\Documents\NoteController;
 use App\Http\Controllers\PageController;
@@ -68,6 +69,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/weekly-tasks', [PageController::class, 'weeklyTasks'])->name('weekly.tasks');
     Route::get('/protocol-tasks', [PageController::class, 'protocolTasks'])->name('protocol.tasks');
     Route::get('/direct-messages', [PageController::class, 'directMessages'])->name('direct.messages');
+
+    Route::prefix('mails')->name('mails.')->controller(MailController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('create', 'create')->name('create');
+        Route::get('report', 'report')->name('report');
+        Route::get('report/export', 'exportReport')->name('report.export');
+        Route::get('files/{mailFile}/download', 'download')->name('files.download');
+        Route::get('{mailDocument}', 'show')->name('show');
+        Route::get('{mailDocument}/edit', 'edit')->name('edit');
+    });
 
     Route::put('task/change/status/{id}', [TaskController::class, 'changeStatus'])->name('change.status');
 

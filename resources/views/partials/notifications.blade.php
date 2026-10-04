@@ -19,6 +19,8 @@
                             'App\Notifications\CommentStoredNotification' => '<span class="noti-title">' . e($data['user_name']) . '</span> ' . __('notifications.wrote_comment'),
                             'App\Notifications\TaskConfirmedNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> ' . __('notifications.accepted_task'),
                             'App\Notifications\TaskRejectedNotification' => '<span class="noti-title">' . e($data['creator_name']) . '</span> ' . __('notifications.rejected_task'),
+                            'App\Notifications\MailAssignedNotification' => '<span class="noti-title">' . e($data['assigned_by']) . '</span> ' . __('notifications.assigned_mail'),
+                            'App\Notifications\MailStatusChangedNotification' => '<span class="noti-title">' . e($data['changed_by']) . '</span> ' . __('notifications.changed_mail_status'),
                             default => null,
                         };
                         $suffix = $notification->type === 'App\Notifications\TaskSubmittedNotification'
@@ -40,7 +42,7 @@
                                     <img alt="" src="{{ asset('assets/img/avatar.jpg') }}">
                                 </span>
                                 <div class="media-body">
-                                    <p class="noti-details">{!! $message !!} <a href="#" onclick="openModal({{ $data['task_id'] }})" id="noti-link">{{ $data['name'] }}</a>{{ $suffix }}</p>
+                                    <p class="noti-details">{!! $message !!} @if (isset($data['document_id']))<a href="{{ route('mails.index', ['document' => $data['document_id']]) }}" id="noti-link">{{ $data['document_number'] }}</a>@else<a href="#" onclick="openModal({{ $data['task_id'] }})" id="noti-link">{{ $data['name'] }}</a>@endif{{ $suffix }}</p>
                                     <p class="noti-time"><span class="notification-time">{{ time_elapsed_string($notification->created_at) }}</span></p>
                                 </div>
                             </div>

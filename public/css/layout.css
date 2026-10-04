@@ -4495,3 +4495,51 @@ body.dark-mode .page-loader-card {
     border-color: var(--border-color);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
+
+/* Open edo.ijro.uz items counter in the sidebar */
+.sidebar-menu li a.sidebar-link-with-count {
+    position: relative;
+}
+
+.sidebar-count {
+    margin-left: auto;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: #3b82f6;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 22px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.sidebar-count--late {
+    background: #ef4444;
+}
+
+.sidebar-menu li.active a .sidebar-count,
+.sidebar-menu li a.active .sidebar-count {
+    background: #ffffff;
+    color: #1d4ed8;
+}
+
+.sidebar-menu li.active a .sidebar-count--late,
+.sidebar-menu li a.active .sidebar-count--late {
+    color: #dc2626;
+}
+
+body.sidebar-collapsed .sidebar .sidebar-count {
+    position: absolute;
+    top: 4px;
+    left: 36px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: 10px;
+    line-height: 18px;
+    box-shadow: 0 0 0 2px var(--sidebar-bg);
+}
+

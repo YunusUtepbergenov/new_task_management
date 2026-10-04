@@ -19,6 +19,7 @@ Schedule::command('telegram:deadline-reminders')->dailyAt('09:00');
 Schedule::command('telegram:birthday-notifications')->dailyAt('08:00');
 Schedule::command('telegram:turnstile-notifications')->everyTwoMinutes();
 Schedule::command('telegram:weekly-unsubmitted-reminders')->weeklyOn(6, '09:00');
+Schedule::command('mails:deadline-reminders')->dailyAt('09:00');
 
 Schedule::call(function() {
     DB::table('tasks')
