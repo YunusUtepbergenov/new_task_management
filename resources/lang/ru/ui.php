@@ -6,7 +6,7 @@ return [
         'collapse' => 'Свернуть',
         'projects_tasks' => 'Проекты и задачи',
         'mails' => 'edo.ijro.uz',
-        'mails_open' => 'Открытых поручений: :count',
+        'mails_open' => 'Открытых документов: :count',
         'weekly_tasks' => 'Недельные задачи',
         'protocol' => 'Протокол',
         'archive' => 'Архив задач',

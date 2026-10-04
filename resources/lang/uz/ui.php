@@ -6,7 +6,7 @@ return [
         'collapse' => 'Йиғиш',
         'projects_tasks' => 'Лойиҳа ва вазифалар',
         'mails' => 'edo.ijro.uz',
-        'mails_open' => 'Очиқ топшириқлар: :count',
+        'mails_open' => 'Очиқ ҳужжатлар: :count',
         'weekly_tasks' => 'Ҳафталик вазифалар',
         'protocol' => 'Баённома',
         'archive' => 'Вазифалар архиви',

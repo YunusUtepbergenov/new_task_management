@@ -292,10 +292,21 @@ class User extends Authenticatable
      */
     public function mailBadge(): array
     {
-        return once(fn (): array => [
-            'count' => MailItem::query()->visibleTo($this)->open()->count(),
-            'overdue' => MailItem::query()->visibleTo($this)->whereHas('deadlines', fn ($deadlines) => $deadlines->overdue())->exists(),
-        ]);
+        return once(function (): array {
+            // The same documents as the inbox's opening list: everything for the mailer, their own
+            // items for the director and deputies, and what visibleTo() allows for everyone else.
+            $documents = MailDocument::query()
+                ->visibleTo($this)
+                ->when($this->canViewAllMails() && ! $this->canManageMails(), fn ($query) => $query
+                    ->whereHas('items.executors', fn ($users) => $users->where('users.id', $this->id)));
+
+            return [
+                'count' => (clone $documents)->where(fn ($open) => $open
+                    ->whereHas('deadlines', fn ($deadlines) => $deadlines->where('status', '!=', MailDeadline::STATUS_DONE))
+                    ->orWhereDoesntHave('deadlines'))->count(),
+                'overdue' => (clone $documents)->whereHas('deadlines', fn ($deadlines) => $deadlines->overdue())->exists(),
+            ];
+        });
     }
 
     /**

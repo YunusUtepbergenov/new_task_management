@@ -22,7 +22,7 @@ class MailInbox extends Component
     /**
      * @var list<string>
      */
-    public const TABS = ['all', 'late', 'week', 'review', 'returned'];
+    public const TABS = ['all', 'late', 'week', 'review', 'returned', 'done'];
 
     private const PAGE_SIZE = 30;
 
@@ -49,6 +49,16 @@ class MailInbox extends Component
      */
     #[Url(as: 'scope')]
     public ?string $scope = null;
+
+    /**
+     * A link to a closed document (from a notification or the report) lands on the "closed" list.
+     */
+    public function mount(): void
+    {
+        if ($this->selected && $this->tab === 'all' && $this->filtered('done', 'all')->whereKey($this->selected)->exists()) {
+            $this->tab = 'done';
+        }
+    }
 
     public function updatedSearch(): void
     {
@@ -167,6 +177,13 @@ class MailInbox extends Component
                     ->orWhereHas('items', fn (Builder $items) => $items->where('clause', 'like', $term)->orWhere('content', 'like', $term))
                     ->orWhereHas('items.executors', fn (Builder $users) => $users->where('users.name', 'like', $term)));
             })
+            // "all" is the working list: documents with something still open. Closed ones have their own tab.
+            ->when($tab === 'all', fn (Builder $q) => $q->where(fn (Builder $open) => $open
+                ->whereHas('deadlines', fn (Builder $d) => $d->where('status', '!=', MailDeadline::STATUS_DONE))
+                ->orWhereDoesntHave('deadlines')))
+            ->when($tab === 'done', fn (Builder $q) => $q
+                ->whereHas('deadlines')
+                ->whereDoesntHave('deadlines', fn (Builder $d) => $d->where('status', '!=', MailDeadline::STATUS_DONE)))
             ->when($tab === 'late', fn (Builder $q) => $q->whereHas('deadlines', fn (Builder $d) => $d->overdue()))
             ->when($tab === 'week', fn (Builder $q) => $q->whereHas('deadlines', fn (Builder $d) => $d
                 ->where('status', '!=', MailDeadline::STATUS_DONE)

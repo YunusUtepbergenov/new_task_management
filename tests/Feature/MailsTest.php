@@ -67,7 +67,6 @@ class MailsTest extends TestCase
             ->set('document_date', '2026-09-01')
             ->set('title', 'Хат')
             ->set('items.0.main_executor_id', $executor ? (string) $executor->id : null)
-            ->call('addDeadline', 0)
             ->set('items.0.deadlines.0.deadline', '2026-10-01');
     }
 
@@ -165,7 +164,7 @@ class MailsTest extends TestCase
 
         $inbox = Livewire::actingAs(User::factory()->director()->create())->test(MailInbox::class)->call('setScope', 'all');
 
-        $inbox->assertViewHas('tabs', fn ($tabs) => $tabs->all() === ['all' => 3, 'late' => 1, 'week' => 1, 'review' => 1, 'returned' => 0]);
+        $inbox->assertViewHas('tabs', fn ($tabs) => $tabs->all() === ['all' => 3, 'late' => 1, 'week' => 1, 'review' => 1, 'returned' => 0, 'done' => 0]);
 
         $inbox->call('setTab', 'late')
             ->assertSee($overdue->document_number)
@@ -176,6 +175,32 @@ class MailsTest extends TestCase
             ->call('setTab', 'review')
             ->assertSee($inReview->document_number)
             ->assertDontSee($thisWeek->document_number);
+    }
+
+    public function test_closed_documents_leave_the_open_list_for_the_closed_tab(): void
+    {
+        $open = $this->documentAssignedTo($this->employee());
+        $partlyClosed = $this->documentAssignedTo($this->employee());
+        MailDeadline::factory()->for($partlyClosed->items->sole(), 'item')->create(['status' => MailDeadline::STATUS_DONE]);
+        $closed = $this->documentAssignedTo($this->employee());
+        $closed->deadlines()->update(['status' => MailDeadline::STATUS_DONE]);
+
+        $inbox = Livewire::actingAs(User::factory()->mailer()->create())->test(MailInbox::class);
+
+        $inbox->assertViewHas('tabs', fn ($tabs) => $tabs['all'] === 2 && $tabs['done'] === 1)
+            ->assertSee($open->document_number)
+            ->assertSee($partlyClosed->document_number)
+            ->assertDontSee($closed->document_number)
+            ->call('setTab', 'done')
+            ->assertSee($closed->document_number)
+            ->assertDontSee($open->document_number);
+
+        // Opening a closed document by link switches to the closed list so it is highlighted.
+        Livewire::actingAs(User::factory()->mailer()->create())
+            ->withQueryParams(['document' => $closed->id])
+            ->test(MailInbox::class)
+            ->assertSet('tab', 'done')
+            ->assertSee($closed->document_number);
     }
 
     public function test_search_matches_executor_names(): void
@@ -206,7 +231,6 @@ class MailsTest extends TestCase
             ->set('items.0.clause', '4-илова 12-банд')
             ->set('items.0.main_executor_id', (string) $main->id)
             ->set('items.0.co_executor_ids', [(string) $coExecutor->id])
-            ->call('addDeadline', 0)
             ->set('items.0.deadlines.0.deadline', '2026-10-25')
             ->call('addDeadline', 0)
             ->set('items.0.deadlines.1.deadline', '2026-11-25')
@@ -291,7 +315,6 @@ class MailsTest extends TestCase
             ->test(MailForm::class, ['mailDocument' => $document])
             ->call('addItem')
             ->set('items.1.main_executor_id', (string) $replacement->id)
-            ->call('addDeadline', 1)
             ->set('items.1.deadlines.0.deadline', today()->addMonth()->toDateString())
             ->call('removeItem', 0)
             ->call('save')
@@ -514,7 +537,6 @@ class MailsTest extends TestCase
     {
         Livewire::actingAs(User::factory()->mailer()->create())
             ->test(MailForm::class)
-            ->call('addDeadline', 0)
             ->set('items.0.deadlines.0.deadline', '2026-01-31')
             ->call('repeatMonthly', 0)
             ->assertSet('items.0.deadlines.1.deadline', '2026-02-28')
@@ -650,24 +672,30 @@ class MailsTest extends TestCase
             ]);
     }
 
-    public function test_sidebar_badge_counts_open_items_the_user_can_see(): void
+    public function test_sidebar_badge_counts_the_open_documents_of_the_users_list(): void
     {
         $executor = $this->employee(3);
         $colleague = $this->employee(3);
         $head = User::factory()->head()->create(['sector_id' => 3]);
+        $director = User::factory()->director()->create();
 
         $open = $this->documentAssignedTo($executor);
         $overdue = $this->documentAssignedTo($executor);
         $overdue->deadlines()->update(['deadline' => today()->subDay()]);
+        // Partly closed documents still count; fully closed ones do not.
+        MailDeadline::factory()->for($open->items->sole(), 'item')->create(['status' => MailDeadline::STATUS_DONE]);
         $done = $this->documentAssignedTo($executor);
         $done->deadlines()->update(['status' => MailDeadline::STATUS_DONE]);
         $this->documentAssignedTo($colleague);
         $this->documentAssignedTo($this->employee(4));
+        $this->documentAssignedTo($director);
 
         $this->assertSame(['count' => 2, 'overdue' => true], $executor->mailBadge());
         $this->assertSame(['count' => 1, 'overdue' => false], $colleague->fresh()->mailBadge());
         $this->assertSame(3, $head->mailBadge()['count']);
-        $this->assertSame(4, User::factory()->director()->create()->mailBadge()['count']);
+        // The director lands on their own items; the mailer on everything.
+        $this->assertSame(['count' => 1, 'overdue' => false], $director->fresh()->mailBadge());
+        $this->assertSame(['count' => 5, 'overdue' => true], User::factory()->mailer()->create()->mailBadge());
         $this->assertSame(['count' => 0, 'overdue' => false], $this->employee(5)->mailBadge());
     }
 
@@ -769,7 +797,7 @@ class MailsTest extends TestCase
             ->set('title', 'Фақат мазмун')
             ->set('items.0.main_executor_id', (string) $this->employee()->id)
             ->call('save')
-            ->assertHasErrors(['type' => 'required', 'document_number' => 'required', 'document_date' => 'required', 'items.0.deadlines' => 'required']);
+            ->assertHasErrors(['type' => 'required', 'document_number' => 'required', 'document_date' => 'required', 'items.0.deadlines.0.deadline' => 'required']);
 
         Livewire::actingAs(User::factory()->mailer()->create())
             ->test(MailForm::class)

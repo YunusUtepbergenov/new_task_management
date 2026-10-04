@@ -82,7 +82,8 @@ class MailForm extends Component
             'content' => '',
             'main_executor_id' => null,
             'co_executor_ids' => [],
-            'deadlines' => [],
+            // A deadline is mandatory, so the first row is already there to fill in.
+            'deadlines' => [['id' => null, 'deadline' => '']],
         ];
     }
 

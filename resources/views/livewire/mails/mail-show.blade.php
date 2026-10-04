@@ -219,11 +219,26 @@
                                 </span>
 
                                 @if ($canManage && isset($statusForms[$deadline->id]))
-                                    <div class="mx-pop-wrap" x-data="{ open: false }" @click.outside="open = false" x-on:mail-deadline-saved.window="open = false">
-                                        <button type="button" class="mx-status-btn" @click="open = !open" :aria-expanded="open">
+                                    {{-- The popover opens upwards when there is no room for it below the button. --}}
+                                    <div class="mx-pop-wrap" x-data="{
+                                            open: false,
+                                            up: false,
+                                            toggle() {
+                                                this.open = ! this.open;
+                                                if (this.open) this.$nextTick(() => this.place());
+                                            },
+                                            place() {
+                                                const pane = this.$el.closest('.mx-detail') ?? document.documentElement;
+                                                const button = this.$el.getBoundingClientRect();
+                                                const limits = pane.getBoundingClientRect();
+                                                const needed = this.$refs.pop.offsetHeight + 12;
+                                                this.up = limits.bottom - button.bottom < needed && button.top - limits.top > limits.bottom - button.bottom;
+                                            },
+                                        }" @click.outside="open = false" x-on:mail-deadline-saved.window="open = false">
+                                        <button type="button" class="mx-status-btn" @click="toggle()" :aria-expanded="open">
                                             <i class="fa fa-pencil" aria-hidden="true"></i> {{ __('mails.actions.change_status') }}
                                         </button>
-                                        <div class="mx-pop mx-pop--right" x-show="open" x-transition.opacity.duration.100ms style="display: none;">
+                                        <div class="mx-pop mx-pop--right" x-ref="pop" :class="{ 'mx-pop--up': up }" x-show="open" x-transition.opacity.duration.100ms style="display: none;">
                                             <div class="mx-pop-title">№ {{ $loop->parent->iteration }} · {{ $item->clause }} · {{ $deadline->deadline->format('d.m.Y') }}</div>
                                             <div class="mx-status-pills" role="radiogroup" aria-label="{{ __('mails.fields.status') }}">
                                                 @foreach (\App\Models\MailDeadline::STATUSES as $statusOption)
