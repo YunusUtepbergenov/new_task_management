@@ -457,9 +457,10 @@ class MailsTest extends TestCase
 
         $reports = app(MailReportService::class);
         $sectors = collect($reports->bySector()['rows'])->pluck('required', 'name');
-        $this->assertSame(1, $sectors[__('mails.report.all_sectors')]);
+        // With a main executor the item counts under their sector, as in the Excel sheet.
+        $this->assertSame(1, $sectors[\App\Models\Sector::find(4)->name]);
         $this->assertSame(1, $sectors[__('mails.report.left_sector')]);
-        $this->assertFalse($sectors->has(\App\Models\Sector::find(4)->name));
+        $this->assertFalse($sectors->has(__('mails.report.all_sectors')));
 
         // The employee summary still counts the item for its main executor.
         $this->assertSame(1, collect($reports->byEmployee()['rows'])->firstWhere('person', (string) $main->id)['required']);

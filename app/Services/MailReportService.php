@@ -18,8 +18,9 @@ use Illuminate\Support\Collection;
  *   under a single "Барча шўъба мудирлари" entry;
  * - rows are split into "not due yet" and "past due" (the deadline date has passed, whatever
  *   the status), and each part is broken down by status;
- * - in the sector summary, items given to every sector head count under "Барча шўъбалар"
- *   (or "Барча шўъба ва филиаллар"), and items of people who left under a separate row.
+ * - in the sector summary, items count under the main executor's sector; items given to every
+ *   sector head without a main executor count under "Барча шўъбалар" (or "Барча шўъба ва
+ *   филиаллар"), and items of people who left under a separate row.
  */
 class MailReportService
 {
@@ -187,9 +188,10 @@ class MailReportService
                 continue;
             }
 
+            // As in the Excel sheet: the main executor's sector. "All sectors" only when the item
+            // went to the heads without a main executor.
             $sector = match (true) {
-                $item->heads_group !== null => $item->heads_group,
-                $owner['person'] === self::GROUP => MailItem::HEADS_SECTORS,
+                $owner['person'] === self::GROUP => $item->heads_group ?? MailItem::HEADS_SECTORS,
                 $owner['left'] => self::LEFT,
                 default => $owner['sector'],
             };

@@ -337,6 +337,31 @@ class ImportMailsCommandTest extends TestCase
         Notification::assertNothingSent();
     }
 
+    public function test_rows_of_one_document_are_joined_even_when_split_by_another(): void
+    {
+        $executor = User::factory()->create(['name' => 'Асосийев Бахтиёр', 'sector_id' => 7]);
+
+        $this->writeSplitLayout([
+            [1, '25.05.2026', 'ПҚ-314', '22.10.2025', 'Қарор', '2-илова 8-банд.', 'Б.Асосийев', null, 'Юборилмаган'],
+            [2, '14.02.2026', '2-2026', '14.01.2026', 'Фармон', '4-банд.', 'Б.Асосийев', null, 'Юборилмаган'],
+            [3, '25.09.2026', 'ПҚ-314', '22.10.2025', 'Қарор', '3-банд.', 'Б.Асосийев', null, 'Ёпилган'],
+        ]);
+
+        $this->artisan('mails:import', ['path' => $this->path])
+            ->expectsOutputToContain('Imported 2 documents')
+            ->assertSuccessful();
+
+        $decree = MailDocument::where('document_number', 'ПҚ-314')->with('items.deadlines')->sole();
+        $this->assertSame(['2-илова 8-банд.', '3-банд.'], $decree->items->pluck('clause')->all());
+
+        // A second sync keeps both items instead of replacing them run by run.
+        $this->artisan('mails:import', ['path' => $this->path, '--sync' => true, '--force' => true])
+            ->expectsOutputToContain('updated 2')
+            ->assertSuccessful();
+        $this->assertCount(2, $decree->fresh()->items);
+        $this->assertSame($executor->id, $decree->items->first()->executors()->sole()->id);
+    }
+
     public function test_unknown_nicknames_are_reported_without_an_alias(): void
     {
         $this->writeSplitLayout([[1, '01.11.2025', 'ПФ-117', '25.07.2025', 'Ижро интизоми', '85-банд.', 'Диля опа', null, 'Бажарилмади']]);

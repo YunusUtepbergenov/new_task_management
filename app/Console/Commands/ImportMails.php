@@ -259,7 +259,7 @@ class ImportMails extends Command
 
             if ($startsDocument && ! $sameDocument) {
                 if ($doc) {
-                    $documents[] = $this->finishDocument($doc, $item);
+                    $this->addDocument($documents, $doc, $item);
                 }
 
                 $doc = [
@@ -323,10 +323,36 @@ class ImportMails extends Command
         }
 
         if ($doc) {
-            $documents[] = $this->finishDocument($doc, $item);
+            $this->addDocument($documents, $doc, $item);
         }
 
-        return $documents;
+        return array_values(array_map(function (array $document): array {
+            unset($document['key']);
+
+            return $document;
+        }, $documents));
+    }
+
+    /**
+     * Rows of one document are not always next to each other (a stray row of another document,
+     * or a later addition at the bottom): later runs join the first one.
+     *
+     * @param  array<string, array<string, mixed>>  $documents
+     * @param  array<string, mixed>  $doc
+     * @param  array<string, mixed>|null  $item
+     */
+    private function addDocument(array &$documents, array $doc, ?array $item): void
+    {
+        $doc = $this->finishDocument($doc, $item);
+        $key = $doc['key'] ?? null;
+
+        if ($key !== null && isset($documents[$key])) {
+            $documents[$key]['items'] = [...$documents[$key]['items'], ...$doc['items']];
+
+            return;
+        }
+
+        $documents[$key ?? '#'.count($documents)] = $doc;
     }
 
     /**
@@ -403,8 +429,6 @@ class ImportMails extends Command
         if ($item) {
             $doc['items'][] = $item;
         }
-
-        unset($doc['key']);
 
         return $doc;
     }

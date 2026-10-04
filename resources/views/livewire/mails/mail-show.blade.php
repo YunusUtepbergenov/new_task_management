@@ -220,8 +220,8 @@
 
                                 @if ($canManage && isset($statusForms[$deadline->id]))
                                     <div class="mx-pop-wrap" x-data="{ open: false }" @click.outside="open = false" x-on:mail-deadline-saved.window="open = false">
-                                        <button type="button" class="mx-icon-btn" @click="open = !open" :aria-expanded="open" title="{{ __('mails.actions.change_status') }}" aria-label="{{ __('mails.actions.change_status') }}">
-                                            <i class="fa fa-pencil"></i>
+                                        <button type="button" class="mx-status-btn" @click="open = !open" :aria-expanded="open">
+                                            <i class="fa fa-pencil" aria-hidden="true"></i> {{ __('mails.actions.change_status') }}
                                         </button>
                                         <div class="mx-pop mx-pop--right" x-show="open" x-transition.opacity.duration.100ms style="display: none;">
                                             <div class="mx-pop-title">№ {{ $loop->parent->iteration }} · {{ $item->clause }} · {{ $deadline->deadline->format('d.m.Y') }}</div>
