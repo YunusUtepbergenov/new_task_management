@@ -515,6 +515,37 @@ class MailsTest extends TestCase
         Excel::assertDownloaded('mail-report-'.today()->format('Y-m-d').'.xlsx', fn (MailReportExport $export) => count($export->sheets()) === 2);
     }
 
+    public function test_report_export_is_formatted(): void
+    {
+        $this->documentAssignedTo($this->employee(2));
+
+        $path = tempnam(sys_get_temp_dir(), 'svod').'.xlsx';
+        file_put_contents($path, Excel::raw(new MailReportExport, \Maatwebsite\Excel\Excel::XLSX));
+        $workbook = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
+        unlink($path);
+
+        $this->assertSame([__('mails.report.by_sector'), __('mails.report.by_employee')], $workbook->getSheetNames());
+
+        $sheet = $workbook->getSheet(0);
+        // Title rows, then the two header rows, then the totals row and the data.
+        $this->assertSame(__('mails.report.export_title'), $sheet->getCell('A1')->getValue());
+        $this->assertContains('A1:N1', $sheet->getMergeCells());
+        $this->assertContains('E3:H3', $sheet->getMergeCells());
+        $this->assertSame('№', $sheet->getCell('A3')->getValue());
+        $this->assertSame(__('mails.report.total'), $sheet->getCell('B5')->getValue());
+        $this->assertSame(\App\Models\Sector::find(2)->name, $sheet->getCell('B6')->getValue());
+        $this->assertSame(1, (int) $sheet->getCell('C6')->getValue());
+
+        $this->assertSame('center', $sheet->getStyle('A1')->getAlignment()->getHorizontal());
+        $this->assertSame('center', $sheet->getStyle('A2')->getAlignment()->getHorizontal());
+        $this->assertTrue($sheet->getStyle('A3')->getFont()->getBold());
+        $this->assertSame('FEF2F2', $sheet->getStyle('I3')->getFill()->getStartColor()->getRGB());
+        $this->assertTrue($sheet->getStyle('B5')->getFont()->getBold());
+        $this->assertSame('0;-0;"–"', $sheet->getStyle('D6')->getNumberFormat()->getFormatCode());
+        $this->assertSame('C6', $sheet->getFreezePane());
+        $this->assertGreaterThan(40, $sheet->getColumnDimension('B')->getWidth());
+    }
+
     public function test_all_heads_shortcut_adds_every_active_head_as_co_executor(): void
     {
         $main = $this->employee();
