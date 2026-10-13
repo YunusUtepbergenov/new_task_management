@@ -57,7 +57,7 @@ class MailReportService
      */
     public function bySector(): array
     {
-        $sectorNames = Sector::pluck('name', 'id');
+        $sectorNames = Sector::all()->pluck('name', 'id');
 
         $rows = $this->rows()
             ->groupBy('sector')

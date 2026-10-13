@@ -135,7 +135,7 @@ class MailShow extends Component
 
         return view('livewire.mails.mail-show', [
             'document' => $document,
-            'sectorNames' => Sector::pluck('name', 'id'),
+            'sectorNames' => Sector::all()->pluck('name', 'id'),
             'deadlineCount' => $deadlines->count(),
             'overdueCount' => $deadlines->filter->isOverdue()->count(),
             'statusCounts' => $statusCounts,

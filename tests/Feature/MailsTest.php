@@ -640,6 +640,25 @@ class MailsTest extends TestCase
         $this->assertNull(MailFile::formatSize(null));
     }
 
+    public function test_sector_names_follow_the_interface_language(): void
+    {
+        $sector = \App\Models\Sector::find(2);
+        $this->documentAssignedTo($this->employee(2));
+
+        app()->setLocale('ru');
+        $this->assertSame('Сектор по изучению конкурентоспособности отраслей экономики и инвестиционной активности', $sector->fresh()->name);
+
+        app()->setLocale('uz');
+        $this->assertSame('Иқтисодиёт тармоқлари рақобатбардошлиги ва инвестицион фаолликни ўрганиш шўъбаси', $sector->fresh()->name);
+        $this->assertSame($sector->fresh()->name, app(MailReportService::class)->bySector()['rows'][0]['name']);
+
+        $director = User::factory()->director()->create(['locale' => 'uz']);
+        $this->actingAs($director)->get(route('mails.report'))
+            ->assertOk()
+            ->assertSee('Иқтисодиёт тармоқлари рақобатбардошлиги')
+            ->assertDontSee('Сектор по изучению конкурентоспособности');
+    }
+
     public function test_employee_report_has_no_sector_column(): void
     {
         $executor = $this->employee(2);

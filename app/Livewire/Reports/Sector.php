@@ -10,7 +10,7 @@ class Sector extends Component
     public $sect, $sectors;
 
     public function mount(){
-        $this->sectors = ModelsSector::select(['id', 'name'])->get();
+        $this->sectors = ModelsSector::select(['id', 'name', 'name_uz'])->get();
     }
 
     public function updatedSect(){

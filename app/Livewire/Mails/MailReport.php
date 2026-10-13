@@ -74,7 +74,7 @@ class MailReport extends Component
             return null;
         }
 
-        $user = $row['is_group'] ? null : User::with('sector:id,name')->find((int) $this->person);
+        $user = $row['is_group'] ? null : User::with('sector:id,name,name_uz')->find((int) $this->person);
 
         return $row + $tasks + ['sector' => $user?->sector?->name];
     }

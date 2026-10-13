@@ -295,7 +295,7 @@ class MailForm extends Component
             ->map(fn ($id): int => (int) $id);
 
         $users = User::query()
-            ->with('sector:id,name')
+            ->with('sector:id,name,name_uz')
             ->where(fn ($query) => $query->where('leave', 0)->orWhereIn('id', $assignedUserIds))
             ->orderBy('sector_id')
             ->orderBy('name')
